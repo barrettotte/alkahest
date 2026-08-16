@@ -1,0 +1,9 @@
+project:
+  output-dir: _build/html
+
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-copy: true
+

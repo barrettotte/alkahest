@@ -1,0 +1,20 @@
+project:
+  output-dir: _build/print/6x9/latex
+
+format:
+  pdf:
+    documentclass: scrbook
+    classoption:
+      - twoside
+      - openright
+    pdf-engine: lualatex
+    keep-tex: true
+    toc: true
+    number-sections: true
+    geometry:
+      - paperwidth=6in
+      - paperheight=9in
+      - inner=0.80in
+      - outer=0.65in
+      - top=0.65in
+      - bottom=0.75in

@@ -1,0 +1,10 @@
+# Preface {.unnumbered}
+
+This deliberately small book is an executable specification for Alkahest. Each
+example exists to expose formatting or conversion problems before a real
+manuscript depends on the template.
+
+The specimen is not the final visual design. Early versions establish semantic
+and multi-format correctness; typography follows after the pipeline is
+reproducible.
+

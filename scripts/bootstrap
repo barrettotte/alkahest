@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/toolchain.sh
+source "${script_dir}/lib/toolchain.sh"
+
+if ! command -v podman >/dev/null 2>&1; then
+  echo "error: Podman is required but was not found" >&2
+  exit 1
+fi
+
+repo_root="$(alkahest_repo_root)"
+
+podman build \
+  --pull=always \
+  --file "${repo_root}/Containerfile" \
+  --tag "${ALKAHEST_TOOLCHAIN_IMAGE}" \
+  "${repo_root}"

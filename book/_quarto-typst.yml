@@ -1,0 +1,26 @@
+project:
+  output-dir: _build/print/7x10/typst
+
+trim-width: 7in
+trim-height: 10in
+
+format:
+  typst:
+    toc: true
+    number-sections: true
+    keep-typ: true
+    template-partials:
+      - typst/typst-show.typ
+    margin:
+      top: 0.70in
+      bottom: 0.80in
+    margin-geometry:
+      inner:
+        far: 0.85in
+        width: 0in
+        separation: 0in
+      outer:
+        far: 0.70in
+        width: 0in
+        separation: 0in
+      clearance: 8pt

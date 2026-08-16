@@ -1,0 +1,20 @@
+project:
+  output-dir: _build/print/7x10/latex
+
+format:
+  pdf:
+    documentclass: scrbook
+    classoption:
+      - twoside
+      - openright
+    pdf-engine: lualatex
+    keep-tex: true
+    toc: true
+    number-sections: true
+    geometry:
+      - paperwidth=7in
+      - paperheight=10in
+      - inner=0.85in
+      - outer=0.70in
+      - top=0.70in
+      - bottom=0.80in

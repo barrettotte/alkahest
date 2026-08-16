@@ -1,0 +1,16 @@
+.quarto/
+
+book/_build/
+book/Alkahest-Reference-Book.epub
+book/Alkahest-Reference-Book.pdf
+book/Alkahest-Reference-Book.tex
+book/index.html
+book/index_files/
+book/index.log
+book/index.tex
+book/index.typ
+book/reference.html
+book/reference_files/
+book/references.html
+book/references_files/
+book/site_libs/

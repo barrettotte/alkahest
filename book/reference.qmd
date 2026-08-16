@@ -1,0 +1,92 @@
+# Core feature specimen
+
+This chapter begins the cross-format test corpus. It includes common technical
+elements and will grow as each roadmap capability is evaluated. Turing's model
+of computation is a fitting early citation [@turing1936].
+
+## Links, emphasis, and notes
+
+Alkahest is developed as a collection of plain-text sources. The
+[Quarto website](https://quarto.org/) is an external link, while
+@sec-equations is an internal cross-reference. This sentence has a footnote
+that must remain navigable in reflowable output.^[A useful footnote should not
+depend on the geometry of a printed page.]
+
+## Equations {#sec-equations}
+
+Inline mathematics such as $V = I R$ should share a baseline with prose. The
+same relationship can be numbered for later reference:
+
+$$
+V = I R
+$$ {#eq-ohms-law}
+
+Equation @eq-ohms-law must be legible in print, responsive on the web, and
+represented accessibly where the output permits it.
+
+## Code listings
+
+The half-adder in @lst-half-adder tests syntax highlighting, a caption, and a
+cross-reference.
+
+```{#lst-half-adder .verilog lst-cap="A combinational half-adder"}
+module half_adder(
+  input  logic a,
+  input  logic b,
+  output logic sum,
+  output logic carry
+);
+  assign sum   = a ^ b;
+  assign carry = a & b;
+endmodule
+```
+
+Long-line policy must be tested explicitly rather than discovered during final
+layout:
+
+```text
+0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789
+```
+
+## Diagrams and figures
+
+@fig-half-adder is a text-authored diagram. Later specimens will add proper
+logic symbols, timing diagrams, electrical schematics, plots, and chemical
+structures.
+
+```{mermaid}
+%%| label: fig-half-adder
+%%| fig-cap: "The information flow through a half-adder."
+flowchart LR
+  A[Input A] --> XOR[XOR]
+  B[Input B] --> XOR
+  A --> AND[AND]
+  B --> AND
+  XOR --> S[Sum]
+  AND --> C[Carry]
+```
+
+## Tables
+
+| A | B | Sum | Carry |
+|--:|--:|----:|------:|
+| 0 | 0 | 0 | 0 |
+| 0 | 1 | 1 | 0 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 0 | 1 |
+
+: Half-adder truth table {#tbl-half-adder}
+
+Table @tbl-half-adder should remain understandable without relying on color.
+
+## Deliberately pending specimens
+
+The following features require a tool choice or design decision and are tracked
+in the roadmap rather than represented by a misleading placeholder:
+
+- chemical formulae, reactions, and 2D molecular structures;
+- publication-quality electrical circuits and logic diagrams;
+- data-driven graphs with accessible descriptions;
+- subfigures and print/web image variants;
+- theorem, proof, exercise, solution, project, and warning components;
+- glossary, index, appendices, and complete front matter.

@@ -1,0 +1,26 @@
+project:
+  output-dir: _build/review/letter/typst
+
+trim-width: 8.5in
+trim-height: 11in
+
+format:
+  typst:
+    toc: true
+    number-sections: true
+    keep-typ: true
+    template-partials:
+      - typst/typst-show.typ
+    margin:
+      top: 1in
+      bottom: 1in
+    margin-geometry:
+      inner:
+        far: 1in
+        width: 0in
+        separation: 0in
+      outer:
+        far: 1in
+        width: 0in
+        separation: 0in
+      clearance: 8pt

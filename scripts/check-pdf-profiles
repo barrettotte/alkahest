@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/toolchain.sh
+source "${script_dir}/lib/toolchain.sh"
+repo_root="$(alkahest_repo_root)"
+
+for required_command in pdfinfo pdffonts; do
+  if ! command -v "${required_command}" >/dev/null 2>&1; then
+    echo "error: ${required_command} is required for PDF profile checks" >&2
+    exit 1
+  fi
+done
+
+check_pdf() {
+  local relative_path="$1"
+  local expected_width="$2"
+  local expected_height="$3"
+  local label="$4"
+  local pdf_path="${repo_root}/${relative_path}"
+  local actual_width
+  local actual_height
+
+  if [[ ! -f "${pdf_path}" ]]; then
+    echo "error: missing ${label}: ${relative_path}" >&2
+    return 1
+  fi
+
+  read -r actual_width actual_height < <(
+    pdfinfo "${pdf_path}" | awk '/^Page size:/ { print $3, $5; exit }'
+  )
+
+  if ! awk \
+    -v actual_width="${actual_width}" \
+    -v actual_height="${actual_height}" \
+    -v expected_width="${expected_width}" \
+    -v expected_height="${expected_height}" \
+    'BEGIN {
+      width_delta = actual_width - expected_width
+      height_delta = actual_height - expected_height
+      if (width_delta < 0) width_delta = -width_delta
+      if (height_delta < 0) height_delta = -height_delta
+      exit !(width_delta <= 0.1 && height_delta <= 0.1)
+    }'
+  then
+    echo "error: ${label} is ${actual_width} x ${actual_height} points; expected ${expected_width} x ${expected_height}" >&2
+    return 1
+  fi
+
+  if ! pdffonts "${pdf_path}" | awk '
+    NR > 2 && ($(NF - 4) != "yes" || $(NF - 3) != "yes") { failed = 1 }
+    END { exit failed }
+  '
+  then
+    echo "error: ${label} contains a font that is not embedded and subset" >&2
+    return 1
+  fi
+
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; fonts embedded and subset)"
+}
+
+check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"
+check_pdf "book/_build/print/7x10/latex/Alkahest-Reference-Book.pdf" 504 720 "LuaLaTeX 7 x 10"
+check_pdf "book/_build/print/6x9/typst/Alkahest-Reference-Book.pdf" 432 648 "Typst 6 x 9"
+check_pdf "book/_build/print/6x9/latex/Alkahest-Reference-Book.pdf" 432 648 "LuaLaTeX 6 x 9"
+check_pdf "book/_build/review/letter/typst/Alkahest-Reference-Book.pdf" 612 792 "Typst Letter review"
+check_pdf "book/_build/review/letter/latex/Alkahest-Reference-Book.pdf" 612 792 "LuaLaTeX Letter review"
