@@ -1,5 +1,7 @@
 project:
   type: book
+  # Font files are generated build inputs staged from the locked container.
+  pre-render: ../scripts/stage-webfonts
 
 book:
   title: "Alkahest Reference Book"
@@ -10,10 +12,14 @@ book:
     - part: "Foundations"
       chapters:
         - reference.qmd
+        - layout-stress.qmd
+        - page-continuity.qmd
+        - layout-acceptance.qmd
     - references.qmd
   appendices:
     - appendices/page-system-checklist.qmd
     - appendices/format-behavior.qmd
+    - appendices/language-and-script.qmd
 
 # Shared front-matter fields are deliberately obvious specimen values. A real
 # book or edition profile replaces them; no placeholder is a publication claim.
@@ -30,6 +36,11 @@ bibliography: references.bib
 lang: en-US
 crossrefs-hover: true
 
+# Let modern Babel import local span languages lazily in every LuaLaTeX
+# profile. Pandoc otherwise passes embedded languages through the document
+# class, triggering an incompatible legacy Greek/English module sequence.
+babel-otherlangs: []
+
 # H1 is the chapter title. Number and list sections (H2) and subsections (H3),
 # while keeping detail headings (H4) visible but out of numbering and contents.
 toc: true
@@ -40,8 +51,8 @@ number-depth: 3
 crossref:
   chapters: true
 
-# One named stack feeds both PDF backends; webfont packaging follows with the
-# shared HTML/EPUB theme later in Phase 2.
+# One named stack feeds every output. HTML and EPUB package selected WOFF2
+# faces; PDF backends resolve the matching locked OTF files.
 mainfont: Libertinus Serif
 displayfont: Libertinus Serif Display
 sansfont: Libertinus Sans

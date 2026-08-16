@@ -1,0 +1,98 @@
+# Page continuity after a pagination stress chapter {#sec-page-continuity}
+
+This follow-on chapter proves that a later ordinary chapter still opens on a
+recto after the stress chapter changes length. It also brings every PDF profile
+into the 30–50 page Phase 2 specimen range without padding the build with empty
+or duplicated pages.
+
+## Invariants that survive manuscript growth {#sec-pagination-invariants}
+
+A useful layout test should continue to describe the desired result after the
+manuscript changes. Exact page numbers are poor invariants because adding one
+paragraph can change every subsequent leaf. Physical parity, empty-sheet
+behavior, complete text, and content containment remain meaningful even as the
+page count evolves. The validator therefore discovers where each unique opener
+landed and evaluates that page rather than expecting a fixed location.
+
+The same principle applies to headings. A production title may be short today
+and become longer during editing or translation. The page system must retain
+its number, hierarchy, navigation destination, and full semantic text without a
+manual break inserted for one trim size. A reviewer can then judge the precise
+wrapping in the narrowest profile while automated checks guard the structural
+properties common to all profiles.
+
+Paragraph flow is similarly sensitive to ordinary revision. Widow and orphan
+rules operate on the current line layout, so they remain useful when a sentence
+is inserted or a font receives new metrics. A hard-coded page break would only
+preserve the old composition and could create a new blank or half-empty page
+after the next edit. The template owns pagination policy; chapter files own the
+order and meaning of content.
+
+## Fixed pages and reflowable views {#sec-fixed-and-reflowable}
+
+PDF, HTML, and EPUB editions share semantics but not a physical model. A PDF
+defines sheets, sides, trim, and a stable sequence of page coordinates. That
+makes recto starts and intentionally blank versos both meaningful and testable.
+A web page is a continuous viewport, while an EPUB reading system repaginates
+for the device and reader preferences. Adding synthetic blank screens to those
+outputs would interrupt reading without preserving a useful print convention.
+
+The reflowable styles can still express preferences. Headings ask to remain
+with following content, paragraphs request a minimum number of lines at a page
+boundary, and long words are permitted to wrap before they force horizontal
+scrolling. Reading systems vary in how much paged-media CSS they honor, so the
+contract distinguishes a declared preference from a guaranteed sheet-level
+result. No essential meaning depends on either preference being implemented.
+
+This distinction also protects accessibility. Semantic headings remain in the
+document outline even when their visual treatment changes, and a blank print
+verso contributes no false navigation stop or spoken placeholder. Complete
+titles remain available to search and assistive technology even when running
+furniture uses a compact composition. Layout convenience never replaces the
+source structure that readers and conversion tools depend on.
+
+## Review across profiles {#sec-profile-review}
+
+The economy trim is the first visual checkpoint for long headings because it
+has the least horizontal and vertical room. The primary trim then shows whether
+the same rules produce a calmer page without becoming visually unrelated. The
+Letter review profile has a different purpose: generous margins and familiar
+office-paper geometry make annotations convenient, but its chapter parity and
+typographic hierarchy should still agree with the print interiors.
+
+Both typesetters are evaluated independently. Their line endings and total page
+counts need not match, and trying to force them into pixel equality would hide
+the strengths and limitations we need to compare later. They must agree on the
+book structure, reading order, page dimensions, recto policy, blank-page
+furniture, heading hierarchy, and selected font families. A difference outside
+those invariants becomes evidence for the eventual backend decision rather than
+an automatic defect.
+
+Visual inspection complements those checks. It catches an overfull heading
+whose text still extracts correctly, an awkward running head that remains
+technically inside the page, or a sequence of loose bottoms that makes spreads
+feel unstable. The stress chapters concentrate these risks into a few pages so
+a reviewer does not have to search an entire manuscript. The acceptance notes
+record which pages and profiles deserve attention after a theme change.
+
+## Phase 2 handoff {#sec-phase-two-handoff}
+
+With these specimens in place, the reference book has a coherent page system,
+shared typography, output-specific reflow behavior, explicit language support,
+and repeatable layout checks. Later roadmap phases can add code, math, figures,
+tables, notes, and semantic components without reopening basic decisions about
+which side a chapter begins on or whether an empty verso carries furniture.
+
+Those later components will create new pagination pressures. A tall figure may
+leave a heading near the foot of a page, a code listing may resist breaking,
+and a translated caption may become twice as long. Each feature should add its
+own minimal stress case and preserve the invariants established here. The page
+system is therefore a foundation for further testing, not a claim that every
+future composition problem has already been solved.
+
+The practical handoff is intentionally modest: authors write semantic chapters
+without manual page commands, the build applies profile geometry and medium-
+appropriate flow rules, automated checks catch structural regressions, and a
+short visual review judges composition. That division of responsibility keeps
+the template simple to use while leaving enough control for demanding technical
+books and future publication profiles.

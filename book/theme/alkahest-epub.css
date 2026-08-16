@@ -1,0 +1,326 @@
+/*
+Reader-tolerant EPUB adapter for the Alkahest color and type system.
+
+Embedded font notices:
+Copyright © 2012-2024 The Libertinus Project Authors, with Reserved Font Name
+"Linux Libertine", "Biolinum", "STIX Fonts".
+© 2023 Adobe (http://www.adobe.com/), with Reserved Font Name "Source".
+
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The fonts,
+including any derivative works, can be bundled, embedded, redistributed
+and/or sold with any software provided that any reserved names are not used
+by derivative works. The fonts and derivatives, however, cannot be released
+under any other type of license. The requirement for fonts to remain under
+this license does not apply to any document created using the fonts or their
+derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may include
+source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting, or
+substituting -- in part or in whole -- any of the components of the Original
+Version, by changing formats or by porting the Font Software to a new
+environment.
+
+"Author" refers to any designer, engineer, programmer, technical writer or
+other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the Font Software, to use, study, copy, merge, embed, modify, redistribute,
+and sell modified and unmodified copies of the Font Software, subject to the
+following conditions:
+
+1) Neither the Font Software nor any of its individual components, in Original
+or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy contains
+the above copyright notice and this license. These can be included either as
+stand-alone text files, human-readable headers or in the appropriate
+machine-readable metadata fields within text or binary files as long as those
+fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font Name(s)
+unless explicit written permission is granted by the corresponding Copyright
+Holder. This restriction only applies to the primary font name as presented to
+the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any Modified
+Version, except to acknowledge the contribution(s) of the Copyright Holder(s)
+and the Author(s) or with their explicit written permission.
+
+5) The Font Software, modified or unmodified, in part or in whole, must be
+distributed entirely under this license, and must not be distributed under any
+other license. The requirement for fonts to remain under this license does not
+apply to any document created using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT,
+TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR
+ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL,
+INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE
+THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
+*/
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("../fonts/LibertinusSerif-Regular.woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("../fonts/LibertinusSerif-Italic.woff2");
+  font-style: italic;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("../fonts/LibertinusSerif-Bold.woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("../fonts/LibertinusSerif-BoldItalic.woff2");
+  font-style: italic;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Libertinus Serif Display";
+  src: url("../fonts/LibertinusSerifDisplay-Regular.woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Libertinus Sans";
+  src: url("../fonts/LibertinusSans-Regular.woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Libertinus Sans";
+  src: url("../fonts/LibertinusSans-Italic.woff2");
+  font-style: italic;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Libertinus Sans";
+  src: url("../fonts/LibertinusSans-Bold.woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("../fonts/SourceCodePro-Regular.otf.woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("../fonts/SourceCodePro-It.otf.woff2");
+  font-style: italic;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("../fonts/SourceCodePro-Bold.otf.woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("../fonts/SourceCodePro-BoldIt.otf.woff2");
+  font-style: italic;
+  font-weight: 700;
+}
+
+html {
+  color: #20262e;
+  background: #ffffff;
+  font-family: "Libertinus Serif", Georgia, serif;
+  line-height: 1.48;
+}
+
+body {
+  margin: 5%;
+  font-kerning: normal;
+}
+
+:lang(en),
+:lang(fr),
+:lang(de),
+:lang(el),
+:lang(ru),
+:lang(he) {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.language-sample {
+  display: block;
+  margin: 1em 0;
+}
+
+p {
+  margin: 0;
+  text-indent: 1.1em;
+  widows: 2;
+  orphans: 2;
+}
+
+h1 + p,
+h2 + p,
+h3 + p,
+h4 + p,
+figure + p,
+div.sourceCode + p,
+pre + p,
+table + p,
+li p {
+  text-indent: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #334155;
+  font-family: "Libertinus Sans", sans-serif;
+  line-height: 1.18;
+  page-break-after: avoid;
+  break-after: avoid;
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  margin: 2.5em 0 1.2em;
+  font-family: "Libertinus Serif Display", "Libertinus Serif", serif;
+  font-size: 2em;
+  font-weight: 400;
+  page-break-before: always;
+  break-before: page;
+}
+
+h2 {
+  margin: 2em 0 0.65em;
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid #cbd5e1;
+  font-size: 1.5em;
+}
+
+h3 {
+  margin: 1.6em 0 0.55em;
+  font-size: 1.25em;
+}
+
+h4 {
+  margin: 1.35em 0 0.5em;
+  color: #20262e;
+  font-size: 1.05em;
+}
+
+a {
+  color: #334155;
+  text-decoration: underline;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: "Source Code Pro", monospace;
+}
+
+code:not(pre code) {
+  padding: 0.05em 0.2em;
+  background: #f1f5f9;
+}
+
+pre,
+div.sourceCode {
+  margin: 1em 0;
+  padding: 0.7em;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-left: 0.2em solid #334155;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+pre code {
+  font-size: 0.82em;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+table {
+  margin: 1em 0;
+  border-top: 2px solid #334155;
+  border-bottom: 1px solid #334155;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 0.3em 0.45em;
+}
+
+th {
+  color: #334155;
+  background: #f1f5f9;
+  font-family: "Libertinus Sans", sans-serif;
+}
+
+figcaption,
+table caption {
+  color: #64748b;
+  font-family: "Libertinus Sans", sans-serif;
+  font-size: 0.88em;
+}
+
+blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 0.2em solid #334155;
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+nav#toc a,
+nav#landmarks a {
+  text-decoration: none;
+}

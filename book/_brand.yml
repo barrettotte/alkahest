@@ -1,0 +1,23 @@
+# Semantic color contract for every format. Typst consumes it directly; HTML,
+# EPUB, and LuaLaTeX repeat the same values through documented adapters for the
+# pinned Quarto version.
+color:
+  palette:
+    ink: "#20262e"
+    slate: "#334155"
+    muted: "#64748b"
+    line: "#cbd5e1"
+    mist: "#f1f5f9"
+    paper: "#ffffff"
+    copper: "#9a4f12"
+  foreground: ink
+  background: paper
+  primary: slate
+  secondary: muted
+  tertiary: mist
+  warning: copper
+
+defaults:
+  bootstrap:
+    defaults:
+      link-decoration: underline

@@ -20,6 +20,10 @@ render_pdf_profiles() {
   render_profile latex-review
 }
 
+render_locale_smoke() {
+  "${script_dir}/quarto" render book --profile locale-fr,html
+}
+
 case "${target}" in
   html|epub|typst|latex|typst-6x9|latex-6x9|typst-review|latex-review)
     render_profile "${target}"
@@ -35,6 +39,9 @@ case "${target}" in
   pdf-profiles)
     render_pdf_profiles
     ;;
+  locale-smoke)
+    render_locale_smoke
+    ;;
   all)
     render_profile html
     render_profile epub
@@ -46,9 +53,10 @@ case "${target}" in
     render_profile html
     render_profile epub
     render_pdf_profiles
+    render_locale_smoke
     ;;
   *)
-    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles]" >&2
+    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles|locale-smoke]" >&2
     exit 2
     ;;
 esac

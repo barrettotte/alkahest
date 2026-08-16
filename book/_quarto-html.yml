@@ -1,6 +1,14 @@
 project:
   output-dir: _build/html
+  resources:
+    - theme/fonts/licenses
+
+# Quarto 1.10.18 duplicates color-scheme link IDs when auto-applying Brand to a
+# book. The Sass adapter consumes the same visible tokens until that is fixed.
+brand: false
 
 format:
   html:
     code-copy: true
+    theme: theme/alkahest.scss
+    css: theme/alkahest-fonts.css

@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Stage the locked WOFF2 faces and license notices used by HTML and EPUB builds.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "${script_dir}/.." && pwd)"
+source_root="/opt/alkahest/fonts/web"
+license_root="/usr/local/share/doc/fonts"
+destination="${repo_root}/book/theme/fonts"
+
+if [[ ! -d "${source_root}" ]]; then
+  echo "error: locked webfonts are unavailable; render through ./scripts/render" >&2
+  exit 1
+fi
+
+install -d "${destination}/licenses"
+
+stage_file() {
+  local source_path="$1"
+  local destination_path="$2"
+
+  if [[ ! -f "${source_path}" ]]; then
+    echo "error: locked webfont asset is missing: ${source_path}" >&2
+    exit 1
+  fi
+  if [[ ! -f "${destination_path}" ]] || ! cmp -s "${source_path}" "${destination_path}"; then
+    install -m 0644 "${source_path}" "${destination_path}"
+  fi
+}
+
+for face in \
+  LibertinusSerif-Regular.woff2 \
+  LibertinusSerif-Italic.woff2 \
+  LibertinusSerif-Bold.woff2 \
+  LibertinusSerif-BoldItalic.woff2 \
+  LibertinusSerifDisplay-Regular.woff2 \
+  LibertinusSans-Regular.woff2 \
+  LibertinusSans-Italic.woff2 \
+  LibertinusSans-Bold.woff2
+do
+  stage_file "${source_root}/libertinus/${face}" "${destination}/${face}"
+done
+
+for face in \
+  SourceCodePro-Regular.otf.woff2 \
+  SourceCodePro-It.otf.woff2 \
+  SourceCodePro-Bold.otf.woff2 \
+  SourceCodePro-BoldIt.otf.woff2
+do
+  stage_file "${source_root}/source-code-pro/${face}" "${destination}/${face}"
+done
+
+stage_file "${license_root}/libertinus/OFL.txt" "${destination}/licenses/Libertinus-OFL.txt"
+stage_file "${license_root}/source-code-pro/OFL.md" "${destination}/licenses/Source-Code-Pro-OFL.md"

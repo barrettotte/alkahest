@@ -124,8 +124,8 @@ flowchart LR
 
 The title, publication-data, and dedication treatments draw from one shared
 metadata record. This chapter belongs to a named part, and
-@sec-page-system-checklist and @sec-format-behavior exercise two independently
-addressable appendices.
+@sec-page-system-checklist, @sec-format-behavior, and @sec-language-and-script
+exercise three independently addressable appendices.
 
 ## Deliberately pending specimens
 

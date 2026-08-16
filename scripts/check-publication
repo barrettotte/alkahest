@@ -25,8 +25,8 @@ if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   exit 1
 fi
 
-# Mount outputs read-only and disable networking: internal HTML resolution and
-# EPUB conformance must not mutate artifacts or depend on external services.
+# Mount outputs read-only and disable networking: link, locale, and EPUB
+# conformance checks must not mutate artifacts or depend on external services.
 exec podman run --rm \
   --pull=never \
   --network=none \
@@ -40,25 +40,82 @@ exec podman run --rm \
   --entrypoint sh \
   "${ALKAHEST_TOOLCHAIN_IMAGE}" \
   -ec '
+    require_literal() {
+      needle="$1"
+      file="$2"
+      label="$3"
+      if ! grep -Fq "${needle}" "${file}"; then
+        echo "error: ${label} is missing required text: ${needle}" >&2
+        exit 1
+      fi
+    }
+
     # The small local checker handles site-relative files/fragments; EPUBCheck
     # supplies the full W3C EPUB ruleset from the locked image.
     perl scripts/check-html-links book/_build/html
+    perl scripts/check-html-links book/_build/locale/fr/html
     java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
+
+    # The reflowable artifacts must be self-contained and carry the same theme
+    # roles and selected font faces; a successful render alone does not prove
+    # that CSS resources were copied or embedded.
+    html_theme="book/_build/html/theme/alkahest-fonts.css"
+    epub_listing="$(mktemp)"
+    epub_css="$(mktemp)"
+    test -f "${html_theme}"
+    unzip -Z1 book/_build/epub/Alkahest-Reference-Book.epub >"${epub_listing}"
+    unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
+      EPUB/styles/stylesheet1.css >"${epub_css}"
+    grep -R -Fq -- "--alkahest-primary" book/_build/html/site_libs/bootstrap
+    grep -Fq "Embedded font notices" "${epub_css}"
+    grep -Fq "color: #334155" "${epub_css}"
+    for font_file in \
+      LibertinusSerif-Regular.woff2 \
+      LibertinusSerif-Italic.woff2 \
+      LibertinusSerif-Bold.woff2 \
+      LibertinusSerif-BoldItalic.woff2 \
+      LibertinusSerifDisplay-Regular.woff2 \
+      LibertinusSans-Regular.woff2 \
+      LibertinusSans-Italic.woff2 \
+      LibertinusSans-Bold.woff2 \
+      SourceCodePro-Regular.otf.woff2 \
+      SourceCodePro-It.otf.woff2 \
+      SourceCodePro-Bold.otf.woff2 \
+      SourceCodePro-BoldIt.otf.woff2
+    do
+      test -f "book/_build/html/theme/fonts/${font_file}"
+      grep -Fq "fonts/${font_file}" "${html_theme}"
+      grep -Fxq "EPUB/fonts/${font_file}" "${epub_listing}"
+      grep -Fq "../fonts/${font_file}" "${epub_css}"
+    done
+    for license_file in Libertinus-OFL.txt Source-Code-Pro-OFL.md; do
+      test -f "book/_build/html/theme/fonts/licenses/${license_file}"
+    done
 
     # Conformance alone cannot detect a valid file that silently dropped one of
     # the shared front-matter or appendix components.
     html_text="$(mktemp)"
     epub_text="$(mktemp)"
+    epub_language="$(mktemp)"
     find book/_build/html -type f -name "*.html" -exec cat {} + \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${html_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       EPUB/nav.xhtml "EPUB/text/*.xhtml" \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${epub_text}"
+    unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
+      "EPUB/text/*.xhtml" >"${epub_language}"
     for marker in \
       "Publication data" \
       "For the readers who build things to understand them." \
       "Appendix A" \
       "Appendix B" \
+      "Appendix C" \
+      "Language and writing-system specimen" \
+      "A deliberately long chapter title for testing wrapping" \
+      "Page continuity after a pagination stress chapter" \
+      "Layout acceptance record" \
+      "Boundary Alpha begins" \
+      "Boundary Lima ends" \
       "Contents" \
       "Section 1.1" \
       "Section 1.1.1" \
@@ -78,10 +135,71 @@ exec podman run --rm \
     done
     # Quarto intentionally omits part dividers from EPUB, but HTML must retain it.
     grep -Fq "Foundations" "${html_text}"
+    grep -Eq "widows:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
+    grep -Eq "orphans:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
+    grep -Eq "overflow-wrap:[[:space:]]*anywhere" book/_build/html/site_libs/bootstrap/*.css
+    grep -Eq "widows:[[:space:]]*2" "${epub_css}"
+    grep -Eq "orphans:[[:space:]]*2" "${epub_css}"
+    grep -Eq "overflow-wrap:[[:space:]]*anywhere" "${epub_css}"
     if grep -Fq "1.1.1.1" "${html_text}" || grep -Fq "1.1.1.1" "${epub_text}"; then
       echo "error: a reflowable output incorrectly numbers the H4 detail heading" >&2
       exit 1
     fi
-    rm "${html_text}" "${epub_text}"
-    echo "ok: HTML/EPUB publication-structure and heading markers"
+
+    # Require both the primary locale and scoped language/direction semantics.
+    # These attributes drive hyphenation, shaping, and assistive technology;
+    # visible multilingual text alone is not sufficient evidence.
+    html_language="book/_build/html/appendices/language-and-script.html"
+    locale_index="book/_build/locale/fr/html/index.html"
+    locale_reference="book/_build/locale/fr/html/reference.html"
+    require_literal "lang=\"en-US\"" book/_build/html/index.html "HTML root"
+    require_literal "lang=\"fr-FR\"" "${locale_index}" "French HTML root"
+    for semantic_attribute in \
+      "lang=\"en-US\"" \
+      "lang=\"fr-FR\"" \
+      "lang=\"de-DE\"" \
+      "lang=\"el-GR\"" \
+      "lang=\"ru-RU\"" \
+      "lang=\"he-IL\" dir=\"rtl\""
+    do
+      require_literal "${semantic_attribute}" "${html_language}" "HTML language specimen"
+      require_literal "${semantic_attribute}" "${epub_language}" "EPUB language specimen"
+    done
+
+    # The French smoke edition checks document-level locale changes and known
+    # generated labels. Prose intentionally remains the same reference text.
+    require_literal "Table des matières" "${locale_index}" "French HTML"
+    require_literal "Tableau&nbsp;" "${locale_reference}" "French HTML"
+    require_literal "Équation&nbsp;" "${locale_reference}" "French HTML"
+    require_literal "Extrait&nbsp;" "${locale_reference}" "French HTML"
+    require_literal "Annexe A" "${locale_reference}" "French HTML"
+
+    # Preserve both documented nonbreaking forms. HTML serializes NBSP as an
+    # entity; EPUB serializes it as Unicode, while both retain narrow NBSP.
+    require_literal "25&nbsp;MHz" "${html_language}" "HTML language specimen"
+    require_literal "Figure&nbsp;1" "${html_language}" "HTML language specimen"
+    if ! perl -MEncode -0777 -e \
+      '"'"'$_ = Encode::decode("UTF-8", <>);
+       exit !(/Fran\x{00E7}ais\x{202F}:/)'"'"' "${html_language}"
+    then
+      echo "error: HTML did not preserve the narrow nonbreaking space" >&2
+      exit 1
+    fi
+    if ! perl -MEncode -0777 -e \
+      '"'"'$_ = Encode::decode("UTF-8", <>);
+       exit !(/25\x{A0}MHz/ && /Figure\x{A0}1/ &&
+               /Fran\x{00E7}ais\x{202F}:/)'"'"' \
+      "${epub_language}"
+    then
+      echo "error: EPUB did not preserve the documented nonbreaking spaces" >&2
+      exit 1
+    fi
+
+    rm \
+      "${html_text}" \
+      "${epub_text}" \
+      "${epub_language}" \
+      "${epub_listing}" \
+      "${epub_css}"
+    echo "ok: HTML/EPUB structure, locale semantics, theme, embedded fonts, and heading markers"
   '

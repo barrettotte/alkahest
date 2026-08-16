@@ -2,13 +2,13 @@
 // Keep wrappers narrow so future Quarto upgrades remain easy to compare.
 #import "@preview/orange-book:0.7.1" as orange-book
 
-#set text(font: "$mainfont$")
+#set text(font: "$mainfont$", fallback: false)
 
 // Quarto's book filter emits these function names into the generated Typst.
 // The wrappers preserve that interface while applying the selected display face.
-#let part(title) = orange-book.part(text(font: "$displayfont$", title))
+#let part(title) = orange-book.part(text(font: "$displayfont$", fallback: false, title))
 #let chapter(title, image: none, l: none) = orange-book.chapter(
-  text(font: "$displayfont$", title),
+  text(font: "$displayfont$", fallback: false, title),
   image: image,
   l: l,
 )
@@ -23,9 +23,9 @@
 #let alkahest-front-matter = [
   #page(header: none, footer: none, numbering: none)[
     #place(bottom + left, block(width: 100%)[
-      #set text(font: "$mainfont$", size: 10pt)
+      #set text(font: "$mainfont$", fallback: false, size: 10pt)
       #set par(spacing: 0.65em)
-      #text(font: "$displayfont$", size: 18pt)[Publication data]
+      #text(font: "$displayfont$", fallback: false, size: 18pt)[Publication data]
       #v(1.2em)
       Copyright © $alkahest.copyright-year$ $alkahest.copyright-holder$\
       $alkahest.rights-statement$\
@@ -38,7 +38,7 @@
     ])
   ]
   #page(header: none, footer: none, numbering: none)[
-    #place(center + horizon, text(font: "$displayfont$", size: 18pt)[$alkahest.dedication$])
+    #place(center + horizon, text(font: "$displayfont$", fallback: false, size: 18pt)[$alkahest.dedication$])
   ]
   // Reserve the verso after the dedication so the contents begins recto.
   #page(header: none, footer: none, numbering: none)[]
@@ -46,10 +46,10 @@
 
 #show: orange-book.book.with(
 $if(title)$
-  title: [#text(font: "$displayfont$")[$title$]],
+  title: [#text(font: "$displayfont$", fallback: false)[$title$]],
 $endif$
 $if(subtitle)$
-  subtitle: [#text(font: "$sansfont$")[$subtitle$]],
+  subtitle: [#text(font: "$sansfont$", fallback: false)[$subtitle$]],
 $endif$
 $if(by-author)$
   author: "$for(by-author)$$it.name.literal$$sep$, $endfor$\n$alkahest.edition$",
@@ -132,24 +132,50 @@ $endif$
 // intentionally applied after orange-book so it replaces the package's extra
 // paragraph gap while retaining its heading, list, and figure treatments.
 #let alkahest-body-style(body) = {
+  let theme-ink = brand-color.at("ink", default: rgb("#20262e"))
+  let theme-primary = brand-color.at("primary", default: rgb("#334155"))
+  let theme-line = brand-color.at("line", default: rgb("#cbd5e1"))
+  let theme-mist = brand-color.at("mist", default: rgb("#f1f5f9"))
+
   // Orange-book places a second folio in the default footer; its running head
   // already provides the single outward folio required by the design contract.
   set page(numbering: none)
-  set text(font: "$mainfont$")
+  // Typst prevents widows and orphans by default. State the nonzero costs
+  // explicitly so a future engine or package default cannot weaken the policy.
+  set text(
+    font: "$mainfont$",
+    fallback: false,
+    costs: (widow: 100%, orphan: 100%),
+  )
   set par(
     justify: true,
     leading: $body-leading$,
     first-line-indent: $paragraph-indent$,
     spacing: $paragraph-spacing$,
   )
-  show heading: set text(font: "$sansfont$")
+  show heading: set text(font: "$sansfont$", fallback: false, fill: theme-primary)
+  // Preserve Typst's built-in keep-with-next behavior through later show rules.
+  show heading: set block(sticky: true)
   // Quarto/Typst currently carries numbering deeper than number-depth. Keep
   // H4-H6 as local, unnumbered structure to match HTML/EPUB and LuaLaTeX.
+  show heading.where(level: 4): set text(fill: theme-ink)
   show heading.where(level: 4): set heading(numbering: none)
+  show heading.where(level: 5): set text(fill: theme-ink)
   show heading.where(level: 5): set heading(numbering: none)
+  show heading.where(level: 6): set text(fill: theme-ink)
   show heading.where(level: 6): set heading(numbering: none)
-  show math.equation: set text(font: "$mathfont$")
-  show raw: set text(font: "$monofont$")
+  show link: set text(fill: theme-primary)
+  show figure.caption: set text(font: "$sansfont$", fallback: false, size: 8.5pt)
+  show raw.where(block: true): content => block(
+    width: 100%,
+    fill: theme-mist,
+    stroke: (left: 2pt + theme-primary, rest: 0.5pt + theme-line),
+    inset: 7pt,
+    radius: 2pt,
+    content,
+  )
+  show math.equation: set text(font: "$mathfont$", fallback: false)
+  show raw: set text(font: "$monofont$", fallback: false)
   body
 }
 

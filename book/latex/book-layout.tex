@@ -1,8 +1,19 @@
 % Shared PDF body rhythm and running-page furniture for every LuaLaTeX profile.
 \KOMAoptions{parskip=false,numbers=noenddot}
+\usepackage{xcolor}
+\definecolor{AlkahestInk}{HTML}{20262E}
+\definecolor{AlkahestSlate}{HTML}{334155}
+\definecolor{AlkahestMuted}{HTML}{64748B}
+\definecolor{AlkahestLine}{HTML}{CBD5E1}
+\definecolor{AlkahestMist}{HTML}{F1F5F9}
+\definecolor{AlkahestCopper}{HTML}{9A4F12}
 \linespread{1.083333}% 10 pt text on a 13 pt baseline (12 pt class default x 13/12).
 \setlength{\parindent}{1em}
 \setlength{\parskip}{0pt}
+% Never leave a single first or last paragraph line on the adjacent page.
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
 
 % Reserve the selected display face for title and division-page designs.
 \newfontfamily\alkahestdisplayfont{Libertinus Serif Display}
@@ -10,10 +21,15 @@
 % Keep division pages typographically related while allowing the structural
 % label to change automatically from Chapter to Appendix in back matter.
 \KOMAoptions{chapterprefix=true}
-\setkomafont{part}{\normalfont\alkahestdisplayfont\Huge}
-\setkomafont{partnumber}{\normalfont\sffamily\bfseries\Large}
-\setkomafont{chapter}{\normalfont\alkahestdisplayfont\huge}
-\setkomafont{chapterprefix}{\normalfont\sffamily\bfseries\small\MakeUppercase}
+\setkomafont{part}{\normalfont\alkahestdisplayfont\Huge\color{AlkahestSlate}}
+\setkomafont{partnumber}{\normalfont\sffamily\bfseries\Large\color{AlkahestMuted}}
+\setkomafont{chapter}{\normalfont\alkahestdisplayfont\huge\color{AlkahestSlate}}
+\setkomafont{chapterprefix}{\normalfont\sffamily\bfseries\small\color{AlkahestMuted}\MakeUppercase}
+\setkomafont{section}{\normalfont\sffamily\bfseries\Large\color{AlkahestSlate}}
+\setkomafont{subsection}{\normalfont\sffamily\bfseries\large\color{AlkahestSlate}}
+\setkomafont{subsubsection}{\normalfont\sffamily\bfseries\normalsize\color{AlkahestInk}}
+\setkomafont{caption}{\normalfont\sffamily\small\color{AlkahestMuted}}
+\setkomafont{captionlabel}{\normalfont\sffamily\bfseries\small\color{AlkahestSlate}}
 \RedeclareSectionCommand[beforeskip=0pt,afterskip=2\baselineskip]{chapter}
 
 % Pandoc maps Markdown H1 to KOMA's chapter level (0), so a LaTeX depth of 2
@@ -28,4 +44,14 @@
 \setkomafont{pageheadfoot}{\normalfont\sffamily\small}
 \setkomafont{pagenumber}{\normalfont\small}
 \renewcommand*{\chapterpagestyle}{empty}
-\AtBeginDocument{\pagestyle{scrheadings}}
+\AtBeginDocument{%
+  \color{AlkahestInk}%
+  \colorlet{shadecolor}{AlkahestMist}%
+  \hypersetup{%
+    colorlinks=true,%
+    linkcolor=AlkahestSlate,%
+    citecolor=AlkahestSlate,%
+    urlcolor=AlkahestCopper%
+  }%
+  \pagestyle{scrheadings}%
+}

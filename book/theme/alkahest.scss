@@ -1,0 +1,217 @@
+/*-- scss:defaults --*/
+$alkahest-ink: #20262e;
+$alkahest-slate: #334155;
+$alkahest-muted: #64748b;
+$alkahest-line: #cbd5e1;
+$alkahest-mist: #f1f5f9;
+$alkahest-paper: #ffffff;
+$alkahest-copper: #9a4f12;
+$font-family-sans-serif: "Libertinus Serif", Georgia, "Times New Roman", serif;
+$font-family-monospace: "Source Code Pro", ui-monospace, monospace;
+$font-size-root: 18px;
+$line-height-base: 1.58;
+$headings-font-family: "Libertinus Sans", system-ui, sans-serif;
+$headings-font-weight: 700;
+$headings-line-height: 1.18;
+$body-color: $alkahest-ink;
+$body-bg: $alkahest-paper;
+$headings-color: $alkahest-slate;
+$link-color: $alkahest-slate;
+$link-hover-color: $alkahest-copper;
+$code-color: $alkahest-ink;
+$code-bg: $alkahest-mist;
+$border-color: $alkahest-line;
+$sidebar-bg: #f8fafc;
+$sidebar-fg: $alkahest-ink;
+$toc-color: $alkahest-muted;
+$toc-active-border: $alkahest-slate;
+$toc-inactive-border: $alkahest-line;
+
+/*-- scss:rules --*/
+:root {
+  --alkahest-ink: #{$alkahest-ink};
+  --alkahest-primary: #{$alkahest-slate};
+  --alkahest-muted: #{$alkahest-muted};
+  --alkahest-line: #{$alkahest-line};
+  --alkahest-mist: #{$alkahest-mist};
+}
+
+body {
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+p {
+  orphans: 2;
+  widows: 2;
+}
+
+:lang(en),
+:lang(fr),
+:lang(de),
+:lang(el),
+:lang(ru),
+:lang(he) {
+  hyphens: auto;
+}
+
+[dir="rtl"] {
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.language-sample {
+  display: block;
+  max-width: 30rem;
+  margin-block: 1rem;
+}
+
+#quarto-content main.content {
+  max-width: 46rem;
+}
+
+h1.title,
+h1 .chapter-title,
+.quarto-title-block .title {
+  font-family: "Libertinus Serif Display", "Libertinus Serif", serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  margin-bottom: 1.25rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  break-after: avoid-page;
+  overflow-wrap: anywhere;
+}
+
+h2 {
+  margin-top: 2.4rem;
+  padding-bottom: 0.28rem;
+  border-bottom: 1px solid $alkahest-line;
+}
+
+h3 {
+  margin-top: 1.9rem;
+}
+
+h4 {
+  margin-top: 1.5rem;
+  color: $alkahest-ink;
+  font-size: 1.05rem;
+}
+
+.header-section-number,
+.chapter-number {
+  color: $alkahest-muted;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.sidebar-title,
+.sidebar-navigation,
+.quarto-secondary-nav,
+.margin-sidebar,
+.pagination,
+.quarto-figure figcaption,
+table caption {
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+}
+
+.sidebar-title a {
+  color: $alkahest-slate;
+  font-family: "Libertinus Serif Display", "Libertinus Serif", serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.sidebar-navigation .sidebar-item .sidebar-link.active {
+  color: $alkahest-slate;
+  border-left-color: $alkahest-slate;
+  font-weight: 700;
+}
+
+a {
+  text-decoration-thickness: 0.075em;
+  text-underline-offset: 0.14em;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid $alkahest-copper;
+  outline-offset: 3px;
+}
+
+code:not(pre code) {
+  padding: 0.08em 0.28em;
+  border-radius: 0.18rem;
+}
+
+div.sourceCode,
+pre:not(.sourceCode) {
+  background: $alkahest-mist;
+  border: 1px solid $alkahest-line;
+  border-left: 0.22rem solid $alkahest-slate;
+  border-radius: 0.2rem;
+}
+
+pre code {
+  font-size: 0.84rem;
+  line-height: 1.48;
+}
+
+table {
+  border-top: 2px solid $alkahest-slate;
+  border-bottom: 1px solid $alkahest-slate;
+}
+
+thead th {
+  color: $alkahest-slate;
+  background: $alkahest-mist;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+}
+
+.quarto-figure figcaption,
+table caption {
+  color: $alkahest-muted;
+  font-size: 0.9rem;
+}
+
+blockquote {
+  color: $alkahest-ink;
+  border-left-color: $alkahest-slate;
+}
+
+@media (max-width: 575.98px) {
+  :root {
+    font-size: 17px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.45rem;
+  }
+}
+
+@media print {
+  a {
+    color: $alkahest-ink;
+  }
+
+  .sidebar,
+  .margin-sidebar,
+  .quarto-secondary-nav {
+    display: none !important;
+  }
+}

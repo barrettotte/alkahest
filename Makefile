@@ -1,6 +1,6 @@
-.PHONY: bootstrap build-report check check-publication check-pdf-profiles ci clean render render-all \
+.PHONY: bootstrap build-report check check-glyph-coverage check-publication check-pdf-profiles ci clean render render-all \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
-	render-pdf-profiles toolchain-report help
+	render-pdf-profiles render-locale-smoke toolchain-report help
 
 bootstrap: ## Build the pinned local publishing container.
 	./scripts/bootstrap
@@ -10,6 +10,9 @@ build-report: ## Measure primary builds, warnings, and artifact sizes.
 
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
+
+check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stack.
+	./scripts/check-glyph-coverage
 
 check-publication: ## Validate internal HTML links and EPUB conformance.
 	./scripts/check-publication
@@ -31,6 +34,7 @@ clean: ## Remove generated books, intermediates, and Quarto caches.
 		book/reference_files \
 		book/references_files \
 		book/site_libs \
+		book/theme/fonts \
 		book/Alkahest-Reference-Book.epub \
 		book/Alkahest-Reference-Book.pdf \
 		book/index.html \
@@ -66,6 +70,9 @@ render-review: ## Render both US Letter review PDFs.
 
 render-pdf-profiles: ## Render every Typst and LuaLaTeX PDF profile.
 	./scripts/render pdf-profiles
+
+render-locale-smoke: ## Render the French-locale HTML smoke edition.
+	./scripts/render locale-smoke
 
 help: ## Show available Make targets and their descriptions.
 	@awk 'BEGIN { FS = ":.*## " } /^[[:alnum:]_-]+:.*## / { printf "  %-24s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)

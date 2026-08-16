@@ -2,4 +2,18 @@ project:
   output-dir: _build/epub
 
 format:
-  epub: default
+  epub:
+    css: theme/alkahest-epub.css
+    epub-fonts:
+      - theme/fonts/LibertinusSerif-Regular.woff2
+      - theme/fonts/LibertinusSerif-Italic.woff2
+      - theme/fonts/LibertinusSerif-Bold.woff2
+      - theme/fonts/LibertinusSerif-BoldItalic.woff2
+      - theme/fonts/LibertinusSerifDisplay-Regular.woff2
+      - theme/fonts/LibertinusSans-Regular.woff2
+      - theme/fonts/LibertinusSans-Italic.woff2
+      - theme/fonts/LibertinusSans-Bold.woff2
+      - theme/fonts/SourceCodePro-Regular.otf.woff2
+      - theme/fonts/SourceCodePro-It.otf.woff2
+      - theme/fonts/SourceCodePro-Bold.otf.woff2
+      - theme/fonts/SourceCodePro-BoldIt.otf.woff2

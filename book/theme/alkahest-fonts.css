@@ -1,0 +1,96 @@
+/* Local faces staged from the locked toolchain; no network font service is used. */
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("fonts/LibertinusSerif-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("fonts/LibertinusSerif-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("fonts/LibertinusSerif-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Serif";
+  src: url("fonts/LibertinusSerif-BoldItalic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Serif Display";
+  src: url("fonts/LibertinusSerifDisplay-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Sans";
+  src: url("fonts/LibertinusSans-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Sans";
+  src: url("fonts/LibertinusSans-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Libertinus Sans";
+  src: url("fonts/LibertinusSans-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("fonts/SourceCodePro-Regular.otf.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("fonts/SourceCodePro-It.otf.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("fonts/SourceCodePro-Bold.otf.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("fonts/SourceCodePro-BoldIt.otf.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}

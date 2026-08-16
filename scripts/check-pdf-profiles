@@ -55,6 +55,7 @@ check_pdf() {
   local pdf_path="${repo_root}/${relative_path}"
   local actual_width
   local actual_height
+  local page_count
   local pdfinfo_output
   local pdfinfo_stderr
   local pdffonts_output
@@ -64,8 +65,17 @@ check_pdf() {
   local equation_marker
   local required_font
   local required_marker
+  local recto_description
+  local recto_marker
+  local marker_page
+  local boundary
+  local boundary_start_page
+  local boundary_end_page
+  local split_boundary_found=0
+  local blank_page_text
   local diagnostic
   local unexpected_diagnostic=0
+  local -a pdf_pages
 
   if [[ ! -f "${pdf_path}" ]]; then
     echo "error: missing ${label}: ${relative_path}" >&2
@@ -101,6 +111,7 @@ check_pdf() {
   read -r actual_width actual_height < <(
     awk '/^Page size:/ { print $3, $5; exit }' <<<"${pdfinfo_output}"
   )
+  page_count="$(awk '/^Pages:/ { print $2; exit }' <<<"${pdfinfo_output}")"
 
   if ! awk \
     -v actual_width="${actual_width}" \
@@ -116,6 +127,11 @@ check_pdf() {
     }'
   then
     echo "error: ${label} is ${actual_width} x ${actual_height} points; expected ${expected_width} x ${expected_height}" >&2
+    return 1
+  fi
+
+  if (( page_count < 30 || page_count > 50 )); then
+    echo "error: ${label} has ${page_count} pages; the Phase 2 specimen must contain 30–50" >&2
     return 1
   fi
 
@@ -150,14 +166,33 @@ check_pdf() {
 
   # Text extraction is not a complete visual test, but it catches dropped
   # template pages and broken book-division transforms in every trim profile.
+  mapfile -d $'\f' -t pdf_pages < <(pdftotext -layout "${pdf_path}" -)
+  if [[ "${#pdf_pages[@]}" -ne "${page_count}" ]]; then
+    echo "error: ${label} yielded ${#pdf_pages[@]} extracted pages; expected ${page_count}" >&2
+    return 1
+  fi
+  # Use Poppler's reading-order extraction for literal marker checks; layout
+  # extraction may insert discretionary visual hyphens into otherwise intact text.
   pdf_text="$(pdftotext "${pdf_path}" - | awk 'BEGIN { ORS = " " } { print }')"
   for required_marker in \
     "Publication data" \
     "For the readers who build things to understand them." \
     "Foundations" \
     "Core feature specimen" \
+    "A deliberately long chapter title for testing wrapping" \
+    "Page continuity after a pagination stress chapter" \
+    "Layout acceptance record" \
+    "Boundary Alpha begins" \
+    "Boundary Lima ends" \
     "Page-system checklist" \
     "Format behavior" \
+    "Language and writing-system specimen" \
+    "English: The characteristically interdisciplinary electromechanical laboratory" \
+    "Français" \
+    "Deutsch: Die Donaudampfschifffahrtsgesellschaft" \
+    "Greek: Η τεχνολογία εξελίσσεται μέσα από τη γνώση." \
+    "Cyrillic: Технология развивается благодаря знаниям." \
+    "Hebrew:" \
     "Contents" \
     "Heading hierarchy" \
     "Numbered subsection with a descriptive title" \
@@ -197,7 +232,68 @@ check_pdf() {
     return 1
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; fonts, page system, headings, and references verified)"
+  # Physical PDF page 1 is a recto regardless of the displayed folio. Locate
+  # unique opening prose so contents entries cannot produce a false match.
+  find_marker_page() {
+    local marker="$1"
+    local page_index
+    local normalized_page
+    for page_index in "${!pdf_pages[@]}"; do
+      normalized_page="$(tr '\n\r\t' '   ' <<<"${pdf_pages[${page_index}]}" | tr -s ' ')"
+      if [[ "${normalized_page}" == *"${marker}"* ]]; then
+        printf '%s\n' "$((page_index + 1))"
+        return 0
+      fi
+    done
+    return 1
+  }
+
+  while IFS='|' read -r recto_description recto_marker; do
+    if ! marker_page="$(find_marker_page "${recto_marker}")"; then
+      echo "error: ${label} is missing recto marker for ${recto_description}: ${recto_marker}" >&2
+      return 1
+    fi
+    if (( marker_page % 2 == 0 )); then
+      echo "error: ${label} places ${recto_description} on physical page ${marker_page}, a verso" >&2
+      return 1
+    fi
+  done <<'RECTO_MARKERS'
+reference chapter|This chapter begins the cross-format test corpus.
+layout-stress chapter|This chapter is a pagination stress specimen
+continuity chapter|This follow-on chapter proves
+acceptance chapter|This final layout chapter records
+appendix A|This appendix makes the first appendix opener
+appendix B|This second appendix proves
+appendix C|This appendix exercises language metadata
+RECTO_MARKERS
+
+  # Page 4 is deliberately reserved after the dedication. Zero extracted text
+  # proves that no folio, running head, rule label, or placeholder leaked onto it.
+  blank_page_text="$(tr -d '[:space:]' <<<"${pdf_pages[3]}")"
+  if [[ -n "${blank_page_text}" ]]; then
+    echo "error: ${label} physical page 4 is not the required furniture-free blank verso" >&2
+    return 1
+  fi
+
+  # Ensure the corpus actually exercises cross-page paragraph layout. The
+  # explicit backend widow/orphan rules and visual review cover line quality.
+  for boundary in Alpha Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliett Kilo Lima; do
+    boundary_start_page="$(find_marker_page "Boundary ${boundary} begins")"
+    boundary_end_page="$(find_marker_page "Boundary ${boundary} ends")"
+    if [[ "${boundary_start_page}" -ne "${boundary_end_page}" ]]; then
+      if (( boundary_end_page - boundary_start_page != 1 )); then
+        echo "error: ${label} splits Boundary ${boundary} across more than two pages" >&2
+        return 1
+      fi
+      split_boundary_found=1
+    fi
+  done
+  if [[ "${split_boundary_found}" -ne 1 ]]; then
+    echo "error: ${label} does not exercise a cross-page boundary paragraph" >&2
+    return 1
+  fi
+
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

@@ -1,0 +1,16 @@
+# Full-document locale smoke profile. The prose intentionally stays unchanged;
+# generated navigation and cross-reference language must switch to French.
+project:
+  output-dir: _build/locale/fr/html
+
+lang: fr-FR
+toc-title: "Table des matières"
+
+# Keep edition-specific wording visible in the locale profile. Quarto's bundled
+# French data covers appendices and equations but leaves some technical labels
+# at their English defaults in 1.10.18.
+language:
+  crossref-tbl-title: "Tableau"
+  crossref-tbl-prefix: "Tableau"
+  crossref-lst-title: "Extrait"
+  crossref-lst-prefix: "Extrait"

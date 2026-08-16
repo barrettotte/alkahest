@@ -4,9 +4,9 @@ This deliberately small book is an executable specification for Alkahest. Each
 example exists to expose formatting or conversion problems before a real
 manuscript depends on the template.
 
-The specimen is not the final visual design. Early versions establish semantic
-and multi-format correctness; typography follows after the pipeline is
-reproducible.
+The specimen carries Alkahest's baseline visual system. Individual books may
+vary its identity later, but shared typography, hierarchy, color roles, and
+component behavior remain testable here.
 
 ::: {.content-visible when-format="html"}
 ## Publication data {.unnumbered .unlisted}

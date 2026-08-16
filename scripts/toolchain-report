@@ -70,7 +70,11 @@ echo "Font and TeX packages"
 dpkg-query -W fonts-dejavu-core | sed "s/^/  /"
 dpkg-query -W openjdk-11-jre-headless | sed "s/^/  /"
 dpkg-query -W poppler-utils | sed "s/^/  /"
-tlmgr info --only-installed lm lm-math babel-english caption koma-script \
+tlmgr info --only-installed \
+  lm lm-math \
+  babel-english babel-french babel-german babel-greek babel-hebrew babel-russian \
+  hyphen-english hyphen-french hyphen-german hyphen-greek hyphen-russian ruhyphen \
+  caption koma-script \
   | grep -E "^(package|revision|cat-version):" \
   | sed "s/^/  /"
 

@@ -23,6 +23,10 @@ Title and division-page sequencing is defined in
 [`page-system.md`](page-system.md).
 Heading depth, numbering, contents, and reference wording are defined in
 [`headings-and-references.md`](headings-and-references.md).
+Shared color roles, reflowable styles, and PDF theme adapters are defined in
+[`theme.md`](theme.md).
+Locale profiles, semantic language spans, and font-coverage boundaries are
+defined in [`localization.md`](localization.md).
 
 Interior artwork should remain understandable in grayscale even when a digital
 edition uses color. Do not encode meaning by color alone. We are not forcing
@@ -37,6 +41,7 @@ contrast problems that should instead fail a deliberate preflight check.
 | `make render-print-6x9` | Typst and LuaLaTeX 6 x 9 PDFs |
 | `make render-review` | Typst and LuaLaTeX US Letter PDFs |
 | `make render-pdf-profiles` | All six PDF variants |
+| `make render-locale-smoke` | French-locale HTML fixture |
 | `make check-pdf-profiles` | Verify all six page sizes, selected faces, font packaging, and page-system markers |
 
 Artifacts are grouped under `book/_build/print/7x10/`,

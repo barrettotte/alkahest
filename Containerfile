@@ -160,7 +160,18 @@ RUN curl --fail --location --silent --show-error \
 # Keep manuscript-required packages in a separate layer. Adding one package
 # does not invalidate the larger operating-system and browser installation.
 RUN tlmgr install \
+        babel-french \
+        babel-german \
+        babel-greek \
+        babel-hebrew \
+        babel-russian \
         babel-english \
+        hyphen-english \
+        hyphen-french \
+        hyphen-german \
+        hyphen-greek \
+        hyphen-russian \
+        ruhyphen \
         caption \
         koma-script
 
@@ -171,7 +182,18 @@ RUN set -eu; \
         actual="$(tlmgr info --only-installed "$1" | sed -n 's/^revision:[[:space:]]*//p')"; \
         test "${actual}" = "$2"; \
     }; \
+    check_revision babel-french 79302; \
+    check_revision babel-german 78737; \
+    check_revision babel-greek 78101; \
+    check_revision babel-hebrew 77914; \
+    check_revision babel-russian 57376; \
     check_revision babel-english 77682; \
+    check_revision hyphen-english 78069; \
+    check_revision hyphen-french 78069; \
+    check_revision hyphen-german 78069; \
+    check_revision hyphen-greek 78069; \
+    check_revision hyphen-russian 78069; \
+    check_revision ruhyphen 79618; \
     check_revision caption 79618; \
     check_revision koma-script 77575; \
     check_revision lm 77682; \
