@@ -1,14 +1,27 @@
-.PHONY: bootstrap check check-pdf-profiles clean render render-html render-epub render-typst \
-	render-latex render-print-6x9 render-review render-pdf-profiles help
+.PHONY: bootstrap build-report check check-publication check-pdf-profiles ci clean render render-all \
+	render-html render-epub render-typst render-latex render-print-6x9 render-review \
+	render-pdf-profiles toolchain-report help
 
 bootstrap: ## Build the pinned local publishing container.
 	./scripts/bootstrap
 
+build-report: ## Measure primary builds, warnings, and artifact sizes.
+	./scripts/build-report
+
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
 
+check-publication: ## Validate internal HTML links and EPUB conformance.
+	./scripts/check-publication
+
 check-pdf-profiles: ## Verify PDF dimensions and embedded/subset fonts.
 	./scripts/check-pdf-profiles
+
+ci: ## Run the complete local/CI publishing validation pipeline.
+	./scripts/ci
+
+toolchain-report: ## Report immutable sources, exact tools, font packages, and hashes.
+	./scripts/toolchain-report
 
 clean: ## Remove generated books, intermediates, and Quarto caches.
 	podman unshare rm -rf \
@@ -29,6 +42,9 @@ clean: ## Remove generated books, intermediates, and Quarto caches.
 
 render: ## Render HTML, EPUB, and both primary 7 x 10 PDFs.
 	./scripts/render all
+
+render-all: ## Render HTML, EPUB, and every PDF profile.
+	./scripts/render complete
 
 render-html: ## Render the HTML web book.
 	./scripts/render html

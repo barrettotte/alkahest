@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Render selected publication formats through the locked toolchain.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -6,6 +7,17 @@ target="${1:-all}"
 
 render_profile() {
   "${script_dir}/quarto" render book --profile "$1"
+}
+
+# Profiles share source-directory intermediates, so render them sequentially.
+# Parallel profile builds can overwrite each other's generated Typst/TeX files.
+render_pdf_profiles() {
+  render_profile typst
+  render_profile latex
+  render_profile typst-6x9
+  render_profile latex-6x9
+  render_profile typst-review
+  render_profile latex-review
 }
 
 case "${target}" in
@@ -21,12 +33,7 @@ case "${target}" in
     render_profile latex-review
     ;;
   pdf-profiles)
-    render_profile typst
-    render_profile latex
-    render_profile typst-6x9
-    render_profile latex-6x9
-    render_profile typst-review
-    render_profile latex-review
+    render_pdf_profiles
     ;;
   all)
     render_profile html
@@ -34,8 +41,14 @@ case "${target}" in
     render_profile typst
     render_profile latex
     ;;
+  complete)
+    # CI's complete publication set: both reflowable outputs and all six PDFs.
+    render_profile html
+    render_profile epub
+    render_pdf_profiles
+    ;;
   *)
-    echo "usage: $0 [all|html|epub|typst|latex|print-6x9|review|pdf-profiles]" >&2
+    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles]" >&2
     exit 2
     ;;
 esac

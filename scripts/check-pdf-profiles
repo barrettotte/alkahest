@@ -1,10 +1,44 @@
 #!/usr/bin/env bash
+# Validate page dimensions and embedded fonts in every PDF profile.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/toolchain.sh
 source "${script_dir}/lib/toolchain.sh"
 repo_root="$(alkahest_repo_root)"
+
+# The host-facing invocation reinvokes this same script inside the locked image.
+# The guard variable prevents recursion and keeps Poppler out of host/CI setup.
+if [[ "${ALKAHEST_PDF_CHECK_IN_CONTAINER:-0}" != "1" ]]; then
+  invoking_uid="$(id -u)"
+  invoking_gid="$(id -g)"
+
+  if [[ "${invoking_uid}" -eq 0 ]]; then
+    echo "error: PDF checks must be run as a non-root host user" >&2
+    exit 1
+  fi
+  if ! command -v podman >/dev/null 2>&1; then
+    echo "error: Podman is required but was not found" >&2
+    exit 1
+  fi
+  if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
+    echo "error: publishing image is not available locally" >&2
+    echo "run ./scripts/bootstrap once while connected to the network" >&2
+    exit 1
+  fi
+
+  exec podman run --rm \
+    --pull=never \
+    --network=none \
+    --userns=keep-id \
+    --user "${invoking_uid}:${invoking_gid}" \
+    --security-opt label=disable \
+    --env ALKAHEST_PDF_CHECK_IN_CONTAINER=1 \
+    --volume "${repo_root}:/workspace:ro" \
+    --workdir /workspace \
+    --entrypoint /workspace/scripts/check-pdf-profiles \
+    "${ALKAHEST_TOOLCHAIN_IMAGE}"
+fi
 
 for required_command in pdfinfo pdffonts; do
   if ! command -v "${required_command}" >/dev/null 2>&1; then
@@ -21,14 +55,44 @@ check_pdf() {
   local pdf_path="${repo_root}/${relative_path}"
   local actual_width
   local actual_height
+  local pdfinfo_output
+  local pdfinfo_stderr
+  local diagnostic
+  local unexpected_diagnostic=0
 
   if [[ ! -f "${pdf_path}" ]]; then
     echo "error: missing ${label}: ${relative_path}" >&2
     return 1
   fi
 
+  # Poppler 0.86 predates Typst's tagged-PDF output and misdiagnoses the valid
+  # boolean MarkInfo/Suspects entry. Ignore only that exact Typst diagnostic;
+  # any different parser message still fails validation.
+  pdfinfo_stderr="$(mktemp)"
+  if ! pdfinfo_output="$(pdfinfo "${pdf_path}" 2>"${pdfinfo_stderr}")"; then
+    echo "error: pdfinfo could not inspect ${label}" >&2
+    sed 's/^/  /' "${pdfinfo_stderr}" >&2
+    rm "${pdfinfo_stderr}"
+    return 1
+  fi
+  while IFS= read -r diagnostic; do
+    [[ -z "${diagnostic}" ]] && continue
+    if [[ "${label}" == Typst* \
+      && "${diagnostic}" == "Syntax Error: Suspects object is wrong type (boolean)" ]]
+    then
+      continue
+    fi
+    echo "error: pdfinfo reported an unexpected diagnostic for ${label}" >&2
+    echo "  ${diagnostic}" >&2
+    unexpected_diagnostic=1
+  done <"${pdfinfo_stderr}"
+  rm "${pdfinfo_stderr}"
+  if [[ "${unexpected_diagnostic}" -ne 0 ]]; then
+    return 1
+  fi
+
   read -r actual_width actual_height < <(
-    pdfinfo "${pdf_path}" | awk '/^Page size:/ { print $3, $5; exit }'
+    awk '/^Page size:/ { print $3, $5; exit }' <<<"${pdfinfo_output}"
   )
 
   if ! awk \
@@ -48,6 +112,8 @@ check_pdf() {
     return 1
   fi
 
+  # A publishable specimen must embed and subset every reported font. This is a
+  # packaging check; later preflight phases will add licensing and color rules.
   if ! pdffonts "${pdf_path}" | awk '
     NR > 2 && ($(NF - 4) != "yes" || $(NF - 3) != "yes") { failed = 1 }
     END { exit failed }

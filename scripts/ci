@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Run the complete provider-neutral publishing validation pipeline.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Keep CI policy here rather than in provider YAML so this exact sequence is
+# runnable locally. Bootstrap is the sole networked stage; every later wrapper
+# explicitly launches its container with networking disabled.
+"${script_dir}/bootstrap"
+"${script_dir}/quarto" check
+"${script_dir}/toolchain-report"
+"${script_dir}/render" complete
+"${script_dir}/check-publication"
+"${script_dir}/check-pdf-profiles"

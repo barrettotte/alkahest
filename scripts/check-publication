@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run Quarto in the pinned rootless publishing container.
+# Validate rendered HTML links and EPUB conformance offline.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,7 +10,7 @@ invoking_uid="$(id -u)"
 invoking_gid="$(id -g)"
 
 if [[ "${invoking_uid}" -eq 0 ]]; then
-  echo "error: the publishing toolchain must be run as a non-root host user" >&2
+  echo "error: publication checks must be run as a non-root host user" >&2
   exit 1
 fi
 
@@ -25,21 +25,23 @@ if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   exit 1
 fi
 
-# Map the invoking identity into the rootless container so bind-mounted outputs
-# retain normal host ownership. Ephemeral caches make undeclared dependencies
-# visible, while --network=none guarantees renders cannot download them.
+# Mount outputs read-only and disable networking: internal HTML resolution and
+# EPUB conformance must not mutate artifacts or depend on external services.
 exec podman run --rm \
   --pull=never \
   --network=none \
   --userns=keep-id \
   --user "${invoking_uid}:${invoking_gid}" \
   --security-opt label=disable \
-  --tmpfs /tmp:rw,size=2g,mode=1777 \
+  --tmpfs /tmp:rw,size=512m,mode=1777 \
   --env HOME=/tmp \
-  --env TEXMFCACHE=/tmp \
-  --env TEXMFVAR=/tmp \
-  --env XDG_CACHE_HOME=/tmp/cache \
-  --volume "${repo_root}:/workspace:rw" \
+  --volume "${repo_root}:/workspace:ro" \
   --workdir /workspace \
+  --entrypoint sh \
   "${ALKAHEST_TOOLCHAIN_IMAGE}" \
-  quarto "$@"
+  -ec '
+    # The small local checker handles site-relative files/fragments; EPUBCheck
+    # supplies the full W3C EPUB ruleset from the locked image.
+    perl scripts/check-html-links book/_build/html
+    java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
+  '
