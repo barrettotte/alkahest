@@ -3,7 +3,4 @@ project:
 
 format:
   html:
-    toc: true
-    number-sections: true
     code-copy: true
-

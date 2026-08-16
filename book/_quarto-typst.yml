@@ -3,11 +3,13 @@ project:
 
 trim-width: 7in
 trim-height: 10in
+body-font-size: 10pt
+body-leading: 3pt
+paragraph-indent: 1em
+paragraph-spacing: 3pt
 
 format:
   typst:
-    toc: true
-    number-sections: true
     keep-typ: true
     template-partials:
       - typst/typst-show.typ

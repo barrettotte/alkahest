@@ -44,4 +44,44 @@ exec podman run --rm \
     # supplies the full W3C EPUB ruleset from the locked image.
     perl scripts/check-html-links book/_build/html
     java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
+
+    # Conformance alone cannot detect a valid file that silently dropped one of
+    # the shared front-matter or appendix components.
+    html_text="$(mktemp)"
+    epub_text="$(mktemp)"
+    find book/_build/html -type f -name "*.html" -exec cat {} + \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${html_text}"
+    unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
+      EPUB/nav.xhtml "EPUB/text/*.xhtml" \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${epub_text}"
+    for marker in \
+      "Publication data" \
+      "For the readers who build things to understand them." \
+      "Appendix A" \
+      "Appendix B" \
+      "Contents" \
+      "Section 1.1" \
+      "Section 1.1.1" \
+      "Figure 1.1" \
+      "Table 1.1" \
+      "Equation 1.1" \
+      "Listing 1.1"
+    do
+      if ! grep -Fq "${marker}" "${html_text}"; then
+        echo "error: HTML is missing required marker: ${marker}" >&2
+        exit 1
+      fi
+      if ! grep -Fq "${marker}" "${epub_text}"; then
+        echo "error: EPUB is missing required marker: ${marker}" >&2
+        exit 1
+      fi
+    done
+    # Quarto intentionally omits part dividers from EPUB, but HTML must retain it.
+    grep -Fq "Foundations" "${html_text}"
+    if grep -Fq "1.1.1.1" "${html_text}" || grep -Fq "1.1.1.1" "${epub_text}"; then
+      echo "error: a reflowable output incorrectly numbers the H4 detail heading" >&2
+      exit 1
+    fi
+    rm "${html_text}" "${epub_text}"
+    echo "ok: HTML/EPUB publication-structure and heading markers"
   '

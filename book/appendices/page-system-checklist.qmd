@@ -1,0 +1,15 @@
+# Page-system checklist {#sec-page-system-checklist}
+
+This appendix makes the first appendix opener, running furniture, contents
+entry, and alphabetic numbering visible in every applicable output.
+
+## Required opening pages
+
+- The title uses book metadata rather than manuscript-only wording.
+- Publication data remains a conspicuous placeholder until an edition supplies
+  verified rights and identifier records.
+- The optional dedication has no heading or folio in print.
+- Parts, chapters, and appendices begin on recto pages in print profiles.
+
+The structural source remains ordinary Quarto Markdown. Backend-specific code
+is confined to template partials.

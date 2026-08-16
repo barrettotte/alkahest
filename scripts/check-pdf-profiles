@@ -40,7 +40,7 @@ if [[ "${ALKAHEST_PDF_CHECK_IN_CONTAINER:-0}" != "1" ]]; then
     "${ALKAHEST_TOOLCHAIN_IMAGE}"
 fi
 
-for required_command in pdfinfo pdffonts; do
+for required_command in pdfinfo pdffonts pdftotext; do
   if ! command -v "${required_command}" >/dev/null 2>&1; then
     echo "error: ${required_command} is required for PDF profile checks" >&2
     exit 1
@@ -57,6 +57,13 @@ check_pdf() {
   local actual_height
   local pdfinfo_output
   local pdfinfo_stderr
+  local pdffonts_output
+  local pdf_text
+  local appendix_a_marker
+  local appendix_b_marker
+  local equation_marker
+  local required_font
+  local required_marker
   local diagnostic
   local unexpected_diagnostic=0
 
@@ -112,18 +119,85 @@ check_pdf() {
     return 1
   fi
 
-  # A publishable specimen must embed and subset every reported font. This is a
-  # packaging check; later preflight phases will add licensing and color rules.
-  if ! pdffonts "${pdf_path}" | awk '
+  # Require both correct packaging and the selected families. Otherwise a
+  # missing font could pass by silently falling back to a bundled backend face.
+  pdffonts_output="$(pdffonts "${pdf_path}")"
+  if ! awk '
     NR > 2 && ($(NF - 4) != "yes" || $(NF - 3) != "yes") { failed = 1 }
     END { exit failed }
-  '
+  ' <<<"${pdffonts_output}"
   then
     echo "error: ${label} contains a font that is not embedded and subset" >&2
     return 1
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; fonts embedded and subset)"
+  for required_font in \
+    LibertinusSerif-Regular \
+    LibertinusSerif-Bold \
+    LibertinusSerif-Italic \
+    LibertinusSerif-BoldItalic \
+    LibertinusSerifDisplay-Regular \
+    LibertinusSans-Bold \
+    LibertinusMath-Regular \
+    SourceCodePro-Regular \
+    SourceCodePro-Bold
+  do
+    if [[ "${pdffonts_output}" != *"${required_font}"* ]]; then
+      echo "error: ${label} does not embed selected face ${required_font}" >&2
+      return 1
+    fi
+  done
+
+  # Text extraction is not a complete visual test, but it catches dropped
+  # template pages and broken book-division transforms in every trim profile.
+  pdf_text="$(pdftotext "${pdf_path}" - | awk 'BEGIN { ORS = " " } { print }')"
+  for required_marker in \
+    "Publication data" \
+    "For the readers who build things to understand them." \
+    "Foundations" \
+    "Core feature specimen" \
+    "Page-system checklist" \
+    "Format behavior" \
+    "Contents" \
+    "Heading hierarchy" \
+    "Numbered subsection with a descriptive title" \
+    "Detail heading excluded from numbering and contents" \
+    "Section 1.1" \
+    "Section 1.1.1" \
+    "Figure 1.1" \
+    "Table 1.1" \
+    "Listing 1.1"
+  do
+    if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
+      echo "error: ${label} is missing required marker: ${required_marker}" >&2
+      return 1
+    fi
+  done
+  if [[ "${label}" == Typst* ]]; then
+    appendix_a_marker="A. Page-system checklist"
+    appendix_b_marker="B. Format behavior"
+    equation_marker="Equation (1.1)"
+  else
+    appendix_a_marker="A Page-system checklist"
+    appendix_b_marker="B Format behavior"
+    equation_marker="Equation 1.1"
+  fi
+  for required_marker in \
+    "${appendix_a_marker}" \
+    "${appendix_b_marker}" \
+    "${equation_marker}"
+  do
+    if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
+      echo "error: ${label} is missing backend marker: ${required_marker}" >&2
+      return 1
+    fi
+  done
+  if [[ "${pdf_text}" == *"1.1.1.1"* ]]; then
+    echo "error: ${label} incorrectly numbers the H4 detail heading" >&2
+    return 1
+  fi
+
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; fonts, page system, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

@@ -9,8 +9,10 @@ format:
       - openright
     pdf-engine: lualatex
     keep-tex: true
-    toc: true
-    number-sections: true
+    include-in-header: latex/book-layout.tex
+    template-partials:
+      - latex/title.tex
+      - latex/before-body.tex
     geometry:
       - paperwidth=6in
       - paperheight=9in

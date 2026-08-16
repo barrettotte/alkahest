@@ -8,3 +8,20 @@ The specimen is not the final visual design. Early versions establish semantic
 and multi-format correctness; typography follows after the pipeline is
 reproducible.
 
+::: {.content-visible when-format="html"}
+## Publication data {.unnumbered .unlisted}
+
+- **Edition:** {{< meta alkahest.edition >}}
+- **Publisher:** {{< meta alkahest.publisher >}}
+- **Copyright:** © {{< meta alkahest.copyright-year >}}
+  {{< meta alkahest.copyright-holder >}}
+- **Rights:** {{< meta alkahest.rights-statement >}}
+- **Identifier:** {{< meta alkahest.identifier >}}
+
+These visible placeholders prove that reflowable editions receive the same
+metadata as the print templates without implying that the specimen is released.
+
+## Dedication {.unnumbered .unlisted}
+
+*{{< meta alkahest.dedication >}}*
+:::

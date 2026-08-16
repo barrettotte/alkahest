@@ -4,6 +4,27 @@ This chapter begins the cross-format test corpus. It includes common technical
 elements and will grow as each roadmap capability is evaluated. Turing's model
 of computation is a fitting early citation [@turing1936].
 
+## Heading hierarchy {#sec-heading-hierarchy}
+
+Chapters use level-one headings. Ordinary divisions use level two and appear in
+the book contents with chapter-based numbers.
+
+### Numbered subsection with a descriptive title {#sec-numbered-subsection}
+
+Level-three headings remain numbered and listed because they often carry useful
+technical structure such as phases, subsystems, or derivation stages.
+
+#### Detail heading excluded from numbering and contents
+
+Level-four headings provide local structure without extending decimal numbers
+or crowding the contents. Levels five and six are reserved for future semantic
+components rather than used as a substitute for reorganizing a chapter.
+
+The reference language comes from the active locale and uses unabbreviated
+labels. For example, @sec-heading-hierarchy and @sec-numbered-subsection are
+section references; @fig-half-adder, @tbl-half-adder, @eq-ohms-law, and
+@lst-half-adder exercise the figure, table, equation, and listing labels.
+
 ## Links, emphasis, and notes
 
 Alkahest is developed as a collection of plain-text sources. The
@@ -11,6 +32,23 @@ Alkahest is developed as a collection of plain-text sources. The
 @sec-equations is an internal cross-reference. This sentence has a footnote
 that must remain navigable in reflowable output.^[A useful footnote should not
 depend on the geometry of a printed page.]
+
+## Paragraph rhythm
+
+The first paragraph after a heading begins flush left so the structural break
+does not need a second visual cue. Its lines establish the normal body rhythm
+against which headings, lists, equations, figures, and tables can be judged.
+
+Following paragraphs use a first-line indent instead of additional vertical
+space. This conventional book treatment keeps related prose together and
+avoids turning a page of short technical paragraphs into disconnected blocks.
+
+A third consecutive paragraph makes accidental one-off behavior visible. The
+PDF backends should agree on the treatment even when their exact line breaks
+differ, while HTML and EPUB retain their reflowable medium-appropriate styles.
+The selected text faces must also provide *real italics*, **real bold**, and
+***bold italic*** alongside punctuation such as “curly quotes,” en dashes,
+em dashes, and ellipses… without synthetic styling or fallback.
 
 ## Equations {#sec-equations}
 
@@ -21,7 +59,7 @@ $$
 V = I R
 $$ {#eq-ohms-law}
 
-Equation @eq-ohms-law must be legible in print, responsive on the web, and
+@eq-ohms-law must be legible in print, responsive on the web, and
 represented accessibly where the output permits it.
 
 ## Code listings
@@ -47,6 +85,9 @@ layout:
 ```text
 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789
 ```
+
+The code face must keep commonly confused characters distinct:
+`0 O 1 l I | { [ ( < - + = > ) ] }`.
 
 ## Diagrams and figures
 
@@ -77,7 +118,14 @@ flowchart LR
 
 : Half-adder truth table {#tbl-half-adder}
 
-Table @tbl-half-adder should remain understandable without relying on color.
+@tbl-half-adder should remain understandable without relying on color.
+
+## Book divisions
+
+The title, publication-data, and dedication treatments draw from one shared
+metadata record. This chapter belongs to a named part, and
+@sec-page-system-checklist and @sec-format-behavior exercise two independently
+addressable appendices.
 
 ## Deliberately pending specimens
 
@@ -89,4 +137,4 @@ in the roadmap rather than represented by a misleading placeholder:
 - data-driven graphs with accessible descriptions;
 - subfigures and print/web image variants;
 - theorem, proof, exercise, solution, project, and warning components;
-- glossary, index, appendices, and complete front matter.
+- glossary and index generation.

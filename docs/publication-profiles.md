@@ -16,6 +16,14 @@ interior content must therefore remain inside the live area. A later preflight
 step will check embedded fonts, effective image resolution, color space, and
 PDF standard before any release is called print-ready.
 
+The shared body rhythm, paragraph treatment, and running-page furniture are
+defined in [`typography.md`](typography.md). Both PDF backends implement that
+contract while retaining profile-specific page geometry.
+Title and division-page sequencing is defined in
+[`page-system.md`](page-system.md).
+Heading depth, numbering, contents, and reference wording are defined in
+[`headings-and-references.md`](headings-and-references.md).
+
 Interior artwork should remain understandable in grayscale even when a digital
 edition uses color. Do not encode meaning by color alone. We are not forcing
 the generated PDFs to grayscale yet because that would hide source-art and
@@ -29,7 +37,7 @@ contrast problems that should instead fail a deliberate preflight check.
 | `make render-print-6x9` | Typst and LuaLaTeX 6 x 9 PDFs |
 | `make render-review` | Typst and LuaLaTeX US Letter PDFs |
 | `make render-pdf-profiles` | All six PDF variants |
-| `make check-pdf-profiles` | Verify all six page sizes and font packaging |
+| `make check-pdf-profiles` | Verify all six page sizes, selected faces, font packaging, and page-system markers |
 
 Artifacts are grouped under `book/_build/print/7x10/`,
 `book/_build/print/6x9/`, and `book/_build/review/letter/` by PDF backend.

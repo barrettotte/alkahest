@@ -1,0 +1,31 @@
+% Shared PDF body rhythm and running-page furniture for every LuaLaTeX profile.
+\KOMAoptions{parskip=false,numbers=noenddot}
+\linespread{1.083333}% 10 pt text on a 13 pt baseline (12 pt class default x 13/12).
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+% Reserve the selected display face for title and division-page designs.
+\newfontfamily\alkahestdisplayfont{Libertinus Serif Display}
+
+% Keep division pages typographically related while allowing the structural
+% label to change automatically from Chapter to Appendix in back matter.
+\KOMAoptions{chapterprefix=true}
+\setkomafont{part}{\normalfont\alkahestdisplayfont\Huge}
+\setkomafont{partnumber}{\normalfont\sffamily\bfseries\Large}
+\setkomafont{chapter}{\normalfont\alkahestdisplayfont\huge}
+\setkomafont{chapterprefix}{\normalfont\sffamily\bfseries\small\MakeUppercase}
+\RedeclareSectionCommand[beforeskip=0pt,afterskip=2\baselineskip]{chapter}
+
+% Pandoc maps Markdown H1 to KOMA's chapter level (0), so a LaTeX depth of 2
+% numbers through subsection/H3 and leaves subsubsection/H4 unnumbered.
+\setcounter{secnumdepth}{2}
+
+\usepackage[automark,headsepline=.4pt]{scrlayer-scrpage}
+\clearpairofpagestyles
+\automark[section]{chapter}
+\ihead{\headmark}
+\ohead{\pagemark}
+\setkomafont{pageheadfoot}{\normalfont\sffamily\small}
+\setkomafont{pagenumber}{\normalfont\small}
+\renewcommand*{\chapterpagestyle}{empty}
+\AtBeginDocument{\pagestyle{scrheadings}}

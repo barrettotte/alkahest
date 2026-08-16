@@ -1,0 +1,16 @@
+# Format behavior {#sec-format-behavior}
+
+This second appendix proves that appendix numbering advances from A to B and
+that links can target appendix content without hard-coded display text.
+
+## Reflowable fallback
+
+HTML presents parts in navigation and gives each appendix its own page. EPUB
+retains the chapters and alphabetic appendices but omits part-divider pages;
+this is an intentional renderer limitation, not missing manuscript content.
+
+## Print behavior
+
+Typst and LuaLaTeX provide designed division openers. Exact line and page
+breaks may differ, while hierarchy, wording, numbering, and trim-specific
+geometry remain equivalent.

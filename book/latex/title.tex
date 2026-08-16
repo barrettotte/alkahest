@@ -1,0 +1,15 @@
+% Bind shared Quarto metadata to stable commands used by the front-matter pages.
+\newcommand{\alkahestbooktitle}{$title$}
+$if(subtitle)$
+\newcommand{\alkahestbooksubtitle}{$subtitle$}
+$else$
+\newcommand{\alkahestbooksubtitle}{}
+$endif$
+\newcommand{\alkahestbookauthor}{$for(authors)$$it.name.literal$$sep$, $endfor$}
+\newcommand{\alkahestedition}{$alkahest.edition$}
+\newcommand{\alkahestpublisher}{$alkahest.publisher$}
+\newcommand{\alkahestcopyrightyear}{$alkahest.copyright-year$}
+\newcommand{\alkahestcopyrightholder}{$alkahest.copyright-holder$}
+\newcommand{\alkahestrightsstatement}{$alkahest.rights-statement$}
+\newcommand{\alkahestidentifier}{$alkahest.identifier$}
+\newcommand{\alkahestdedication}{$alkahest.dedication$}

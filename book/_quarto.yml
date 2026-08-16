@@ -7,9 +7,43 @@ book:
   author: "Barrett Otte"
   chapters:
     - index.qmd
-    - reference.qmd
+    - part: "Foundations"
+      chapters:
+        - reference.qmd
     - references.qmd
+  appendices:
+    - appendices/page-system-checklist.qmd
+    - appendices/format-behavior.qmd
+
+# Shared front-matter fields are deliberately obvious specimen values. A real
+# book or edition profile replaces them; no placeholder is a publication claim.
+alkahest:
+  edition: "Reference specimen (not for publication)"
+  publisher: "[Publisher name]"
+  copyright-year: "[Publication year]"
+  copyright-holder: "[Rights holder]"
+  rights-statement: "[Rights statement selected before publication]"
+  identifier: "[ISBN or other publication identifier]"
+  dedication: "For the readers who build things to understand them."
 
 bibliography: references.bib
 lang: en-US
 crossrefs-hover: true
+
+# H1 is the chapter title. Number and list sections (H2) and subsections (H3),
+# while keeping detail headings (H4) visible but out of numbering and contents.
+toc: true
+toc-title: "Contents"
+toc-depth: 3
+number-sections: true
+number-depth: 3
+crossref:
+  chapters: true
+
+# One named stack feeds both PDF backends; webfont packaging follows with the
+# shared HTML/EPUB theme later in Phase 2.
+mainfont: Libertinus Serif
+displayfont: Libertinus Serif Display
+sansfont: Libertinus Sans
+mathfont: Libertinus Math
+monofont: Source Code Pro
