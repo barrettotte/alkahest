@@ -55,9 +55,10 @@ than a print-trim failure.
 
 A visual check of the tightest 6 x 9 layout confirmed the mirrored margins and
 showed that the specimen diagram and table remain legible. It also exposed a
-deliberately long raw-code line overflowing the LuaLaTeX live area; Typst wraps
-the same sample. A shared code wrapping and overflow policy is therefore a
-publication blocker to resolve in Phase 3, not a reason to enlarge the trim.
+deliberately long raw-code line overflowing the original LuaLaTeX live area.
+Phase 3 resolved that blocker with continuation-safe LuaLaTeX wrapping and a
+hard-token fallback in Typst; the PDF validator now rejects text outside the
+physical page. The trim did not need to grow to accommodate source code.
 
 ## Publishing boundary
 

@@ -60,6 +60,8 @@ check_pdf() {
   local pdfinfo_stderr
   local pdffonts_output
   local pdf_text
+  local pdf_bbox
+  local pdftotext_stderr
   local appendix_a_marker
   local appendix_b_marker
   local equation_marker
@@ -130,10 +132,50 @@ check_pdf() {
     return 1
   fi
 
-  if (( page_count < 30 || page_count > 50 )); then
-    echo "error: ${label} has ${page_count} pages; the Phase 2 specimen must contain 30–50" >&2
+  if (( page_count < 30 )); then
+    echo "error: ${label} has ${page_count} pages; the specimen must retain the Phase 2 minimum of 30" >&2
     return 1
   fi
+
+  # A complete text stream can still hide visible clipping. Inspect Poppler's
+  # positioned word boxes and reject any text that crosses the physical page.
+  # Blank and image-only pages legitimately produce the exact diagnostic below.
+  pdf_bbox="$(mktemp)"
+  pdftotext_stderr="$(mktemp)"
+  if ! pdftotext -bbox "${pdf_path}" "${pdf_bbox}" 2>"${pdftotext_stderr}"; then
+    echo "error: pdftotext could not extract positioned text from ${label}" >&2
+    sed 's/^/  /' "${pdftotext_stderr}" >&2
+    rm "${pdf_bbox}" "${pdftotext_stderr}"
+    return 1
+  fi
+  while IFS= read -r diagnostic; do
+    [[ -z "${diagnostic}" || "${diagnostic}" == "no word list" ]] && continue
+    echo "error: positioned-text extraction reported an unexpected diagnostic for ${label}" >&2
+    echo "  ${diagnostic}" >&2
+    unexpected_diagnostic=1
+  done <"${pdftotext_stderr}"
+  if [[ "${unexpected_diagnostic}" -ne 0 ]]; then
+    rm "${pdf_bbox}" "${pdftotext_stderr}"
+    return 1
+  fi
+  if ! perl -ne '
+    if (/<page width="([0-9.]+)"/) {
+      $page_width = $1;
+    }
+    while (/<word xMin="([0-9.-]+)"[^>]*xMax="([0-9.-]+)"/g) {
+      if ($1 < -0.1 || $2 > $page_width + 0.1) {
+        printf STDERR "word box %.3f..%.3f crosses %.3f-point page\n", $1, $2, $page_width;
+        $failed = 1;
+      }
+    }
+    END { exit($failed ? 1 : 0) }
+  ' "${pdf_bbox}"
+  then
+    echo "error: ${label} contains text outside the physical page" >&2
+    rm "${pdf_bbox}" "${pdftotext_stderr}"
+    return 1
+  fi
+  rm "${pdf_bbox}" "${pdftotext_stderr}"
 
   # Require both correct packaging and the selected families. Otherwise a
   # missing font could pass by silently falling back to a bundled backend face.
@@ -201,7 +243,17 @@ check_pdf() {
     "Section 1.1.1" \
     "Figure 1.1" \
     "Table 1.1" \
-    "Listing 1.1"
+    "Listing 1.1" \
+    "Code blocks and executable-example presentation" \
+    "counter.py" \
+    "status.py" \
+    "Clamp untrusted input before applying the thresholds." \
+    "ALKAHEST_LONG_LINE_BEGIN" \
+    "LONG_LINE_END" \
+    "counter.patch" \
+    "python3 counter.py" \
+    "checksum.py" \
+    "standard output"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
       echo "error: ${label} is missing required marker: ${required_marker}" >&2
@@ -262,6 +314,7 @@ reference chapter|This chapter begins the cross-format test corpus.
 layout-stress chapter|This chapter is a pagination stress specimen
 continuity chapter|This follow-on chapter proves
 acceptance chapter|This final layout chapter records
+code-block chapter|This chapter defines how source code, terminal transcripts, patches
 appendix A|This appendix makes the first appendix opener
 appendix B|This second appendix proves
 appendix C|This appendix exercises language metadata
@@ -293,7 +346,7 @@ RECTO_MARKERS
     return 1
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code contract, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

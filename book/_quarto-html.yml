@@ -10,5 +10,7 @@ brand: false
 format:
   html:
     code-copy: true
+    # Interactive pages preserve source columns; print CSS still forces wrap.
+    code-overflow: scroll
     theme: theme/alkahest.scss
     css: theme/alkahest-fonts.css

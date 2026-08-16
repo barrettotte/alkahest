@@ -3,7 +3,7 @@
 
 # Bump this tag whenever the Containerfile's effective toolchain changes. All
 # wrappers consume the same constant so stale local images fail consistently.
-readonly ALKAHEST_TOOLCHAIN_IMAGE="localhost/alkahest-publishing:quarto-1.10.18-v7"
+readonly ALKAHEST_TOOLCHAIN_IMAGE="localhost/alkahest-publishing:quarto-1.10.18-v8"
 
 alkahest_repo_root() {
   local script_dir

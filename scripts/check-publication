@@ -122,7 +122,17 @@ exec podman run --rm \
       "Figure 1.1" \
       "Table 1.1" \
       "Equation 1.1" \
-      "Listing 1.1"
+      "Listing 1.1" \
+      "Code blocks and executable-example presentation" \
+      "counter.py" \
+      "status.py" \
+      "Clamp untrusted input before applying the thresholds." \
+      "ALKAHEST_LONG_LINE_BEGIN" \
+      "LONG_LINE_END" \
+      "counter.patch" \
+      "python3 counter.py" \
+      "checksum.py" \
+      "standard output"
     do
       if ! grep -Fq "${marker}" "${html_text}"; then
         echo "error: HTML is missing required marker: ${marker}" >&2
@@ -138,9 +148,31 @@ exec podman run --rm \
     grep -Eq "widows:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "orphans:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "overflow-wrap:[[:space:]]*anywhere" book/_build/html/site_libs/bootstrap/*.css
+    grep -Eq "overflow-x:[[:space:]]*auto" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "widows:[[:space:]]*2" "${epub_css}"
     grep -Eq "orphans:[[:space:]]*2" "${epub_css}"
     grep -Eq "overflow-wrap:[[:space:]]*anywhere" "${epub_css}"
+    grep -Eq "white-space:[[:space:]]*pre-wrap" "${epub_css}"
+    html_code="book/_build/html/code-blocks.html"
+    for code_structure in \
+      "class=\"code-with-filename\"" \
+      "class=\"code-with-filename-file\"" \
+      "number-lines" \
+      "code-annotation-container-grid" \
+      "code-copy-button" \
+      "code-output"
+    do
+      require_literal "${code_structure}" "${html_code}" "HTML code specimen"
+    done
+    for code_structure in \
+      "class=\"code-with-filename\"" \
+      "class=\"code-with-filename-file\"" \
+      "number-lines" \
+      "data-code-annotation=\"1\"" \
+      "code-output"
+    do
+      require_literal "${code_structure}" "${epub_language}" "EPUB code specimen"
+    done
     if grep -Fq "1.1.1.1" "${html_text}" || grep -Fq "1.1.1.1" "${epub_text}"; then
       echo "error: a reflowable output incorrectly numbers the H4 detail heading" >&2
       exit 1
@@ -201,5 +233,5 @@ exec podman run --rm \
       "${epub_language}" \
       "${epub_listing}" \
       "${epub_css}"
-    echo "ok: HTML/EPUB structure, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, code contract, locale semantics, theme, embedded fonts, and heading markers"
   '

@@ -15,6 +15,19 @@
 \clubpenalty=10000
 \displaywidowpenalty=10000
 
+% Pandoc emits highlighted code through fancyvrb token macros. fvextra allows
+% safe breaks both at spaces and inside an otherwise unbreakable token, keeping
+% narrow print profiles inside the physical page without changing source text.
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{%
+  commandchars=\\\{\},%
+  breaklines=true,%
+  breaknonspaceingroup=true,%
+  breakanywhere=true,%
+  breakautoindent=true,%
+  breakindent=1em%
+}
+
 % Reserve the selected display face for title and division-page designs.
 \newfontfamily\alkahestdisplayfont{Libertinus Serif Display}
 

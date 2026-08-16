@@ -282,6 +282,31 @@ pre code {
   overflow-wrap: anywhere;
 }
 
+.code-with-filename .code-with-filename-file {
+  display: block;
+  margin: 0;
+  padding: 0.35em 0.7em;
+  color: #334155;
+  background: #cbd5e1;
+  border: 1px solid #cbd5e1;
+  font-family: "Libertinus Sans", sans-serif;
+  font-weight: 700;
+}
+
+.code-with-filename > p:first-child,
+.code-with-filename > p:first-child code,
+.code-with-filename > div.sourceCode,
+.code-with-filename > pre {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.code-output,
+.code-output div.sourceCode,
+.code-output pre {
+  border-left-color: #64748b;
+}
+
 table {
   margin: 1em 0;
   border-top: 2px solid #334155;

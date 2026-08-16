@@ -163,6 +163,36 @@ pre:not(.sourceCode) {
   border-radius: 0.2rem;
 }
 
+div.sourceCode {
+  overflow-x: auto;
+}
+
+.code-with-filename .code-with-filename-file {
+  display: block;
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  color: $alkahest-slate;
+  background: $alkahest-line;
+  border: 1px solid $alkahest-line;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.code-with-filename > p:first-child,
+.code-with-filename > p:first-child code,
+.code-with-filename > div.sourceCode,
+.code-with-filename > pre,
+.code-with-filename > .code-copy-outer-scaffold div.sourceCode {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.code-output,
+.code-output div.sourceCode,
+.code-output pre {
+  border-left-color: $alkahest-muted;
+}
+
 pre code {
   font-size: 0.84rem;
   line-height: 1.48;
@@ -213,5 +243,10 @@ blockquote {
   .margin-sidebar,
   .quarto-secondary-nav {
     display: none !important;
+  }
+
+  pre code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 }

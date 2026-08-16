@@ -1,0 +1,152 @@
+# Code blocks and executable-example presentation {#sec-code-blocks}
+
+This chapter defines how source code, terminal transcripts, patches, and
+source/output examples appear without tying the manuscript to a PDF backend.
+Every fixture uses ordinary fenced-code attributes and semantic containers.
+
+## Syntax highlighting and filenames {#sec-code-filenames}
+
+A filename identifies the source context without becoming part of the copied
+code. Language tags drive syntax highlighting; color is supplementary because
+keywords, punctuation, and the original text remain visible without it.
+
+::: {.code-with-filename}
+[`counter.py`]{.code-with-filename-file}
+
+```{.python}
+def clamp(value: int, lower: int, upper: int) -> int:
+    """Return value constrained to the inclusive interval."""
+    return max(lower, min(value, upper))
+```
+:::
+
+## Opt-in line numbers {#sec-code-line-numbers}
+
+Line numbers help prose discuss a fixed specimen but are omitted by default so
+short examples remain easy to copy. The numbers are presentation, not literal
+characters in the source.
+
+::: {.code-with-filename}
+[`counter.py`]{.code-with-filename-file}
+
+```{.python code-line-numbers="true"}
+def count_enabled(flags: list[bool]) -> int:
+    total = 0
+    for enabled in flags:
+        if enabled:
+            total += 1
+    return total
+```
+:::
+
+## Line callouts and annotations {#sec-code-annotations}
+
+Inline callout markers connect explanations to source lines. HTML turns them
+into interactive annotations, while the other outputs preserve a readable
+labeled list.
+
+::: {.code-with-filename}
+[`status.py`]{.code-with-filename-file}
+
+```{.python}
+def status_code(load: int) -> int:
+    bounded = max(0, min(load, 100))  # <1>
+    if bounded >= 90:                 # <2>
+        return 2
+    if bounded >= 70:
+        return 1
+    return 0
+```
+1. Clamp untrusted input before applying the thresholds.
+2. Test the most severe condition first.
+:::
+
+## Long-line policy {#sec-code-long-lines}
+
+Interactive HTML preserves source columns with horizontal scrolling. EPUB and
+fixed-page outputs wrap long lines because clipping or shrinking an entire
+listing would make content inaccessible. A visual continuation is never a new
+source line. Authors should still prefer readable source and use an intentional
+long line only when the unbroken value matters.
+
+The first fixture wraps at ordinary spaces. The second is an intentionally
+unbroken token that requires an anywhere-safe fallback in the PDF and EPUB
+paths.
+
+::: {.code-with-filename}
+[`spaced-line.txt`]{.code-with-filename-file}
+
+```{.text}
+ALKAHEST SPACED LINE BEGIN 0123456789 0123456789 0123456789 0123456789 0123456789 0123456789 SPACED LINE END
+```
+:::
+
+::: {.code-with-filename}
+[`unbroken-token.txt`]{.code-with-filename-file}
+
+```{.text}
+ALKAHEST_LONG_LINE_BEGIN_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_LONG_LINE_END
+```
+:::
+
+## Patches and terminal sessions {#sec-code-diff-terminal}
+
+A diff retains its conventional `+`, `-`, and context prefixes, so additions
+and removals do not depend on color. A terminal transcript uses a visible
+prompt and includes output in reading order. Commands intended for copying
+should also appear separately when prompts would be inconvenient.
+
+::: {.code-with-filename}
+[`counter.patch`]{.code-with-filename-file}
+
+```{.diff}
+diff --git a/counter.py b/counter.py
+--- a/counter.py
++++ b/counter.py
+@@ -1,2 +1,3 @@
+ def next_value(current: int) -> int:
+-    return current + 1
++    maximum = 255
++    return min(current + 1, maximum)
+```
+:::
+
+::: {.code-with-filename}
+[`terminal`]{.code-with-filename-file}
+
+```{.console}
+$ python3 counter.py --start 41
+42
+$ printf 'done\n'
+done
+```
+:::
+
+## Executable-example presentation {#sec-executable-presentation}
+
+An executable example is presented as a named source block followed immediately
+by its expected standard output. Both remain static, reviewable manuscript
+content for now: normal publication builds do not execute code. A later roadmap
+decision will determine which engines may run, how dependencies are locked, and
+how generated output is verified without granting manuscripts ambient access.
+
+::: {.code-with-filename}
+[`checksum.py`]{.code-with-filename-file}
+
+```{.python}
+values = (3, 1, 4, 1, 5)
+print(sum(values))
+```
+:::
+
+::: {.code-with-filename}
+[`standard output`]{.code-with-filename-file}
+
+```{.text .code-output}
+14
+```
+:::
+
+The source/output pair is deliberately small enough to verify by inspection.
+When execution is enabled later, generated results must remain distinguishable
+from commands and must fail validation when they no longer match their source.

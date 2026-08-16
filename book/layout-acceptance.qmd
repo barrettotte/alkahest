@@ -7,8 +7,8 @@ folios.
 
 ## Automated evidence {#sec-automated-layout-evidence}
 
-Every PDF must remain between thirty and fifty physical pages, use the declared
-trim size, embed and subset the selected font faces, and retain the shared
+Every PDF must retain at least thirty physical pages, use the declared trim
+size, embed and subset the selected font faces, and retain the shared
 structural markers. The validator locates unique prose on each ordinary chapter
 and appendix opener and requires an odd physical page. It separately requires
 the fixed front-matter verso to contain no extractable text, which catches

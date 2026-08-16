@@ -166,6 +166,19 @@ $endif$
   show heading.where(level: 6): set heading(numbering: none)
   show link: set text(fill: theme-primary)
   show figure.caption: set text(font: "$sansfont$", fallback: false, size: 8.5pt)
+  // Quarto emits code-annotation fallbacks as term-list items. Give the term a
+  // real column so labels such as "Line 12" cannot collide with their prose.
+  show terms.item: item => block(breakable: false, below: 0.35em)[
+    #grid(
+      columns: (3.5em, 1fr),
+      column-gutter: 0.5em,
+      text(font: "$sansfont$", fallback: false, weight: "bold", item.term),
+      block[
+        #set par(first-line-indent: 0em)
+        #item.description
+      ],
+    )
+  ]
   show raw.where(block: true): content => block(
     width: 100%,
     fill: theme-mist,
@@ -174,6 +187,18 @@ $endif$
     radius: 2pt,
     content,
   )
+  // Quarto's Typst highlighter emits each lexical token as one raw element.
+  // Make its grapheme clusters individually breakable so a URL, hash, or other
+  // intentionally unbroken value cannot escape a narrow print page.
+  show raw.where(block: false): content => {
+    if content.text == "\n" {
+      linebreak()
+    } else {
+      for cluster in content.text.clusters() {
+        box(text(font: "$monofont$", fallback: false, cluster))
+      }
+    }
+  }
   show math.equation: set text(font: "$mathfont$", fallback: false)
   show raw: set text(font: "$monofont$", fallback: false)
   body
