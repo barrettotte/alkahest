@@ -1,0 +1,90 @@
+# Figures and visual evidence {#sec-figure-system}
+
+This chapter defines the shared contract for authored images, technical art,
+figure panels, output variants, and source credit. A figure must communicate
+through its caption, labels, geometry, and alternative description; color may
+reinforce those channels but cannot replace them.
+
+## Captions, alternatives, and provenance {#sec-figure-anatomy}
+
+A figure identifier names the idea rather than its filename or eventual
+number. The caption tells readers why the figure matters, while `fig-alt`
+describes the visual evidence needed by someone who cannot see it. Source and
+license credit remain visible at the end of the caption and are also recorded
+in the asset registry.
+
+@fig-signal-chain is referenced before its definition so float movement cannot
+change the meaning of the surrounding prose.
+
+::: {#fig-signal-chain}
+
+![](figures/signal-chain.svg){fig-alt="A three-stage signal chain runs from a sensor through signal conditioning to a decision stage. Arrows label the intermediate signals as analog and normalized." width="100%"}
+
+A labeled signal chain communicates direction and stage responsibility without
+depending on color. [Source: original Alkahest fixture, CC0 1.0.]{.figure-source}
+:::
+
+## Subfigures and panel references {#sec-figure-panels}
+
+Use a panel only when its members support one comparison. Each member receives
+its own durable identifier, caption, and alternative description; the panel
+adds the shared claim. In @fig-waveform-comparison, @fig-waveform-raw retains
+high-frequency variation while @fig-waveform-filtered exposes the underlying
+trend.
+
+::: {#fig-waveform-comparison layout-ncol="2"}
+
+![Raw samples](figures/waveform-raw.svg){#fig-waveform-raw fig-alt="A jagged sampled waveform varies around a broad rise and fall, with sharp noise peaks near the middle."}
+
+![Filtered estimate](figures/waveform-filtered.svg){#fig-waveform-filtered fig-alt="A smooth waveform rises to one broad peak and falls after high-frequency noise is removed."}
+
+Raw and filtered views of the same conceptual measurement. [Source: original
+Alkahest fixtures, CC0 1.0.]{.figure-source}
+:::
+
+## Full-width and output-specific art {#sec-figure-variants}
+
+The semantic figure in @fig-system-map has one identifier, caption, reference,
+and alternative description even though its presentation changes by medium.
+HTML and EPUB use a restrained screen palette; PDFs use a monochrome version
+whose patterns and border weights survive grayscale printing.
+
+::: {#fig-system-map .figure-full-width}
+
+:::: {.content-visible when-format="html"}
+![](figures/system-map-screen.svg){fig-alt="Four modules form a closed loop: observe, model, decide, and act. Solid arrows connect the primary path, and a dashed feedback arrow returns from act to observe." width="100%"}
+::::
+
+:::: {.content-visible unless-format="html"}
+![](figures/system-map-print.svg){fig-alt="Four modules form a closed loop: observe, model, decide, and act. Solid arrows connect the primary path, and a dashed feedback arrow returns from act to observe." width="100%"}
+::::
+
+A closed-loop system shown as full-width art with equivalent screen and print
+presentations. [Source: original Alkahest fixture, CC0 1.0.]{.figure-source}
+:::
+
+Full-width means the available page or viewport column, never the physical trim
+edge. On the web the figure may extend beyond the prose measure; in EPUB it
+degrades to the reader's content width; and in the one-column print profiles it
+uses the live area inside the margins.
+
+## Float and placement policy {#sec-figure-floats}
+
+Author figures at the document's top level, close to their first reference.
+Fixed-layout engines may move a figure to a nearby legal position to avoid a
+large gap or split caption. The exact page is not part of the manuscript
+contract: the stable identifier and generated reference carry the relationship.
+
+The LuaLaTeX adapter permits here, top, bottom, or float-page placement. Typst
+uses its native book-figure placement. HTML and EPUB keep figures in reading
+order. Authors must not write “above,” “below,” or a page number unless an
+edition-specific review artifact is deliberately being discussed.
+
+## Authoring boundary {#sec-figure-boundary}
+
+Prefer SVG for diagrams, plots, and line art; use a high-resolution raster only
+when the subject is inherently photographic or textured. Do not encode a
+caption inside an image, and do not repeat every visible label in alternative
+text. Print/web variants are allowed only when they preserve the same meaning,
+labels, reading order, identifier, and caption. Materially different content
+requires a separate figure and reference.

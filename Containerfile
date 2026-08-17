@@ -23,10 +23,10 @@ ENV ALKAHEST_UBUNTU_SNAPSHOT="https://snapshot.ubuntu.com/ubuntu/20260816T000000
 
 USER root
 
-# Runtime libraries required by Chrome Headless Shell plus the Java and Poppler
-# validation tools. The upstream `quarto-full` image contains TeX but not these
-# stacks. Resolve them from an immutable Ubuntu archive view and pin each direct
-# dependency so local and CI checks use identical parser versions.
+# Runtime libraries required by Chrome Headless Shell plus the Java, Poppler,
+# and SVG-conversion tools. The upstream `quarto-full` image contains TeX but
+# not these stacks. Resolve them from an immutable Ubuntu archive view and pin
+# each direct dependency so local and CI checks use identical parser versions.
 RUN sed -i \
         -e "s|http://archive.ubuntu.com/ubuntu/|${ALKAHEST_UBUNTU_SNAPSHOT}/|g" \
         -e "s|http://security.ubuntu.com/ubuntu/|${ALKAHEST_UBUNTU_SNAPSHOT}/|g" \
@@ -38,6 +38,7 @@ RUN sed -i \
         libatk1.0-0=2.35.1-1ubuntu2 \
         libatspi2.0-0=2.36.0-2 \
         libcairo2=1.16.0-4ubuntu1 \
+        librsvg2-bin=2.48.9-1ubuntu0.20.04.4 \
         libcups2=2.3.1-9ubuntu1.9 \
         libdbus-1-3=1.12.16-2ubuntu2.3 \
         libdrm2=2.4.107-8ubuntu1~20.04.2 \
@@ -56,6 +57,8 @@ RUN sed -i \
         libxrandr2=2:1.5.2-0ubuntu1 \
         openjdk-11-jre-headless=11.0.27+6~us1-0ubuntu1~20.04 \
         poppler-utils=0.86.1-0ubuntu1.7 \
+    && echo "daaec6e04e775ff7582545e055d0559590ff44a75664ff94b0ec3562afeb9509  /usr/bin/rsvg-convert" \
+        | sha256sum --check \
     && rm -rf /var/lib/apt/lists/*
 
 # Quarto's diagram renderer needs a browser for non-HTML targets. Install the

@@ -261,7 +261,18 @@ check_pdf() {
     "Matrices and vectors" \
     "Theorem 6.1" \
     "Saturation bounds" \
-    "Proof"
+    "Proof" \
+    "Figures and visual evidence" \
+    "Captions, alternatives, and provenance" \
+    "Subfigures and panel references" \
+    "Full-width and output-specific art" \
+    "Figure 7.1" \
+    "Figure 7.2" \
+    "Figure 7.2a" \
+    "Figure 7.2b" \
+    "Figure 7.3" \
+    "Source: original Alkahest fixture" \
+    "print edition"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
       echo "error: ${label} is missing required marker: ${required_marker}" >&2
@@ -292,6 +303,10 @@ check_pdf() {
   done
   if [[ "${pdf_text}" == *"1.1.1.1"* ]]; then
     echo "error: ${label} incorrectly numbers the H4 detail heading" >&2
+    return 1
+  fi
+  if [[ "${pdf_text}" == *"screen edition"* ]]; then
+    echo "error: ${label} contains the screen-only figure variant" >&2
     return 1
   fi
 
@@ -327,6 +342,7 @@ continuity chapter|This follow-on chapter proves
 acceptance chapter|This final layout chapter records
 code-block chapter|This chapter defines how source code, terminal transcripts, patches
 math chapter|This chapter defines the shared authoring contract for mathematical
+figure chapter|This chapter defines the shared contract for authored images
 appendix A|This appendix makes the first appendix opener
 appendix B|This second appendix proves
 appendix C|This appendix exercises language metadata
@@ -358,7 +374,7 @@ RECTO_MARKERS
     return 1
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math/figure contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

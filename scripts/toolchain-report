@@ -65,11 +65,14 @@ printf "  OpenJDK: "
 java -version 2>&1 | sed -n "1s/^openjdk version \"\([^\"]*\)\".*/\1/p"
 printf "  Poppler: "
 pdfinfo -v 2>&1 | sed -n "1s/^pdfinfo version //p"
+printf "  librsvg: "
+rsvg-convert --version | sed "s/^rsvg-convert version //"
 
 echo "Font and TeX packages"
 dpkg-query -W fonts-dejavu-core | sed "s/^/  /"
 dpkg-query -W openjdk-11-jre-headless | sed "s/^/  /"
 dpkg-query -W poppler-utils | sed "s/^/  /"
+dpkg-query -W librsvg2-bin | sed "s/^/  /"
 tlmgr info --only-installed \
   lm lm-math \
   babel-english babel-french babel-german babel-greek babel-hebrew babel-russian \
@@ -99,6 +102,7 @@ sha256sum \
   /opt/quarto/bin/tools/x86_64/typst \
   /opt/quarto/bin/tools/x86_64/pandoc \
   /opt/TinyTeX/bin/x86_64-linux/luahbtex \
+  /usr/bin/rsvg-convert \
   /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \
   /usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf \
   /opt/TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf \

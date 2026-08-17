@@ -257,6 +257,25 @@ span[id^="eq-"] {
   font-style: normal;
 }
 
+// A full-width figure may use the safe gutter beside the prose measure on roomy
+// screens. Keeping its start edge fixed prevents a navigation rail from clipping
+// the caption; narrow layouts retain the ordinary content width.
+#quarto-content .figure-full-width {
+  width: 100%;
+
+  @media (min-width: 992px) {
+    width: calc(100% + 1rem);
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+.figure-source {
+  display: block;
+  margin-top: 0.2rem;
+  color: $alkahest-muted;
+  font-size: 0.88em;
+}
+
 @media (max-width: 575.98px) {
   :root {
     font-size: 17px;

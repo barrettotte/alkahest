@@ -97,6 +97,7 @@ exec podman run --rm \
     html_text="$(mktemp)"
     epub_text="$(mktemp)"
     epub_language="$(mktemp)"
+    epub_svg="$(mktemp)"
     find book/_build/html -type f -name "*.html" -exec cat {} + \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${html_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
@@ -104,6 +105,8 @@ exec podman run --rm \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${epub_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       "EPUB/text/*.xhtml" >"${epub_language}"
+    unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
+      "EPUB/media/*.svg" >"${epub_svg}"
     for marker in \
       "Publication data" \
       "For the readers who build things to understand them." \
@@ -139,7 +142,17 @@ exec podman run --rm \
       "Matrices and vectors" \
       "Theorem 6.1" \
       "Saturation bounds" \
-      "Proof"
+      "Proof" \
+      "Figures and visual evidence" \
+      "Captions, alternatives, and provenance" \
+      "Subfigures and panel references" \
+      "Full-width and output-specific art" \
+      "Figure 7.1" \
+      "Figure 7.2" \
+      "Figure 7.2 (a)" \
+      "Figure 7.2 (b)" \
+      "Figure 7.3" \
+      "Source: original Alkahest fixture"
     do
       if ! grep -Fq "${marker}" "${html_text}"; then
         echo "error: HTML is missing required marker: ${marker}" >&2
@@ -209,6 +222,39 @@ exec podman run --rm \
     do
       require_literal "${math_description}" book/math.qmd "math source description"
     done
+
+    # Figures retain IDs, panel relationships, explicit alternatives, source
+    # credit, and exactly one medium-specific asset inside each publication.
+    html_figures="book/_build/html/figures.html"
+    for figure_structure in \
+      "id=\"fig-signal-chain\"" \
+      "id=\"fig-waveform-comparison\" class=\"quarto-layout-panel\"" \
+      "id=\"fig-waveform-raw\"" \
+      "id=\"fig-waveform-filtered\"" \
+      "data-ref-parent=\"fig-waveform-comparison\"" \
+      "id=\"fig-system-map\" class=\"figure-full-width" \
+      "class=\"figure-source\""
+    do
+      require_literal "${figure_structure}" "${html_figures}" "HTML figure specimen"
+      require_literal "${figure_structure}" "${epub_language}" "EPUB figure specimen"
+    done
+    for figure_alt in \
+      "A three-stage signal chain runs from a sensor through signal conditioning to a decision stage." \
+      "A jagged sampled waveform varies around a broad rise and fall" \
+      "A smooth waveform rises to one broad peak and falls" \
+      "Four modules form a closed loop: observe, model, decide, and act."
+    do
+      require_literal "${figure_alt}" "${html_figures}" "HTML figure alternative"
+      require_literal "${figure_alt}" "${epub_language}" "EPUB figure alternative"
+    done
+    require_literal "figures/system-map-screen.svg" "${html_figures}" "HTML figure variant"
+    require_literal "screen edition" "${epub_svg}" "EPUB figure variant"
+    if grep -Fq "system-map-print.svg" "${html_figures}" \
+      || grep -Fq "print edition" "${epub_svg}"
+    then
+      echo "error: a reflowable output contains the print-only figure variant" >&2
+      exit 1
+    fi
     if grep -Fq "1.1.1.1" "${html_text}" || grep -Fq "1.1.1.1" "${epub_text}"; then
       echo "error: a reflowable output incorrectly numbers the H4 detail heading" >&2
       exit 1
@@ -267,7 +313,8 @@ exec podman run --rm \
       "${html_text}" \
       "${epub_text}" \
       "${epub_language}" \
+      "${epub_svg}" \
       "${epub_listing}" \
       "${epub_css}"
-    echo "ok: HTML/EPUB structure, code and math contracts, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, code/math/figure contracts, locale semantics, theme, embedded fonts, and heading markers"
   '

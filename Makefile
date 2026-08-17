@@ -37,6 +37,7 @@ clean: ## Remove generated books, intermediates, and Quarto caches.
 		book/theme/fonts \
 		book/Alkahest-Reference-Book.epub \
 		book/Alkahest-Reference-Book.pdf \
+		book/Alkahest-Reference-Book.tex \
 		book/index.html \
 		book/index.log \
 		book/index.tex \

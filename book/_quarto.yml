@@ -17,6 +17,7 @@ book:
         - layout-acceptance.qmd
         - code-blocks.qmd
         - math.qmd
+        - figures.qmd
     - references.qmd
   appendices:
     - appendices/page-system-checklist.qmd
@@ -52,6 +53,13 @@ number-sections: true
 number-depth: 3
 crossref:
   chapters: true
+
+# Quarto 1.10 copies fig-alt onto both the image and its generated Div. Keep the
+# valid image alternative and remove the invalid wrapper attribute late enough
+# that cross-reference rendering is already complete.
+filters:
+  - at: post-render
+    path: filters/strip-invalid-alt.lua
 
 # One named stack feeds every output. HTML and EPUB package selected WOFF2
 # faces; PDF backends resolve the matching locked OTF files.

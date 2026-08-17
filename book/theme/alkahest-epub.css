@@ -376,6 +376,18 @@ span[id^="eq-"] {
   font-style: normal;
 }
 
+.figure-full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+.figure-source {
+  display: block;
+  margin-top: 0.2em;
+  color: #64748b;
+  font-size: 0.88em;
+}
+
 img,
 svg {
   max-width: 100%;

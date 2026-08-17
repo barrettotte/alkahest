@@ -3,6 +3,8 @@ project:
 
 format:
   pdf:
+    # Let figures remain near their reference while retaining legal float exits.
+    fig-pos: htbp
     documentclass: scrbook
     classoption:
       - twoside
