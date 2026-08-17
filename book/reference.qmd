@@ -136,5 +136,5 @@ in the roadmap rather than represented by a misleading placeholder:
 - publication-quality electrical circuits and logic diagrams;
 - data-driven graphs with accessible descriptions;
 - subfigures and print/web image variants;
-- theorem, proof, exercise, solution, project, and warning components;
+- exercise, solution, project, and warning components;
 - glossary and index generation.

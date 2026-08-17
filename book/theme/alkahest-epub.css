@@ -339,6 +339,43 @@ blockquote {
   border-left: 0.2em solid #334155;
 }
 
+/* Preserve readable math size in narrow readers and isolate overflow. */
+span[id^="eq-"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.theorem,
+.proof {
+  margin: 1.2em 0;
+  padding: 0.7em 0.9em;
+  border-left: 0.2em solid #334155;
+}
+
+.theorem {
+  background: #f1f5f9;
+  font-style: italic;
+}
+
+.proof {
+  border-left-color: #64748b;
+}
+
+.theorem p,
+.proof p {
+  margin: 0;
+  text-indent: 0;
+}
+
+.theorem-title,
+.proof-title {
+  color: #334155;
+  font-family: "Libertinus Sans", sans-serif;
+  font-style: normal;
+}
+
 img,
 svg {
   max-width: 100%;

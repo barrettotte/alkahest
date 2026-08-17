@@ -1,0 +1,110 @@
+# Mathematical notation and reasoning {#sec-math-system}
+
+This chapter defines the shared authoring contract for mathematical prose,
+display equations, structured notation, and formal reasoning. Authors write
+portable TeX mathematics in Markdown; backend-specific commands are not part
+of the manuscript contract.
+
+## Inline and display mathematics {#sec-math-inline-display}
+
+Inline expressions such as $E_k = \tfrac{1}{2} m v^2$ belong grammatically to
+their sentence and should align with the surrounding text. Use a display when
+an expression needs a stable reference, a multi-line derivation, or enough
+space to expose its structure.
+
+Every important display receives an `eq-` identifier and a concise plain-text
+description. The description states the equation's purpose instead of trying
+to pronounce every symbol.
+
+## Aligned equations {#sec-math-aligned}
+
+One aligned block receives one equation number. Alignment points communicate
+the relationship between lines without inserting spaces by hand:
+
+$$
+\begin{aligned}
+\mathbf{x}_{k+1} &= A\mathbf{x}_k + B\mathbf{u}_k, \\
+\mathbf{y}_k     &= C\mathbf{x}_k + D\mathbf{u}_k.
+\end{aligned}
+$$ {#eq-state-update alt="Discrete state-space update and output equations"}
+
+@eq-state-update is the canonical aligned-equation fixture. Independent
+relationships that need separate references should be separate displays rather
+than lines forced into one numbered block.
+
+## Cases and custom operators {#sec-math-cases-operators}
+
+Use `\operatorname` when an application needs a named operator that is not
+built into ordinary TeX notation. This keeps spacing correct without adding a
+backend-specific preamble command. The saturation operator also exercises a
+piecewise definition:
+
+$$
+\operatorname{sat}_{[\ell,u]}(x) =
+\begin{cases}
+\ell, & x < \ell, \\
+x,    & \ell \le x \le u, \\
+u,    & x > u.
+\end{cases}
+$$ {#eq-saturation alt="Piecewise saturation of x between lower and upper bounds"}
+
+The prose can reuse the operator inline as
+$\operatorname{sat}_{[0,1]}(x)$ without changing its source syntax.
+
+## Matrices and vectors {#sec-math-matrices}
+
+Matrices remain semantic mathematics rather than screenshots. Keep them small
+enough for the narrowest edition, or split a derivation before reducing the
+type size. A planar rotation is a representative dense display:
+
+$$
+\begin{bmatrix}
+x' \\ y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos\theta & -\sin\theta \\
+\sin\theta &  \cos\theta
+\end{bmatrix}
+\begin{bmatrix}
+x \\ y
+\end{bmatrix}.
+$$ {#eq-coordinate-rotation alt="Two-dimensional coordinate rotation matrix"}
+
+Together, @eq-state-update and @eq-coordinate-rotation test references to
+structured displays.
+
+## Theorems and proofs {#sec-math-theorems}
+
+Theorem-like blocks use Quarto's reserved semantic identifiers. Their visible
+names, counters, and references are generated consistently instead of being
+typed into prose.
+
+@thm-saturation-bounds demonstrates a numbered theorem followed immediately by
+its unnumbered proof. A proof must remain adjacent to the claim it establishes
+and retain a distinct proof label in every output.
+
+::: {#thm-saturation-bounds}
+## Saturation bounds
+
+For real numbers $x$, $\ell$, and $u$ with $\ell \le u$,
+$\operatorname{sat}_{[\ell,u]}(x)$ belongs to the closed interval $[\ell,u]$.
+:::
+
+::: {.proof}
+The three branches of @eq-saturation are exhaustive. If $x < \ell$, the result
+is $\ell$; if $\ell \le x \le u$, the result is $x$; and if $x > u$, the result
+is $u$. Each result belongs to $[\ell,u]$.
+:::
+
+## Authoring boundary {#sec-math-boundary}
+
+The supported baseline is portable TeX notation that Pandoc can translate to
+native MathML, Typst mathematics, and LuaLaTeX. Raw MathJax, raw Typst, and raw
+LaTeX are reserved for an explicitly documented output-specific fallback.
+Equation numbers and theorem numbers are generated; authors never type them.
+
+Displayed equations should carry meaningful alternative descriptions. Inline
+mathematics cannot receive per-expression alternative text through standard
+Pandoc Markdown, so surrounding prose must introduce every symbol and state
+the expression's purpose.

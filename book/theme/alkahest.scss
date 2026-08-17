@@ -220,6 +220,43 @@ blockquote {
   border-left-color: $alkahest-slate;
 }
 
+// Keep semantic mathematics usable on narrow screens without shrinking the
+// notation. The equation wrapper provides a local scroll region when needed.
+span[id^="eq-"] {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.theorem,
+.proof {
+  margin-block: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-left: 0.22rem solid $alkahest-slate;
+}
+
+.theorem {
+  background: $alkahest-mist;
+  font-style: italic;
+}
+
+.proof {
+  border-left-color: $alkahest-muted;
+}
+
+.theorem > :last-child,
+.proof > :last-child {
+  margin-bottom: 0;
+}
+
+.theorem-title,
+.proof-title {
+  color: $alkahest-slate;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  font-style: normal;
+}
+
 @media (max-width: 575.98px) {
   :root {
     font-size: 17px;

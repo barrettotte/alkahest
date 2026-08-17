@@ -16,6 +16,7 @@ book:
         - page-continuity.qmd
         - layout-acceptance.qmd
         - code-blocks.qmd
+        - math.qmd
     - references.qmd
   appendices:
     - appendices/page-system-checklist.qmd

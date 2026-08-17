@@ -65,6 +65,7 @@ check_pdf() {
   local appendix_a_marker
   local appendix_b_marker
   local equation_marker
+  local math_equation_marker
   local required_font
   local required_marker
   local recto_description
@@ -253,7 +254,14 @@ check_pdf() {
     "counter.patch" \
     "python3 counter.py" \
     "checksum.py" \
-    "standard output"
+    "standard output" \
+    "Mathematical notation and reasoning" \
+    "Aligned equations" \
+    "Cases and custom operators" \
+    "Matrices and vectors" \
+    "Theorem 6.1" \
+    "Saturation bounds" \
+    "Proof"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
       echo "error: ${label} is missing required marker: ${required_marker}" >&2
@@ -264,15 +272,18 @@ check_pdf() {
     appendix_a_marker="A. Page-system checklist"
     appendix_b_marker="B. Format behavior"
     equation_marker="Equation (1.1)"
+    math_equation_marker="Equation (6.3)"
   else
     appendix_a_marker="A Page-system checklist"
     appendix_b_marker="B Format behavior"
     equation_marker="Equation 1.1"
+    math_equation_marker="Equation 6.3"
   fi
   for required_marker in \
     "${appendix_a_marker}" \
     "${appendix_b_marker}" \
-    "${equation_marker}"
+    "${equation_marker}" \
+    "${math_equation_marker}"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
       echo "error: ${label} is missing backend marker: ${required_marker}" >&2
@@ -315,6 +326,7 @@ layout-stress chapter|This chapter is a pagination stress specimen
 continuity chapter|This follow-on chapter proves
 acceptance chapter|This final layout chapter records
 code-block chapter|This chapter defines how source code, terminal transcripts, patches
+math chapter|This chapter defines the shared authoring contract for mathematical
 appendix A|This appendix makes the first appendix opener
 appendix B|This second appendix proves
 appendix C|This appendix exercises language metadata
@@ -346,7 +358,7 @@ RECTO_MARKERS
     return 1
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code contract, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

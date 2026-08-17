@@ -132,7 +132,14 @@ exec podman run --rm \
       "counter.patch" \
       "python3 counter.py" \
       "checksum.py" \
-      "standard output"
+      "standard output" \
+      "Mathematical notation and reasoning" \
+      "Aligned equations" \
+      "Cases and custom operators" \
+      "Matrices and vectors" \
+      "Theorem 6.1" \
+      "Saturation bounds" \
+      "Proof"
     do
       if ! grep -Fq "${marker}" "${html_text}"; then
         echo "error: HTML is missing required marker: ${marker}" >&2
@@ -172,6 +179,35 @@ exec podman run --rm \
       "code-output"
     do
       require_literal "${code_structure}" "${epub_language}" "EPUB code specimen"
+    done
+
+    # Web and EPUB mathematics stays semantic and offline: native MathML,
+    # stable cross-reference targets, and native theorem/proof structures.
+    html_math="book/_build/html/math.html"
+    for math_structure in \
+      "<math display=\"inline\"" \
+      "<math display=\"block\"" \
+      "id=\"eq-state-update\"" \
+      "id=\"eq-saturation\"" \
+      "id=\"eq-coordinate-rotation\"" \
+      "id=\"thm-saturation-bounds\" class=\"theorem\"" \
+      "class=\"theorem-title\"" \
+      "class=\"proof\"" \
+      "class=\"proof-title\""
+    do
+      require_literal "${math_structure}" "${html_math}" "HTML math specimen"
+      require_literal "${math_structure}" "${epub_language}" "EPUB math specimen"
+    done
+    if grep -RiEq "<script[^>]+src=[^>]*mathjax" book/_build/html; then
+      echo "error: HTML math unexpectedly depends on MathJax" >&2
+      exit 1
+    fi
+    for math_description in \
+      "Discrete state-space update and output equations" \
+      "Piecewise saturation of x between lower and upper bounds" \
+      "Two-dimensional coordinate rotation matrix"
+    do
+      require_literal "${math_description}" book/math.qmd "math source description"
     done
     if grep -Fq "1.1.1.1" "${html_text}" || grep -Fq "1.1.1.1" "${epub_text}"; then
       echo "error: a reflowable output incorrectly numbers the H4 detail heading" >&2
@@ -233,5 +269,5 @@ exec podman run --rm \
       "${epub_language}" \
       "${epub_listing}" \
       "${epub_css}"
-    echo "ok: HTML/EPUB structure, code contract, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, code and math contracts, locale semantics, theme, embedded fonts, and heading markers"
   '
