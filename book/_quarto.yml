@@ -1,7 +1,9 @@
 project:
   type: book
-  # Font files are generated build inputs staged from the locked container.
-  pre-render: ../scripts/stage-webfonts
+  # Validate semantic sources, then stage generated font build inputs.
+  pre-render:
+    - ../scripts/check-icons
+    - ../scripts/stage-webfonts
 
 book:
   title: "Alkahest Reference Book"
@@ -18,6 +20,8 @@ book:
         - code-blocks.qmd
         - math.qmd
         - figures.qmd
+        - components.qmd
+        - icons.qmd
     - references.qmd
   appendices:
     - appendices/page-system-checklist.qmd

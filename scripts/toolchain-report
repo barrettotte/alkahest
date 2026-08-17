@@ -77,7 +77,7 @@ tlmgr info --only-installed \
   lm lm-math \
   babel-english babel-french babel-german babel-greek babel-hebrew babel-russian \
   hyphen-english hyphen-french hyphen-german hyphen-greek hyphen-russian ruhyphen \
-  caption fvextra pgf koma-script \
+  caption fvextra pgf tcolorbox tikzfill pdfcol fontawesome5 koma-script \
   | grep -E "^(package|revision|cat-version):" \
   | sed "s/^/  /"
 

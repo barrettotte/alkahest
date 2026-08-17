@@ -1,0 +1,67 @@
+# Semantic icons {#sec-icons}
+
+Technical books repeat a small visual vocabulary: equipment is needed, a
+hazard deserves attention, an experiment begins, or a side path is optional.
+Alkahest gives those meanings stable names instead of asking authors to select
+a glyph, font, image file, or backend command.
+
+## Registry specimen {#sec-icon-registry}
+
+Every icon below comes from the same `alk-icon` shortcode and the central
+registry. The nearby visible label is deliberate manuscript content; the
+shortcode also carries the registry's default label for nonvisual readers.
+
+{{< alk-icon equipment >}} **Equipment required.** Gather the instruments and
+protective equipment before starting the procedure.
+
+{{< alk-icon warning >}} **Warning.** Check the stated limits before energizing
+the circuit.
+
+{{< alk-icon danger >}} **Danger—stop.** Do not continue while stored energy is
+present.
+
+{{< alk-icon idea >}} **Idea.** Compare the measured result with the simplest
+model that could explain it.
+
+{{< alk-icon experiment >}} **Experiment.** Record raw observations before
+writing an interpretation.
+
+{{< alk-icon optional-material >}} **Optional material.** This branch adds
+context but is not required by the main argument.
+
+The `stop` alias resolves to the canonical danger entry rather than creating a
+second symbol: {{< alk-icon stop label="Stop; danger remains" >}} **Stop if the
+hazard remains.** Aliases let authors use familiar vocabulary while generated
+markup and asset selection remain stable.
+
+| Registry name | Meaning and aliases |
+|:--------------|:--------------------|
+| `equipment` | Label: Equipment required. Alias: `tools`. |
+| `warning` | Label: Warning. Alias: `caution`. |
+| `danger` | Label: Danger. Aliases: `stop`, `stop-sign`. |
+| `idea` | Label: Idea. Aliases: `lightbulb`, `tip`. |
+| `experiment` | Label: Experiment. Aliases: `lab`, `laboratory`. |
+| `optional-material` | Label: Optional material. Aliases: `optional`, `extension-material`. |
+
+: Initial semantic icon registry {#tbl-icon-registry tbl-colwidths="[36,64]"}
+
+## Authoring syntax {#sec-icon-syntax}
+
+Authors invoke a meaning, not an asset:
+
+```{.markdown shortcodes=false}
+{{< alk-icon equipment >}} **Equipment required.** Gather the listed tools.
+{{< alk-icon stop label="Stop; danger remains" >}} **Stop.** Remove power.
+```
+
+The first positional argument must be a registered name or alias. The optional
+`label` override provides a more specific accessible name while preserving the
+canonical icon identity. Missing names, unknown names, extra positional
+arguments, and empty labels stop the render with a direct error.
+
+## Extension boundary {#sec-icon-extension-boundary}
+
+New meanings are added once in the registry with a stable canonical name,
+default label, repository-controlled asset, and nonconflicting aliases. Authors
+must not refer to SVG paths directly, paste Unicode lookalikes, select icon-font
+code points, or add output-specific markup to manuscript prose.

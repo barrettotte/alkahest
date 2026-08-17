@@ -178,6 +178,10 @@ RUN tlmgr install \
         caption \
         fvextra \
         pgf \
+        tcolorbox \
+        tikzfill \
+        pdfcol \
+        fontawesome5 \
         koma-script
 
 # Assert package revisions and the original baseline font bytes so
@@ -202,6 +206,10 @@ RUN set -eu; \
     check_revision caption 79618; \
     check_revision fvextra 78296; \
     check_revision pgf 79866; \
+    check_revision tcolorbox 79191; \
+    check_revision tikzfill 78793; \
+    check_revision pdfcol 79618; \
+    check_revision fontawesome5 77682; \
     check_revision koma-script 77575; \
     check_revision lm 77682; \
     check_revision lm-math 67718; \

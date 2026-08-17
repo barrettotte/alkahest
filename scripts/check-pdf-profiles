@@ -75,6 +75,8 @@ check_pdf() {
   local boundary_start_page
   local boundary_end_page
   local split_boundary_found=0
+  local table_header_pages=0
+  local normalized_page
   local blank_page_text
   local diagnostic
   local unexpected_diagnostic=0
@@ -272,6 +274,26 @@ check_pdf() {
     "Figure 7.2b" \
     "Figure 7.3" \
     "Source: original Alkahest fixture" \
+    "Tables and instructional blocks" \
+    "Table 8.1" \
+    "Measurement and acceptance plan" \
+    "Bench-test sequence" \
+    "Close the test session." \
+    "Note 8.1" \
+    "Warning 8.1" \
+    "Exercise 8.1" \
+    "Solution 8.1" \
+    "Project: build a threshold indicator" \
+    "Lab: verify the threshold indicator" \
+    "Semantic icons" \
+    "Table 9.1" \
+    "Initial semantic icon registry" \
+    "Equipment required." \
+    "Check the stated limits before energizing the circuit." \
+    "Do not continue while stored energy is present." \
+    "Record raw observations before writing an interpretation." \
+    "Optional material." \
+    "Stop if the hazard remains." \
     "print edition"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
@@ -343,6 +365,8 @@ acceptance chapter|This final layout chapter records
 code-block chapter|This chapter defines how source code, terminal transcripts, patches
 math chapter|This chapter defines the shared authoring contract for mathematical
 figure chapter|This chapter defines the shared contract for authored images
+component chapter|Technical books need more than prose, code, mathematics, and figures.
+icon chapter|Technical books repeat a small visual vocabulary
 appendix A|This appendix makes the first appendix opener
 appendix B|This second appendix proves
 appendix C|This appendix exercises language metadata
@@ -374,7 +398,22 @@ RECTO_MARKERS
     return 1
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math/figure contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  # The compact profile deliberately forces the long table across a page. Both
+  # engines must repeat its semantic header instead of clipping or flattening it.
+  if [[ "${label}" == *"6 x 9"* ]]; then
+    for normalized_page in "${pdf_pages[@]}"; do
+      normalized_page="$(tr '\n\r\t' '   ' <<<"${normalized_page}" | tr -s ' ')"
+      if [[ "${normalized_page}" == *"Step Operation Expected evidence"* ]]; then
+        ((table_header_pages += 1))
+      fi
+    done
+    if (( table_header_pages < 2 )); then
+      echo "error: ${label} does not repeat the long-table header across compact pages" >&2
+      return 1
+    fi
+  fi
+
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math/figure/component/icon contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

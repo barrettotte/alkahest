@@ -68,3 +68,22 @@
   }%
   \pagestyle{scrheadings}%
 }
+
+% Quarto's HTML and Typst callout counters are chapter-aware in books. Bring
+% the generated LuaLaTeX counters into the same numbering system and remap the
+% native callout frames to the restrained book palette after Quarto defines
+% them later in the preamble.
+\makeatletter
+\AtBeginDocument{%
+  \@ifundefined{c@quartocalloutnteno}{}{\counterwithin{quartocalloutnteno}{chapter}}%
+  \@ifundefined{c@quartocallouttipno}{}{\counterwithin{quartocallouttipno}{chapter}}%
+  \@ifundefined{c@quartocalloutwrnno}{}{\counterwithin{quartocalloutwrnno}{chapter}}%
+  \@ifundefined{c@quartocalloutimpno}{}{\counterwithin{quartocalloutimpno}{chapter}}%
+  \@ifundefined{c@quartocalloutcauno}{}{\counterwithin{quartocalloutcauno}{chapter}}%
+  \colorlet{quarto-callout-note-color-frame}{AlkahestSlate}%
+  \colorlet{quarto-callout-tip-color-frame}{AlkahestSlate}%
+  \colorlet{quarto-callout-warning-color-frame}{AlkahestCopper}%
+  \colorlet{quarto-callout-important-color-frame}{AlkahestSlate}%
+  \colorlet{quarto-callout-caution-color-frame}{AlkahestCopper}%
+}
+\makeatother

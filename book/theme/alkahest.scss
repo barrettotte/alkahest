@@ -201,12 +201,18 @@ pre code {
 table {
   border-top: 2px solid $alkahest-slate;
   border-bottom: 1px solid $alkahest-slate;
+  overflow-wrap: anywhere;
 }
 
 thead th {
   color: $alkahest-slate;
   background: $alkahest-mist;
   font-family: "Libertinus Sans", system-ui, sans-serif;
+}
+
+th,
+td {
+  vertical-align: top;
 }
 
 .quarto-figure figcaption,
@@ -255,6 +261,77 @@ span[id^="eq-"] {
   color: $alkahest-slate;
   font-family: "Libertinus Sans", system-ui, sans-serif;
   font-style: normal;
+}
+
+// Exercises and solutions share Quarto's numbered theorem machinery but use a
+// working-text voice rather than the italic statement voice used by theorems.
+.theorem[id^="exr-"],
+.theorem[id^="sol-"] {
+  font-style: normal;
+}
+
+.theorem[id^="sol-"] {
+  background: $alkahest-paper;
+  border-left-color: $alkahest-muted;
+}
+
+.table-note {
+  display: block;
+  margin-top: -0.55rem;
+  color: $alkahest-muted;
+  font-size: 0.88rem;
+}
+
+h4.table-title {
+  display: block;
+  margin: 1.25rem 0 0.35rem;
+  color: $alkahest-slate;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  font-weight: 700;
+  text-align: center;
+}
+
+#test-sequence-table > table th:first-child {
+  white-space: nowrap;
+}
+
+.semantic-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-inline: 0.08em;
+  vertical-align: -0.14em;
+  line-height: 1;
+}
+
+.semantic-icon > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.callout.project-block,
+.callout.lab-block,
+.callout.margin-note {
+  break-inside: avoid-page;
+}
+
+.callout.project-block {
+  border-left-color: $alkahest-slate;
+}
+
+.callout.lab-block {
+  border-left-color: $alkahest-copper;
+}
+
+// Preserve source order and a readable fallback everywhere. On roomy web
+// layouts the note becomes a compact inset beside the paragraph that owns it.
+@media (min-width: 1200px) {
+  .callout.margin-note {
+    float: inline-end;
+    width: min(17rem, 44%);
+    margin: 0.25rem 0 1rem 1.25rem;
+  }
 }
 
 // A full-width figure may use the safe gutter beside the prose measure on roomy

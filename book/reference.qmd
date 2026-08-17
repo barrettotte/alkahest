@@ -135,5 +135,4 @@ in the roadmap rather than represented by a misleading placeholder:
 - chemical formulae, reactions, and 2D molecular structures;
 - publication-quality electrical circuits and logic diagrams;
 - data-driven graphs with accessible descriptions;
-- exercise, solution, project, and warning components;
 - glossary and index generation.

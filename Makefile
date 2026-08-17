@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-glyph-coverage check-publication check-pdf-profiles ci clean render render-all \
+.PHONY: bootstrap build-report check check-glyph-coverage check-icons check-publication check-pdf-profiles ci clean render render-all \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke toolchain-report help
 
@@ -13,6 +13,9 @@ check: ## Report Quarto and publishing-toolchain diagnostics.
 
 check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stack.
 	./scripts/check-glyph-coverage
+
+check-icons: ## Validate semantic icon names, assets, aliases, and calls.
+	./scripts/check-icons
 
 check-publication: ## Validate internal HTML links and EPUB conformance.
 	./scripts/check-publication
