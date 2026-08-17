@@ -1,0 +1,224 @@
+#!/usr/bin/env perl
+# Validate the glossary registry, aliases, forms, and manuscript references.
+use strict;
+use warnings;
+use File::Find qw(find);
+use FindBin qw($Bin);
+use Cwd qw(abs_path);
+
+my $repo_root = abs_path("$Bin/..");
+my $book_root = $ENV{ALKAHEST_GLOSSARY_BOOK_ROOT} // "$repo_root/book";
+$book_root = abs_path($book_root)
+  or die "error: glossary book root does not exist\n";
+my $registry_path = "$book_root/glossary.yml";
+my (%entries, %lookup, %terms_seen);
+my ($version, $language, $saw_terms, $current, $mode);
+
+open my $registry, '<', $registry_path
+  or die "error: cannot read glossary registry $registry_path: $!\n";
+my @lines = <$registry>;
+close $registry;
+
+for (my $index = 0; $index < @lines; ++$index) {
+  my $line_number = $index + 1;
+  my $line = $lines[$index];
+  chomp $line;
+
+  if (defined $current && defined $mode && $mode eq 'definition'
+      && $line =~ /^      (\S.*)$/) {
+    $entries{$current}{definition} .= ' ' if length $entries{$current}{definition};
+    $entries{$current}{definition} .= $1;
+    next;
+  }
+  if (defined $current && defined $mode && $mode eq 'aliases'
+      && $line =~ /^      - ([a-z][a-z0-9-]*)$/) {
+    push @{ $entries{$current}{aliases} }, $1;
+    next;
+  }
+  $mode = undef;
+
+  next if $line =~ /^\s*(?:#.*)?$/;
+  if ($line =~ /^version: ([0-9]+)$/) {
+    die "error: $registry_path:$line_number: duplicate version\n"
+      if defined $version;
+    $version = $1;
+    next;
+  }
+  if ($line =~ /^lang: (\S+)$/) {
+    die "error: $registry_path:$line_number: duplicate language tag\n"
+      if defined $language;
+    $language = $1;
+    next;
+  }
+  if ($line eq 'terms:') {
+    die "error: $registry_path:$line_number: duplicate terms mapping\n"
+      if $saw_terms;
+    $saw_terms = 1;
+    next;
+  }
+  if ($line =~ /^  ([a-z][a-z0-9-]*):$/) {
+    $current = $1;
+    die "error: $registry_path:$line_number: duplicate glossary ID: $current\n"
+      if exists $entries{$current};
+    $entries{$current} = { aliases => [], line => $line_number };
+    next;
+  }
+  die "error: $registry_path:$line_number: field appears before a glossary ID\n"
+    unless defined $current;
+
+  if ($line =~ /^    aliases:$/) {
+    die "error: $registry_path:$line_number: duplicate aliases field for $current\n"
+      if $entries{$current}{saw_aliases};
+    $entries{$current}{saw_aliases} = 1;
+    $mode = 'aliases';
+    next;
+  }
+  if ($line =~ /^    definition: >-$/) {
+    die "error: $registry_path:$line_number: duplicate definition for $current\n"
+      if exists $entries{$current}{definition};
+    $entries{$current}{definition} = '';
+    $mode = 'definition';
+    next;
+  }
+  if ($line =~ /^    (term|plural|acronym|acronym-plural): (\S.*)$/) {
+    my ($field, $value) = ($1, $2);
+    die "error: $registry_path:$line_number: duplicate $field for $current\n"
+      if exists $entries{$current}{$field};
+    $entries{$current}{$field} = $value;
+    next;
+  }
+  die "error: $registry_path:$line_number: unsupported glossary syntax: $line\n";
+}
+
+die "error: glossary registry version must be 1\n"
+  unless defined $version && $version == 1;
+die "error: glossary registry language must be a BCP 47-style tag\n"
+  unless defined $language
+    && $language =~ /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
+die "error: glossary registry has no terms mapping\n" unless $saw_terms;
+die "error: glossary registry has no entries\n" unless keys %entries;
+
+for my $name (sort keys %entries) {
+  my $entry = $entries{$name};
+  for my $required (qw(term definition)) {
+    die "error: glossary $name has no $required\n"
+      unless defined $entry->{$required} && $entry->{$required} =~ /\S/;
+  }
+  die "error: duplicate glossary display term: $entry->{term}\n"
+    if $terms_seen{lc $entry->{term}}++;
+  die "error: glossary $name has acronym-plural without acronym\n"
+    if defined $entry->{'acronym-plural'} && !defined $entry->{acronym};
+
+  for my $key ($name, @{ $entry->{aliases} }) {
+    die "error: duplicate glossary name or alias: $key\n" if exists $lookup{$key};
+    $lookup{$key} = $name;
+  }
+}
+
+my @sources;
+find(
+  {
+    wanted => sub {
+      return unless -f $_ && /\.qmd\z/;
+      return if $File::Find::name =~ m{/(?:\.quarto|_build)/};
+      push @sources, $File::Find::name;
+    },
+    no_chdir => 1,
+  },
+  $book_root,
+);
+
+my %valid_forms = map { $_ => 1 }
+  qw(term plural acronym acronym-plural first first-plural);
+my %valid_cases = map { $_ => 1 } qw(as-written sentence);
+my (%first_uses, %referenced);
+my ($calls, $generators) = (0, 0);
+for my $source (sort @sources) {
+  open my $input, '<', $source or die "error: cannot read $source: $!\n";
+  my ($line_number, $disabled_fence) = (0, undef);
+  while (my $line = <$input>) {
+    ++$line_number;
+    if (defined $disabled_fence) {
+      $disabled_fence = undef if $line =~ /^\Q$disabled_fence\E\s*$/;
+      next;
+    }
+    if ($line =~ /^(`{3,}|~{3,}).*\bshortcodes=false\b/) {
+      $disabled_fence = $1;
+      next;
+    }
+    if ($line =~ /\{\{<\s*alk-term\s*>\}\}/) {
+      die "error: $source:$line_number: alk-term is missing a glossary name\n";
+    }
+    if ($line =~ /^:::\s+\{\.alkahest-glossary-placeholder\}\s*$/) {
+      ++$generators;
+    }
+    while ($line =~ /\{\{<\s*alk-term\s+(.+?)\s*>\}\}/g) {
+      my $arguments = $1;
+      my ($requested, $remainder) = $arguments =~ /^([a-z][a-z0-9-]*)(.*)$/;
+      die "error: $source:$line_number: invalid alk-term glossary name\n"
+        unless defined $requested;
+      die "error: $source:$line_number: unknown glossary name or alias: $requested\n"
+        unless exists $lookup{$requested};
+
+      my %named;
+      while ($remainder =~ s/\b(form|case|link)\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s]+))//) {
+        my ($key, $value) = ($1, defined $2 ? $2 : defined $3 ? $3 : $4);
+        die "error: $source:$line_number: duplicate alk-term argument: $key\n"
+          if exists $named{$key};
+        $named{$key} = $value;
+      }
+      $remainder =~ s/\s+//g;
+      die "error: $source:$line_number: unexpected alk-term arguments: $remainder\n"
+        if length $remainder;
+      my $form = $named{form} // 'term';
+      die "error: $source:$line_number: unknown alk-term form: $form\n"
+        unless $valid_forms{$form};
+      my $text_case = $named{case} // 'as-written';
+      die "error: $source:$line_number: unknown alk-term case: $text_case\n"
+        unless $valid_cases{$text_case};
+      my $link = $named{link} // 'true';
+      die "error: $source:$line_number: alk-term link must be true or false\n"
+        unless $link eq 'true' || $link eq 'false';
+
+      my $name = $lookup{$requested};
+      my $entry = $entries{$name};
+      my $required_field =
+          $form eq 'plural' ? 'plural'
+        : $form eq 'acronym' ? 'acronym'
+        : $form eq 'acronym-plural' ? 'acronym-plural'
+        : $form eq 'first-plural' ? 'plural'
+        : undef;
+      if (defined $required_field && !defined $entry->{$required_field}) {
+        die "error: $source:$line_number: form $form is unavailable for $name\n";
+      }
+      if ($form eq 'first-plural' && defined $entry->{acronym}
+          && !defined $entry->{'acronym-plural'}) {
+        die "error: $source:$line_number: first-plural needs acronym-plural for $name\n";
+      }
+      if ($form eq 'first' || $form eq 'first-plural') {
+        die "error: $source:$line_number: duplicate explicit first use for $name; first marked at $first_uses{$name}\n"
+          if exists $first_uses{$name};
+        $first_uses{$name} = "$source:$line_number";
+      }
+      ++$referenced{$name};
+      ++$calls;
+    }
+  }
+  close $input;
+}
+
+die "error: no alk-term glossary references were found\n" unless $calls;
+die "error: expected exactly one generated-glossary placeholder; found $generators\n"
+  unless $generators == 1;
+for my $name (sort keys %referenced) {
+  die "error: referenced glossary entry $name has no explicit first-use marker\n"
+    unless exists $first_uses{$name};
+}
+for my $name (sort keys %entries) {
+  die "error: glossary entry $name is unused; remove it or reference it before generating back matter\n"
+    unless exists $referenced{$name};
+}
+print "ok: glossary registry (" . scalar(keys %entries)
+  . " entries; " . scalar(keys %lookup)
+  . " names and aliases; " . scalar(keys %referenced)
+  . " referenced entries; $calls manuscript calls; $language; one generated glossary)\n";

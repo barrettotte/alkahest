@@ -1,8 +1,11 @@
 project:
   type: book
-  # Validate semantic sources, then stage generated font build inputs.
+  # Validate semantic sources, then stage generated vector and font build inputs.
   pre-render:
+    - ../scripts/check-appendices
+    - ../scripts/check-glossary
     - ../scripts/check-icons
+    - ../scripts/stage-icons
     - ../scripts/stage-webfonts
 
 book:
@@ -22,11 +25,17 @@ book:
         - figures.qmd
         - components.qmd
         - icons.qmd
+        - glossary.qmd
     - references.qmd
+    - glossary-backmatter.qmd
   appendices:
-    - appendices/page-system-checklist.qmd
-    - appendices/format-behavior.qmd
-    - appendices/language-and-script.qmd
+    - part: "Production reference"
+      chapters:
+        - appendices/page-system-checklist.qmd
+        - appendices/format-behavior.qmd
+    - part: "Language reference"
+      chapters:
+        - appendices/language-and-script.qmd
 
 # Shared front-matter fields are deliberately obvious specimen values. A real
 # book or edition profile replaces them; no placeholder is a publication claim.
@@ -62,6 +71,7 @@ crossref:
 # valid image alternative and remove the invalid wrapper attribute late enough
 # that cross-reference rendering is already complete.
 filters:
+  - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
   - at: post-render
     path: filters/strip-invalid-alt.lua
 

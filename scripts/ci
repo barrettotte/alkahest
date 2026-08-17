@@ -11,6 +11,9 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 "${script_dir}/quarto" check
 "${script_dir}/toolchain-report"
 "${script_dir}/check-glyph-coverage"
+"${script_dir}/check-appendices"
+"${script_dir}/check-glossary"
+"${script_dir}/test-glossary"
 "${script_dir}/check-icons"
 "${script_dir}/render" complete
 "${script_dir}/check-publication"

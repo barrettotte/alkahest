@@ -81,7 +81,7 @@ find(
 my $calls = 0;
 for my $source (sort @sources) {
   open my $input, '<', $source or die "error: cannot read $source: $!\n";
-  my ($line_number, $disabled_fence) = (0, undef);
+  my ($line_number, $disabled_fence, $pending_notice) = (0, undef, undef);
   while (my $line = <$input>) {
     ++$line_number;
     if (defined $disabled_fence) {
@@ -92,11 +92,23 @@ for my $source (sort @sources) {
       $disabled_fence = $1;
       next;
     }
+    if ($line =~ /^:{3,}.*\.icon-notice\b/) {
+      die "error: $source:$line_number: .icon-notice must set icon=false\n"
+        unless $line =~ /\bicon=false\b/;
+      $pending_notice = $line_number;
+      next;
+    }
+    if (defined $pending_notice && $line !~ /^\s*$/) {
+      die "error: $source:$pending_notice: .icon-notice must be followed by a title containing alk-icon\n"
+        unless $line =~ /^#{1,6}\s+.*\{\{<\s*alk-icon\s+/;
+      $pending_notice = undef;
+    }
     if ($line =~ /\{\{<\s*alk-icon\s*>\}\}/) {
       die "error: $source:$line_number: alk-icon is missing a registry name\n";
     }
     while ($line =~ /\{\{<\s*alk-icon\s+(.+?)\s*>\}\}/g) {
       my $arguments = $1;
+      my $visible_after = substr($line, pos($line));
       my ($name, $remainder) = $arguments =~ /^([a-z][a-z0-9-]*)(.*)$/;
       die "error: $source:$line_number: invalid alk-icon registry name\n"
         unless defined $name;
@@ -109,10 +121,19 @@ for my $source (sort @sources) {
       $remainder =~ s/\s+//g;
       die "error: $source:$line_number: unexpected alk-icon arguments: $remainder\n"
         if length $remainder;
+      $visible_after =~ s/\{\{<.*?>\}\}//g;
+      $visible_after =~ s/<!--.*?-->//g;
+      $visible_after =~ s/\{[^{}]*\}//g;
+      $visible_after =~ s/<[^>]*>//g;
+      $visible_after =~ s/&(?:[A-Za-z][A-Za-z0-9]+|#[0-9]+|#x[0-9A-Fa-f]+);//g;
+      die "error: $source:$line_number: alk-icon must be followed on the same line by visible text\n"
+        unless $visible_after =~ /[\p{L}\p{N}]/;
       ++$calls;
     }
   }
   close $input;
+  die "error: $source:$pending_notice: .icon-notice has no title\n"
+    if defined $pending_notice;
 }
 
 die "error: no semantic icon shortcode calls were found\n" unless $calls;

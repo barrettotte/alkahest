@@ -1,0 +1,61 @@
+# Glossary authoring contract {#sec-glossary-authoring}
+
+Technical books need one durable definition for a term even when the term is
+referenced in several chapters, forms, or editions. Alkahest stores that source
+once in `glossary.yml`; manuscript prose selects a stable semantic name and a
+display form without copying the definition.
+
+## Terms, acronyms, and first use {#sec-glossary-forms}
+
+A {{< alk-term central-processing-unit >}} fetches, decodes, and executes
+instructions. This later chapter may use {{< alk-term cpu form=acronym >}}
+without hard-coding either expansion, proving that cross-chapter references
+retain one identity. A multiprocessor discussion may refer to several
+{{< alk-term cpu form=acronym-plural >}}. When the full plural is clearer, the
+same entry emits {{< alk-term central-processing-unit form=plural >}}.
+
+The {{< alk-term instruction-set-architecture form=first >}} defines the
+programmer-visible processor contract. The `isa` alias still resolves to the
+canonical registry identity when rendered as {{< alk-term isa form=acronym >}}.
+
+Irregular forms are data rather than author memory: one
+{{< alk-term matrix form=first >}} may become several
+{{< alk-term matrix form=plural >}}, while a later reference to the
+{{< alk-term matrix >}} keeps the registered singular. An entry may also mark a
+plural first use explicitly, as in
+{{< alk-term quantum-bit form=first-plural >}}.
+
+## Authoring syntax {#sec-glossary-syntax}
+
+The first positional argument is a stable registry ID or alias. The optional
+`form` is one of `term`, `plural`, `acronym`, `acronym-plural`, `first`, or
+`first-plural`; omitted `form` means `term`. `case=sentence` performs a
+Unicode-aware first-letter capitalization, and `link=false` is an explicit
+escape hatch when a reflowable link would be distracting.
+
+```{.markdown shortcodes=false}
+{{< alk-term central-processing-unit form=first >}}
+{{< alk-term cpu form=acronym >}}
+{{< alk-term matrix form=plural >}}
+{{< alk-term matrix link=false >}}
+```
+
+`first` and `first-plural` are explicit editorial markers. This avoids hidden
+state: split HTML chapters, an EPUB, and a whole-book PDF all render the same
+wording even when an edition later omits earlier chapters. A validator rejects
+unknown IDs, aliases, forms, unavailable plural/acronym data, and duplicate
+explicit first-use markers.
+
+The fallback remains semantic visible text without a hyperlink, as demonstrated
+by [{{< alk-term matrix link=false >}}]{#glossary-unlinked-fallback}. Print
+outputs use the same visible fallback for every occurrence and put navigation
+in the generated first-use page references.
+
+## Generated back matter {#sec-glossary-back-matter}
+
+The back-matter placeholder builds the book's glossary once from the registry.
+Entries sort by their displayed term and retain stable ID-derived anchors.
+HTML and EPUB term references link to those entries and expose the definition as
+supplementary hover text. Typst and LuaLaTeX glossary entries report the page of
+the explicit first-use marker, so pagination is calculated by each print engine
+rather than copied into source.

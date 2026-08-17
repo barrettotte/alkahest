@@ -9,7 +9,8 @@ a glyph, font, image file, or backend command.
 
 Every icon below comes from the same `alk-icon` shortcode and the central
 registry. The nearby visible label is deliberate manuscript content; the
-shortcode also carries the registry's default label for nonvisual readers.
+shortcode also carries the registry's default label as validation and fallback
+metadata.
 
 {{< alk-icon equipment >}} **Equipment required.** Gather the instruments and
 protective equipment before starting the procedure.
@@ -55,9 +56,28 @@ Authors invoke a meaning, not an asset:
 ```
 
 The first positional argument must be a registered name or alias. The optional
-`label` override provides a more specific accessible name while preserving the
+`label` override provides more specific fallback metadata while preserving the
 canonical icon identity. Missing names, unknown names, extra positional
-arguments, and empty labels stop the render with a direct error.
+arguments, empty labels, and calls without same-line visible wording stop the
+render with a direct error.
+
+## Accessibility and narrow reflow {#sec-icon-accessibility}
+
+Every icon is followed by visible wording that carries the same meaning. In
+HTML and EPUB the image is therefore decorative to assistive technology, which
+prevents a duplicate announcement; its registered label remains available as
+machine-readable validation metadata. PDF editions retain the visible wording
+even if a reader or conversion tool cannot expose image alternatives.
+
+The bounded specimen below forces ordinary web content to the measure of a
+narrow phone or e-reader. Its intentionally long warning must wrap without
+separating the symbol from its label or requiring horizontal scrolling.
+
+::: {#icon-narrow-specimen .icon-accessibility-specimen}
+{{< alk-icon warning label="Warning: stored energy may remain" >}} **Warning:
+stored energy may remain after disconnection.** Icon meaning remains in visible
+text even when this deliberately long notice wraps in a narrow edition.
+:::
 
 ## Extension boundary {#sec-icon-extension-boundary}
 

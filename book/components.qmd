@@ -75,11 +75,11 @@ order.]{.table-note}
 
 Callouts interrupt the normal reading rhythm, so authors use them only when a
 reader benefits from a distinct decision, reminder, or hazard. The visible
-title is mandatory; color and a future icon may reinforce the category but
-never define it.
+title is mandatory; a registered semantic icon and color may reinforce the
+category but never define it.
 
-::: {#nte-measure-twice .callout-note .margin-note appearance="simple" icon=false}
-## Margin note: measure twice
+::: {#nte-measure-twice .callout-note .margin-note .icon-notice appearance="simple" icon=false}
+## {{< alk-icon idea >}} Margin note: measure twice
 
 Record the instrument range with the reading. A value without its range can
 hide clipping or insufficient resolution.
@@ -89,15 +89,15 @@ hide clipping or insufficient resolution.
 and compact print profiles keep it inline at the same source position rather
 than squeezing it into an unreadable physical margin.
 
-::: {#tip-checkpoint .callout-tip appearance="simple" icon=false}
-## Checkpoint before continuing
+::: {#tip-checkpoint .callout-tip .icon-notice appearance="simple" icon=false}
+## {{< alk-icon idea >}} Checkpoint before continuing
 
 State what has been established and what the next section assumes. A checkpoint
 is guidance, not a prerequisite hidden from the surrounding prose.
 :::
 
-::: {#wrn-disconnect-power .callout-warning appearance="simple" icon=false}
-## Disconnect power before changing leads
+::: {#wrn-disconnect-power .callout-warning .icon-notice appearance="simple" icon=false}
+## {{< alk-icon warning >}} Disconnect power before changing leads
 
 De-energize the fixture, verify the supply reads zero, and discharge stored
 energy before moving a connection. The imperative title and complete text carry
@@ -106,6 +106,13 @@ the hazard without relying on color.
 
 The procedure must obey @wrn-disconnect-power wherever a lead change could
 expose stored energy.
+
+::: {.callout-note .optional-material-block .icon-notice appearance="simple" icon=false}
+## {{< alk-icon optional-material >}} Optional extension: characterize drift
+
+Repeat the nominal measurement at three documented temperatures only when the
+book or course includes the optional environmental-analysis branch.
+:::
 
 ## Exercises and solutions {#sec-component-exercises}
 
@@ -141,8 +148,8 @@ repeatable procedure, evidence, and safety boundary. Neither is merely a long
 warning or an exercise with extra prose.
 
 ::: {#project-threshold-indicator .project-anchor}
-::: {.callout-note .project-block appearance="simple" icon=false}
-## Project: build a threshold indicator
+::: {.callout-note .project-block .icon-notice appearance="simple" icon=false}
+## {{< alk-icon equipment >}} Project: build a threshold indicator
 
 **Outcome.** Build a circuit that illuminates an indicator when a sensor signal
 crosses an adjustable threshold.
@@ -157,8 +164,8 @@ and a short comparison between predicted and observed behavior.
 :::
 
 ::: {#lab-verify-threshold .lab-anchor}
-::: {.callout-tip .lab-block appearance="simple" icon=false}
-## Lab: verify the threshold indicator
+::: {.callout-tip .lab-block .icon-notice appearance="simple" icon=false}
+## {{< alk-icon experiment >}} Lab: verify the threshold indicator
 
 **Before starting.** Read @wrn-disconnect-power and confirm the supply current
 limit.

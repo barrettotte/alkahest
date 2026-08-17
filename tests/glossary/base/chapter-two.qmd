@@ -1,0 +1,4 @@
+# Second chapter
+
+The later chapter uses {{< alk-term central-processing-unit form=acronym >}} and
+an unlinked {{< alk-term matrix form=first link=false >}} reference.

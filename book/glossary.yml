@@ -1,0 +1,37 @@
+version: 1
+lang: en-US
+terms:
+  central-processing-unit:
+    term: central processing unit
+    plural: central processing units
+    acronym: CPU
+    acronym-plural: CPUs
+    aliases:
+      - cpu
+    definition: >-
+      The hardware unit that fetches, decodes, and executes instructions while coordinating the movement of data through a computer.
+  instruction-set-architecture:
+    term: instruction set architecture
+    plural: instruction set architectures
+    acronym: ISA
+    acronym-plural: ISAs
+    aliases:
+      - isa
+    definition: >-
+      The programmer-visible contract that defines a processor's instructions, registers, data types, memory behavior, and execution model.
+  matrix:
+    term: matrix
+    plural: matrices
+    aliases:
+      - array-of-values
+    definition: >-
+      A rectangular arrangement of values used to represent and transform mathematical relationships.
+  quantum-bit:
+    term: quantum bit
+    plural: quantum bits
+    acronym: qubit
+    acronym-plural: qubits
+    aliases:
+      - qubit
+    definition: >-
+      A two-state quantum system whose state may be a superposition until measurement produces a classical result.

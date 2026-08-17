@@ -53,25 +53,40 @@ return {
       end
     end
 
+    local asset = entry.asset
+    if quarto.doc.isFormat("latex") then
+      asset = asset:gsub("%.svg$", ".pdf")
+    end
+
+    -- Reflowable editions always require equivalent visible text, so hiding the
+    -- span avoids a duplicate screen-reader announcement. The image alternative
+    -- remains intact for format conversion and PDF metadata.
+    local reflowable = quarto.doc.isFormat("html") or quarto.doc.isFormat("epub")
+
     local image = pandoc.Image(
       { pandoc.Str(label) },
-      entry.asset,
+      asset,
       label,
       pandoc.Attr("", { "semantic-icon-image" }, {
         width = "1em",
         height = "1em",
       })
     )
+    local span_attributes = {
+      ["data-icon"] = entry.name,
+      ["data-icon-label"] = label,
+      title = label,
+    }
+    if reflowable then
+      span_attributes["aria-hidden"] = "true"
+    end
+
     return pandoc.Span(
       { image },
       pandoc.Attr("", {
         "semantic-icon",
         "semantic-icon-" .. entry.name,
-      }, {
-        ["data-icon"] = entry.name,
-        ["data-icon-label"] = label,
-        title = label,
-      })
+      }, span_attributes)
     )
   end,
 }

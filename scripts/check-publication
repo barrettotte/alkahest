@@ -159,6 +159,7 @@ exec podman run --rm \
       "Close the test session." \
       "Margin note: measure twice" \
       "Disconnect power before changing leads" \
+      "Optional extension: characterize drift" \
       "Exercise 8.1" \
       "Solution 8.1" \
       "Project: build a threshold indicator" \
@@ -168,7 +169,16 @@ exec podman run --rm \
       "Equipment required." \
       "stored energy is present." \
       "Optional material." \
-      "Stop if the hazard remains."
+      "Stop if the hazard remains." \
+      "Accessibility and narrow reflow" \
+      "Icon meaning remains in visible text" \
+      "Glossary authoring contract" \
+      "central processing unit (CPU)" \
+      "central processing units" \
+      "CPUs" \
+      "instruction set architecture (ISA)" \
+      "matrices" \
+      "quantum bits (qubits)"
     do
       if ! grep -Fq "${marker}" "${html_text}"; then
         echo "error: HTML is missing required marker: ${marker}" >&2
@@ -181,6 +191,20 @@ exec podman run --rm \
     done
     # Quarto intentionally omits part dividers from EPUB, but HTML must retain it.
     grep -Fq "Foundations" "${html_text}"
+    for appendix_group in "Production reference" "Language reference"; do
+      require_literal "${appendix_group}" book/_build/html/index.html \
+        "HTML appendix group"
+      if grep -Fq "${appendix_group}" "${epub_text}"; then
+        echo "error: EPUB unexpectedly emitted appendix group divider: ${appendix_group}" >&2
+        exit 1
+      fi
+    done
+    for default_only_output in "${html_text}" "${epub_text}"; do
+      if grep -Fq "Extended laboratory observations" "${default_only_output}"; then
+        echo "error: default publication includes the online-only appendix" >&2
+        exit 1
+      fi
+    done
     grep -Eq "widows:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "orphans:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "overflow-wrap:[[:space:]]*anywhere" book/_build/html/site_libs/bootstrap/*.css
@@ -279,6 +303,12 @@ exec podman run --rm \
     # Tables and instructional blocks retain semantic HTML rather than relying
     # on visual styling. EPUBCheck separately catches duplicate or invalid IDs.
     html_components="book/_build/html/components.html"
+    html_component_css=""
+    for css_candidate in book/_build/html/site_libs/bootstrap/bootstrap-*.min.css; do
+      html_component_css="${css_candidate}"
+      break
+    done
+    test -n "${html_component_css}"
     for component_structure in \
       "id=\"tbl-measurement-plan\"" \
       "data-tbl-colwidths=\"[24,22,18,36]\"" \
@@ -294,21 +324,45 @@ exec podman run --rm \
       require_literal "${component_structure}" "${epub_language}" "EPUB component specimen"
     done
     for component_class in \
-      "class=\"margin-note callout" \
-      "callout-warning" \
-      "project-block" \
-      "lab-block"
+      "class=\"margin-note icon-notice callout" \
+      "class=\"icon-notice callout callout-style-simple callout-warning no-icon" \
+      "class=\"optional-material-block icon-notice callout" \
+      "class=\"project-block icon-notice callout" \
+      "class=\"lab-block icon-notice callout"
     do
       require_literal "${component_class}" "${html_components}" "HTML component specimen"
     done
     for component_class in \
       "callout-note" \
       "callout-warning" \
+      "class=\"optional-material-block icon-notice\"" \
+      "class=\"project-block icon-notice\"" \
+      "class=\"lab-block icon-notice\"" \
       "project-anchor" \
       "lab-anchor"
     do
       require_literal "${component_class}" "${epub_language}" "EPUB component specimen"
     done
+    for notice_icon in \
+      idea \
+      warning \
+      optional-material \
+      equipment \
+      experiment
+    do
+      require_literal "data-icon=\"${notice_icon}\"" "${html_components}" "HTML notice icon"
+      require_literal "data-icon=\"${notice_icon}\"" "${epub_language}" "EPUB notice icon"
+    done
+    require_literal "no-icon callout-titled" "${html_components}" "HTML notice built-in icon suppression"
+    require_literal "no-icon callout-titled" "${epub_language}" "EPUB notice built-in icon suppression"
+    require_literal ".callout.icon-notice .callout-title-container .semantic-icon" \
+      "${html_component_css}" "HTML notice icon sizing"
+    require_literal "vertical-align:-0.12em" \
+      "${html_component_css}" "HTML notice icon baseline"
+    require_literal ".icon-notice .callout-title .semantic-icon" \
+      "${epub_css}" "EPUB notice icon sizing"
+    require_literal "vertical-align: -0.12em" "${epub_css}" "EPUB notice icon baseline"
+    require_literal "margin-right: 0.28em" "${epub_css}" "EPUB notice icon spacing"
     require_literal "<table" "${html_components}" "HTML component specimen"
     require_literal "<th" "${html_components}" "HTML component specimen"
     require_literal "<table" "${epub_language}" "EPUB component specimen"
@@ -361,7 +415,134 @@ exec podman run --rm \
     done
     require_literal "class=\"semantic-icon semantic-icon-danger\"" "${html_icons}" "HTML icon alias"
     require_literal "data-icon-label=\"Stop; danger remains\"" "${html_icons}" "HTML icon label override"
+    scripts/check-rendered-icons "${html_icons}" "${html_components}" "${epub_language}"
+    require_literal ".icon-accessibility-specimen{" \
+      "${html_component_css}" "HTML narrow icon specimen"
+    require_literal "@media(max-width: 480px)" \
+      "${html_component_css}" "HTML narrow notice breakpoint"
+    require_literal "overflow-wrap:anywhere" \
+      "${html_component_css}" "HTML narrow icon wrapping"
+    require_literal ".icon-accessibility-specimen" \
+      "${epub_css}" "EPUB narrow icon specimen"
+    require_literal "max-width: 18rem" "${epub_css}" "EPUB narrow icon measure"
+    require_literal "overflow-wrap: anywhere" "${epub_css}" "EPUB narrow icon wrapping"
     require_literal "vertical-align: -0.14em" "${epub_css}" "EPUB icon baseline"
+
+    # Glossary references retain canonical identity and requested display form;
+    # reflowable outputs link to generated, stably anchored definitions.
+    html_reference="book/_build/html/reference.html"
+    html_glossary="book/_build/html/glossary.html"
+    html_glossary_backmatter="book/_build/html/glossary-backmatter.html"
+    locale_glossary_backmatter="book/_build/locale/fr/html/glossary-backmatter.html"
+    require_literal "class=\"generated-glossary\"" \
+      "${html_glossary_backmatter}" "HTML generated glossary"
+    require_literal "data-glossary-count=\"4\"" \
+      "${html_glossary_backmatter}" "HTML generated glossary count"
+    require_literal "class=\"glossary-entry\"" \
+      "${html_glossary_backmatter}" "HTML glossary semantics"
+    require_literal "aria-labelledby=\"glossary-central-processing-unit\"" \
+      "${html_glossary_backmatter}" "HTML glossary accessible name"
+    require_literal "role=\"definition\"" \
+      "${html_glossary_backmatter}" "HTML glossary definition role"
+    require_literal "class=\"generated-glossary\"" \
+      "${epub_language}" "EPUB generated glossary"
+    require_literal "data-glossary-count=\"4\"" \
+      "${epub_language}" "EPUB generated glossary count"
+    require_literal "role=\"definition\"" \
+      "${epub_language}" "EPUB glossary definition role"
+
+    # The explicit first use lives in an earlier chapter than the remaining
+    # CPU references. Sentence casing must transform Unicode-aware visible text
+    # without changing identity, language, or the default-link contract.
+    require_literal "glossary-backmatter.html#glossary-central-processing-unit" \
+      "${html_reference}" "HTML cross-chapter glossary link"
+    require_literal "data-glossary-case=\"sentence\"" \
+      "${html_reference}" "HTML glossary sentence case"
+    require_literal "data-glossary-link=\"true\"" \
+      "${html_reference}" "HTML default glossary link"
+    require_literal "lang=\"en-US\"" \
+      "${html_reference}" "HTML glossary reference language"
+    require_literal "Central processing unit (CPU)" \
+      "${html_reference}" "HTML sentence-cased glossary text"
+    require_literal "data-glossary-case=\"sentence\"" \
+      "${epub_language}" "EPUB glossary sentence case"
+    require_literal "Central processing unit (CPU)" \
+      "${epub_language}" "EPUB sentence-cased glossary text"
+
+    # Authors can suppress navigation for an output-safe semantic fallback.
+    # The nested span at this stable specimen ID deliberately has no anchor.
+    require_literal "<span id=\"glossary-unlinked-fallback\"><span class=\"glossary-term\"" \
+      "${html_glossary}" "HTML unlinked glossary fallback"
+    require_literal "data-glossary-link=\"false\"" \
+      "${html_glossary}" "HTML unlinked glossary policy"
+    require_literal ">matrix</span></span>" \
+      "${html_glossary}" "HTML unlinked glossary text"
+    require_literal "id=\"glossary-unlinked-fallback\"" \
+      "${epub_language}" "EPUB unlinked glossary fallback"
+    require_literal "data-glossary-link=\"false\"" \
+      "${epub_language}" "EPUB unlinked glossary policy"
+    require_literal ">matrix</span></span>" \
+      "${epub_language}" "EPUB unlinked glossary text"
+    previous_glossary_line=0
+    for glossary_id in \
+      central-processing-unit \
+      instruction-set-architecture \
+      matrix \
+      quantum-bit
+    do
+      require_literal "data-glossary-id=\"${glossary_id}\"" \
+        "${html_glossary}" "HTML glossary reference"
+      require_literal "data-glossary-id=\"${glossary_id}\"" \
+        "${epub_language}" "EPUB glossary reference"
+      require_literal "id=\"glossary-${glossary_id}\"" \
+        "${html_glossary_backmatter}" "HTML glossary anchor"
+      require_literal "id=\"glossary-${glossary_id}\"" \
+        "${epub_language}" "EPUB glossary anchor"
+      require_literal "glossary-${glossary_id}\" class=\"glossary-link\" title=\"" \
+        "${html_glossary}" "HTML glossary link and tooltip"
+      require_literal "glossary-${glossary_id}\" class=\"glossary-link\" title=\"" \
+        "${epub_language}" "EPUB glossary link and tooltip"
+      glossary_line="$(grep -n -m1 "id=\"glossary-${glossary_id}\"" \
+        "${html_glossary_backmatter}" | cut -d: -f1)"
+      if [ "${glossary_line}" -le "${previous_glossary_line}" ]; then
+        echo "error: HTML glossary entries are not in stable display-term order" >&2
+        exit 1
+      fi
+      previous_glossary_line="${glossary_line}"
+    done
+    for glossary_form in \
+      term \
+      plural \
+      acronym \
+      acronym-plural \
+      first \
+      first-plural
+    do
+      require_literal "data-glossary-form=\"${glossary_form}\"" \
+        "${html_glossary}" "HTML glossary form"
+      require_literal "data-glossary-form=\"${glossary_form}\"" \
+        "${epub_language}" "EPUB glossary form"
+    done
+    require_literal "<span class=\"glossary-term\"" \
+      "${html_glossary}" "HTML portable glossary span"
+    require_literal "<span class=\"glossary-term\"" \
+      "${epub_language}" "EPUB portable glossary span"
+    require_literal ".glossary-entry{" \
+      "${html_component_css}" "HTML glossary entry theme"
+    require_literal ".glossary-entry" \
+      "${epub_css}" "EPUB glossary entry theme"
+    for glossary_output in \
+      "${html_glossary_backmatter}" \
+      "${epub_language}" \
+      "${locale_glossary_backmatter}"
+    do
+      require_literal "class=\"generated-glossary\"" \
+        "${glossary_output}" "generated glossary language scope"
+      require_literal "lang=\"en-US\"" \
+        "${glossary_output}" "generated glossary language scope"
+      require_literal "role=\"definition\"" \
+        "${glossary_output}" "generated glossary definition semantics"
+    done
     # Require both the primary locale and scoped language/direction semantics.
     # These attributes drive hyphenation, shaping, and assistive technology;
     # visible multilingual text alone is not sufficient evidence.
@@ -418,5 +599,5 @@ exec podman run --rm \
       "${epub_svg}" \
       "${epub_listing}" \
       "${epub_css}"
-    echo "ok: HTML/EPUB structure, code/math/figure/component/icon contracts, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, appendix grouping/omission, code/math/figure/component/icon/notice/glossary contracts, locale semantics, theme, embedded fonts, and heading markers"
   '

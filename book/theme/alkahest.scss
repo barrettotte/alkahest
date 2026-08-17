@@ -310,6 +310,63 @@ h4.table-title {
   height: 100%;
 }
 
+// Glossary links preserve ordinary reading flow; generated entries use a
+// compact headword/definition rhythm that remains legible on narrow screens.
+.glossary-link {
+  text-decoration-style: dotted;
+}
+
+.generated-glossary {
+  margin-block: 1.5rem;
+}
+
+.glossary-entry {
+  margin-block: 0 1.15rem;
+  break-inside: avoid-page;
+}
+
+.glossary-entry > p {
+  margin: 0;
+}
+
+.glossary-entry-name {
+  color: $alkahest-slate;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+}
+
+.glossary-entry-forms,
+.glossary-page-reference {
+  color: $alkahest-muted;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  font-size: 0.88em;
+}
+
+// Notice titles reuse the inline registry rather than Quarto's unrelated
+// backend icons. A little trailing space separates the symbol from its label.
+.callout.icon-notice .callout-title-container .semantic-icon {
+  width: 0.95em;
+  height: 0.95em;
+  margin-inline: 0 0.28em;
+  vertical-align: -0.12em;
+}
+
+// Exercise icon/text wrapping at a phone-like measure in every web render.
+.icon-accessibility-specimen {
+  max-width: 18rem;
+  margin-block: 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid $alkahest-line;
+  border-inline-start: 0.2rem solid currentcolor;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .callout.icon-notice .callout-title-container {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
 .callout.project-block,
 .callout.lab-block,
 .callout.margin-note {
@@ -322,6 +379,10 @@ h4.table-title {
 
 .callout.lab-block {
   border-left-color: $alkahest-copper;
+}
+
+.callout.optional-material-block {
+  border-left-color: $alkahest-muted;
 }
 
 // Preserve source order and a readable fallback everywhere. On roomy web

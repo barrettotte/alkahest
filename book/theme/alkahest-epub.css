@@ -424,6 +424,67 @@ h4.table-title {
   height: 100%;
 }
 
+.glossary-link {
+  text-decoration-style: dotted;
+}
+
+.generated-glossary {
+  margin: 1.4em 0;
+}
+
+.glossary-entry {
+  margin: 0 0 1.1em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.glossary-entry p {
+  margin: 0;
+  text-indent: 0;
+}
+
+.glossary-entry-name {
+  color: #334155;
+  font-family: "Libertinus Sans", sans-serif;
+}
+
+.glossary-entry-forms,
+.glossary-page-reference {
+  color: #64748b;
+  font-family: "Libertinus Sans", sans-serif;
+  font-size: 0.88em;
+}
+
+.icon-notice .callout-title .semantic-icon {
+  width: 0.95em;
+  height: 0.95em;
+  margin-left: 0;
+  margin-right: 0.28em;
+  vertical-align: -0.12em;
+}
+
+.icon-accessibility-specimen {
+  max-width: 18rem;
+  margin: 1em 0;
+  padding: 0.75em 0.9em;
+  border: 1px solid #cbd5e1;
+  border-left: 0.2em solid currentcolor;
+  overflow-wrap: anywhere;
+}
+
+.callout.optional-material-block,
+.optional-material-block > .callout {
+  border-left-color: #64748b;
+}
+
+.project-block > .callout {
+  border-left-color: #334155;
+}
+
+.lab-block > .callout {
+  border-left-color: #a15c38;
+}
+
 /* EPUB keeps margin notes and instructional callouts inline in source order. */
 .callout.margin-note,
 .callout.project-block,

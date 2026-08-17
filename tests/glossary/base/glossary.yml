@@ -1,0 +1,17 @@
+version: 1
+lang: en-US
+terms:
+  central-processing-unit:
+    term: central processing unit
+    acronym: CPU
+    aliases:
+      - cpu
+    definition: >-
+      The hardware unit that fetches, decodes, and executes instructions.
+  matrix:
+    term: matrix
+    plural: matrices
+    aliases:
+      - array
+    definition: >-
+      A rectangular arrangement of values.

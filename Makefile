@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-glyph-coverage check-icons check-publication check-pdf-profiles ci clean render render-all \
+.PHONY: bootstrap build-report check check-appendices check-glossary check-glyph-coverage check-icons check-publication check-pdf-profiles ci clean render render-all test-glossary \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke toolchain-report help
 
@@ -10,6 +10,15 @@ build-report: ## Measure primary builds, warnings, and artifact sizes.
 
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
+
+check-appendices: ## Validate appendix groups and supplemental source policy.
+	./scripts/check-appendices
+
+check-glossary: ## Validate glossary entries, aliases, forms, and references.
+	./scripts/check-glossary
+
+test-glossary: ## Exercise valid and invalid glossary contracts.
+	./scripts/test-glossary
 
 check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stack.
 	./scripts/check-glyph-coverage
@@ -36,6 +45,7 @@ clean: ## Remove generated books, intermediates, and Quarto caches.
 		book/index_files \
 		book/reference_files \
 		book/references_files \
+		book/icons/*.pdf \
 		book/site_libs \
 		book/theme/fonts \
 		book/Alkahest-Reference-Book.epub \

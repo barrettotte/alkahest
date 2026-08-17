@@ -1,8 +1,10 @@
 # Core feature specimen
 
 This chapter begins the cross-format test corpus. It includes common technical
-elements and will grow as each roadmap capability is evaluated. Turing's model
-of computation is a fitting early citation [@turing1936].
+elements and will grow as each roadmap capability is evaluated.
+{{< alk-term central-processing-unit form=first case=sentence >}} designs provide
+a concrete counterpoint to Turing's abstract model of computation, a fitting
+early citation [@turing1936].
 
 ## Heading hierarchy {#sec-heading-hierarchy}
 
@@ -135,4 +137,4 @@ in the roadmap rather than represented by a misleading placeholder:
 - chemical formulae, reactions, and 2D molecular structures;
 - publication-quality electrical circuits and logic diagrams;
 - data-driven graphs with accessible descriptions;
-- glossary and index generation.
+- index generation.

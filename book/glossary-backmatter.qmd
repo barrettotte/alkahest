@@ -1,0 +1,7 @@
+# Glossary {.unnumbered #glossary}
+
+The entries below are generated from `glossary.yml`; edit the registry rather
+than this page when terminology changes.
+
+::: {.alkahest-glossary-placeholder}
+:::

@@ -281,6 +281,7 @@ check_pdf() {
     "Close the test session." \
     "Note 8.1" \
     "Warning 8.1" \
+    "Optional extension: characterize drift" \
     "Exercise 8.1" \
     "Solution 8.1" \
     "Project: build a threshold indicator" \
@@ -294,6 +295,22 @@ check_pdf() {
     "Record raw observations before writing an interpretation." \
     "Optional material." \
     "Stop if the hazard remains." \
+    "Accessibility and narrow reflow" \
+    "Icon meaning remains in visible text" \
+    "Glossary authoring contract" \
+    "Central process" \
+    "The entries below are generated from glossary.yml" \
+    "The hardware unit that fetches, decodes, and executes instructions" \
+    "A rectangular arrangement of values" \
+    "First use: p." \
+    "central processing unit (CPU)" \
+    "central processing units" \
+    "CPUs" \
+    "instruction set architecture (ISA)" \
+    "matrices" \
+    "quantum bits (qubits)" \
+    "Production reference" \
+    "Language reference" \
     "print edition"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
@@ -329,6 +346,18 @@ check_pdf() {
   fi
   if [[ "${pdf_text}" == *"screen edition"* ]]; then
     echo "error: ${label} contains the screen-only figure variant" >&2
+    return 1
+  fi
+  if [[ "${pdf_text}" == *"Extended laboratory observations"* ]]; then
+    echo "error: ${label} contains the online-only appendix" >&2
+    return 1
+  fi
+  glossary_page_reference_count="$(awk '
+    { count += gsub(/First use: p\. [0-9]+/, "&") }
+    END { print count + 0 }
+  ' <<<"${pdf_text}")"
+  if [[ "${glossary_page_reference_count}" -ne 4 ]]; then
+    echo "error: ${label} has ${glossary_page_reference_count} generated glossary page references; expected 4" >&2
     return 1
   fi
 
@@ -367,6 +396,8 @@ math chapter|This chapter defines the shared authoring contract for mathematical
 figure chapter|This chapter defines the shared contract for authored images
 component chapter|Technical books need more than prose, code, mathematics, and figures.
 icon chapter|Technical books repeat a small visual vocabulary
+glossary chapter|Technical books need one durable definition
+generated glossary|The entries below are generated from glossary.yml
 appendix A|This appendix makes the first appendix opener
 appendix B|This second appendix proves
 appendix C|This appendix exercises language metadata
@@ -413,7 +444,7 @@ RECTO_MARKERS
     fi
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math/figure/component/icon contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math/figure/component/icon/notice/glossary contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

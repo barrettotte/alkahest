@@ -1,6 +1,7 @@
 .quarto/
 
 book/_build/
+book/icons/*.pdf
 book/Alkahest-Reference-Book.epub
 book/Alkahest-Reference-Book.pdf
 book/Alkahest-Reference-Book.tex
