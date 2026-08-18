@@ -3,7 +3,7 @@
 This appendix makes the first appendix opener, running furniture, contents
 entry, and alphabetic numbering visible in every applicable output.
 
-## Required opening pages
+## Required opening pages {#sec-required-opening-pages}
 
 - The title uses book metadata rather than manuscript-only wording.
 - Publication data remains a conspicuous placeholder until an edition supplies

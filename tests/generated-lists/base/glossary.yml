@@ -1,0 +1,9 @@
+version: 1
+lang: en-US
+terms:
+  central-processing-unit:
+    term: central processing unit
+    acronym: CPU
+    definition: >-
+      A processor that executes instructions.
+

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "sources": {
+    "sample": {"path": "chapter.qmd"}
+  },
+  "structures": {
+    "full": {
+      "chapters": [{"source": "sample"}],
+      "appendices": []
+    },
+    "preview": {
+      "chapters": [{"part": "Fixture", "sources": ["sample"]}],
+      "appendices": []
+    }
+  },
+  "editions": {
+    "full": {"structure": "full"},
+    "preview": {"structure": "preview"}
+  }
+}

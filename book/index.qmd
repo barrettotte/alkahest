@@ -1,4 +1,4 @@
-# Preface {.unnumbered}
+# Preface {.unnumbered #sec-preface}
 
 This deliberately small book is an executable specification for Alkahest. Each
 example exists to expose formatting or conversion problems before a real
@@ -9,7 +9,7 @@ vary its identity later, but shared typography, hierarchy, color roles, and
 component behavior remain testable here.
 
 ::: {.content-visible when-format="html"}
-## Publication data {.unnumbered .unlisted}
+## Publication data {.unnumbered .unlisted #sec-publication-data}
 
 - **Edition:** {{< meta alkahest.edition >}}
 - **Publisher:** {{< meta alkahest.publisher >}}
@@ -21,7 +21,7 @@ component behavior remain testable here.
 These visible placeholders prove that reflowable editions receive the same
 metadata as the print templates without implying that the specimen is released.
 
-## Dedication {.unnumbered .unlisted}
+## Dedication {.unnumbered .unlisted #sec-dedication}
 
 *{{< meta alkahest.dedication >}}*
 :::

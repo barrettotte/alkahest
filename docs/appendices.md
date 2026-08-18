@@ -43,29 +43,21 @@ parts; group names must not carry information unavailable in their children.
 
 ## Edition registry
 
-`book/appendix-editions.json` is the checked source-selection contract. It
-names every canonical appendix once, records whether it is `core`,
-`online-only`, or `supplemental`, and provides a complete ordered group list
-for each supported edition:
+`book/editions.json` registers appendices alongside front matter, chapters, and
+back matter. Appendix sources record `core`, `online-only`, or `supplemental`
+availability and each whole-book structure provides its complete ordered
+appendix groups. Standard render commands select `web` for HTML, `epub` for
+EPUB, and `print` for PDFs. The preview retains core Appendix A, the web edition
+adds online-only D, and the supplemental edition adds its own D instead.
 
-| Edition | Output formats | Appendix selection |
-|---|---|---|
-| `full` | HTML, EPUB, Typst, LuaLaTeX | Core A–C |
-| `preview` | HTML | Core A only |
-| `print` | Typst, LuaLaTeX | Core A–C |
-| `epub` | EPUB | Core A–C |
-| `html` | HTML | Core A–C plus online-only D |
-| `supplemental` | HTML | Core A–C plus supplemental D |
-
-The canonical `_quarto.yml` remains the readable full-book structure. Standard
-render commands select the matching explicit edition: `make render-html` uses
-`html`, `make render-epub` uses `epub`, and every PDF command uses `print`.
-`make render-appendix-smoke` builds the `preview` and `supplemental` contracts.
+See `docs/editions.md` for the complete structure/edition matrix, staging
+boundary, private-source policy, and reduced-book reference checks.
 
 Quarto concatenates project arrays while merging profiles, so a profile cannot
 safely remove a canonical appendix. `scripts/stage-edition` instead generates a
-temporary symlinked project under `book/_build/staging/editions`, replaces the
-complete appendix list there, renders inside that project, and promotes only a
+temporary selectively symlinked project under `book/_build/staging/editions`,
+replaces the complete chapter and appendix lists there, renders inside that
+project, and promotes only a
 successful artifact into the canonical `_build` tree. Never edit staged files;
 they are disposable build products.
 
@@ -110,12 +102,11 @@ the same edition condition or redirected to a retained stable target.
 
 ## Validation and acceptance
 
-`make check-appendices` requires exactly the six documented editions, their
-allowed formats and availability sets, unique groups and source selections,
-complete on-disk source coverage, exactly one identified H1 per source, and one
-shared bibliography policy. It also requires canonical `_quarto.yml` to match
-the `full` registry order exactly. `make test-appendix-editions` proves eight
-malformed or leaking registry variants fail with useful diagnostics.
+`make check-editions` validates every registered source, complete on-disk
+coverage, one identified H1 per source, availability and format policy, ordered
+whole-book structures, cross-reference integrity, and the shared bibliography.
+`make test-editions` proves malformed and leaking contracts fail and verifies
+that staged reduced/public/private source trees are isolated as declared.
 
 Rendered checks retain A–C in the full-family outputs, include online-only D in
 HTML alone, and exclude all exceptional appendices from EPUB and every PDF.

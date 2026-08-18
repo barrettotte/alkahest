@@ -1,0 +1,117 @@
+version: 1
+lang: en-US
+order:
+  - figures
+  - tables
+  - listings
+  - equations
+  - acronyms
+  - symbols
+  - nomenclature
+  - algorithms
+lists:
+  figures:
+    title: List of figures
+    source: crossref
+    prefix: fig
+    enabled: true
+  tables:
+    title: List of tables
+    source: crossref
+    prefix: tbl
+    enabled: true
+  listings:
+    title: List of listings
+    source: crossref
+    prefix: lst
+    enabled: true
+  equations:
+    title: List of equations
+    source: crossref
+    prefix: eq
+    enabled: true
+  acronyms:
+    title: List of acronyms
+    source: glossary-acronyms
+    enabled: true
+  symbols:
+    title: List of symbols
+    source: terms
+    enabled: true
+  nomenclature:
+    title: Nomenclature
+    source: terms
+    enabled: true
+  algorithms:
+    title: List of algorithms
+    source: crossref
+    prefix: alg
+    enabled: true
+objects:
+  - id: eq-ohms-law
+    title: Ohm's law
+  - id: lst-half-adder
+    title: A combinational half-adder
+  - id: fig-half-adder
+    title: Information flow through a half-adder
+  - id: tbl-half-adder
+    title: Half-adder truth table
+  - id: eq-state-update
+    title: Discrete state-space update and output equations
+  - id: eq-saturation
+    title: Piecewise saturation between lower and upper bounds
+  - id: eq-coordinate-rotation
+    title: Two-dimensional coordinate rotation matrix
+  - id: fig-signal-chain
+    title: Signal-chain direction and stage responsibility
+  - id: fig-waveform-comparison
+    title: Raw and filtered waveform comparison
+  - id: fig-waveform-raw
+    title: Raw waveform samples
+  - id: fig-waveform-filtered
+    title: Filtered waveform estimate
+  - id: fig-system-map
+    title: Closed-loop system map
+  - id: tbl-measurement-plan
+    title: Measurement and acceptance plan
+  - id: tbl-icon-registry
+    title: Initial semantic icon registry
+  - id: fig-appendix-signal
+    title: Appendix signal-chain fixture
+  - id: tbl-appendix-prefixes
+    title: Appendix-local numbering acceptance matrix
+  - id: eq-appendix-scale
+    title: Appendix scale identity
+  - id: lst-appendix-check
+    title: Backend-neutral appendix check
+terms:
+  electric-current:
+    list: symbols
+    display: I
+    meaning: electric current
+    sort: current
+    target: eq-ohms-law
+  electrical-resistance:
+    list: symbols
+    display: R
+    meaning: electrical resistance
+    sort: resistance
+    target: eq-ohms-law
+  electric-potential:
+    list: symbols
+    display: V
+    meaning: electric potential difference
+    sort: voltage
+    target: eq-ohms-law
+  state-vector:
+    list: nomenclature
+    display: x_k
+    meaning: system state vector at discrete step $k$
+    sort: state vector
+    target: eq-state-update
+  input-vector:
+    list: nomenclature
+    display: u_k
+    meaning: system input vector at discrete step $k$
+    sort: input vector
+    target: eq-state-update

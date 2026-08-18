@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "book_id": "alkahest-reference-book",
+  "canonical_language": "en-US",
+  "language_variants": [
+    {
+      "language": "en-US",
+      "root": ".",
+      "mode": "canonical"
+    },
+    {
+      "language": "fr-FR",
+      "root": ".",
+      "mode": "shared-source",
+      "profile": "_quarto-locale-fr.yml"
+    }
+  ],
+  "edition_manifests": [
+    "editions.json"
+  ],
+  "companion_assets": {
+    "asset-half-adder-verilog": {
+      "path": "companion/half-adder.v",
+      "media_type": "text/x-verilog",
+      "description": "Reusable half-adder source matching the canonical listing specimen."
+    }
+  },
+  "migrations": []
+}

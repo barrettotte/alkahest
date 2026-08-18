@@ -359,6 +359,27 @@ h4.table-title {
   font-size: 0.88em;
 }
 
+// Generated lists share a compact entry rhythm while retaining native Quarto
+// cross-reference links and math, so numbers never drift between backends.
+.generated-reference-lists {
+  margin-block: 1.5rem;
+}
+
+.generated-list-entry {
+  margin-block: 0 0.35rem;
+  break-inside: avoid-page;
+}
+
+.generated-list-entry > p {
+  margin: 0;
+}
+
+.generated-list-acronym-link,
+.generated-list-term-entry > p > strong {
+  color: $alkahest-slate;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+}
+
 // Notice titles reuse the inline registry rather than Quarto's unrelated
 // backend icons. A little trailing space separates the symbol from its label.
 .callout.icon-notice .callout-title-container .semantic-icon {

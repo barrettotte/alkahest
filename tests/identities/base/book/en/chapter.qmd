@@ -1,0 +1,25 @@
+# Identity fixture {#sec-identity-fixture}
+
+## Stable section {#sec-stable-section}
+
+![A small fixture.](sample.svg){#fig-identity-sample}
+
+| Value |
+|------:|
+| 1 |
+
+: Fixture table {#tbl-identity-sample}
+
+$$
+x = 1
+$$ {#eq-identity-sample}
+
+```{#lst-identity-sample .text lst-cap="Fixture listing"}
+identity
+```
+
+::: {#exr-identity-sample}
+## Fixture exercise
+
+Preserve every ID.
+:::

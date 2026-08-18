@@ -12,6 +12,16 @@ require_literal() {
   fi
 }
 
+require_pattern() {
+  local pattern="$1"
+  local file="$2"
+  local label="$3"
+  if ! grep -Eq "${pattern}" "${file}"; then
+    echo "error: ${label} is missing required pattern: ${pattern}" >&2
+    exit 1
+  fi
+}
+
 html_root="book/_build/html"
 html_index="${html_root}/index-backmatter.html"
 epub="book/_build/epub/Alkahest-Reference-Book.epub"
@@ -23,9 +33,13 @@ test -f "${html_index}"
 require_literal 'class="generated-indexes"' "${html_index}" "HTML generated index"
 require_literal 'data-index-entry-count="7"' "${html_index}" "HTML generated index"
 require_literal 'lang="en-US"' "${html_index}" "HTML generated index"
+require_pattern \
+  'id="index-subject"[^>]*data-index-kind="subject"[^>]*data-index-root-count="3"|id="index-subject"[^>]*data-index-root-count="3"[^>]*data-index-kind="subject"' \
+  "${html_index}" "HTML subject-index group"
+require_pattern \
+  'id="index-person"[^>]*data-index-kind="person"[^>]*data-index-root-count="2"|id="index-person"[^>]*data-index-root-count="2"[^>]*data-index-kind="person"' \
+  "${html_index}" "HTML person-index group"
 for structure in \
-  'class="level2 generated-index-group index-kind-subject" data-index-root-count="3" data-index-kind="subject"' \
-  'class="level2 generated-index-group index-kind-person" data-index-root-count="2" data-index-kind="person"' \
   'class="index-entry index-entry-depth-1 index-entry-kind-subject"' \
   'id="index-entry-processor-architecture" class="index-entry-term"' \
   'href="#index-entry-instruction-set-architecture" class="index-relation-link"' \

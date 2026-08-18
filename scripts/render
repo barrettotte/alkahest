@@ -55,7 +55,7 @@ render_edition_profile() {
 render_profile() {
   case "$1" in
     html)
-      render_edition_profile html html _build/html
+      render_edition_profile web html _build/html
       ;;
     epub)
       render_edition_profile epub epub _build/epub
@@ -93,28 +93,31 @@ render_pdf_profiles() {
 }
 
 render_locale_smoke() {
-  render_edition_profile html locale-fr,html _build/locale/fr/html
+  render_edition_profile web locale-fr,html _build/locale/fr/html
 }
 
 render_citation_smoke() {
-  render_edition_profile html citation-numeric,html \
+  render_edition_profile web citation-numeric,html \
     _build/smoke/citations/numeric/html
   render_edition_profile print citation-numeric,typst \
     _build/smoke/citations/numeric/typst
 }
 
-render_appendix_smoke() {
-  render_edition_profile preview html _build/smoke/appendices/preview/html
+render_edition_smoke() {
+  render_edition_profile abridged html _build/smoke/editions/abridged/html
+  render_edition_profile preview html _build/smoke/editions/preview/html
+  render_edition_profile public html _build/smoke/editions/public/html
+  render_edition_profile private html _build/smoke/editions/private/html
   render_edition_profile supplemental html \
-    _build/smoke/appendices/supplemental/html
+    _build/smoke/editions/supplemental/html
 }
 
 render_notes_smoke() {
-  render_edition_profile html html,notes-chapter \
+  render_edition_profile web html,notes-chapter \
     _build/smoke/notes/chapter/html
-  render_edition_profile html html,notes-book \
+  render_edition_profile web html,notes-book \
     _build/smoke/notes/book/html
-  render_edition_profile html html,notes-sidenote \
+  render_edition_profile web html,notes-sidenote \
     _build/smoke/notes/sidenote/html
   # Use one complete Typst profile: Quarto treats format declarations from
   # composed profiles as separate render targets rather than map overrides.
@@ -143,8 +146,8 @@ case "${target}" in
   citation-smoke)
     render_citation_smoke
     ;;
-  appendix-smoke)
-    render_appendix_smoke
+  edition-smoke)
+    render_edition_smoke
     ;;
   notes-smoke)
     render_notes_smoke
@@ -162,11 +165,11 @@ case "${target}" in
     render_pdf_profiles
     render_locale_smoke
     render_citation_smoke
-    render_appendix_smoke
+    render_edition_smoke
     render_notes_smoke
     ;;
   *)
-    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|appendix-smoke|notes-smoke]" >&2
+    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke]" >&2
     exit 2
     ;;
 esac

@@ -1,0 +1,150 @@
+#!/usr/bin/env perl
+# Validate whole-book edition manifests, source policy, and reference integrity.
+use strict;
+use warnings;
+use Cwd qw(abs_path);
+use File::Find qw(find);
+use FindBin qw($Bin);
+use lib "$Bin/lib";
+use Alkahest::Editions qw(edition_source_ids load_editions render_book_structure);
+
+sub fail { die "error: $_[0]\n"; }
+
+my $repo_root = abs_path("$Bin/..");
+my $book_root = $ENV{ALKAHEST_EDITION_BOOK_ROOT} // "$repo_root/book";
+$book_root = abs_path($book_root) or fail('edition book root does not exist');
+my $registry = load_editions("$book_root/editions.json");
+
+open my $config_handle, '<:encoding(UTF-8)', "$book_root/_quarto.yml"
+  or fail('cannot read canonical Quarto config');
+local $/;
+my $config = <$config_handle>;
+close $config_handle;
+my ($actual_structure) = $config =~ /(^  chapters:\n.*?)(?=^\S)/ms;
+fail('canonical Quarto config has no book structure') if !defined $actual_structure;
+my $expected_structure = render_book_structure($registry, 'full');
+fail('canonical Quarto structure must match the full edition exactly')
+  if $actual_structure ne $expected_structure;
+
+my %registered_path = map {
+  $registry->{sources}{$_}{path} => $_
+} keys %{ $registry->{sources} };
+my @disk_sources;
+find(
+  {
+    wanted => sub {
+      if (-d $_ && $File::Find::name =~ m{/(?:_build|\.quarto)$}) {
+        $File::Find::prune = 1;
+        return;
+      }
+      return if !-f $_ || $_ !~ /\.qmd$/;
+      my $path = $File::Find::name;
+      $path =~ s/^\Q$book_root\E\///;
+      push @disk_sources, $path;
+    },
+    no_chdir => 1,
+  },
+  $book_root,
+);
+for my $source (sort @disk_sources) {
+  fail("manuscript source '$source' is absent from editions.json")
+    if !exists $registered_path{$source};
+}
+for my $source (sort keys %registered_path) {
+  fail("edition manifest references missing source '$source'")
+    if !-f "$book_root/$source";
+}
+fail('edition manifest and manuscript tree contain different source counts')
+  if @disk_sources != keys %registered_path;
+
+my %identity_owner;
+for my $source (sort keys %registered_path) {
+  my $source_id = $registered_path{$source};
+  my $metadata = $registry->{sources}{$source_id};
+  open my $handle, '<:encoding(UTF-8)', "$book_root/$source"
+    or fail("cannot read source '$source'");
+  local $/;
+  my $content = <$handle>;
+  close $handle;
+  my ($front_matter) = $content =~ /\A---\s*\n(.*?)^---\s*$/ms;
+  if (defined $front_matter && $front_matter =~ /^bibliography\s*:/m) {
+    fail("source '$source' declares a local bibliography; use the shared book bibliography");
+  }
+  my @headings = ($content =~ /^(# (?!#).*?)$/mg);
+  fail("source '$source' must have exactly one H1 with a persistent ID")
+    if @headings != 1
+      || $headings[0] !~ /\{[^}]*#[A-Za-z][A-Za-z0-9_.:-]*/;
+  if ($metadata->{availability} eq 'private') {
+    fail("private source '$source' must declare alkahest-edition access: private")
+      if !defined($front_matter)
+        || $front_matter !~ /^alkahest-edition:\s*\n\s+access:\s*private\s*$/m;
+  } elsif (defined($front_matter) && $front_matter =~ /^alkahest-edition:/m) {
+    fail("public source '$source' must not declare private edition metadata");
+  }
+  if ($metadata->{role} eq 'appendix') {
+    my ($declared) = defined($front_matter)
+      ? $front_matter =~ /^alkahest-appendix:\s*\n\s+availability:\s*([a-z-]+)\s*$/m
+      : ();
+    if ($metadata->{availability} eq 'core') {
+      fail("core appendix '$source' must not declare exceptional availability")
+        if defined $declared;
+    } else {
+      fail("appendix '$source' must declare availability '$metadata->{availability}'")
+        if !defined($declared) || $declared ne $metadata->{availability};
+    }
+  }
+  while ($content =~ /\{[^}\n]*#([A-Za-z][A-Za-z0-9_.:-]*)/g) {
+    fail("content identity '$1' is declared in both '$source' and '$identity_owner{$1}'")
+      if exists $identity_owner{$1};
+    $identity_owner{$1} = $source;
+  }
+}
+
+sub visible_content {
+  my ($content, $edition_name) = @_;
+  # Quarto removes these blocks for the matching profile. Mirror that behavior
+  # before checking references so intentional preview omissions remain valid.
+  $content =~ s{^:::\s+\{\.content-visible\s+unless-profile="edition-\Q$edition_name\E"\}\s*\n.*?^:::\s*$}{}gms;
+  return $content;
+}
+
+for my $edition_name (sort keys %{ $registry->{editions} }) {
+  my @source_ids = edition_source_ids($registry, $edition_name);
+  my %selected_path = map { $registry->{sources}{$_}{path} => 1 } @source_ids;
+  for my $source_id (@source_ids) {
+    my $source = $registry->{sources}{$source_id}{path};
+    open my $handle, '<:encoding(UTF-8)', "$book_root/$source"
+      or fail("cannot read source '$source'");
+    local $/;
+    my $content = visible_content(<$handle>, $edition_name);
+    close $handle;
+    while ($content =~ /@([A-Za-z][A-Za-z0-9_.:-]*)/g) {
+      my $target = $1;
+      next if !exists $identity_owner{$target};
+      fail("edition '$edition_name' leaves dangling reference '@$target' in '$source'")
+        if !$selected_path{ $identity_owner{$target} };
+    }
+  }
+  if ($selected_path{'index-backmatter.qmd'}) {
+    open my $index_handle, '<:encoding(UTF-8)', "$book_root/index.yml"
+      or fail('cannot read index.yml');
+    while (my $line = <$index_handle>) {
+      next if $line !~ /^\s+-\s+([A-Za-z0-9_\/-]+\.qmd)#[A-Za-z0-9_.:-]+\s*$/;
+      fail("edition '$edition_name' retains index locator into omitted '$1'")
+        if !$selected_path{$1};
+    }
+    close $index_handle;
+  }
+  if ($registry->{editions}{$edition_name}{access} eq 'public') {
+    for my $source_id (@source_ids) {
+      fail("public edition '$edition_name' includes private source '$source_id'")
+        if $registry->{sources}{$source_id}{availability} eq 'private';
+    }
+  }
+}
+
+print 'ok: whole-book editions ('
+  . scalar(keys %{ $registry->{editions} }) . ' editions; '
+  . scalar(keys %{ $registry->{structures} }) . ' reusable structures; '
+  . scalar(keys %{ $registry->{sources} })
+  . " registered sources; preview, abridged, format, public/private, and reference-integrity policy)\n";

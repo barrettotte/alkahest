@@ -1,6 +1,6 @@
-.PHONY: bootstrap build-report check check-appendices check-citations check-glossary check-glyph-coverage check-icons check-index check-notes check-rendered-index check-rendered-notes check-publication check-pdf-profiles ci clean render render-all test-appendix-editions test-citations test-glossary test-index test-notes \
+.PHONY: bootstrap build-report check check-editions check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean render render-all test-editions test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
-	render-pdf-profiles render-locale-smoke render-citation-smoke render-appendix-smoke render-notes-smoke toolchain-report help
+	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
 bootstrap: ## Build the pinned local publishing container.
 	./scripts/bootstrap
@@ -11,17 +11,23 @@ build-report: ## Measure primary builds, warnings, and artifact sizes.
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
 
-check-appendices: ## Validate appendix editions, sources, and bibliography policy.
-	./scripts/check-appendices
+check-editions: ## Validate whole-book manifests, sources, privacy, and references.
+	./scripts/check-editions
 
-test-appendix-editions: ## Exercise valid and invalid appendix-edition contracts.
-	./scripts/test-appendix-editions
+test-editions: ## Exercise valid, invalid, and staged edition contracts.
+	./scripts/test-editions
 
 check-citations: ## Validate citation styles, bibliography keys, and manuscript calls.
 	./scripts/check-citations
 
 test-citations: ## Exercise valid and invalid citation contracts.
 	./scripts/test-citations
+
+check-generated-lists: ## Validate configured reference and terminology lists.
+	./scripts/check-generated-lists
+
+test-generated-lists: ## Exercise valid and invalid generated-list contracts.
+	./scripts/test-generated-lists
 
 check-glossary: ## Validate glossary entries, aliases, forms, and references.
 	./scripts/check-glossary
@@ -34,6 +40,15 @@ check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stac
 
 check-icons: ## Validate semantic icon names, assets, aliases, and calls.
 	./scripts/check-icons
+
+check-identities: ## Validate persistent IDs, variants, assets, and the identity lock.
+	./scripts/check-identities
+
+test-identities: ## Exercise identity uniqueness, translation, edition, and migration rules.
+	./scripts/test-identities
+
+update-identities: ## Lock intentional identity additions and recorded migrations.
+	./scripts/update-identities
 
 check-index: ## Validate subject/person index entries, markers, ranges, and relations.
 	./scripts/check-index
@@ -50,8 +65,14 @@ test-notes: ## Exercise valid and invalid semantic-note contracts.
 check-rendered-notes: ## Verify rendered chapter, book, and sidenote behavior.
 	./scripts/check-rendered-notes
 
+check-rendered-identities: ## Verify IDs survive rendered editions and locales.
+	./scripts/check-rendered-identities
+
 check-rendered-index: ## Verify linked reflowable and page-resolved print indexes.
 	./scripts/check-rendered-index
+
+check-rendered-lists: ## Verify generated lists, links, numbering, and empty omission.
+	./scripts/check-rendered-lists
 
 check-publication: ## Validate internal HTML links and EPUB conformance.
 	./scripts/check-publication
@@ -118,8 +139,8 @@ render-locale-smoke: ## Render the French-locale HTML smoke edition.
 render-citation-smoke: ## Render numeric-citation HTML and Typst smoke editions.
 	./scripts/render citation-smoke
 
-render-appendix-smoke: ## Render preview and supplemental appendix editions.
-	./scripts/render appendix-smoke
+render-edition-smoke: ## Render abridged, preview, public, private, and supplemental editions.
+	./scripts/render edition-smoke
 
 render-notes-smoke: ## Render chapter, book, and sidenote placement editions.
 	./scripts/render notes-smoke

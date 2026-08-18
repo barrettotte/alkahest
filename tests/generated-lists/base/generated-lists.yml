@@ -1,0 +1,64 @@
+version: 1
+lang: en-US
+order:
+  - figures
+  - tables
+  - listings
+  - equations
+  - acronyms
+  - symbols
+  - nomenclature
+  - algorithms
+lists:
+  figures:
+    title: List of figures
+    source: crossref
+    prefix: fig
+  tables:
+    title: List of tables
+    source: crossref
+    prefix: tbl
+  listings:
+    title: List of listings
+    source: crossref
+    prefix: lst
+  equations:
+    title: List of equations
+    source: crossref
+    prefix: eq
+  acronyms:
+    title: List of acronyms
+    source: glossary-acronyms
+  symbols:
+    title: List of symbols
+    source: terms
+  nomenclature:
+    title: Nomenclature
+    source: terms
+  algorithms:
+    title: List of algorithms
+    source: crossref
+    prefix: alg
+objects:
+  - id: fig-sample
+    title: Sample figure
+  - id: tbl-sample
+    title: Sample table
+  - id: lst-sample
+    title: Sample listing
+  - id: eq-sample
+    title: Sample equation
+terms:
+  current:
+    list: symbols
+    display: I
+    meaning: electric current
+    sort: current
+    target: eq-sample
+  state:
+    list: nomenclature
+    display: x_k
+    meaning: state at step $k$
+    sort: state
+    target: eq-sample
+

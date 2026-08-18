@@ -66,10 +66,13 @@ exec podman run --rm \
     # supplies the full W3C EPUB ruleset from the locked image.
     perl scripts/check-html-links book/_build/html
     perl scripts/check-html-links book/_build/locale/fr/html
-    perl scripts/check-html-links book/_build/smoke/appendices/preview/html
-    perl scripts/check-html-links book/_build/smoke/appendices/supplemental/html
+    for edition in abridged preview public private supplemental; do
+      perl scripts/check-html-links "book/_build/smoke/editions/${edition}/html"
+    done
     scripts/check-rendered-notes
+    scripts/check-rendered-identities
     scripts/check-rendered-index
+    scripts/check-rendered-lists
     java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
 
     # The reflowable artifacts must be self-contained and carry the same theme
@@ -115,7 +118,10 @@ exec podman run --rm \
     epub_language="$(mktemp)"
     epub_nav="$(mktemp)"
     epub_svg="$(mktemp)"
+    abridged_text="$(mktemp)"
     preview_text="$(mktemp)"
+    public_text="$(mktemp)"
+    private_text="$(mktemp)"
     supplemental_text="$(mktemp)"
     find book/_build/html -type f -name "*.html" -exec cat {} + \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" >"${html_text}"
@@ -128,11 +134,23 @@ exec podman run --rm \
       EPUB/nav.xhtml >"${epub_nav}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       "EPUB/media/*.svg" >"${epub_svg}"
-    find book/_build/smoke/appendices/preview/html -type f -name "*.html" \
+    find book/_build/smoke/editions/abridged/html -type f -name "*.html" \
+      -exec cat {} + \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      >"${abridged_text}"
+    find book/_build/smoke/editions/preview/html -type f -name "*.html" \
       -exec cat {} + \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
       >"${preview_text}"
-    find book/_build/smoke/appendices/supplemental/html -type f -name "*.html" \
+    find book/_build/smoke/editions/public/html -type f -name "*.html" \
+      -exec cat {} + \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      >"${public_text}"
+    find book/_build/smoke/editions/private/html -type f -name "*.html" \
+      -exec cat {} + \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      >"${private_text}"
+    find book/_build/smoke/editions/supplemental/html -type f -name "*.html" \
       -exec cat {} + \
       | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
       >"${supplemental_text}"
@@ -459,12 +477,41 @@ exec podman run --rm \
       fi
     done
 
+    # The reduced whole-book structures omit main-matter sources as well as
+    # appendices. Abridged keeps a useful technical core; preview contains two
+    # manuscript chapters and remains reference-safe.
+    require_literal "Abridged foundations" \
+      book/_build/smoke/editions/abridged/html/index.html "abridged part"
+    for abridged_marker in \
+      "Core feature specimen" \
+      "Code blocks and executable-example presentation" \
+      "Mathematical notation and reasoning" \
+      "Figures and visual evidence" \
+      "Tables and instructional blocks" \
+      "Glossary authoring contract"
+    do
+      require_literal "${abridged_marker}" "${abridged_text}" "abridged edition"
+    done
+    for omitted_abridged_marker in \
+      "A deliberately long chapter title for testing wrapping" \
+      "Page continuity after a pagination stress chapter" \
+      "Layout acceptance record" \
+      "Semantic icons"
+    do
+      if grep -Fq "${omitted_abridged_marker}" "${abridged_text}"; then
+        echo "error: abridged edition includes omitted chapter: ${omitted_abridged_marker}" >&2
+        exit 1
+      fi
+    done
+
     # Preview omission is intentional and reference-safe: retained Appendix A
     # keeps its letter and local counters, while the conditional references to
     # omitted B and C disappear instead of becoming unresolved links.
-    preview_root="book/_build/smoke/appendices/preview/html"
+    preview_root="book/_build/smoke/editions/preview/html"
     preview_reference="${preview_root}/reference.html"
     preview_appendix="${preview_root}/appendices/page-system-checklist.html"
+    require_literal "Preview chapters" "${preview_root}/index.html" \
+      "preview main-matter part"
     require_literal "Preview reference" "${preview_root}/index.html" \
       "preview appendix group"
     for preview_marker in \
@@ -481,6 +528,11 @@ exec podman run --rm \
     require_literal "href=\"../reference.html#sec-heading-hierarchy\"" \
       "${preview_appendix}" "preview appendix-to-chapter reference"
     for omitted_preview_marker in \
+      "Code blocks and executable-example presentation" \
+      "Mathematical notation and reasoning" \
+      "Figures and visual evidence" \
+      "Tables and instructional blocks" \
+      "Semantic icons" \
       "Format behavior" \
       "Language and writing-system specimen" \
       "Extended laboratory observations" \
@@ -498,9 +550,34 @@ exec podman run --rm \
       exit 1
     fi
 
+    # Public/full and private structures share core content, but only the
+    # explicitly private render may contain the editorial canary source.
+    private_canary="internal editorial canary and must never appear in a public artifact"
+    require_literal "Core feature specimen" "${public_text}" "public edition"
+    require_literal "Private working material" \
+      book/_build/smoke/editions/private/html/index.html "private edition part"
+    require_literal "${private_canary}" "${private_text}" "private edition"
+    for public_artifact in \
+      "${html_text}" "${epub_text}" "${abridged_text}" "${preview_text}" \
+      "${public_text}" "${supplemental_text}"
+    do
+      if grep -Fq "${private_canary}" "${public_artifact}"; then
+        echo "error: private manuscript content leaked into a public artifact" >&2
+        exit 1
+      fi
+    done
+    if grep -Fq "Extended laboratory observations" "${public_text}"; then
+      echo "error: public/full edition includes online-only material" >&2
+      exit 1
+    fi
+    if grep -Fq "Supplemental workbook" "${private_text}"; then
+      echo "error: private edition includes supplemental material" >&2
+      exit 1
+    fi
+
     # The companion edition keeps the three core letters and assigns D to its
     # supplemental appendix without leaking the online-only HTML appendix.
-    supplemental_root="book/_build/smoke/appendices/supplemental/html"
+    supplemental_root="book/_build/smoke/editions/supplemental/html"
     require_literal "Supplemental reference" "${supplemental_root}/index.html" \
       "supplemental appendix group"
     for supplemental_marker in \
@@ -918,5 +995,5 @@ exec podman run --rm \
       "${supplemental_text}" \
       "${numeric_html_text}" \
       "${numeric_pdf_text}"
-    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, explicit appendix editions/grouping/omission/numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index contracts, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, whole-book edition grouping/omission/privacy/numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index/generated-list/persistent-ID contracts, locale semantics, theme, embedded fonts, and heading markers"
   '

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "book_id": "identity-fixture",
+  "identities": [
+    {"namespace": "asset", "id": "asset-sample-code", "kind": "companion-asset", "source": "companion/sample.txt", "status": "active"},
+    {"namespace": "content", "id": "eq-identity-sample", "kind": "equation", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "content", "id": "exr-identity-sample", "kind": "exercise", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "content", "id": "fig-identity-sample", "kind": "figure", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "content", "id": "lst-identity-sample", "kind": "listing", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "content", "id": "sec-identity-fixture", "kind": "chapter", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "content", "id": "sec-stable-section", "kind": "section", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "content", "id": "tbl-identity-sample", "kind": "table", "source": "chapter.qmd", "status": "active"},
+    {"namespace": "glossary", "id": "stable-term", "kind": "glossary-term", "source": "glossary.yml", "status": "active"},
+    {"namespace": "index", "id": "stable-concept", "kind": "index-concept", "source": "index.yml", "status": "active"}
+  ]
+}

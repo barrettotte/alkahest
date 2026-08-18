@@ -1,0 +1,6 @@
+version: 1
+lang: fr-FR
+entries:
+  stable-concept:
+    term: concept stable
+    kind: subject

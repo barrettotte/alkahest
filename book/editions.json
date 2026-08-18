@@ -1,0 +1,375 @@
+{
+  "version": 1,
+  "sources": {
+    "preface": {
+      "path": "index.qmd",
+      "role": "front",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "generated-lists": {
+      "path": "generated-lists.qmd",
+      "role": "front",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "reference": {
+      "path": "reference.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "layout-stress": {
+      "path": "layout-stress.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "page-continuity": {
+      "path": "page-continuity.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "layout-acceptance": {
+      "path": "layout-acceptance.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "code-blocks": {
+      "path": "code-blocks.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "math": {
+      "path": "math.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "figures": {
+      "path": "figures.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "components": {
+      "path": "components.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "icons": {
+      "path": "icons.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "glossary-authoring": {
+      "path": "glossary.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "references": {
+      "path": "references.qmd",
+      "role": "back",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "glossary": {
+      "path": "glossary-backmatter.qmd",
+      "role": "back",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "index": {
+      "path": "index-backmatter.qmd",
+      "role": "back",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "page-system-checklist": {
+      "path": "appendices/page-system-checklist.qmd",
+      "role": "appendix",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "format-behavior": {
+      "path": "appendices/format-behavior.qmd",
+      "role": "appendix",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "language-and-script": {
+      "path": "appendices/language-and-script.qmd",
+      "role": "appendix",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "online-lab-notes": {
+      "path": "appendices/online-lab-notes.qmd",
+      "role": "appendix",
+      "availability": "online-only",
+      "formats": ["html"]
+    },
+    "supplemental-workbook": {
+      "path": "appendices/supplemental-workbook.qmd",
+      "role": "appendix",
+      "availability": "supplemental",
+      "formats": ["html"]
+    },
+    "private-working-notes": {
+      "path": "private/working-notes.qmd",
+      "role": "chapter",
+      "availability": "private",
+      "formats": ["html"]
+    }
+  },
+  "structures": {
+    "full": {
+      "chapters": [
+        {"source": "preface"},
+        {"source": "generated-lists"},
+        {
+          "part": "Foundations",
+          "sources": [
+            "reference",
+            "layout-stress",
+            "page-continuity",
+            "layout-acceptance",
+            "code-blocks",
+            "math",
+            "figures",
+            "components",
+            "icons",
+            "glossary-authoring"
+          ]
+        },
+        {"source": "references"},
+        {"source": "glossary"},
+        {"source": "index"}
+      ],
+      "appendices": [
+        {
+          "part": "Production reference",
+          "sources": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "sources": ["language-and-script"]
+        }
+      ]
+    },
+    "abridged": {
+      "chapters": [
+        {"source": "preface"},
+        {
+          "part": "Abridged foundations",
+          "sources": [
+            "reference",
+            "code-blocks",
+            "math",
+            "figures",
+            "components",
+            "glossary-authoring"
+          ]
+        },
+        {"source": "references"},
+        {"source": "glossary"},
+        {"source": "index"}
+      ],
+      "appendices": [
+        {
+          "part": "Production reference",
+          "sources": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "sources": ["language-and-script"]
+        }
+      ]
+    },
+    "preview": {
+      "chapters": [
+        {"source": "preface"},
+        {
+          "part": "Preview chapters",
+          "sources": ["reference", "glossary-authoring"]
+        },
+        {"source": "references"},
+        {"source": "glossary"},
+        {"source": "index"}
+      ],
+      "appendices": [
+        {
+          "part": "Preview reference",
+          "sources": ["page-system-checklist"]
+        }
+      ]
+    },
+    "web": {
+      "chapters": [
+        {"source": "preface"},
+        {"source": "generated-lists"},
+        {
+          "part": "Foundations",
+          "sources": [
+            "reference",
+            "layout-stress",
+            "page-continuity",
+            "layout-acceptance",
+            "code-blocks",
+            "math",
+            "figures",
+            "components",
+            "icons",
+            "glossary-authoring"
+          ]
+        },
+        {"source": "references"},
+        {"source": "glossary"},
+        {"source": "index"}
+      ],
+      "appendices": [
+        {
+          "part": "Production reference",
+          "sources": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "sources": ["language-and-script"]
+        },
+        {
+          "part": "Online reference",
+          "sources": ["online-lab-notes"]
+        }
+      ]
+    },
+    "supplemental": {
+      "chapters": [
+        {"source": "preface"},
+        {"source": "generated-lists"},
+        {
+          "part": "Foundations",
+          "sources": [
+            "reference",
+            "layout-stress",
+            "page-continuity",
+            "layout-acceptance",
+            "code-blocks",
+            "math",
+            "figures",
+            "components",
+            "icons",
+            "glossary-authoring"
+          ]
+        },
+        {"source": "references"},
+        {"source": "glossary"},
+        {"source": "index"}
+      ],
+      "appendices": [
+        {
+          "part": "Production reference",
+          "sources": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "sources": ["language-and-script"]
+        },
+        {
+          "part": "Supplemental reference",
+          "sources": ["supplemental-workbook"]
+        }
+      ]
+    },
+    "private": {
+      "chapters": [
+        {"source": "preface"},
+        {"source": "generated-lists"},
+        {
+          "part": "Foundations",
+          "sources": [
+            "reference",
+            "layout-stress",
+            "page-continuity",
+            "layout-acceptance",
+            "code-blocks",
+            "math",
+            "figures",
+            "components",
+            "icons",
+            "glossary-authoring"
+          ]
+        },
+        {
+          "part": "Private working material",
+          "sources": ["private-working-notes"]
+        },
+        {"source": "references"},
+        {"source": "glossary"},
+        {"source": "index"}
+      ],
+      "appendices": [
+        {
+          "part": "Production reference",
+          "sources": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "sources": ["language-and-script"]
+        }
+      ]
+    }
+  },
+  "editions": {
+    "full": {
+      "structure": "full",
+      "access": "public",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "abridged": {
+      "structure": "abridged",
+      "access": "public",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "preview": {
+      "structure": "preview",
+      "access": "public",
+      "formats": ["html"]
+    },
+    "print": {
+      "structure": "full",
+      "access": "public",
+      "formats": ["typst", "latex"]
+    },
+    "epub": {
+      "structure": "full",
+      "access": "public",
+      "formats": ["epub"]
+    },
+    "web": {
+      "structure": "web",
+      "access": "public",
+      "formats": ["html"]
+    },
+    "public": {
+      "structure": "full",
+      "access": "public",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "private": {
+      "structure": "private",
+      "access": "private",
+      "formats": ["html"]
+    },
+    "supplemental": {
+      "structure": "supplemental",
+      "access": "public",
+      "formats": ["html"]
+    }
+  }
+}

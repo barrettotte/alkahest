@@ -10,7 +10,7 @@ the online supplement profile. An author can move this source into a full
 edition, or include it in several compatible editions, without maintaining a
 second copy of the prose.
 
-## Supplemental data contract
+## Supplemental data contract {#sec-supplemental-data-contract}
 
 - Store the source beside ordinary appendices as backend-neutral Markdown.
 - Declare exceptional availability in document metadata.

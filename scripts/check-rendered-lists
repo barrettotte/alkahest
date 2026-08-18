@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+# Verify linked generated lists, terminology, numbering, and empty-list omission.
+set -euo pipefail
+
+require_literal() {
+  local needle="$1"
+  local file="$2"
+  local label="$3"
+  if ! grep -Fq "${needle}" "${file}"; then
+    echo "error: ${label} is missing required text: ${needle}" >&2
+    exit 1
+  fi
+}
+
+require_pattern() {
+  local pattern="$1"
+  local file="$2"
+  local label="$3"
+  if ! grep -Eq "${pattern}" "${file}"; then
+    echo "error: ${label} is missing required pattern: ${pattern}" >&2
+    exit 1
+  fi
+}
+
+reject_literal() {
+  local needle="$1"
+  local file="$2"
+  local label="$3"
+  if grep -Fq "${needle}" "${file}"; then
+    echo "error: ${label} contains forbidden text: ${needle}" >&2
+    exit 1
+  fi
+}
+
+html_root="book/_build/html"
+html_lists="${html_root}/generated-lists.html"
+epub="book/_build/epub/Alkahest-Reference-Book.epub"
+typst_pdf="book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf"
+latex_pdf="book/_build/print/7x10/latex/Alkahest-Reference-Book.pdf"
+
+perl scripts/check-html-links "${html_root}"
+test -f "${html_lists}"
+for structure in \
+  'class="generated-reference-lists"' \
+  'data-generated-list-count="7"' \
+  'data-configured-list-count="8"' \
+  'href="reference.html#fig-half-adder" class="quarto-xref"' \
+  'href="appendices/page-system-checklist.html#fig-appendix-signal" class="quarto-xref"' \
+  'href="reference.html#eq-ohms-law" class="quarto-xref"' \
+  'href="./glossary-backmatter.html#glossary-central-processing-unit" class="generated-list-acronym-link"' \
+  'data-entry-id="electric-current"' \
+  'data-entry-id="state-vector"'
+do
+  require_literal "${structure}" "${html_lists}" "HTML generated lists"
+done
+for group_count in \
+  'figures:7' \
+  'tables:4' \
+  'listings:2' \
+  'equations:5' \
+  'acronyms:3' \
+  'symbols:3' \
+  'nomenclature:2'
+do
+  group="${group_count%%:*}"
+  count="${group_count##*:}"
+  require_pattern \
+    "id=\"generated-list-${group}\"[^>]*data-entry-count=\"${count}\"" \
+    "${html_lists}" "HTML generated-list group"
+done
+for title in \
+  'List of figures' \
+  'List of tables' \
+  'List of listings' \
+  'List of equations' \
+  'List of acronyms' \
+  'List of symbols' \
+  'Nomenclature'
+do
+  require_literal "${title}" "${html_lists}" "HTML generated lists"
+done
+reject_literal 'data-list-name="algorithms"' "${html_lists}" "HTML empty-list omission"
+reject_literal 'List of algorithms' "${html_lists}" "HTML empty-list omission"
+
+epub_xhtml="$(mktemp)"
+typst_text="$(mktemp)"
+latex_text="$(mktemp)"
+trap 'rm -f -- "${epub_xhtml}" "${typst_text}" "${latex_text}"' EXIT
+unzip -p "${epub}" 'EPUB/text/*.xhtml' >"${epub_xhtml}"
+for structure in \
+  'class="generated-reference-lists"' \
+  'data-generated-list-count="7"' \
+  'data-configured-list-count="8"' \
+  'data-entry-id="fig-half-adder"' \
+  'data-entry-id="eq-state-update"' \
+  'data-entry-id="central-processing-unit"' \
+  'data-entry-id="electric-current"' \
+  'data-entry-id="state-vector"'
+do
+  require_literal "${structure}" "${epub_xhtml}" "EPUB generated lists"
+done
+for target in \
+  fig-half-adder \
+  fig-appendix-signal \
+  eq-state-update \
+  glossary-central-processing-unit
+do
+  if ! grep -Eq "href=\"ch[0-9]+\.xhtml#${target}\"" "${epub_xhtml}"; then
+    echo "error: EPUB generated lists have no packaged link to ${target}" >&2
+    exit 1
+  fi
+done
+reject_literal 'data-list-name="algorithms"' "${epub_xhtml}" "EPUB empty-list omission"
+reject_literal 'List of algorithms' "${epub_xhtml}" "EPUB empty-list omission"
+
+normalize_pdf() {
+  local pdf="$1"
+  local output="$2"
+  pdftotext "${pdf}" - \
+    | perl -CSD -0777 -pe \
+      's/([\pL\pN])-[ \t]*\r?\n[ \t]*([\pL\pN])/$1-$2/g; s/\x{AD}\s*//g; s/\s+/ /g' \
+    >"${output}"
+}
+normalize_pdf "${typst_pdf}" "${typst_text}"
+normalize_pdf "${latex_pdf}" "${latex_text}"
+
+for print_text in "${typst_text}" "${latex_text}"; do
+  for marker in \
+    'List of figures' \
+    'Information flow through a half-adder' \
+    'List of tables' \
+    'Measurement and acceptance plan' \
+    'List of listings' \
+    'A combinational half-adder' \
+    'List of equations' \
+    'Discrete state-space update and output equations' \
+    'List of acronyms' \
+    'CPU — central processing unit' \
+    'List of symbols' \
+    'electric current' \
+    'Nomenclature' \
+    'system state vector at discrete step'
+  do
+    require_literal "${marker}" "${print_text}" "print generated lists"
+  done
+  reject_literal 'List of algorithms' "${print_text}" "print empty-list omission"
+  if ! perl -CSD -0777 -ne '
+    die "missing numbered figure list entry\n"
+      unless /Figure\s+1\.1\s+\x{2014}\s+Information flow through a half-adder/;
+    die "missing appendix-numbered list entry\n"
+      unless /Figure\s+A\.1\s+\x{2014}\s+Appendix signal-chain fixture/;
+    die "missing numbered equation terminology target\n"
+      unless /electric current\s+\(Equation\s+\(?1\.1\)?\)/;
+    die "unresolved generated-list reference\n" if /\?\?/;
+  ' "${print_text}"
+  then
+    echo "error: print generated-list numbering contract failed" >&2
+    exit 1
+  fi
+done
+
+echo "ok: rendered generated lists (seven linked/numbered kinds; glossary acronyms; notation math; empty algorithm list omitted)"

@@ -2,9 +2,11 @@ project:
   type: book
   # Validate semantic sources, then stage generated vector and font build inputs.
   pre-render:
-    - ../scripts/check-appendices
+    - ../scripts/check-identities
+    - ../scripts/check-editions
     - ../scripts/check-citations
     - ../scripts/check-glossary
+    - ../scripts/check-generated-lists
     - ../scripts/check-icons
     - ../scripts/check-index
     - ../scripts/check-notes
@@ -17,6 +19,7 @@ book:
   author: "Barrett Otte"
   chapters:
     - index.qmd
+    - generated-lists.qmd
     - part: "Foundations"
       chapters:
         - reference.qmd
@@ -86,6 +89,7 @@ filters:
   - _extensions/alkahest-notes/alkahest-notes-filter.lua
   - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
   - _extensions/alkahest-index/alkahest-index-filter.lua
+  - _extensions/alkahest-generated-lists/alkahest-generated-lists.lua
   - at: post-render
     path: filters/strip-invalid-alt.lua
 

@@ -1,0 +1,101 @@
+#!/usr/bin/env perl
+# Validate persistent IDs, the checked identity lock, variants, and migrations.
+use strict;
+use warnings;
+use Cwd qw(abs_path);
+use FindBin qw($Bin);
+use lib "$Bin/lib";
+use Alkahest::Identities qw(
+  add_companion_assets canonical_variant identity_key inventory_book load_identity_policy load_json_file
+  validate_edition_manifests validate_language_variants validate_migrations
+);
+
+my $repo_root = abs_path("$Bin/..");
+my $book_root = $ENV{ALKAHEST_IDENTITY_BOOK_ROOT} // "$repo_root/book";
+$book_root = abs_path($book_root)
+  or die "error: identity book root does not exist\n";
+my $policy = load_identity_policy("$book_root/identities.json");
+validate_migrations($policy);
+
+my $canonical = canonical_variant($book_root, $policy);
+my $records = inventory_book($book_root, $policy, $canonical);
+
+add_companion_assets($book_root, $policy, $records);
+
+validate_language_variants($book_root, $policy, $records);
+validate_edition_manifests($book_root, $policy, $records);
+
+my $lock = load_json_file("$book_root/identity-lock.json", 'identity lock');
+die "error: identity lock version must be 1\n" if ($lock->{version} // 0) != 1;
+die "error: identity lock book_id differs from identities.json\n"
+  if ($lock->{book_id} // '') ne $policy->{book_id};
+die "error: identity lock identities must be an array\n"
+  if ref($lock->{identities}) ne 'ARRAY';
+
+my (%active, %retired);
+for my $entry (@{ $lock->{identities} }) {
+  die "error: malformed identity-lock entry\n" if ref($entry) ne 'HASH';
+  my $key = identity_key($entry);
+  my $status = $entry->{status} // '';
+  die "error: duplicate identity-lock entry '$entry->{namespace}:$entry->{id}'\n"
+    if exists $active{$key} || exists $retired{$key};
+  if ($status eq 'active') {
+    $active{$key} = $entry;
+  } elsif ($status eq 'retired') {
+    $retired{$key} = $entry;
+  } else {
+    die "error: identity-lock entry '$entry->{namespace}:$entry->{id}' has invalid status\n";
+  }
+}
+
+for my $key (sort keys %$records) {
+  my $record = $records->{$key};
+  die "error: retired identity '$record->{namespace}:$record->{id}' was reused\n"
+    if exists $retired{$key};
+  die "error: new identity '$record->{namespace}:$record->{id}' is not locked; run make update-identities\n"
+    if !exists $active{$key};
+  my $locked = $active{$key};
+  die "error: locked identity '$record->{namespace}:$record->{id}' metadata changed; run make update-identities\n"
+    if ($locked->{kind} // '') ne $record->{kind}
+      || ($locked->{source} // '') ne $record->{source};
+}
+for my $key (sort keys %active) {
+  my $locked = $active{$key};
+  die "error: active identity '$locked->{namespace}:$locked->{id}' disappeared; add an explicit migration, then run make update-identities\n"
+    if !exists $records->{$key};
+}
+
+my %migrations = map {
+  my $migration = $_;
+  ("$migration->{namespace}\0$migration->{from}" => $migration);
+} @{ $policy->{migrations} };
+for my $key (sort keys %retired) {
+  my $entry = $retired{$key};
+  my $migration = $migrations{$key}
+    or die "error: retired identity '$entry->{namespace}:$entry->{id}' has no migration record\n";
+  die "error: retired identity '$entry->{namespace}:$entry->{id}' migration reason differs from the lock\n"
+    if ($entry->{reason} // '') ne $migration->{reason};
+  if (defined $migration->{to}) {
+    my $target = "$migration->{namespace}\0$migration->{to}";
+    die "error: migration target '$migration->{namespace}:$migration->{to}' is not active\n"
+      if !exists $active{$target};
+    die "error: retired identity '$entry->{namespace}:$entry->{id}' replacement differs from the lock\n"
+      if ($entry->{replaced_by} // '') ne $migration->{to};
+  } elsif (defined $entry->{replaced_by}) {
+    die "error: retired identity '$entry->{namespace}:$entry->{id}' unexpectedly has a replacement\n";
+  }
+}
+for my $key (sort keys %migrations) {
+  my $migration = $migrations{$key};
+  die "error: migration '$migration->{namespace}:$migration->{from}' does not name a retired identity\n"
+    if !exists $retired{$key};
+}
+
+my %kind_count;
+++ $kind_count{$_->{kind}} for values %$records;
+my $required = join(', ', map { ($kind_count{$_} // 0) . " $_" }
+  qw(chapter section figure table equation listing exercise glossary-term index-concept companion-asset));
+print "ok: persistent identities (" . scalar(keys %$records)
+  . " active; " . scalar(keys %retired) . " retired; $required; "
+  . scalar(@{ $policy->{language_variants} }) . " language variants; "
+  . scalar(@{ $policy->{edition_manifests} }) . " edition manifest)\n";

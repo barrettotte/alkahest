@@ -225,6 +225,21 @@ check_pdf() {
   for required_marker in \
     "Publication data" \
     "For the readers who build things to understand them." \
+    "Lists and notation" \
+    "List of figures" \
+    "Information flow through a half-adder" \
+    "List of tables" \
+    "Measurement and acceptance plan" \
+    "List of listings" \
+    "A combinational half-adder" \
+    "List of equations" \
+    "Discrete state-space update and output equations" \
+    "List of acronyms" \
+    "CPU — central processing unit" \
+    "List of symbols" \
+    "electric current" \
+    "Nomenclature" \
+    "system state vector at discrete step" \
     "Foundations" \
     "Core feature specimen" \
     "A deliberately long chapter title for testing wrapping" \
@@ -335,6 +350,10 @@ check_pdf() {
       return 1
     fi
   done
+  if [[ "${pdf_text}" == *"List of algorithms"* ]]; then
+    echo "error: ${label} rendered the configured but empty algorithm list" >&2
+    return 1
+  fi
   if [[ "${label}" == Typst* ]]; then
     appendix_a_marker="A. Page-system checklist"
     appendix_b_marker="B. Format behavior"
@@ -399,6 +418,10 @@ check_pdf() {
   fi
   if [[ "${pdf_text}" == *"Supplemental workbook"* ]]; then
     echo "error: ${label} contains the supplemental appendix" >&2
+    return 1
+  fi
+  if [[ "${pdf_text}" == *"internal editorial canary and must never appear in a public artifact"* ]]; then
+    echo "error: ${label} contains private manuscript content" >&2
     return 1
   fi
   semantic_repeat_count="$(perl -e '
@@ -517,7 +540,7 @@ RECTO_MARKERS
     fi
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index/generated-list contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

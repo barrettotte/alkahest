@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "book_id": "identity-fixture",
+  "canonical_language": "en-US",
+  "language_variants": [
+    {"language": "en-US", "root": "en", "mode": "canonical"},
+    {"language": "fr-FR", "root": "fr", "mode": "translated"}
+  ],
+  "edition_manifests": ["editions.json"],
+  "companion_assets": {
+    "asset-sample-code": {
+      "path": "companion/sample.txt",
+      "media_type": "text/plain",
+      "description": "Small companion fixture."
+    }
+  },
+  "migrations": []
+}

@@ -1,4 +1,4 @@
-# Core feature specimen
+# Core feature specimen {#sec-core-feature-specimen}
 
 This chapter begins the cross-format test corpus. It includes common technical
 elements and will grow as each roadmap capability is evaluated.
@@ -24,7 +24,7 @@ the book contents with chapter-based numbers.
 Level-three headings remain numbered and listed because they often carry useful
 technical structure such as phases, subsystems, or derivation stages.
 
-#### Detail heading excluded from numbering and contents
+#### Detail heading excluded from numbering and contents {#sec-detail-heading}
 
 Level-four headings provide local structure without extending decimal numbers
 or crowding the contents. Levels five and six are reserved for future semantic
@@ -35,7 +35,7 @@ labels. For example, @sec-heading-hierarchy and @sec-numbered-subsection are
 section references; @fig-half-adder, @tbl-half-adder, @eq-ohms-law, and
 @lst-half-adder exercise the figure, table, equation, and listing labels.
 
-## Links, emphasis, and notes
+## Links, emphasis, and notes {#sec-links-emphasis-notes}
 
 Alkahest is developed as a collection of plain-text sources. The
 [Quarto website](https://quarto.org/) is an external link, while
@@ -47,7 +47,7 @@ must apply its documented repeat behavior.[^page-geometry]
 [^page-geometry]: [A useful footnote should not depend on the geometry of a
     printed page.]{#note-page-geometry .alkahest-note}
 
-## Paragraph rhythm
+## Paragraph rhythm {#sec-paragraph-rhythm}
 
 The first paragraph after a heading begins flush left so the structural break
 does not need a second visual cue. Its lines establish the normal body rhythm
@@ -76,7 +76,7 @@ $$ {#eq-ohms-law}
 @eq-ohms-law must be legible in print, responsive on the web, and
 represented accessibly where the output permits it.
 
-## Code listings
+## Code listings {#sec-code-listings}
 
 The half-adder in @lst-half-adder tests syntax highlighting, a caption, and a
 cross-reference.
@@ -105,7 +105,7 @@ The code face must keep commonly confused characters distinct:
 
 {{< alk-index book-design id=reference-tour range=end >}}
 
-## Diagrams and figures
+## Diagrams and figures {#sec-diagrams-and-figures}
 
 @fig-half-adder is a text-authored diagram. Later specimens will add proper
 logic symbols, timing diagrams, electrical schematics, plots, and chemical
@@ -123,7 +123,7 @@ flowchart LR
   AND --> C[Carry]
 ```
 
-## Tables
+## Tables {#sec-reference-tables}
 
 | A | B | Sum | Carry |
 |--:|--:|----:|------:|
@@ -136,7 +136,7 @@ flowchart LR
 
 @tbl-half-adder should remain understandable without relying on color.
 
-## Book divisions
+## Book divisions {#sec-book-divisions}
 
 The title, publication-data, and dedication treatments draw from one shared
 metadata record. This chapter belongs to a named part, and
@@ -150,7 +150,7 @@ The full-family editions also retain @sec-format-behavior and
 A chapter-to-appendix route reaches @sec-appendix-numbering and its
 @fig-appendix-signal without hard-coding either destination's displayed number.
 
-## Deliberately pending specimens
+## Deliberately pending specimens {#sec-pending-specimens}
 
 The following features require a tool choice or design decision and are tracked
 in the roadmap rather than represented by a misleading placeholder:

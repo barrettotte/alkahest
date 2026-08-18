@@ -22,7 +22,7 @@ useful beginning of its text. Web and EPUB layouts cannot promise a physical
 page boundary, but their print and reader pagination styles should express the
 same preference.
 
-#### A long local detail heading remains unnumbered even when it wraps across more than one display line
+#### A long local detail heading remains unnumbered even when it wraps across more than one display line {#sec-long-detail-heading}
 
 The local heading completes the hierarchy stress case. It must not acquire a
 four-part number or appear in the contents simply because its text happens to

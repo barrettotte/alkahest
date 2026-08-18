@@ -110,7 +110,7 @@ the hazard without relying on color.
 The procedure must obey @wrn-disconnect-power wherever a lead change could
 expose stored energy.
 
-::: {.callout-note .optional-material-block .icon-notice appearance="simple" icon=false}
+::: {#nte-characterize-drift .callout-note .optional-material-block .icon-notice appearance="simple" icon=false}
 ## {{< alk-icon optional-material >}} Optional extension: characterize drift
 
 Repeat the nominal measurement at three documented temperatures only when the

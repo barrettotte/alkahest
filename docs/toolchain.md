@@ -109,6 +109,20 @@ Libertinus Serif coverage before rendering. `make render-locale-smoke` renders
 an HTML edition with `fr-FR` document metadata and generated labels; it is a
 translation/locale fixture, not an independently translated manuscript.
 
+`make check-identities` validates explicit manuscript and registry IDs against
+the committed identity ledger. After an intentional addition—or after recording
+an explicit rename/removal migration—use `make update-identities`, review the
+lockfile diff, and rerun the check. `make test-identities` exercises the invalid
+and translated fixtures; `make check-rendered-identities` checks the resulting
+HTML, EPUB, edition, and locale anchors after rendering.
+
+`make check-editions` validates the whole-book source manifest, reduced-book
+reference integrity, format compatibility, and public/private isolation.
+`make render-edition-smoke` builds the abridged, preview, public, private, and
+supplemental HTML variants used by the rendered acceptance suite. The primary
+HTML command uses the `web` structure; EPUB and PDF commands use the core
+`full` structure through their format-specific editions.
+
 Use `make clean` to remove the build directory, Quarto cache, and known leaked
 intermediates left by a failed or interrupted render. Its targets are explicit;
 it does not remove manuscript sources or source assets.

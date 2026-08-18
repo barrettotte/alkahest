@@ -25,8 +25,8 @@ navigate; the two classes solve different problems.
 
 ## Stable identifiers and references
 
-Referenceable headings use explicit, durable `sec-` identifiers with lowercase
-hyphenated names, for example:
+Every structural heading uses one explicit, durable identifier. Ordinary
+manuscript headings use lowercase hyphenated `sec-` names, for example:
 
 ```markdown
 ## Clock domains {#sec-clock-domains}
@@ -34,9 +34,16 @@ hyphenated names, for example:
 See @sec-clock-domains.
 ```
 
-The same stable-ID rule applies to `fig-`, `tbl-`, `eq-`, and `lst-` objects.
+Headings that supply a semantic block's visible title inherit the enclosing
+theorem, callout, exercise, solution, project, or lab ID instead of declaring a
+second anchor. The same stable-ID rule applies to `fig-`, `tbl-`, `eq-`, and
+`lst-` objects.
 Do not place underscores in IDs, encode a displayed number in an ID, or rename
 an ID merely because wording changes.
+
+The checked ledger, glossary/index namespaces, companion-asset IDs, translation
+parity, edition behavior, and explicit migration workflow are defined in
+[`persistent-identities.md`](persistent-identities.md).
 
 References may cross chapter, part, back-matter, and appendix boundaries in
 either direction without different syntax. The renderer supplies the correct
