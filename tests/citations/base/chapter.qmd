@@ -1,0 +1,5 @@
+# Citation fixture
+
+Parenthetical [@primary], narrative @primary, locator [@primary, p. 1],
+multiple [@primary; @secondary], suppressed author with Primary [-@primary],
+and repeated [@primary]. A cross-reference such as @sec-example is not a citekey.

@@ -4,7 +4,10 @@ Technical books need more than prose, code, mathematics, and figures. This
 chapter defines portable tables and a small family of semantic blocks for
 notes, warnings, exercises, solutions, projects, and laboratory work. Their
 labels and source order carry meaning even when a reader removes all color and
-layout.
+layout.[^source-order]
+
+[^source-order]: [Semantic notes remain in manuscript source order even when an
+    edition moves their presentation.]{#note-source-order .alkahest-note}
 
 ## Tables that explain data {#sec-component-tables}
 

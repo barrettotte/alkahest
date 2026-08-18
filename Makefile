@@ -1,6 +1,6 @@
-.PHONY: bootstrap build-report check check-appendices check-glossary check-glyph-coverage check-icons check-publication check-pdf-profiles ci clean render render-all test-glossary \
+.PHONY: bootstrap build-report check check-appendices check-citations check-glossary check-glyph-coverage check-icons check-index check-notes check-rendered-index check-rendered-notes check-publication check-pdf-profiles ci clean render render-all test-appendix-editions test-citations test-glossary test-index test-notes \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
-	render-pdf-profiles render-locale-smoke toolchain-report help
+	render-pdf-profiles render-locale-smoke render-citation-smoke render-appendix-smoke render-notes-smoke toolchain-report help
 
 bootstrap: ## Build the pinned local publishing container.
 	./scripts/bootstrap
@@ -11,8 +11,17 @@ build-report: ## Measure primary builds, warnings, and artifact sizes.
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
 
-check-appendices: ## Validate appendix groups and supplemental source policy.
+check-appendices: ## Validate appendix editions, sources, and bibliography policy.
 	./scripts/check-appendices
+
+test-appendix-editions: ## Exercise valid and invalid appendix-edition contracts.
+	./scripts/test-appendix-editions
+
+check-citations: ## Validate citation styles, bibliography keys, and manuscript calls.
+	./scripts/check-citations
+
+test-citations: ## Exercise valid and invalid citation contracts.
+	./scripts/test-citations
 
 check-glossary: ## Validate glossary entries, aliases, forms, and references.
 	./scripts/check-glossary
@@ -25,6 +34,24 @@ check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stac
 
 check-icons: ## Validate semantic icon names, assets, aliases, and calls.
 	./scripts/check-icons
+
+check-index: ## Validate subject/person index entries, markers, ranges, and relations.
+	./scripts/check-index
+
+test-index: ## Exercise valid and invalid subject/person index contracts.
+	./scripts/test-index
+
+check-notes: ## Validate semantic note definitions, repeats, and placements.
+	./scripts/check-notes
+
+test-notes: ## Exercise valid and invalid semantic-note contracts.
+	./scripts/test-notes
+
+check-rendered-notes: ## Verify rendered chapter, book, and sidenote behavior.
+	./scripts/check-rendered-notes
+
+check-rendered-index: ## Verify linked reflowable and page-resolved print indexes.
+	./scripts/check-rendered-index
 
 check-publication: ## Validate internal HTML links and EPUB conformance.
 	./scripts/check-publication
@@ -87,6 +114,15 @@ render-pdf-profiles: ## Render every Typst and LuaLaTeX PDF profile.
 
 render-locale-smoke: ## Render the French-locale HTML smoke edition.
 	./scripts/render locale-smoke
+
+render-citation-smoke: ## Render numeric-citation HTML and Typst smoke editions.
+	./scripts/render citation-smoke
+
+render-appendix-smoke: ## Render preview and supplemental appendix editions.
+	./scripts/render appendix-smoke
+
+render-notes-smoke: ## Render chapter, book, and sidenote placement editions.
+	./scripts/render notes-smoke
 
 help: ## Show available Make targets and their descriptions.
 	@awk 'BEGIN { FS = ":.*## " } /^[[:alnum:]_-]+:.*## / { printf "  %-24s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)

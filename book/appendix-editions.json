@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "sources": {
+    "page-system-checklist": {
+      "path": "appendices/page-system-checklist.qmd",
+      "availability": "core"
+    },
+    "format-behavior": {
+      "path": "appendices/format-behavior.qmd",
+      "availability": "core"
+    },
+    "language-and-script": {
+      "path": "appendices/language-and-script.qmd",
+      "availability": "core"
+    },
+    "online-lab-notes": {
+      "path": "appendices/online-lab-notes.qmd",
+      "availability": "online-only"
+    },
+    "supplemental-workbook": {
+      "path": "appendices/supplemental-workbook.qmd",
+      "availability": "supplemental"
+    }
+  },
+  "editions": {
+    "full": {
+      "formats": ["html", "epub", "typst", "latex"],
+      "groups": [
+        {
+          "part": "Production reference",
+          "chapters": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "chapters": ["language-and-script"]
+        }
+      ]
+    },
+    "preview": {
+      "formats": ["html"],
+      "groups": [
+        {
+          "part": "Preview reference",
+          "chapters": ["page-system-checklist"]
+        }
+      ]
+    },
+    "print": {
+      "formats": ["typst", "latex"],
+      "groups": [
+        {
+          "part": "Production reference",
+          "chapters": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "chapters": ["language-and-script"]
+        }
+      ]
+    },
+    "epub": {
+      "formats": ["epub"],
+      "groups": [
+        {
+          "part": "Production reference",
+          "chapters": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "chapters": ["language-and-script"]
+        }
+      ]
+    },
+    "html": {
+      "formats": ["html"],
+      "groups": [
+        {
+          "part": "Production reference",
+          "chapters": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "chapters": ["language-and-script"]
+        },
+        {
+          "part": "Online reference",
+          "chapters": ["online-lab-notes"]
+        }
+      ]
+    },
+    "supplemental": {
+      "formats": ["html"],
+      "groups": [
+        {
+          "part": "Production reference",
+          "chapters": ["page-system-checklist", "format-behavior"]
+        },
+        {
+          "part": "Language reference",
+          "chapters": ["language-and-script"]
+        },
+        {
+          "part": "Supplemental reference",
+          "chapters": ["supplemental-workbook"]
+        }
+      ]
+    }
+  }
+}

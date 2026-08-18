@@ -17,3 +17,75 @@ entry, and alphabetic numbering visible in every applicable output.
 The structural source remains ordinary Quarto Markdown. Backend-specific code
 is confined to template partials. The PDF validator discovers division pages
 from unique opening prose rather than freezing their page numbers.
+
+## Numbered appendix elements {#sec-appendix-numbering}
+
+This section is a compact numbering specimen. @fig-appendix-signal,
+@tbl-appendix-prefixes, @eq-appendix-scale, @lst-appendix-check,
+@thm-appendix-ordering, @nte-appendix-portability, @wrn-appendix-manual-labels,
+and @exr-appendix-review must all use the current appendix letter rather than a
+main-matter chapter number or a manually authored prefix.
+
+An appendix-to-chapter route returns to @sec-heading-hierarchy and
+@eq-ohms-law. Appendix citations also join the book's one shared bibliography;
+the literate-programming example [@knuth1984] must not create a second reference
+list or a duplicate entry.
+
+![A small signal-chain fixture reused to verify appendix-local figure numbering.](../figures/signal-chain.svg){#fig-appendix-signal fig-alt="A three-stage signal chain runs from a sensor through signal conditioning to a decision stage." width="80%"}
+
+| Element | Required prefix |
+|:--------|:----------------|
+| Section | A.2 |
+| Figure | A.1 |
+| Table | A.1 |
+| Equation | A.1 |
+| Listing | A.1 |
+| Exercise | A.1 |
+
+: Appendix-local numbering acceptance matrix {#tbl-appendix-prefixes}
+
+The specimen relationship is
+
+$$
+s_{n+1} = 2s_n + 1.
+$$ {#eq-appendix-scale}
+
+```{#lst-appendix-check .text lst-cap="A backend-neutral appendix check"}
+assert current_appendix == "A"
+assert local_figure == "A.1"
+```
+
+::: {#thm-appendix-ordering}
+## Appendix ordering invariant
+
+Within one appendix, each numbered family advances independently while sharing
+the appendix letter.
+:::
+
+::: {#nte-appendix-portability .callout-note appearance="simple" icon=false}
+## Portable numbering
+
+Authors provide stable identifiers; the active backend provides every visible
+letter, number, and localized label.
+:::
+
+::: {#wrn-appendix-manual-labels .callout-warning appearance="simple" icon=false}
+## Do not type appendix numbers
+
+A literal “A.1” in explanatory prose is never a substitute for a generated
+cross-reference because editions may reorder or omit appendices.
+:::
+
+::: {#exr-appendix-review}
+## Review an appendix reference
+
+Move a numbered object within this appendix and confirm that references update
+without editing prose.
+:::
+
+::: {#sol-appendix-review}
+## Review an appendix reference
+
+Render every supported format and compare the generated reference rather than
+the object's page position.
+:::

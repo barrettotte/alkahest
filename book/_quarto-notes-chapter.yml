@@ -1,0 +1,7 @@
+alkahest:
+  notes:
+    placement: chapter-endnotes
+
+# In an HTML book, each document is one chapter page, so document placement is
+# chapter-endnote placement. Reflowable readers retain native note backlinks.
+reference-location: document

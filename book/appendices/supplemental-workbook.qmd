@@ -1,0 +1,21 @@
+---
+alkahest-appendix:
+  availability: supplemental
+---
+
+# Supplemental workbook {#sec-supplemental-workbook}
+
+This optional workbook demonstrates material distributed with a companion or
+expanded edition. It is canonical Markdown selected by the supplemental
+edition manifest, not a copied chapter or a format-specific fragment.
+
+## Workbook evidence contract
+
+- Keep exercises useful without making them prerequisites for the core book.
+- Preserve stable IDs when a supplement moves into a later full edition.
+- State which edition selects every private, supplemental, or online source.
+- Fail validation when an exceptional source leaks into an incompatible output.
+
+The supplemental fixture intentionally adds no definitions or safety guidance
+required by retained chapters, so omitting it leaves the core publication
+complete.

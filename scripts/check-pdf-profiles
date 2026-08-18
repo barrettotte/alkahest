@@ -68,6 +68,7 @@ check_pdf() {
   local math_equation_marker
   local required_font
   local required_marker
+  local semantic_repeat_count
   local recto_description
   local recto_marker
   local marker_page
@@ -216,9 +217,11 @@ check_pdf() {
     echo "error: ${label} yielded ${#pdf_pages[@]} extracted pages; expected ${page_count}" >&2
     return 1
   fi
-  # Use Poppler's reading-order extraction for literal marker checks; layout
-  # extraction may insert discretionary visual hyphens into otherwise intact text.
-  pdf_text="$(pdftotext "${pdf_path}" - | awk 'BEGIN { ORS = " " } { print }')"
+  # Use Poppler's reading-order extraction for literal marker checks. Normalize
+  # whitespace and discard discretionary soft hyphens so a profile-specific line
+  # wrap cannot make otherwise identical generated text fail the contract.
+  pdf_text="$(pdftotext "${pdf_path}" - \
+    | perl -CSD -0777 -pe 's/([\pL\pN])-[ \t]*\r?\n[ \t]*([\pL\pN])/$1-$2/g; s/\x{AD}\s*//g; s/\s+/ /g; s{/\s+}{/}g')"
   for required_marker in \
     "Publication data" \
     "For the readers who build things to understand them." \
@@ -230,8 +233,13 @@ check_pdf() {
     "Boundary Alpha begins" \
     "Boundary Lima ends" \
     "Page-system checklist" \
+    "Numbered appendix elements" \
+    "A chapter-to-appendix route reaches" \
+    "An appendix-to-chapter route returns to" \
+    "Literate Programming" \
+    "1093/comjnl/27.2.97" \
     "Format behavior" \
-    "Language and writing-system specimen" \
+    "Language and writing" \
     "English: The characteristically interdisciplinary electromechanical laboratory" \
     "Français" \
     "Deutsch: Die Donaudampfschifffahrtsgesellschaft" \
@@ -309,6 +317,15 @@ check_pdf() {
     "instruction set architecture (ISA)" \
     "matrices" \
     "quantum bits (qubits)" \
+    "A useful footnote should not depend on the geometry of a printed page." \
+    "Semantic notes remain in manuscript source order even when an edition moves their presentation." \
+    "Subject index" \
+    "Name index" \
+    "processor architecture, see instruction set architecture" \
+    "technical publishing" \
+    "see also book design" \
+    "Turing, Alan" \
+    "see also computation" \
     "Production reference" \
     "Language reference" \
     "print edition"
@@ -321,19 +338,47 @@ check_pdf() {
   if [[ "${label}" == Typst* ]]; then
     appendix_a_marker="A. Page-system checklist"
     appendix_b_marker="B. Format behavior"
+    appendix_section_marker="A.2 - Numbered appendix elements"
+    appendix_reverse_marker="Section 1.1 and Equation (1.1)"
     equation_marker="Equation (1.1)"
     math_equation_marker="Equation (6.3)"
+    appendix_equation_marker="Equation (A.1)"
   else
     appendix_a_marker="A Page-system checklist"
     appendix_b_marker="B Format behavior"
+    appendix_section_marker="A.2 Numbered appendix elements"
+    appendix_reverse_marker="Section 1.1 and Equation 1.1"
     equation_marker="Equation 1.1"
     math_equation_marker="Equation 6.3"
+    appendix_equation_marker="Equation A.1"
   fi
+  # Every PDF now runs the same versioned CSL through Pandoc citeproc.
+  appendix_citation_marker="programming example (Knuth 1984)"
+  bibliography_author_marker="Knuth, Donald E. 1984"
   for required_marker in \
     "${appendix_a_marker}" \
     "${appendix_b_marker}" \
+    "${appendix_section_marker}" \
+    "${appendix_reverse_marker}" \
+    "${appendix_citation_marker}" \
+    "${bibliography_author_marker}" \
     "${equation_marker}" \
-    "${math_equation_marker}"
+    "${math_equation_marker}" \
+    "${appendix_equation_marker}" \
+    "narrative form with Turing (1936)" \
+    "page locator (Turing 1936, 230–31)" \
+    "multiple sources (Turing 1936; Knuth 1984)" \
+    "author suppression with Turing (1936)" \
+    "Shannon, Claude E. 1948" \
+    "j.1538-7305.1948" \
+    "Figure A.1" \
+    "Table A.1" \
+    "Listing A.1" \
+    "Theorem A.1" \
+    "Note A.1" \
+    "Warning A.1" \
+    "Exercise A.1" \
+    "Solution A.1"
   do
     if [[ "${pdf_text}" != *"${required_marker}"* ]]; then
       echo "error: ${label} is missing backend marker: ${required_marker}" >&2
@@ -350,6 +395,33 @@ check_pdf() {
   fi
   if [[ "${pdf_text}" == *"Extended laboratory observations"* ]]; then
     echo "error: ${label} contains the online-only appendix" >&2
+    return 1
+  fi
+  if [[ "${pdf_text}" == *"Supplemental workbook"* ]]; then
+    echo "error: ${label} contains the supplemental appendix" >&2
+    return 1
+  fi
+  semantic_repeat_count="$(perl -e '
+    local $/;
+    $text = <STDIN>;
+    $needle = "A useful footnote should not depend on the geometry of a printed page.";
+    print scalar(() = $text =~ /\Q$needle\E/g);
+  ' <<<"${pdf_text}")"
+  if [[ "${semantic_repeat_count}" -ne 2 ]]; then
+    echo "error: ${label} has ${semantic_repeat_count} native occurrences of the reusable semantic note; expected 2" >&2
+    return 1
+  fi
+  if ! perl -CSD -0777 -ne '
+    die "missing two-location index entry\n"
+      unless /computation,\s*[0-9]+,\s*[0-9]+;\s*see also Turing, Alan/;
+    die "missing resolved index range\n"
+      unless /book design,\s*([0-9]+)\x{2013}([0-9]+)/ && $2 > $1;
+    die "missing person index page\n"
+      unless /Knuth, Donald E\.,\s*[0-9]+/;
+    die "unresolved index page\n" if /\?\?/;
+  ' <<<"${pdf_text}"
+  then
+    echo "error: ${label} does not retain the page-resolved index contract" >&2
     return 1
   fi
   glossary_page_reference_count="$(awk '
@@ -398,6 +470,7 @@ component chapter|Technical books need more than prose, code, mathematics, and f
 icon chapter|Technical books repeat a small visual vocabulary
 glossary chapter|Technical books need one durable definition
 generated glossary|The entries below are generated from glossary.yml
+generated index|The subject and name indexes below are generated from index.yml
 appendix A|This appendix makes the first appendix opener
 appendix B|This second appendix proves
 appendix C|This appendix exercises language metadata
@@ -444,7 +517,7 @@ RECTO_MARKERS
     fi
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, code/math/figure/component/icon/notice/glossary contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

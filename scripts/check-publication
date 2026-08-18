@@ -37,9 +37,11 @@ exec podman run --rm \
   --env HOME=/tmp \
   --volume "${repo_root}:/workspace:ro" \
   --workdir /workspace \
-  --entrypoint sh \
+  --entrypoint bash \
   "${ALKAHEST_TOOLCHAIN_IMAGE}" \
   -ec '
+    trap "echo error: publication assertion failed near line \${LINENO} >&2" ERR
+
     require_literal() {
       needle="$1"
       file="$2"
@@ -50,10 +52,24 @@ exec podman run --rm \
       fi
     }
 
+    require_pattern() {
+      pattern="$1"
+      file="$2"
+      label="$3"
+      if ! grep -Eq "${pattern}" "${file}"; then
+        echo "error: ${label} is missing required pattern: ${pattern}" >&2
+        exit 1
+      fi
+    }
+
     # The small local checker handles site-relative files/fragments; EPUBCheck
     # supplies the full W3C EPUB ruleset from the locked image.
     perl scripts/check-html-links book/_build/html
     perl scripts/check-html-links book/_build/locale/fr/html
+    perl scripts/check-html-links book/_build/smoke/appendices/preview/html
+    perl scripts/check-html-links book/_build/smoke/appendices/supplemental/html
+    scripts/check-rendered-notes
+    scripts/check-rendered-index
     java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
 
     # The reflowable artifacts must be self-contained and carry the same theme
@@ -97,16 +113,29 @@ exec podman run --rm \
     html_text="$(mktemp)"
     epub_text="$(mktemp)"
     epub_language="$(mktemp)"
+    epub_nav="$(mktemp)"
     epub_svg="$(mktemp)"
+    preview_text="$(mktemp)"
+    supplemental_text="$(mktemp)"
     find book/_build/html -type f -name "*.html" -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${html_text}"
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" >"${html_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       EPUB/nav.xhtml "EPUB/text/*.xhtml" \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g" >"${epub_text}"
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" >"${epub_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       "EPUB/text/*.xhtml" >"${epub_language}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
+      EPUB/nav.xhtml >"${epub_nav}"
+    unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       "EPUB/media/*.svg" >"${epub_svg}"
+    find book/_build/smoke/appendices/preview/html -type f -name "*.html" \
+      -exec cat {} + \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      >"${preview_text}"
+    find book/_build/smoke/appendices/supplemental/html -type f -name "*.html" \
+      -exec cat {} + \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      >"${supplemental_text}"
     for marker in \
       "Publication data" \
       "For the readers who build things to understand them." \
@@ -178,7 +207,9 @@ exec podman run --rm \
       "CPUs" \
       "instruction set architecture (ISA)" \
       "matrices" \
-      "quantum bits (qubits)"
+      "quantum bits (qubits)" \
+      "A useful footnote should not depend on the geometry of a printed page." \
+      "Semantic notes remain in manuscript source order even when an edition moves their presentation."
     do
       if ! grep -Fq "${marker}" "${html_text}"; then
         echo "error: HTML is missing required marker: ${marker}" >&2
@@ -189,7 +220,217 @@ exec podman run --rm \
         exit 1
       fi
     done
-    # Quarto intentionally omits part dividers from EPUB, but HTML must retain it.
+
+    # The primary reflowable editions use the native-footnote fallback. Stable
+    # semantic identity survives presentation, and reuse yields one navigable
+    # occurrence per call without changing the registered content.
+    html_notes_reference="book/_build/html/reference.html"
+    html_notes_components="book/_build/html/components.html"
+    for note_structure in \
+      "data-note-id=\"page-geometry\" data-note-occurrence=\"1\"" \
+      "data-note-id=\"page-geometry\" data-note-occurrence=\"2\""
+    do
+      require_literal "${note_structure}" "${html_notes_reference}" \
+        "HTML semantic footnote"
+      require_literal "${note_structure}" "${epub_language}" \
+        "EPUB semantic footnote"
+    done
+    require_literal \
+      "data-note-id=\"source-order\" data-note-occurrence=\"1\"" \
+      "${html_notes_components}" "HTML cross-chapter semantic footnote"
+    require_literal \
+      "data-note-id=\"source-order\" data-note-occurrence=\"1\"" \
+      "${epub_language}" "EPUB cross-chapter semantic footnote"
+    require_literal \
+      "href=\"#fn1\" class=\"footnote-ref\" id=\"fnref1\" role=\"doc-noteref\"" \
+      "${html_notes_reference}" "HTML semantic footnote reference"
+    require_literal \
+      "href=\"#fnref1\" class=\"footnote-back\" role=\"doc-backlink\"" \
+      "${html_notes_reference}" "HTML semantic footnote backlink"
+    require_literal \
+      "class=\"footnote-ref\" id=\"fnref1\" epub:type=\"noteref\" role=\"doc-noteref\"" \
+      "${epub_language}" "EPUB semantic footnote reference"
+    require_literal \
+      "<aside epub:type=\"footnote\" role=\"doc-footnote\" id=\"fn1\">" \
+      "${epub_language}" "EPUB semantic footnote target"
+    for reflowable_text in "${html_text}" "${epub_text}"; do
+      if [ "$(grep -Fo "A useful footnote should not depend on the geometry of a printed page." "${reflowable_text}" | wc -l)" -ne 2 ]; then
+        echo "error: a primary reflowable edition does not contain two native repeat occurrences" >&2
+        exit 1
+      fi
+      if [ "$(grep -Fo "Semantic notes remain in manuscript source order even when an edition moves their presentation." "${reflowable_text}" | wc -l)" -ne 1 ]; then
+        echo "error: a primary reflowable edition does not contain one single-use note" >&2
+        exit 1
+      fi
+    done
+
+    # Appendix-local families share the appendix letter while advancing their
+    # own counters. Stable IDs prove these are generated objects rather than
+    # number-shaped prose, and the navigation checks bind A.2 to the contents.
+    html_appendix="book/_build/html/appendices/page-system-checklist.html"
+    for appendix_structure in \
+      "id=\"sec-appendix-numbering\"" \
+      "id=\"fig-appendix-signal\"" \
+      "id=\"tbl-appendix-prefixes\"" \
+      "id=\"eq-appendix-scale\"" \
+      "id=\"lst-appendix-check\"" \
+      "id=\"thm-appendix-ordering\"" \
+      "id=\"nte-appendix-portability\"" \
+      "id=\"wrn-appendix-manual-labels\"" \
+      "id=\"exr-appendix-review\"" \
+      "id=\"sol-appendix-review\""
+    do
+      require_literal "${appendix_structure}" "${html_appendix}" \
+        "HTML appendix numbering specimen"
+      require_literal "${appendix_structure}" "${epub_language}" \
+        "EPUB appendix numbering specimen"
+    done
+    for appendix_marker in \
+      "A.2 Numbered appendix elements" \
+      "Figure A.1" \
+      "Table A.1" \
+      "Equation A.1" \
+      "Listing A.1" \
+      "Theorem A.1" \
+      "Note A.1" \
+      "Warning A.1" \
+      "Exercise A.1" \
+      "Solution A.1"
+    do
+      require_literal "${appendix_marker}" "${html_text}" \
+        "HTML appendix numbering specimen"
+      require_literal "${appendix_marker}" "${epub_text}" \
+        "EPUB appendix numbering specimen"
+    done
+    require_literal \
+      "#sec-appendix-numbering\"><span class=\"header-section-number\">A.2</span> Numbered appendix elements" \
+      "${html_appendix}" "HTML appendix contents"
+    require_literal \
+      "#sec-appendix-numbering\"><span class=\"header-section-number\">A.2</span> Numbered appendix elements" \
+      "${epub_nav}" "EPUB appendix contents"
+
+    # Cross-references must cross the chapter/appendix boundary in both
+    # directions. The appendix-only citation resolves into the single central
+    # bibliography rather than generating an authored appendix reference list.
+    html_reference="book/_build/html/reference.html"
+    html_bibliography="book/_build/html/references.html"
+    for chapter_to_appendix in \
+      "href=\"appendices/page-system-checklist.html#sec-appendix-numbering\"" \
+      "href=\"appendices/page-system-checklist.html#fig-appendix-signal\""
+    do
+      require_literal "${chapter_to_appendix}" "${html_reference}" \
+        "HTML chapter-to-appendix reference"
+    done
+    for appendix_to_chapter in \
+      "href=\"../reference.html#sec-heading-hierarchy\"" \
+      "href=\"../reference.html#eq-ohms-law\""
+    do
+      require_literal "${appendix_to_chapter}" "${html_appendix}" \
+        "HTML appendix-to-chapter reference"
+    done
+    for chapter_to_appendix in \
+      "href=\"ch[0-9]+\\.xhtml#sec-appendix-numbering\"" \
+      "href=\"ch[0-9]+\\.xhtml#fig-appendix-signal\""
+    do
+      require_pattern "${chapter_to_appendix}" "${epub_language}" \
+        "EPUB chapter-to-appendix reference"
+    done
+    for appendix_to_chapter in \
+      "href=\"ch[0-9]+\\.xhtml#sec-heading-hierarchy\"" \
+      "href=\"ch[0-9]+\\.xhtml#eq-ohms-law\""
+    do
+      require_pattern "${appendix_to_chapter}" "${epub_language}" \
+        "EPUB appendix-to-chapter reference"
+    done
+    require_literal "data-cites=\"knuth1984\"" "${html_appendix}" \
+      "HTML appendix citation"
+    require_literal "href=\"../references.html#ref-knuth1984\"" \
+      "${html_appendix}" "HTML shared bibliography link"
+    require_literal "id=\"ref-knuth1984\"" "${html_bibliography}" \
+      "HTML shared bibliography entry"
+    require_literal "data-cites=\"knuth1984\"" "${epub_language}" \
+      "EPUB appendix citation"
+    require_literal "id=\"ref-knuth1984\"" "${epub_language}" \
+      "EPUB shared bibliography entry"
+    require_literal "Knuth 1984" "${html_appendix}" "HTML appendix citation"
+    require_literal "Knuth 1984" "${epub_language}" "EPUB appendix citation"
+    for citation_marker in \
+      "narrative form with Turing (1936)" \
+      "page locator (Turing 1936, 230–31)" \
+      "multiple sources (Turing 1936; Knuth 1984)" \
+      "author suppression with Turing (1936)" \
+      "repeated source (Turing 1936)"
+    do
+      require_literal "${citation_marker}" "${html_text}" \
+        "HTML author-date citation specimen"
+      require_literal "${citation_marker}" "${epub_text}" \
+        "EPUB author-date citation specimen"
+    done
+    for shared_bibliography_marker in \
+      "Knuth, Donald E. 1984" \
+      "Literate Programming" \
+      "10.1093/comjnl/27.2.97" \
+      "Shannon, Claude E. 1948" \
+      "Mathematical Theory of" \
+      "10.1002/j.1538-7305.1948.tb01338.x"
+    do
+      require_literal "${shared_bibliography_marker}" "${html_bibliography}" \
+        "HTML shared bibliography"
+      require_literal "${shared_bibliography_marker}" "${epub_language}" \
+        "EPUB shared bibliography"
+    done
+    if [ "$(grep -Fo "id=\"ref-knuth1984\"" "${html_bibliography}" | wc -l)" -ne 1 ]; then
+      echo "error: HTML central bibliography does not contain exactly one Knuth entry" >&2
+      exit 1
+    fi
+    if [ "$(grep -Fo "id=\"ref-knuth1984\"" "${epub_language}" | wc -l)" -ne 1 ]; then
+      echo "error: EPUB does not contain exactly one Knuth bibliography entry" >&2
+      exit 1
+    fi
+
+    # The composed numeric profile must retain the same citekeys, ordering,
+    # locators, bibliography heading, and DOI data through both citeproc paths.
+    numeric_html_reference="book/_build/smoke/citations/numeric/html/reference.html"
+    numeric_html_bibliography="book/_build/smoke/citations/numeric/html/references.html"
+    numeric_pdf="book/_build/smoke/citations/numeric/typst/Alkahest-Reference-Book.pdf"
+    numeric_html_text="$(mktemp)"
+    numeric_pdf_text="$(mktemp)"
+    test -f "${numeric_html_reference}"
+    test -f "${numeric_html_bibliography}"
+    test -f "${numeric_pdf}"
+    cat "${numeric_html_reference}" "${numeric_html_bibliography}" \
+      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      >"${numeric_html_text}"
+    pdftotext -layout "${numeric_pdf}" - \
+      | perl -CSD -0777 -pe "s/\x{AD}\s*//g; s/\s+/ /g; s{/\s+}{/}g" \
+      >"${numeric_pdf_text}"
+    for numeric_marker in \
+      "early citation [1]" \
+      "narrative form with [1]" \
+      "page locator [1, pp. 230–231]" \
+      "multiple sources [1], [2]" \
+      "author suppression with Turing [1]" \
+      "repeated source [1]" \
+      "References" \
+      "[1] A. M. Turing" \
+      "[2] D. E. Knuth" \
+      "[3] C. E. Shannon" \
+      "10.1112/plms/s2-42.1.230" \
+      "10.1093/comjnl/27.2.97" \
+      "10.1002/j.1538-7305.1948.tb01338.x"
+    do
+      require_literal "${numeric_marker}" "${numeric_html_text}" \
+        "numeric HTML citation smoke edition"
+      require_literal "${numeric_marker}" "${numeric_pdf_text}" \
+        "numeric Typst citation smoke edition"
+    done
+    for numeric_key in turing1936 knuth1984 shannon1948; do
+      require_literal "id=\"ref-${numeric_key}\"" "${numeric_html_bibliography}" \
+        "numeric HTML bibliography entry"
+    done
+    # Quarto intentionally omits part dividers from EPUB. HTML retains its
+    # explicitly selected online appendix, while EPUB and print select only the
+    # core set from the checked registry.
     grep -Fq "Foundations" "${html_text}"
     for appendix_group in "Production reference" "Language reference"; do
       require_literal "${appendix_group}" book/_build/html/index.html \
@@ -199,12 +440,86 @@ exec podman run --rm \
         exit 1
       fi
     done
-    for default_only_output in "${html_text}" "${epub_text}"; do
-      if grep -Fq "Extended laboratory observations" "${default_only_output}"; then
-        echo "error: default publication includes the online-only appendix" >&2
+    require_literal "Online reference" book/_build/html/index.html \
+      "HTML appendix group"
+    require_literal "Appendix D" "${html_text}" "HTML online-only appendix"
+    require_literal "Extended laboratory observations" "${html_text}" \
+      "HTML online-only appendix"
+    require_literal "id=\"sec-extended-lab-observations\"" \
+      book/_build/html/appendices/online-lab-notes.html \
+      "HTML online-only appendix"
+    if grep -Fq "Extended laboratory observations" "${epub_text}"; then
+      echo "error: EPUB includes the online-only appendix" >&2
+      exit 1
+    fi
+    for primary_output in "${html_text}" "${epub_text}"; do
+      if grep -Fq "Supplemental workbook" "${primary_output}"; then
+        echo "error: a primary publication includes the supplemental appendix" >&2
         exit 1
       fi
     done
+
+    # Preview omission is intentional and reference-safe: retained Appendix A
+    # keeps its letter and local counters, while the conditional references to
+    # omitted B and C disappear instead of becoming unresolved links.
+    preview_root="book/_build/smoke/appendices/preview/html"
+    preview_reference="${preview_root}/reference.html"
+    preview_appendix="${preview_root}/appendices/page-system-checklist.html"
+    require_literal "Preview reference" "${preview_root}/index.html" \
+      "preview appendix group"
+    for preview_marker in \
+      "Appendix A" \
+      "A.2 Numbered appendix elements" \
+      "Figure A.1" \
+      "A chapter-to-appendix route reaches"
+    do
+      require_literal "${preview_marker}" "${preview_text}" "preview edition"
+    done
+    require_literal \
+      "href=\"appendices/page-system-checklist.html#sec-appendix-numbering\"" \
+      "${preview_reference}" "preview chapter-to-appendix reference"
+    require_literal "href=\"../reference.html#sec-heading-hierarchy\"" \
+      "${preview_appendix}" "preview appendix-to-chapter reference"
+    for omitted_preview_marker in \
+      "Format behavior" \
+      "Language and writing-system specimen" \
+      "Extended laboratory observations" \
+      "Supplemental workbook"
+    do
+      if grep -Fq "${omitted_preview_marker}" "${preview_text}"; then
+        echo "error: preview edition includes omitted appendix: ${omitted_preview_marker}" >&2
+        exit 1
+      fi
+    done
+    if grep -Fq "sec-format-behavior" "${preview_reference}" \
+      || grep -Fq "sec-language-and-script" "${preview_reference}"
+    then
+      echo "error: preview edition retains a reference to an omitted appendix" >&2
+      exit 1
+    fi
+
+    # The companion edition keeps the three core letters and assigns D to its
+    # supplemental appendix without leaking the online-only HTML appendix.
+    supplemental_root="book/_build/smoke/appendices/supplemental/html"
+    require_literal "Supplemental reference" "${supplemental_root}/index.html" \
+      "supplemental appendix group"
+    for supplemental_marker in \
+      "Appendix A" \
+      "Appendix B" \
+      "Appendix C" \
+      "Appendix D" \
+      "Supplemental workbook"
+    do
+      require_literal "${supplemental_marker}" "${supplemental_text}" \
+        "supplemental edition"
+    done
+    require_literal "id=\"sec-supplemental-workbook\"" \
+      "${supplemental_root}/appendices/supplemental-workbook.html" \
+      "supplemental appendix"
+    if grep -Fq "Extended laboratory observations" "${supplemental_text}"; then
+      echo "error: supplemental edition includes the online-only appendix" >&2
+      exit 1
+    fi
     grep -Eq "widows:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "orphans:[[:space:]]*2" book/_build/html/site_libs/bootstrap/*.css
     grep -Eq "overflow-wrap:[[:space:]]*anywhere" book/_build/html/site_libs/bootstrap/*.css
@@ -430,7 +745,6 @@ exec podman run --rm \
 
     # Glossary references retain canonical identity and requested display form;
     # reflowable outputs link to generated, stably anchored definitions.
-    html_reference="book/_build/html/reference.html"
     html_glossary="book/_build/html/glossary.html"
     html_glossary_backmatter="book/_build/html/glossary-backmatter.html"
     locale_glossary_backmatter="book/_build/locale/fr/html/glossary-backmatter.html"
@@ -596,8 +910,13 @@ exec podman run --rm \
       "${html_text}" \
       "${epub_text}" \
       "${epub_language}" \
+      "${epub_nav}" \
       "${epub_svg}" \
       "${epub_listing}" \
-      "${epub_css}"
-    echo "ok: HTML/EPUB structure, appendix grouping/omission, code/math/figure/component/icon/notice/glossary contracts, locale semantics, theme, embedded fonts, and heading markers"
+      "${epub_css}" \
+      "${preview_text}" \
+      "${supplemental_text}" \
+      "${numeric_html_text}" \
+      "${numeric_pdf_text}"
+    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, explicit appendix editions/grouping/omission/numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index contracts, locale semantics, theme, embedded fonts, and heading markers"
   '

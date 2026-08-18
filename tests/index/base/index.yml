@@ -1,0 +1,27 @@
+version: 1
+lang: en-US
+entries:
+  systems:
+    term: systems
+    kind: subject
+    aliases:
+      - system-design
+    locations:
+      - chapter.qmd#overview
+    see-also:
+      - architecture
+  architecture:
+    term: architecture
+    kind: subject
+    parent: systems
+    ranges:
+      - chapter.qmd#tour
+  machine-design:
+    term: machine design
+    kind: subject
+    see: architecture
+  hopper-grace:
+    term: Hopper, Grace
+    kind: person
+    locations:
+      - people.qmd#hopper

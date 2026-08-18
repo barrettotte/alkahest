@@ -3,10 +3,82 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "${script_dir}/.." && pwd)"
 target="${1:-all}"
 
+render_edition_profile() {
+  local edition="$1"
+  local profile="$2"
+  local output_dir="$3"
+  local stage_root="${repo_root}/book/_build/staging/editions/${edition}"
+  local staged_output="${stage_root}/_rendered"
+  local canonical_output="${repo_root}/book/${output_dir}"
+
+  "${script_dir}/stage-edition" "${edition}" >/dev/null
+  "${script_dir}/quarto" render "book/_build/staging/editions/${edition}" \
+    --profile "edition-${edition},${profile}" \
+    --output-dir _rendered
+
+  # Preserve requested PDF backend sources alongside the completed artifact;
+  # staging would otherwise strand keep-typ/keep-tex intermediates.
+  if [[ -f "${stage_root}/index.typ" ]]; then
+    cp "${stage_root}/index.typ" \
+      "${staged_output}/Alkahest-Reference-Book.typ"
+  fi
+  if [[ -f "${stage_root}/index.tex" ]]; then
+    cp "${stage_root}/index.tex" \
+      "${staged_output}/Alkahest-Reference-Book.tex"
+  fi
+
+  # Quarto warns when a project writes outside its root. Promote only a fully
+  # successful staged render into the canonical artifact tree.
+  case "${canonical_output}" in
+    "${repo_root}/book/_build/"*) ;;
+    *)
+      echo "error: unsafe canonical render path: ${canonical_output}" >&2
+      return 1
+      ;;
+  esac
+  test -e "${staged_output}"
+  mkdir -p "$(dirname "${canonical_output}")"
+  rm -rf -- "${canonical_output}"
+  mv -- "${staged_output}" "${canonical_output}"
+  if [[ -d "${canonical_output}/theme/fonts" \
+    && -d "${repo_root}/book/theme/fonts/licenses" ]]
+  then
+    mkdir -p "${canonical_output}/theme/fonts/licenses"
+    cp -a "${repo_root}/book/theme/fonts/licenses/." \
+      "${canonical_output}/theme/fonts/licenses/"
+  fi
+}
+
 render_profile() {
-  "${script_dir}/quarto" render book --profile "$1"
+  case "$1" in
+    html)
+      render_edition_profile html html _build/html
+      ;;
+    epub)
+      render_edition_profile epub epub _build/epub
+      ;;
+    typst)
+      render_edition_profile print typst _build/print/7x10/typst
+      ;;
+    latex)
+      render_edition_profile print latex _build/print/7x10/latex
+      ;;
+    typst-6x9)
+      render_edition_profile print typst-6x9 _build/print/6x9/typst
+      ;;
+    latex-6x9)
+      render_edition_profile print latex-6x9 _build/print/6x9/latex
+      ;;
+    typst-review)
+      render_edition_profile print typst-review _build/review/letter/typst
+      ;;
+    latex-review)
+      render_edition_profile print latex-review _build/review/letter/latex
+      ;;
+  esac
 }
 
 # Profiles share source-directory intermediates, so render them sequentially.
@@ -21,7 +93,33 @@ render_pdf_profiles() {
 }
 
 render_locale_smoke() {
-  "${script_dir}/quarto" render book --profile locale-fr,html
+  render_edition_profile html locale-fr,html _build/locale/fr/html
+}
+
+render_citation_smoke() {
+  render_edition_profile html citation-numeric,html \
+    _build/smoke/citations/numeric/html
+  render_edition_profile print citation-numeric,typst \
+    _build/smoke/citations/numeric/typst
+}
+
+render_appendix_smoke() {
+  render_edition_profile preview html _build/smoke/appendices/preview/html
+  render_edition_profile supplemental html \
+    _build/smoke/appendices/supplemental/html
+}
+
+render_notes_smoke() {
+  render_edition_profile html html,notes-chapter \
+    _build/smoke/notes/chapter/html
+  render_edition_profile html html,notes-book \
+    _build/smoke/notes/book/html
+  render_edition_profile html html,notes-sidenote \
+    _build/smoke/notes/sidenote/html
+  # Use one complete Typst profile: Quarto treats format declarations from
+  # composed profiles as separate render targets rather than map overrides.
+  render_edition_profile print notes-sidenote-typst \
+    _build/smoke/notes/sidenote/typst
 }
 
 case "${target}" in
@@ -42,6 +140,15 @@ case "${target}" in
   locale-smoke)
     render_locale_smoke
     ;;
+  citation-smoke)
+    render_citation_smoke
+    ;;
+  appendix-smoke)
+    render_appendix_smoke
+    ;;
+  notes-smoke)
+    render_notes_smoke
+    ;;
   all)
     render_profile html
     render_profile epub
@@ -54,9 +161,12 @@ case "${target}" in
     render_profile epub
     render_pdf_profiles
     render_locale_smoke
+    render_citation_smoke
+    render_appendix_smoke
+    render_notes_smoke
     ;;
   *)
-    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles|locale-smoke]" >&2
+    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|appendix-smoke|notes-smoke]" >&2
     exit 2
     ;;
 esac

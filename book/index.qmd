@@ -4,7 +4,7 @@ This deliberately small book is an executable specification for Alkahest. Each
 example exists to expose formatting or conversion problems before a real
 manuscript depends on the template.
 
-The specimen carries Alkahest's baseline visual system. Individual books may
+The specimen carries Alkahest's baseline visual system.{{< alk-index technical-publishing id=template-goal >}} Individual books may
 vary its identity later, but shared typography, hierarchy, color roles, and
 component behavior remain testable here.
 

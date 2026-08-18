@@ -3,8 +3,16 @@
 This chapter begins the cross-format test corpus. It includes common technical
 elements and will grow as each roadmap capability is evaluated.
 {{< alk-term central-processing-unit form=first case=sentence >}} designs provide
-a concrete counterpoint to Turing's abstract model of computation, a fitting
-early citation [@turing1936].
+a concrete counterpoint to Turing's abstract model of computation,{{< alk-index computing id=abstract-model >}} a fitting
+early citation [@turing1936].{{< alk-index turing-alan id=turing-citation >}}
+
+The citation specimen also exercises narrative form with @turing1936, a page
+locator [@turing1936, pp. 230–231], multiple sources
+[@turing1936; @knuth1984],{{< alk-index knuth-donald id=knuth-citation >}} author suppression with Turing [-@turing1936], and a
+repeated source [@turing1936]. Shannon's foundational paper is deliberately
+included through project-level `nocite` metadata rather than an inline marker.
+
+{{< alk-index book-design id=reference-tour range=start >}}
 
 ## Heading hierarchy {#sec-heading-hierarchy}
 
@@ -32,8 +40,12 @@ section references; @fig-half-adder, @tbl-half-adder, @eq-ohms-law, and
 Alkahest is developed as a collection of plain-text sources. The
 [Quarto website](https://quarto.org/) is an external link, while
 @sec-equations is an internal cross-reference. This sentence has a footnote
-that must remain navigable in reflowable output.^[A useful footnote should not
-depend on the geometry of a printed page.]
+that must remain navigable in reflowable output.[^page-geometry] A later
+sentence deliberately reuses the same semantic note so each placement policy
+must apply its documented repeat behavior.[^page-geometry]
+
+[^page-geometry]: [A useful footnote should not depend on the geometry of a
+    printed page.]{#note-page-geometry .alkahest-note}
 
 ## Paragraph rhythm
 
@@ -91,6 +103,8 @@ layout:
 The code face must keep commonly confused characters distinct:
 `0 O 1 l I | { [ ( < - + = > ) ] }`.
 
+{{< alk-index book-design id=reference-tour range=end >}}
+
 ## Diagrams and figures
 
 @fig-half-adder is a text-authored diagram. Later specimens will add proper
@@ -126,8 +140,15 @@ flowchart LR
 
 The title, publication-data, and dedication treatments draw from one shared
 metadata record. This chapter belongs to a named part, and
-@sec-page-system-checklist, @sec-format-behavior, and @sec-language-and-script
-exercise three independently addressable appendices.
+@sec-page-system-checklist exercises an independently addressable appendix.
+
+::: {.content-visible unless-profile="edition-preview"}
+The full-family editions also retain @sec-format-behavior and
+@sec-language-and-script without hard-coded letters.
+:::
+
+A chapter-to-appendix route reaches @sec-appendix-numbering and its
+@fig-appendix-signal without hard-coding either destination's displayed number.
 
 ## Deliberately pending specimens
 
@@ -136,5 +157,4 @@ in the roadmap rather than represented by a misleading placeholder:
 
 - chemical formulae, reactions, and 2D molecular structures;
 - publication-quality electrical circuits and logic diagrams;
-- data-driven graphs with accessible descriptions;
-- index generation.
+- data-driven graphs with accessible descriptions.

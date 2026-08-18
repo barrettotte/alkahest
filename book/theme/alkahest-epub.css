@@ -515,3 +515,37 @@ nav#toc a,
 nav#landmarks a {
   text-decoration: none;
 }
+
+.book-endnote-reference {
+  white-space: nowrap;
+}
+
+.generated-book-notes > ol {
+  padding-inline-start: 1.6em;
+}
+
+.book-endnote {
+  margin-block-end: 0.9em;
+}
+
+.book-endnote-backlink {
+  color: #64748b;
+  font-family: "Libertinus Sans", sans-serif;
+  font-size: 0.9em;
+}
+
+.index-marker {
+  display: inline;
+}
+
+.generated-indexes .index-entry > p {
+  margin: 0 0 0.3em;
+}
+
+.generated-indexes .index-entry-depth-1 {
+  margin-left: 1.25em;
+}
+
+.generated-indexes .index-entry-depth-2 {
+  margin-left: 2.5em;
+}

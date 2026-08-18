@@ -1,0 +1,168 @@
+#!/usr/bin/env perl
+# Validate citation styles, bibliography keys, manuscript calls, and uncited inclusions.
+use strict;
+use warnings;
+use Cwd qw(abs_path);
+use Digest::SHA qw(sha256_hex);
+use File::Find qw(find);
+use FindBin qw($Bin);
+
+my $repo_root = abs_path("$Bin/..");
+my $book_root = $ENV{ALKAHEST_CITATION_BOOK_ROOT} // "$repo_root/book";
+$book_root = abs_path($book_root)
+  or die "error: citation book root does not exist\n";
+
+sub fail {
+  die "error: $_[0]\n";
+}
+
+sub slurp {
+  my ($path) = @_;
+  open my $handle, '<:raw', $path or fail("cannot read $path: $!");
+  local $/;
+  my $content = <$handle>;
+  close $handle;
+  return $content;
+}
+
+my %styles = (
+  'citations/chicago-author-date.csl' => {
+    hash => '91fa1fe9787e737dff0c15d7cf8254c9f2bab4ebb4dccf4553a1f991ebddb7d1',
+    format => 'author-date',
+    title => 'Chicago Manual of Style 17th edition (author-date)',
+  },
+  'citations/ieee.csl' => {
+    hash => 'b4c7619fc16c45a31e4cc3271eab94ffe83192d3b4c7fc729470a3b459448de3',
+    format => 'numeric',
+    title => 'IEEE Reference Guide version 11.29.2023',
+  },
+);
+
+for my $relative (sort keys %styles) {
+  my $path = "$book_root/$relative";
+  my $content = slurp($path);
+  my $actual = sha256_hex($content);
+  fail("citation style $relative changed; review its provenance and update the locked hash")
+    if $actual ne $styles{$relative}{hash};
+  fail("citation style $relative has the wrong title")
+    if $content !~ m{<title>\Q$styles{$relative}{title}\E</title>};
+  fail("citation style $relative does not declare $styles{$relative}{format} format")
+    if $content !~ /<category citation-format="\Q$styles{$relative}{format}\E"\/>/;
+  fail("citation style $relative has no declared license")
+    if $content !~ /<rights\s+license="[^"]+">/;
+}
+
+my $config = slurp("$book_root/_quarto.yml");
+fail("default bibliography must be references.bib")
+  if $config !~ /^bibliography:\s*references\.bib\s*$/m;
+fail("default citation style must be the locked Chicago author-date file")
+  if $config !~ /^csl:\s*citations\/chicago-author-date\.csl\s*$/m;
+
+my $numeric = slurp("$book_root/_quarto-citation-numeric.yml");
+fail("numeric profile must select the locked IEEE file")
+  if $numeric !~ /^csl:\s*citations\/ieee\.csl\s*$/m;
+
+for my $typst_profile (qw(_quarto-typst.yml _quarto-typst-6x9.yml _quarto-typst-review.yml)) {
+  my $typst = slurp("$book_root/$typst_profile");
+  fail("Typst profile $typst_profile must run citations through Pandoc citeproc")
+    if $typst !~ /^\s+citeproc:\s*true\s*$/m;
+}
+my $references = slurp("$book_root/references.qmd");
+fail("expected exactly one shared references division")
+  if (() = $references =~ /\{#refs\}/g) != 1;
+
+my $bibliography_path = "$book_root/references.bib";
+my $bibliography = slurp($bibliography_path);
+my (%keys, %key_lines);
+my $line_number = 0;
+for my $line (split /\n/, $bibliography) {
+  ++$line_number;
+  next if $line !~ /^\s*\@[A-Za-z]+\s*\{\s*([^,\s]+)\s*,/;
+  my $key = $1;
+  fail("$bibliography_path:$line_number: duplicate bibliography key $key; first declared at line $key_lines{$key}")
+    if exists $keys{$key};
+  $keys{$key} = 1;
+  $key_lines{$key} = $line_number;
+}
+fail("bibliography has no entries") if !keys %keys;
+
+my %nocite;
+if ($config =~ /^nocite:\s*\|\s*\n((?:[ \t]+.*(?:\n|\z))*)/m) {
+  my $block = $1;
+  while ($block =~ /\@([A-Za-z0-9][A-Za-z0-9_.:+-]*)/g) {
+    $nocite{$1} = 1;
+  }
+}
+while ($config =~ /^nocite:\s*['"]?\@([A-Za-z0-9][A-Za-z0-9_.:+-]*)/mg) {
+  $nocite{$1} = 1;
+}
+fail("nocite metadata must list at least one explicit bibliography key")
+  if $config =~ /^nocite:/m && !keys %nocite;
+for my $key (sort keys %nocite) {
+  fail("nocite metadata references missing bibliography key $key")
+    if !exists $keys{$key};
+}
+
+my @sources;
+find(
+  {
+    wanted => sub {
+      return if !-f $_ || $_ !~ /\.qmd\z/;
+      return if $File::Find::name =~ m{/(?:\.quarto|_build)/};
+      push @sources, $File::Find::name;
+    },
+    no_chdir => 1,
+  },
+  $book_root,
+);
+
+my %crossref_prefix = map { $_ => 1 }
+  qw(sec fig tbl eq lst thm lem cor prp cnj def exm exr sol nte wrn tip imp cau rem alg);
+my (%cited, %calls);
+for my $source (sort @sources) {
+  open my $input, '<:encoding(UTF-8)', $source
+    or fail("cannot read $source: $!");
+  my ($line_number, $fence_char, $fence_length) = (0, undef, 0);
+  while (my $line = <$input>) {
+    ++$line_number;
+    if (defined $fence_char) {
+      if ($line =~ /^\s*(\Q$fence_char\E{$fence_length,})\s*$/) {
+        $fence_char = undef;
+        $fence_length = 0;
+      }
+      next;
+    }
+    if ($line =~ /^\s*(`{3,}|~{3,})/) {
+      my $fence = $1;
+      $fence_char = substr($fence, 0, 1);
+      $fence_length = length($fence);
+      next;
+    }
+
+    $line =~ s/`+[^`]*`+//g;
+    $line =~ s{https?://\S+}{}g;
+    $line =~ s/[A-Za-z0-9._%+-]+\@[A-Za-z0-9.-]+//g;
+    while ($line =~ /(?<![A-Za-z0-9_])\@([A-Za-z0-9][A-Za-z0-9_.:+-]*)/g) {
+      my $key = $1;
+      if (exists $keys{$key}) {
+        $cited{$key} = 1;
+        ++$calls{$key};
+        next;
+      }
+      my ($prefix) = $key =~ /^([a-z]+)-/;
+      next if defined $prefix && $crossref_prefix{$prefix};
+      fail("$source:$line_number: citation references missing bibliography key $key");
+    }
+  }
+  close $input;
+}
+
+for my $key (sort keys %keys) {
+  fail("bibliography key $key is unused; cite it or list it explicitly in nocite metadata")
+    if !$cited{$key} && !$nocite{$key};
+}
+
+print "ok: citations (" . scalar(keys %keys) . " bibliography keys; "
+  . scalar(keys %cited) . " cited; " . scalar(keys %nocite)
+  . " explicit nocite; " . scalar(keys %styles)
+  . " locked styles; shared Pandoc citeproc path)\n";

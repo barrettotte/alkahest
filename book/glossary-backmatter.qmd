@@ -5,3 +5,6 @@ than this page when terminology changes.
 
 ::: {.alkahest-glossary-placeholder}
 :::
+
+::: {.alkahest-book-notes-placeholder}
+:::

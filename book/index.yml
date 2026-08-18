@@ -1,0 +1,50 @@
+version: 1
+lang: en-US
+entries:
+  technical-publishing:
+    term: technical publishing
+    kind: subject
+    locations:
+      - index.qmd#template-goal
+    see-also:
+      - book-design
+  book-design:
+    term: book design
+    kind: subject
+    parent: technical-publishing
+    ranges:
+      - reference.qmd#reference-tour
+  computation:
+    term: computation
+    kind: subject
+    aliases:
+      - computing
+    locations:
+      - reference.qmd#abstract-model
+      - glossary.qmd#processor-discussion
+    see-also:
+      - turing-alan
+  instruction-set-architecture:
+    term: instruction set architecture
+    kind: subject
+    parent: computation
+    aliases:
+      - isa
+    locations:
+      - glossary.qmd#isa-contract
+  processor-architecture:
+    term: processor architecture
+    kind: subject
+    see: instruction-set-architecture
+  knuth-donald:
+    term: Knuth, Donald E.
+    kind: person
+    locations:
+      - reference.qmd#knuth-citation
+  turing-alan:
+    term: Turing, Alan
+    kind: person
+    locations:
+      - reference.qmd#turing-citation
+    see-also:
+      - computation

@@ -1,0 +1,13 @@
+version: 1
+order:
+  - page-geometry
+  - source-order
+notes:
+  page-geometry:
+    source: reference.qmd
+    repeat: reuse
+    references: 2
+  source-order:
+    source: components.qmd
+    repeat: once
+    references: 1

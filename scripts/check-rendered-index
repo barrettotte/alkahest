@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# Verify linked HTML/EPUB indexes and page-resolved Typst/LuaLaTeX indexes.
+set -euo pipefail
+
+require_literal() {
+  local needle="$1"
+  local file="$2"
+  local label="$3"
+  if ! grep -Fq "${needle}" "${file}"; then
+    echo "error: ${label} is missing required text: ${needle}" >&2
+    exit 1
+  fi
+}
+
+html_root="book/_build/html"
+html_index="${html_root}/index-backmatter.html"
+epub="book/_build/epub/Alkahest-Reference-Book.epub"
+typst_pdf="book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf"
+latex_pdf="book/_build/print/7x10/latex/Alkahest-Reference-Book.pdf"
+
+perl scripts/check-html-links "${html_root}"
+test -f "${html_index}"
+require_literal 'class="generated-indexes"' "${html_index}" "HTML generated index"
+require_literal 'data-index-entry-count="7"' "${html_index}" "HTML generated index"
+require_literal 'lang="en-US"' "${html_index}" "HTML generated index"
+for structure in \
+  'class="level2 generated-index-group index-kind-subject" data-index-root-count="3" data-index-kind="subject"' \
+  'class="level2 generated-index-group index-kind-person" data-index-root-count="2" data-index-kind="person"' \
+  'class="index-entry index-entry-depth-1 index-entry-kind-subject"' \
+  'id="index-entry-processor-architecture" class="index-entry-term"' \
+  'href="#index-entry-instruction-set-architecture" class="index-relation-link"' \
+  'href="#index-entry-turing-alan" class="index-relation-link"' \
+  'href="./reference.html#index-ref-computation-abstract-model" class="index-locator-link"' \
+  'href="./reference.html#index-range-book-design-reference-tour-start" class="index-range-link index-range-start"' \
+  'href="./reference.html#index-range-book-design-reference-tour-end" class="index-range-link index-range-end"'
+do
+  require_literal "${structure}" "${html_index}" "HTML generated index"
+done
+require_literal \
+  'id="index-ref-computation-abstract-model" class="index-marker"' \
+  "${html_root}/reference.html" "HTML alias marker"
+require_literal \
+  'data-index-requested="computing"' \
+  "${html_root}/reference.html" "HTML alias marker"
+require_literal \
+  'id="index-range-book-design-reference-tour-start" class="index-marker"' \
+  "${html_root}/reference.html" "HTML range start"
+require_literal \
+  'id="index-range-book-design-reference-tour-end" class="index-marker"' \
+  "${html_root}/reference.html" "HTML range end"
+
+epub_xhtml="$(mktemp)"
+typst_text="$(mktemp)"
+latex_text="$(mktemp)"
+trap 'rm -f -- "${epub_xhtml}" "${typst_text}" "${latex_text}"' EXIT
+unzip -p "${epub}" 'EPUB/text/*.xhtml' >"${epub_xhtml}"
+require_literal 'class="generated-indexes"' "${epub_xhtml}" "EPUB generated index"
+require_literal 'data-index-entry-count="7"' "${epub_xhtml}" "EPUB generated index"
+require_literal 'lang="en-US"' "${epub_xhtml}" "EPUB generated index"
+for structure in \
+  'id="index-entry-computation" class="index-entry-term"' \
+  'id="index-entry-book-design" class="index-entry-term"' \
+  'id="index-entry-turing-alan" class="index-entry-term"' \
+  'id="index-ref-computation-abstract-model" class="index-marker"' \
+  'id="index-range-book-design-reference-tour-start" class="index-marker"' \
+  'id="index-range-book-design-reference-tour-end" class="index-marker"'
+do
+  require_literal "${structure}" "${epub_xhtml}" "EPUB generated index"
+done
+for target in \
+  index-ref-computation-abstract-model \
+  index-range-book-design-reference-tour-start \
+  index-range-book-design-reference-tour-end
+do
+  if ! grep -Eq "href=\"ch[0-9]+\.xhtml#${target}\"" "${epub_xhtml}"; then
+    echo "error: EPUB index has no packaged link to ${target}" >&2
+    exit 1
+  fi
+done
+
+normalize_pdf() {
+  local pdf="$1"
+  local output="$2"
+  pdftotext "${pdf}" - \
+    | perl -CSD -0777 -pe \
+      's/([\pL\pN])-[ \t]*\r?\n[ \t]*([\pL\pN])/$1-$2/g; s/\x{AD}\s*//g; s/\s+/ /g' \
+    >"${output}"
+}
+normalize_pdf "${typst_pdf}" "${typst_text}"
+normalize_pdf "${latex_pdf}" "${latex_text}"
+
+for print_text in "${typst_text}" "${latex_text}"; do
+  for marker in \
+    'Subject index' \
+    'Name index' \
+    'processor architecture, see instruction set architecture' \
+    'technical publishing' \
+    'see also book design' \
+    'Turing, Alan' \
+    'see also computation'
+  do
+    require_literal "${marker}" "${print_text}" "page-resolved print index"
+  done
+  if ! perl -CSD -0777 -ne '
+    die "missing two-page point entry\n"
+      unless /computation,\s*[0-9]+,\s*[0-9]+;\s*see also Turing, Alan/;
+    die "missing resolved range\n"
+      unless /book design,\s*([0-9]+)\x{2013}([0-9]+)/ && $2 > $1;
+    die "missing person page\n"
+      unless /Knuth, Donald E\.,\s*[0-9]+/;
+    die "unresolved page reference\n" if /\?\?/;
+  ' "${print_text}"
+  then
+    echo "error: print index page-number contract failed" >&2
+    exit 1
+  fi
+done
+
+echo "ok: rendered indexes (linked HTML/EPUB points and ranges; nested entries; see/see-also; page-resolved Typst/LuaLaTeX ranges)"

@@ -1,0 +1,4 @@
+bibliography: references.bib
+csl: citations/chicago-author-date.csl
+nocite: |
+  @background

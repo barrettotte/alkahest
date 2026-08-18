@@ -1,0 +1,4 @@
+# Index
+
+::: {.alkahest-index-placeholder}
+:::

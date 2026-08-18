@@ -1,0 +1,5 @@
+# Reference
+
+First reference.[^page-geometry] Reused reference.[^page-geometry]
+
+[^page-geometry]: [Geometry-independent note.]{#note-page-geometry .alkahest-note}

@@ -1,0 +1,80 @@
+#!/usr/bin/env perl
+# Exercise valid and deliberately invalid appendix-edition registry contracts.
+use strict;
+use warnings;
+use FindBin qw($Bin);
+use File::Temp qw(tempfile);
+use JSON::PP qw(decode_json encode_json);
+use lib "$Bin/lib";
+use Alkahest::AppendixEditions qw(load_appendix_editions);
+
+my $registry_path = "$Bin/../book/appendix-editions.json";
+open my $registry_handle, '<:raw', $registry_path
+  or die "error: cannot read $registry_path: $!\n";
+local $/;
+my $registry_json = <$registry_handle>;
+close $registry_handle;
+
+sub registry_copy {
+  return decode_json($registry_json);
+}
+
+sub write_registry {
+  my ($registry) = @_;
+  my ($handle, $path) = tempfile('alkahest-appendix-editions-XXXXXX',
+    TMPDIR => 1, SUFFIX => '.json', UNLINK => 1);
+  print {$handle} encode_json($registry);
+  close $handle;
+  return $path;
+}
+
+sub expect_failure {
+  my ($name, $expected, $mutate) = @_;
+  my $registry = registry_copy();
+  $mutate->($registry);
+  my $path = write_registry($registry);
+  my $error = '';
+  eval { load_appendix_editions($path); 1 } or $error = $@;
+  die "error: appendix-edition fixture $name unexpectedly passed\n"
+    if !$error;
+  die "error: appendix-edition fixture $name missed expected diagnostic: $expected\n$error"
+    if index($error, $expected) < 0;
+}
+
+load_appendix_editions(write_registry(registry_copy()));
+
+expect_failure('missing-edition', 'appendix editions must be exactly', sub {
+  delete $_[0]{editions}{epub};
+});
+expect_failure('drifted-format', "edition 'print' has invalid formats", sub {
+  $_[0]{editions}{print}{formats} = ['latex'];
+});
+expect_failure('online-in-print',
+  "edition 'print' must select exactly the core appendices", sub {
+    push @{ $_[0]{editions}{print}{groups}[0]{chapters} }, 'online-lab-notes';
+  });
+expect_failure('supplemental-in-html',
+  "edition 'html' must select core and online-only appendices", sub {
+    $_[0]{editions}{html}{groups}[2]{chapters}[0] = 'supplemental-workbook';
+  });
+expect_failure('complete-preview',
+  "edition 'preview' must select a nonempty proper subset of core appendices", sub {
+    $_[0]{editions}{preview}{groups}[0]{chapters} = [
+      qw(page-system-checklist format-behavior language-and-script)
+    ];
+  });
+expect_failure('exceptional-preview',
+  "edition 'preview' must select a nonempty proper subset of core appendices", sub {
+    $_[0]{editions}{preview}{groups}[0]{chapters}[0] = 'online-lab-notes';
+  });
+expect_failure('duplicate-source',
+  "selects appendix 'page-system-checklist' more than once", sub {
+    push @{ $_[0]{editions}{full}{groups}[1]{chapters} },
+      'page-system-checklist';
+  });
+expect_failure('unknown-source',
+  "references unknown appendix 'missing-appendix'", sub {
+    $_[0]{editions}{epub}{groups}[0]{chapters}[0] = 'missing-appendix';
+  });
+
+print "ok: appendix-edition fixtures (valid registry; 8 invalid contracts rejected)\n";

@@ -10,6 +10,8 @@ paragraph-spacing: 3pt
 
 format:
   typst:
+    # Keep citation semantics identical to reflowable and LuaLaTeX outputs.
+    citeproc: true
     keep-typ: true
     template-partials:
       - typst/typst-show.typ

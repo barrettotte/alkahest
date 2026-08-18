@@ -1,0 +1,9 @@
+# Systems
+
+Systems thinking starts here.{{< alk-index system-design id=overview >}}
+
+{{< alk-index architecture id=tour range=start >}}
+
+This passage describes an architectural range.
+
+{{< alk-index architecture id=tour range=end >}}

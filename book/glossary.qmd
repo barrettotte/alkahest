@@ -10,11 +10,11 @@ display form without copying the definition.
 A {{< alk-term central-processing-unit >}} fetches, decodes, and executes
 instructions. This later chapter may use {{< alk-term cpu form=acronym >}}
 without hard-coding either expansion, proving that cross-chapter references
-retain one identity. A multiprocessor discussion may refer to several
+retain one identity. A multiprocessor discussion{{< alk-index computation id=processor-discussion >}} may refer to several
 {{< alk-term cpu form=acronym-plural >}}. When the full plural is clearer, the
 same entry emits {{< alk-term central-processing-unit form=plural >}}.
 
-The {{< alk-term instruction-set-architecture form=first >}} defines the
+The {{< alk-term instruction-set-architecture form=first >}}{{< alk-index isa id=isa-contract >}} defines the
 programmer-visible processor contract. The `isa` alias still resolves to the
 canonical registry identity when rendered as {{< alk-term isa form=acronym >}}.
 

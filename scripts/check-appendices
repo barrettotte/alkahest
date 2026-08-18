@@ -1,32 +1,30 @@
 #!/usr/bin/env perl
-# Validate grouped appendix manifests and exceptional availability metadata.
+# Validate appendix sources, explicit edition manifests, and bibliography policy.
 use strict;
 use warnings;
 use Cwd qw(abs_path);
 use File::Find qw(find);
 use FindBin qw($Bin);
+use lib "$Bin/lib";
+use Alkahest::AppendixEditions qw(edition_paths load_appendix_editions);
 
 my $repo_root = abs_path("$Bin/..");
-my $book_root = "$repo_root/book";
-my @manifests = (
-  { path => "$book_root/_quarto.yml", label => "default" },
-);
-my %all_sources;
-my $group_count = 0;
+my $book_root = $ENV{ALKAHEST_APPENDIX_BOOK_ROOT} // "$repo_root/book";
+$book_root = abs_path($book_root)
+  or die "error: appendix book root does not exist\n";
+my $registry = load_appendix_editions("$book_root/appendix-editions.json");
 
 sub fail {
   die "error: $_[0]\n";
 }
 
 sub parse_manifest {
-  my ($manifest) = @_;
-  open my $handle, '<:encoding(UTF-8)', $manifest->{path}
-    or fail("cannot read $manifest->{path}");
-  my $in_appendices = 0;
-  my $in_chapters = 0;
-  my $current_group;
-  my %groups;
-  my @sources;
+  my ($path, $label) = @_;
+  open my $handle, '<:encoding(UTF-8)', $path
+    or fail("cannot read $path");
+  my ($in_appendices, $in_chapters, $current_group) = (0, 0, undef);
+  my (%parts, %seen_sources);
+  my @groups;
   while (my $line = <$handle>) {
     if ($line =~ /^  appendices:\s*$/) {
       $in_appendices = 1;
@@ -37,10 +35,11 @@ sub parse_manifest {
     last if $line =~ /^\S/ || $line =~ /^  [a-zA-Z0-9_-]+:/;
     next if $line =~ /^\s*(?:#.*)?$/;
     if ($line =~ /^    - part: "([^"]+)"\s*$/) {
-      $current_group = $1;
-      fail("duplicate appendix group '$current_group' in $manifest->{label} manifest")
-        if $groups{$current_group}++;
-      $group_count++;
+      my $part = $1;
+      fail("duplicate appendix group '$part' in $label manifest")
+        if $parts{$part}++;
+      $current_group = { part => $part, chapters => [] };
+      push @groups, $current_group;
       $in_chapters = 0;
       next;
     }
@@ -50,20 +49,47 @@ sub parse_manifest {
     }
     if ($line =~ /^        - ([a-zA-Z0-9_\/-]+\.qmd)\s*$/ && $in_chapters) {
       my $source = $1;
-      fail("appendix source '$source' is listed twice in $manifest->{label} manifest")
-        if grep { $_ eq $source } @sources;
-      push @sources, $source;
-      $all_sources{$source} = 1;
+      fail("appendix source '$source' is listed twice in $label manifest")
+        if $seen_sources{$source}++;
+      push @{ $current_group->{chapters} }, $source;
       next;
     }
-    fail("unsupported appendix structure in $manifest->{label} manifest: $line");
+    fail("unsupported appendix structure in $label manifest: $line");
   }
   close $handle;
-  fail("$manifest->{label} manifest has no grouped appendices") if !@sources;
+  fail("$label manifest has no grouped appendices") if !@groups;
+  for my $group (@groups) {
+    fail("appendix group '$group->{part}' in $label manifest has no chapters")
+      if !@{ $group->{chapters} };
+  }
+  return \@groups;
 }
 
-parse_manifest($_) for @manifests;
+my $default_groups = parse_manifest("$book_root/_quarto.yml", 'default');
+my @expected_full_groups;
+for my $group (@{ $registry->{editions}{full}{groups} }) {
+  push @expected_full_groups, {
+    part => $group->{part},
+    chapters => [
+      map { $registry->{sources}{$_}{path} } @{ $group->{chapters} }
+    ],
+  };
+}
+fail("default Quarto manifest must match the full appendix edition exactly")
+  if scalar(@$default_groups) != scalar(@expected_full_groups);
+for my $index (0 .. $#expected_full_groups) {
+  my $actual = $default_groups->[$index];
+  my $expected = $expected_full_groups[$index];
+  fail("default Quarto appendix group order differs from the full edition")
+    if $actual->{part} ne $expected->{part};
+  fail("default Quarto appendix source order differs from the full edition")
+    if join("\0", @{ $actual->{chapters} })
+      ne join("\0", @{ $expected->{chapters} });
+}
 
+my %registered_path = map {
+  $registry->{sources}{$_}{path} => $_
+} keys %{ $registry->{sources} };
 my @disk_sources;
 find(
   sub {
@@ -74,31 +100,46 @@ find(
   },
   "$book_root/appendices",
 );
-
 for my $source (sort @disk_sources) {
+  fail("appendix source '$source' is absent from appendix-editions.json")
+    if !exists $registered_path{$source};
+}
+for my $source (sort keys %registered_path) {
+  fail("appendix registry references missing source '$source'")
+    if !-f "$book_root/$source";
+}
+fail("appendix registry and source directory contain different file counts")
+  if @disk_sources != keys %registered_path;
+
+for my $source (sort keys %registered_path) {
+  my $source_id = $registered_path{$source};
+  my $expected_availability = $registry->{sources}{$source_id}{availability};
   my $path = "$book_root/$source";
   open my $handle, '<:encoding(UTF-8)', $path or fail("cannot read $path");
   local $/;
   my $content = <$handle>;
   close $handle;
+  my ($front_matter) = $content =~ /\A---\s*\n(.*?)^---\s*$/ms;
+  if (defined $front_matter && $front_matter =~ /^bibliography\s*:/m) {
+    fail("appendix source '$source' declares a local bibliography; use the shared book bibliography");
+  }
   my @headings = ($content =~ /^# (?!#)(.+?)\s+\{#([^}]+)\}\s*$/mg);
   fail("appendix source '$source' must have exactly one H1 with a stable ID")
     if @headings != 2;
 
-  my ($availability) = $content =~ /\A---\s*\n.*?^alkahest-appendix:\s*\n\s+availability:\s*([a-z-]+)\s*$.*?^---\s*$/ms;
-  if (defined $availability) {
-    fail("appendix source '$source' has unsupported availability '$availability'")
-      if $availability ne 'online-only' && $availability ne 'supplemental';
-    fail("exceptional appendix '$source' appears in the default book")
-      if $all_sources{$source};
-  } elsif (!$all_sources{$source}) {
-    fail("appendix source '$source' is neither selected nor marked with exceptional availability");
+  my ($declared_availability) = $content =~ /\A---\s*\n.*?^alkahest-appendix:\s*\n\s+availability:\s*([a-z-]+)\s*$.*?^---\s*$/ms;
+  if ($expected_availability eq 'core') {
+    fail("core appendix '$source' must not declare exceptional availability")
+      if defined $declared_availability;
+  } else {
+    fail("appendix '$source' must declare availability '$expected_availability'")
+      if !defined $declared_availability
+        || $declared_availability ne $expected_availability;
   }
 }
-for my $source (sort keys %all_sources) {
-  fail("appendix manifest references missing source '$source'")
-    if !-f "$book_root/$source";
-}
 
-print "ok: appendix structure ($group_count groups; " . scalar(@disk_sources)
-  . " canonical sources; exceptional material deferred to edition manifests)\n";
+my @preview_paths = edition_paths($registry, 'preview');
+print "ok: appendix editions (" . scalar(keys %{ $registry->{editions} })
+  . " editions; " . scalar(keys %{ $registry->{sources} })
+  . " canonical sources; " . scalar(@preview_paths)
+  . " preview appendix; explicit full/print/EPUB/HTML/supplemental rules; one shared bibliography)\n";

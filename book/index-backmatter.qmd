@@ -1,0 +1,7 @@
+# Index {.unnumbered #index-backmatter}
+
+The subject and name indexes below are generated from `index.yml`; edit the
+registry and its stable manuscript markers rather than this page.
+
+::: {.alkahest-index-placeholder}
+:::

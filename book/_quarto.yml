@@ -3,8 +3,11 @@ project:
   # Validate semantic sources, then stage generated vector and font build inputs.
   pre-render:
     - ../scripts/check-appendices
+    - ../scripts/check-citations
     - ../scripts/check-glossary
     - ../scripts/check-icons
+    - ../scripts/check-index
+    - ../scripts/check-notes
     - ../scripts/stage-icons
     - ../scripts/stage-webfonts
 
@@ -28,6 +31,7 @@ book:
         - glossary.qmd
     - references.qmd
     - glossary-backmatter.qmd
+    - index-backmatter.qmd
   appendices:
     - part: "Production reference"
       chapters:
@@ -47,8 +51,16 @@ alkahest:
   rights-statement: "[Rights statement selected before publication]"
   identifier: "[ISBN or other publication identifier]"
   dedication: "For the readers who build things to understand them."
+  notes:
+    placement: footnotes
 
 bibliography: references.bib
+csl: citations/chicago-author-date.csl
+# Keep intentionally uncited background works explicit and reviewable. The
+# citation validator rejects every bibliography record that is neither cited
+# in prose nor listed here.
+nocite: |
+  @shannon1948
 lang: en-US
 crossrefs-hover: true
 
@@ -71,7 +83,9 @@ crossref:
 # valid image alternative and remove the invalid wrapper attribute late enough
 # that cross-reference rendering is already complete.
 filters:
+  - _extensions/alkahest-notes/alkahest-notes-filter.lua
   - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
+  - _extensions/alkahest-index/alkahest-index-filter.lua
   - at: post-render
     path: filters/strip-invalid-alt.lua
 

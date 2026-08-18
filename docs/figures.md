@@ -1,0 +1,121 @@
+# Figure and visual-asset contract
+
+`book/figures.qmd` is the acceptance specimen for standalone figures,
+subfigures, captions, alternative descriptions, source credit, float behavior,
+full-width art, and medium-specific variants. Figure inputs are versioned
+assets; generated assets must eventually carry the same provenance record.
+
+## A complete figure
+
+Every substantive figure has four distinct pieces:
+
+1. A durable `fig-` identifier that names the idea rather than a filename or
+   displayed number.
+2. A caption that states the figure's relevance to the argument.
+3. Explicit `fig-alt` text that describes the visual evidence a reader needs.
+4. Visible source/license credit plus a matching entry in the asset registry.
+
+Use a figure Div when the caption needs structured source credit:
+
+```markdown
+::: {#fig-signal-path}
+
+![](figures/signal-path.svg){fig-alt="Three labeled stages connected by arrows." width="100%"}
+
+A signal moves from measurement to decision.
+[Source: original diagram, CC0 1.0.]{.figure-source}
+:::
+
+See @fig-signal-path.
+```
+
+Alternative text is not the caption repeated. It describes relationships,
+direction, scale, notable contrast, or other visual evidence needed to reach
+the same conclusion. It should not repeat every visible label, begin with
+“image of,” or depend on color names when labels and shapes convey the meaning.
+
+## Panels and subfigures
+
+Use a panel only for members that support one comparison. Give every member an
+ID, subcaption, and alternative description, then give the enclosing panel its
+own ID and shared caption:
+
+```markdown
+::: {#fig-comparison layout-ncol="2"}
+
+![Before](figures/before.svg){#fig-before fig-alt="..."}
+
+![After](figures/after.svg){#fig-after fig-alt="..."}
+
+Before and after the change. [Source: ...]{.figure-source}
+:::
+```
+
+The panel can be cited as `@fig-comparison`; members can be cited independently
+as `@fig-before` and `@fig-after`. Empty lines are required between members so
+Pandoc treats them as separate blocks.
+
+## Full-width and medium-specific variants
+
+Apply `.figure-full-width` to an enclosing figure Div. HTML may expand it a
+small amount beyond the prose measure without entering the navigation columns;
+EPUB and the one-column PDF profiles use the available reader or live-page
+width. “Full-width” never means extending to the physical trim edge.
+
+When screen and print genuinely need different rendering, keep one outer
+figure and select equivalent assets inside it:
+
+```markdown
+::: {#fig-system .figure-full-width}
+
+:::: {.content-visible when-format="html"}
+![](figures/system-screen.svg){fig-alt="..." width="100%"}
+::::
+
+:::: {.content-visible unless-format="html"}
+![](figures/system-print.svg){fig-alt="..." width="100%"}
+::::
+
+One caption and source line for both presentations.
+:::
+```
+
+Quarto's `html` format alias includes EPUB, so the example selects the screen
+asset for both reflowable editions and the print asset for Typst/LuaLaTeX. The
+variants must preserve meaning, labels, reading order, view box, ID, caption,
+and alternative description. A materially different claim needs a separate
+figure and reference.
+
+## Placement and asset policy
+
+Author a figure at the document's top level, near its first reference. HTML and
+EPUB preserve reading order. Typst uses native book-figure placement;
+LuaLaTeX's profile-level `htbp` policy permits here, top, bottom, and float-page
+positions. Exact page placement is deliberately not stable, so prose must not
+say “above,” “below,” or name a page.
+
+Prefer SVG for diagrams, plots, and line art. The locked `rsvg-convert` tool
+turns SVG inputs into vector PDF assets for LuaLaTeX; Typst consumes SVG
+directly. Use raster inputs only for inherently photographic or textured
+subjects. Effective raster resolution, color space, and print preflight remain
+release-gate work rather than claims of this source-level contract.
+
+`book/figures/README.md` is the current asset registry. A production registry
+must record creator, origin, license or permission, modification history, and
+any required credit wording. Captions cannot be baked into image pixels.
+
+Quarto 1.10 duplicates `fig-alt` onto the generated figure wrapper as well as
+the image. HTML/EPUB permit `alt` only on the image, so the small post-render
+filter in `book/filters/strip-invalid-alt.lua` removes the invalid wrapper copy
+without changing the image alternative. Delete the adapter when an upstream
+render no longer produces the duplicate attribute and the regression check
+still passes.
+
+## Validation
+
+`make check-publication` requires stable IDs, panel relationships, explicit alt
+text, source spans, full-width semantics, and only the screen variant in HTML
+and EPUB. EPUBCheck validates the packaged SVG resources. `make
+check-pdf-profiles` requires the print variant, captions, references, source
+credit, recto chapter start, embedded fonts, and physical text containment in
+all six PDFs. Visual review begins with the 6 x 9 panels and full-width figure.
