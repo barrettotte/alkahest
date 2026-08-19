@@ -65,6 +65,8 @@ printf "  OpenJDK: "
 java -version 2>&1 | sed -n "1s/^openjdk version \"\([^\"]*\)\".*/\1/p"
 printf "  Poppler: "
 pdfinfo -v 2>&1 | sed -n "1s/^pdfinfo version //p"
+printf "  Python: "
+python3 --version | sed "s/^Python //"
 printf "  librsvg: "
 rsvg-convert --version | sed "s/^rsvg-convert version //"
 
@@ -72,6 +74,7 @@ echo "Font and TeX packages"
 dpkg-query -W fonts-dejavu-core | sed "s/^/  /"
 dpkg-query -W openjdk-11-jre-headless | sed "s/^/  /"
 dpkg-query -W poppler-utils | sed "s/^/  /"
+dpkg-query -W python3 python3-minimal | sed "s/^/  /"
 dpkg-query -W librsvg2-bin | sed "s/^/  /"
 tlmgr info --only-installed \
   lm lm-math \

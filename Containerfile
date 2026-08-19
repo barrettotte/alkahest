@@ -256,6 +256,14 @@ RUN groupadd --gid 10001 alkahest \
         alkahest \
     && install --directory --owner=10001 --group=10001 /workspace
 
+# Validators use the standard library only. Install Python after the large
+# publishing stack so adding validator tooling does not invalidate TeX, fonts,
+# browser, or EPUB checker layers.
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
+        python3=3.8.2-0ubuntu2 \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV HOME=/home/alkahest
 WORKDIR /workspace
 

@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "items": {
+    "asset-half-adder-verilog": {
+      "kind": "code",
+      "title": "Half-adder Verilog source",
+      "path": "companion/half-adder.v",
+      "media_type": "text/x-verilog",
+      "version": "1.0.0",
+      "sha256": "9f5af146dd486b46c75395650a3ef95bd346b7055bf0180e89ec37e64d9fae60",
+      "compatibility": ["IEEE 1364-2005 Verilog"],
+      "description": "Reusable combinational half-adder source matching the canonical code listing.",
+      "release_path": "companion/half-adder.v"
+    },
+    "asset-half-adder-data": {
+      "kind": "dataset",
+      "title": "Half-adder truth-table dataset",
+      "path": "companion/half-adder-truth-table.csv",
+      "media_type": "text/csv",
+      "version": "1.0.0",
+      "sha256": "5827c0694e0e428f6489747c678d247fefeb18e86f7e21e306fd96a75f78059b",
+      "compatibility": ["RFC 4180 CSV", "UTF-8"],
+      "description": "Four-row truth table with named binary input, sum, and carry columns.",
+      "release_path": "companion/half-adder-truth-table.csv"
+    },
+    "asset-half-adder-schematic": {
+      "kind": "schematic",
+      "title": "Half-adder logic schematic",
+      "path": "companion/half-adder-schematic.svg",
+      "media_type": "image/svg+xml",
+      "version": "1.0.0",
+      "sha256": "b3fec045090d951d344f96cd5de91017cabe678940e92487b612303b970d58dd",
+      "compatibility": ["SVG 1.1", "XOR/AND logic notation"],
+      "description": "Accessible logic schematic showing inputs A and B feeding XOR sum and AND carry outputs.",
+      "release_path": "companion/half-adder-schematic.svg"
+    },
+    "asset-half-adder-bom": {
+      "kind": "bill-of-materials",
+      "title": "Half-adder bill of materials",
+      "path": "companion/half-adder-bom.csv",
+      "media_type": "text/csv",
+      "version": "1.0.0",
+      "sha256": "ff80aabc96b9648cb2b0a327da9722dc56a5cc15d33540911b0df39cc241fbd0",
+      "compatibility": ["74HC logic", "2 V to 6 V supply", "2.54 mm breadboard"],
+      "description": "Parts list for a breadboard half-adder with logic ICs, decoupling capacitors, and headers.",
+      "release_path": "companion/half-adder-bom.csv"
+    },
+    "asset-half-adder-project-pack": {
+      "kind": "download",
+      "title": "Half-adder project pack manifest",
+      "path": "companion/half-adder-project-pack.md",
+      "media_type": "text/markdown",
+      "version": "1.0.0",
+      "sha256": "c42344c95616988420c694b46090f7f2cda2af83e662ce279f071cc1389cddb7",
+      "compatibility": ["Alkahest companion contract 1"],
+      "description": "Download manifest grouping the code, dataset, schematic, and bill of materials for one project.",
+      "release_path": "companion/half-adder-project-pack.md"
+    }
+  }
+}

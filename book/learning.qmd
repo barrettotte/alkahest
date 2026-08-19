@@ -1,0 +1,93 @@
+# Learning components {#sec-learning-components}
+
+Technical instruction benefits from a predictable learning contract without
+turning every book into a course. These blocks state what a reader can do,
+what the section assumes, how demanding it is, what was established, and how
+to check understanding. Their visible headings carry meaning in every output;
+color and layout are only reinforcement.
+
+::: {#obj-threshold-reasoning .learning-objectives}
+::: {.callout-tip appearance="simple" icon=false}
+## Learning objectives
+
+After completing this specimen, a reader can:
+
+- distinguish an observable threshold from an inferred design value;
+- calculate a bounded operating interval from a nominal value and tolerance;
+- record evidence that another reader can independently review.
+:::
+:::
+
+::: {#pre-threshold-reasoning .learning-prerequisites}
+::: {.callout-note appearance="simple" icon=false}
+## Prerequisites
+
+The reader should be comfortable with arithmetic percentages, voltage units,
+and the difference between a measurement and a prediction. No laboratory
+equipment is required for the review question.
+:::
+:::
+
+::: {#plan-threshold-reasoning .learning-plan expected-time="20 minutes" difficulty="foundational"}
+::: {.callout-note appearance="simple" icon=false}
+## Study plan
+
+**Expected time:** 20 minutes
+
+**Difficulty:** Foundational
+:::
+:::
+
+## Guided reasoning {#sec-learning-guided-reasoning}
+
+A nominal 3.3 V signal with a tolerance of 5% has a permitted deviation of
+$3.3 \times 0.05 = 0.165\,\mathrm{V}$. Its acceptable interval is therefore
+3.135 V through 3.465 V. That calculation predicts a range; it does not prove
+that a particular circuit stays inside it. Recorded measurements provide the
+evidence needed to make that claim.
+
+::: {#sum-threshold-reasoning .learning-summary}
+::: {.callout-note appearance="simple" icon=false}
+## Summary
+
+A tolerance defines a bounded interval around a nominal value. Keep calculated
+limits distinct from observations, retain units and conditions with every
+reading, and phrase conclusions no more strongly than the evidence permits.
+:::
+:::
+
+::: {#rev-threshold-reasoning .review-question answer="private"}
+::: {.callout-note appearance="simple" icon=false}
+## Review question: threshold evidence
+
+A design predicts a 2.50 V output with a tolerance of 4%. Calculate the
+acceptable interval. Then name the additional evidence required before stating
+that a built device satisfies the design.
+:::
+:::
+
+::: {#hint-threshold-reasoning .question-hint data-for="rev-threshold-reasoning"}
+::: {.callout-tip appearance="simple" icon=false}
+## Hint
+
+First calculate 4% of 2.50 V. For the second part, distinguish a numerical
+prediction from observations made under stated conditions.
+:::
+:::
+
+::: {#exr-learning-interval}
+## Operating-interval exercise
+
+A 5.0 V rail permits a 2% deviation. Calculate its lower and upper limits.
+:::
+
+::: {#sol-learning-interval data-for="exr-learning-interval"}
+## Operating-interval exercise
+
+Two percent of 5.0 V is 0.1 V, so the permitted interval is 4.9 V through
+5.1 V.
+:::
+
+The private edition pairs the review question with a separately staged answer
+key. Public books retain the question and optional hint without embedding or
+merely hiding private answer material.

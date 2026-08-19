@@ -64,10 +64,10 @@ exec podman run --rm \
 
     # The small local checker handles site-relative files/fragments; EPUBCheck
     # supplies the full W3C EPUB ruleset from the locked image.
-    perl scripts/check-html-links book/_build/html
-    perl scripts/check-html-links book/_build/locale/fr/html
+    python3 scripts/check-html-links.py book/_build/html
+    python3 scripts/check-html-links.py book/_build/locale/fr/html
     for edition in abridged preview public private supplemental; do
-      perl scripts/check-html-links "book/_build/smoke/editions/${edition}/html"
+      python3 scripts/check-html-links.py "book/_build/smoke/editions/${edition}/html"
     done
     scripts/check-rendered-notes
     scripts/check-rendered-identities
@@ -124,10 +124,10 @@ exec podman run --rm \
     private_text="$(mktemp)"
     supplemental_text="$(mktemp)"
     find book/_build/html -type f -name "*.html" -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" >"${html_text}"
+      | python3 scripts/text-normalize.py html >"${html_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       EPUB/nav.xhtml "EPUB/text/*.xhtml" \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" >"${epub_text}"
+      | python3 scripts/text-normalize.py html >"${epub_text}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
       "EPUB/text/*.xhtml" >"${epub_language}"
     unzip -p book/_build/epub/Alkahest-Reference-Book.epub \
@@ -136,23 +136,23 @@ exec podman run --rm \
       "EPUB/media/*.svg" >"${epub_svg}"
     find book/_build/smoke/editions/abridged/html -type f -name "*.html" \
       -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      | python3 scripts/text-normalize.py html \
       >"${abridged_text}"
     find book/_build/smoke/editions/preview/html -type f -name "*.html" \
       -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      | python3 scripts/text-normalize.py html \
       >"${preview_text}"
     find book/_build/smoke/editions/public/html -type f -name "*.html" \
       -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      | python3 scripts/text-normalize.py html \
       >"${public_text}"
     find book/_build/smoke/editions/private/html -type f -name "*.html" \
       -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      | python3 scripts/text-normalize.py html \
       >"${private_text}"
     find book/_build/smoke/editions/supplemental/html -type f -name "*.html" \
       -exec cat {} + \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      | python3 scripts/text-normalize.py html \
       >"${supplemental_text}"
     for marker in \
       "Publication data" \
@@ -211,6 +211,27 @@ exec podman run --rm \
       "Solution 8.1" \
       "Project: build a threshold indicator" \
       "Lab: verify the threshold indicator" \
+      "Learning components" \
+      "Learning objectives" \
+      "Prerequisites" \
+      "Expected time:" \
+      "Difficulty:" \
+      "Review question: threshold evidence" \
+      "Operating-interval exercise" \
+      "Companion materials" \
+      "Half-adder Verilog source" \
+      "Half-adder truth-table dataset" \
+      "Half-adder logic schematic" \
+      "Half-adder bill of materials" \
+      "Half-adder project pack manifest" \
+      "Release package: companion/half-adder.v" \
+      "Controlled content reuse" \
+      "Safety notice — disconnect before changing connections." \
+      "Observed value" \
+      "Rights review notice." \
+      "Worked example — tolerance interval." \
+      "Project prerequisites." \
+      "Dependency boundary" \
       "Semantic icons" \
       "Initial semantic icon registry" \
       "Equipment required." \
@@ -417,10 +438,10 @@ exec podman run --rm \
     test -f "${numeric_html_bibliography}"
     test -f "${numeric_pdf}"
     cat "${numeric_html_reference}" "${numeric_html_bibliography}" \
-      | perl -CSD -0777 -pe "s/<[^>]+>/ /g; s/&nbsp;|&#160;|\x{A0}/ /g; s/\s+/ /g; s/\s+([,.;:)])/\$1/g; s/([(])\s+/\$1/g" \
+      | python3 scripts/text-normalize.py html \
       >"${numeric_html_text}"
     pdftotext -layout "${numeric_pdf}" - \
-      | perl -CSD -0777 -pe "s/\x{AD}\s*//g; s/\s+/ /g; s{/\s+}{/}g" \
+      | python3 scripts/text-normalize.py pdf \
       >"${numeric_pdf_text}"
     for numeric_marker in \
       "early citation [1]" \
@@ -488,6 +509,9 @@ exec podman run --rm \
       "Mathematical notation and reasoning" \
       "Figures and visual evidence" \
       "Tables and instructional blocks" \
+      "Learning components" \
+      "Companion materials" \
+      "Controlled content reuse" \
       "Glossary authoring contract"
     do
       require_literal "${abridged_marker}" "${abridged_text}" "abridged edition"
@@ -532,6 +556,9 @@ exec podman run --rm \
       "Mathematical notation and reasoning" \
       "Figures and visual evidence" \
       "Tables and instructional blocks" \
+      "Learning components" \
+      "Companion materials" \
+      "Controlled content reuse" \
       "Semantic icons" \
       "Format behavior" \
       "Language and writing-system specimen" \
@@ -553,16 +580,28 @@ exec podman run --rm \
     # Public/full and private structures share core content, but only the
     # explicitly private render may contain the editorial canary source.
     private_canary="internal editorial canary and must never appear in a public artifact"
+    private_answer_marker="Answer key: threshold evidence"
     require_literal "Core feature specimen" "${public_text}" "public edition"
     require_literal "Private working material" \
       book/_build/smoke/editions/private/html/index.html "private edition part"
     require_literal "${private_canary}" "${private_text}" "private edition"
+    require_literal "${private_answer_marker}" "${private_text}" "private answer key"
+    require_literal "id=\"ans-threshold-reasoning\"" \
+      book/_build/smoke/editions/private/html/private/answer-key.html \
+      "private answer-key identity"
+    require_literal "data-for=\"rev-threshold-reasoning\"" \
+      book/_build/smoke/editions/private/html/private/answer-key.html \
+      "private answer-key relationship"
     for public_artifact in \
       "${html_text}" "${epub_text}" "${abridged_text}" "${preview_text}" \
       "${public_text}" "${supplemental_text}"
     do
       if grep -Fq "${private_canary}" "${public_artifact}"; then
         echo "error: private manuscript content leaked into a public artifact" >&2
+        exit 1
+      fi
+      if grep -Fq "${private_answer_marker}" "${public_artifact}"; then
+        echo "error: private answer-key content leaked into a public artifact" >&2
         exit 1
       fi
     done
@@ -767,6 +806,130 @@ exec podman run --rm \
       require_literal "${component_reference}" "${html_components}" "HTML component reference"
     done
 
+    # Learning roles retain visible semantics, stable IDs, and pairing
+    # attributes in both reflowable formats. Private answers are checked with
+    # the edition-isolation assertions below.
+    html_learning="book/_build/html/learning.html"
+    for learning_structure in \
+      "id=\"obj-threshold-reasoning\"" \
+      "id=\"pre-threshold-reasoning\"" \
+      "id=\"plan-threshold-reasoning\"" \
+      "id=\"sum-threshold-reasoning\"" \
+      "id=\"rev-threshold-reasoning\"" \
+      "id=\"hint-threshold-reasoning\"" \
+      "id=\"exr-learning-interval\"" \
+      "id=\"sol-learning-interval\""
+    do
+      require_literal "${learning_structure}" "${html_learning}" \
+        "HTML learning component"
+      require_literal "${learning_structure}" "${epub_language}" \
+        "EPUB learning component"
+    done
+    for learning_class in \
+      "learning-objectives" \
+      "learning-prerequisites" \
+      "learning-plan" \
+      "learning-summary" \
+      "review-question" \
+      "question-hint"
+    do
+      require_literal "${learning_class}" "${html_learning}" "HTML learning role"
+      require_literal "${learning_class}" "${epub_language}" "EPUB learning role"
+    done
+    require_literal "20 minutes" "${html_learning}" "HTML expected time"
+    require_literal "Foundational" "${epub_language}" "EPUB difficulty"
+    for learning_relationship in \
+      "data-for=\"rev-threshold-reasoning\"" \
+      "data-for=\"exr-learning-interval\""
+    do
+      require_literal "${learning_relationship}" "${html_learning}" \
+        "HTML learning relationship"
+      require_literal "${learning_relationship}" "${epub_language}" \
+        "EPUB learning relationship"
+    done
+
+    # One registry drives direct HTML downloads and offline EPUB/PDF fallback
+    # text without changing stable companion identities or checksum metadata.
+    html_companions="book/_build/html/companion-materials.html"
+    for companion_id in \
+      asset-half-adder-verilog \
+      asset-half-adder-data \
+      asset-half-adder-schematic \
+      asset-half-adder-bom \
+      asset-half-adder-project-pack
+    do
+      require_literal "id=\"${companion_id}\"" "${html_companions}" \
+        "HTML companion identity"
+      require_literal "id=\"${companion_id}\"" "${epub_language}" \
+        "EPUB companion identity"
+    done
+    for companion_kind in code dataset schematic bill-of-materials download; do
+      require_literal "companion-kind-${companion_kind}" "${html_companions}" \
+        "HTML companion kind"
+      require_literal "companion-kind-${companion_kind}" "${epub_language}" \
+        "EPUB companion kind"
+    done
+    require_literal \
+      "data-companion-sha256=\"9f5af146dd486b46c75395650a3ef95bd346b7055bf0180e89ec37e64d9fae60\"" \
+      "${html_companions}" "HTML companion checksum"
+    require_literal "data-companion-version=\"1.0.0\"" \
+      "${epub_language}" "EPUB companion version"
+    require_literal "href=\"companion/half-adder.v\"" \
+      "${html_companions}" "HTML companion download"
+    require_literal "Release package: companion/half-adder.v" \
+      "${epub_text}" "EPUB companion fallback"
+    for companion_file in \
+      half-adder.v \
+      half-adder-truth-table.csv \
+      half-adder-schematic.svg \
+      half-adder-bom.csv \
+      half-adder-project-pack.md
+    do
+      if [[ ! -f "book/_build/html/companion/${companion_file}" ]]; then
+        echo "error: HTML companion download is missing: ${companion_file}" >&2
+        exit 1
+      fi
+    done
+
+    # Controlled fragments expose their reviewed source identity and exact
+    # substitutions without nested includes or backend-specific source.
+    html_reuse="book/_build/html/content-reuse.html"
+    for reuse_instance in \
+      reuse-use-safety-disconnect \
+      reuse-use-observed-value-definition \
+      reuse-use-rights-review \
+      reuse-use-tolerance-example \
+      reuse-use-project-prerequisites
+    do
+      require_literal "id=\"${reuse_instance}\"" "${html_reuse}" \
+        "HTML reusable-content use site"
+      require_literal "id=\"${reuse_instance}\"" "${epub_language}" \
+        "EPUB reusable-content use site"
+    done
+    for reuse_kind in notice definition legal example project-prerequisite; do
+      require_literal "reuse-kind-${reuse_kind}" "${html_reuse}" \
+        "HTML reusable-content kind"
+      require_literal "reuse-kind-${reuse_kind}" "${epub_language}" \
+        "EPUB reusable-content kind"
+    done
+    require_literal \
+      "data-reuse-sha256=\"d3607e3cdc8ae5fb347b4f82ff9649f3724c2e7c46205dcb0c83c9477fd0a570\"" \
+      "${html_reuse}" "HTML reusable-content checksum"
+    require_literal "data-reuse-version=\"1.0.0\"" \
+      "${epub_language}" "EPUB reusable-content version"
+    require_literal "data-reuse-context=\"project\"" \
+      "${html_reuse}" "HTML reusable-content context"
+    require_literal "data-reuse-origin=\"alkahest-reference-book\"" \
+      "${epub_language}" "EPUB reusable-content origin"
+    require_literal "De-energize the test fixture" "${html_reuse}" \
+      "HTML reusable-content substitution"
+    require_literal "a current-limited supply and multimeter" \
+      "${epub_language}" "EPUB reusable-content substitution"
+    require_literal ".reusable-content" "${html_component_css}" \
+      "HTML reusable-content styling"
+    require_literal ".reusable-content" "${epub_css}" \
+      "EPUB reusable-content styling"
+
     # The shortcode registry emits the same canonical identity and accessible
     # image alternative in both reflowable formats. EPUB renames media files,
     # so embedded SVG titles prove that all six repository assets were packed.
@@ -807,7 +970,7 @@ exec podman run --rm \
     done
     require_literal "class=\"semantic-icon semantic-icon-danger\"" "${html_icons}" "HTML icon alias"
     require_literal "data-icon-label=\"Stop; danger remains\"" "${html_icons}" "HTML icon label override"
-    scripts/check-rendered-icons "${html_icons}" "${html_components}" "${epub_language}"
+    python3 scripts/check-rendered-icons.py "${html_icons}" "${html_components}" "${epub_language}"
     require_literal ".icon-accessibility-specimen{" \
       "${html_component_css}" "HTML narrow icon specimen"
     require_literal "@media(max-width: 480px)" \
@@ -966,18 +1129,12 @@ exec podman run --rm \
     # entity; EPUB serializes it as Unicode, while both retain narrow NBSP.
     require_literal "25&nbsp;MHz" "${html_language}" "HTML language specimen"
     require_literal "Figure&nbsp;1" "${html_language}" "HTML language specimen"
-    if ! perl -MEncode -0777 -e \
-      '"'"'$_ = Encode::decode("UTF-8", <>);
-       exit !(/Fran\x{00E7}ais\x{202F}:/)'"'"' "${html_language}"
+    if ! python3 scripts/check-unicode-spaces.py html "${html_language}"
     then
       echo "error: HTML did not preserve the narrow nonbreaking space" >&2
       exit 1
     fi
-    if ! perl -MEncode -0777 -e \
-      '"'"'$_ = Encode::decode("UTF-8", <>);
-       exit !(/25\x{A0}MHz/ && /Figure\x{A0}1/ &&
-               /Fran\x{00E7}ais\x{202F}:/)'"'"' \
-      "${epub_language}"
+    if ! python3 scripts/check-unicode-spaces.py epub "${epub_language}"
     then
       echo "error: EPUB did not preserve the documented nonbreaking spaces" >&2
       exit 1
@@ -995,5 +1152,5 @@ exec podman run --rm \
       "${supplemental_text}" \
       "${numeric_html_text}" \
       "${numeric_pdf_text}"
-    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, whole-book edition grouping/omission/privacy/numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index/generated-list/persistent-ID contracts, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, whole-book edition grouping/omission/privacy/numbering, code/math/figure/component/companion/reuse/icon/notice/glossary/semantic-note/index/generated-list/persistent-ID contracts, locale semantics, theme, embedded fonts, and heading markers"
   '

@@ -388,6 +388,38 @@ span[id^="eq-"] {
   border-left-color: #64748b;
 }
 
+.learning-objectives,
+.learning-prerequisites,
+.learning-plan,
+.learning-summary,
+.review-question,
+.question-hint,
+.answer-key {
+  margin: 1.1em 0;
+}
+
+.learning-plan .callout-body p,
+.answer-key .callout-body p {
+  text-indent: 0;
+}
+
+.question-hint {
+  margin-left: 1em;
+}
+
+.answer-key {
+  border-left: 0.2em solid #9a5b35;
+}
+
+.companion-reference {
+  display: block;
+  margin: 1em 0;
+  padding: 0.8em 0.9em;
+  background: #f4efe6;
+  border-left: 0.2em solid #9a5b35;
+  overflow-wrap: anywhere;
+}
+
 .table-note {
   display: block;
   margin-top: -0.5em;
@@ -496,6 +528,24 @@ h4.table-title {
 .callout.optional-material-block,
 .optional-material-block > .callout {
   border-left-color: #64748b;
+}
+
+.reusable-content {
+  margin-block: 1em;
+  padding: 0.7em 0.9em;
+  border: 1px solid #cbd5e1;
+  border-left: 0.22em solid #334155;
+  background: #f1f5f9;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.reusable-content > :last-child {
+  margin-bottom: 0;
+}
+
+.reuse-kind-legal {
+  border-left-color: #9a4f12;
 }
 
 .project-block > .callout {

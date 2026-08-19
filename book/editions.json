@@ -61,6 +61,24 @@
       "availability": "core",
       "formats": ["html", "epub", "typst", "latex"]
     },
+    "learning": {
+      "path": "learning.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "companion-materials": {
+      "path": "companion-materials.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
+    "content-reuse": {
+      "path": "content-reuse.qmd",
+      "role": "chapter",
+      "availability": "core",
+      "formats": ["html", "epub", "typst", "latex"]
+    },
     "icons": {
       "path": "icons.qmd",
       "role": "chapter",
@@ -126,6 +144,12 @@
       "role": "chapter",
       "availability": "private",
       "formats": ["html"]
+    },
+    "private-answer-key": {
+      "path": "private/answer-key.qmd",
+      "role": "chapter",
+      "availability": "private",
+      "formats": ["html"]
     }
   },
   "structures": {
@@ -144,6 +168,9 @@
             "math",
             "figures",
             "components",
+            "learning",
+            "companion-materials",
+            "content-reuse",
             "icons",
             "glossary-authoring"
           ]
@@ -174,6 +201,9 @@
             "math",
             "figures",
             "components",
+            "learning",
+            "companion-materials",
+            "content-reuse",
             "glossary-authoring"
           ]
         },
@@ -225,6 +255,9 @@
             "math",
             "figures",
             "components",
+            "learning",
+            "companion-materials",
+            "content-reuse",
             "icons",
             "glossary-authoring"
           ]
@@ -263,6 +296,9 @@
             "math",
             "figures",
             "components",
+            "learning",
+            "companion-materials",
+            "content-reuse",
             "icons",
             "glossary-authoring"
           ]
@@ -301,13 +337,16 @@
             "math",
             "figures",
             "components",
+            "learning",
+            "companion-materials",
+            "content-reuse",
             "icons",
             "glossary-authoring"
           ]
         },
         {
           "part": "Private working material",
-          "sources": ["private-working-notes"]
+          "sources": ["private-working-notes", "private-answer-key"]
         },
         {"source": "references"},
         {"source": "glossary"},

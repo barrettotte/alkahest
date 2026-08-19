@@ -1,0 +1,31 @@
+# Companion materials {#sec-companion-materials}
+
+Companion references should remain useful when a reader has only a printed
+page, when an EPUB reader does not expose arbitrary packaged files, or when a
+website can offer a direct download. Each entry below comes from one checked
+registry and keeps the same stable identity across those presentations.
+
+## Code {#sec-companion-code}
+
+{{< alk-companion asset-half-adder-verilog >}}
+
+## Dataset {#sec-companion-dataset}
+
+{{< alk-companion asset-half-adder-data >}}
+
+## Schematic {#sec-companion-schematic}
+
+{{< alk-companion asset-half-adder-schematic >}}
+
+## Bill of materials {#sec-companion-bom}
+
+{{< alk-companion asset-half-adder-bom >}}
+
+## Download manifest {#sec-companion-download}
+
+{{< alk-companion asset-half-adder-project-pack >}}
+
+For a public release, copy each registered file to its declared release-package
+location without renaming it, or add a durable HTTPS URL while retaining the
+fallback path. A changed byte requires a new checksum; a compatibility or
+content change requires a deliberate semantic version update.

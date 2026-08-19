@@ -1,7 +1,7 @@
 # Toolchain lock record
 
 - Captured: 2026-08-16
-- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v10`
+- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v11`
 - Base image: `ghcr.io/quarto-dev/quarto-full:1.10.18`
 - Base manifest: `sha256:280aa58ecdb814dcced42066e4f64d1825020ce5822f2ca2749fc6396020d7de`
 
@@ -14,7 +14,8 @@ requires an intentional lock update.
 
 | Input | Locked identity |
 |---|---|
-| Ubuntu archive | Snapshot `20260816T000000Z`; direct Chrome runtime dependencies are version-pinned in the Containerfile |
+| Ubuntu archive | Snapshot `20260816T000000Z`; direct Chrome and Python runtime dependencies are version-pinned in the Containerfile |
+| Python runtime | Ubuntu `python3` `3.8.2-0ubuntu2`; validators use only the standard library |
 | Chrome Headless Shell | Official Linux64 archive for 152.0.7977.42; SHA-256 `129686a270d84ac4637c614802c554634aa827aa13214216f81e0a0b9410f8cf` |
 | EPUBCheck | Official 5.3.0 archive; SHA-256 `6c07e68584b2e2ce2f89fe06e1246dfead3eb36b46b340e7d93524f29dcff6c5` |
 | Chicago author–date CSL | Pandoc 3.10.0 bundled `default.csl`; SHA-256 `91fa1fe9787e737dff0c15d7cf8254c9f2bab4ebb4dccf4553a1f991ebddb7d1` |

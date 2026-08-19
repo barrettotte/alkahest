@@ -27,9 +27,9 @@ book_root="book/_build/smoke/notes/book/html"
 sidenote_root="book/_build/smoke/notes/sidenote/html"
 typst_root="book/_build/smoke/notes/sidenote/typst"
 
-perl scripts/check-html-links "${chapter_root}"
-perl scripts/check-html-links "${book_root}"
-perl scripts/check-html-links "${sidenote_root}"
+python3 scripts/check-html-links.py "${chapter_root}"
+python3 scripts/check-html-links.py "${book_root}"
+python3 scripts/check-html-links.py "${sidenote_root}"
 
 chapter_reference="${chapter_root}/reference.html"
 chapter_components="${chapter_root}/components.html"
@@ -98,8 +98,7 @@ trap 'rm -f -- "${typst_text}" "${typst_bbox}" "${typst_bbox_stderr}"' EXIT
 # content assertion. One repeated note may interleave with its anchor paragraph,
 # while its second occurrence must still expose the complete note text.
 pdftotext "${typst_pdf}" - \
-  | perl -CSD -0777 -pe \
-    's/([\pL\pN])-[ \t]*\r?\n[ \t]*([\pL\pN])/$1-$2/g; s/\x{AD}\s*//g; s/\s+/ /g' \
+  | python3 scripts/text-normalize.py pdf \
   >"${typst_text}"
 require_literal 'A useful footnote should not depend on the' \
   "${typst_text}" "Typst sidenote PDF"
@@ -114,18 +113,7 @@ if grep -Fvqx 'no word list' "${typst_bbox_stderr}"; then
   sed 's/^/  /' "${typst_bbox_stderr}" >&2
   exit 1
 fi
-if ! perl -ne '
-  if (/<page width="([0-9.]+)"/) {
-    $page_width = $1;
-  }
-  while (/<word xMin="([0-9.-]+)"[^>]*xMax="([0-9.-]+)"/g) {
-    if ($1 < -0.1 || $2 > $page_width + 0.1) {
-      printf STDERR "word box %.3f..%.3f crosses %.3f-point page\n", $1, $2, $page_width;
-      $failed = 1;
-    }
-  }
-  END { exit($failed ? 1 : 0) }
-' "${typst_bbox}"
+if ! python3 scripts/check-text-contract.py bbox "${typst_bbox}"
 then
   echo "error: Typst sidenote text crosses the physical page" >&2
   exit 1

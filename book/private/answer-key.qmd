@@ -1,0 +1,21 @@
+---
+alkahest-edition:
+  access: private
+---
+
+# Private answer key {.unnumbered #sec-private-answer-key}
+
+This source is selected only by the private edition. Answer blocks pair with
+stable public question or exercise IDs so reorganizing chapters does not break
+the editorial relationship.
+
+::: {#ans-threshold-reasoning .answer-key data-for="rev-threshold-reasoning"}
+::: {.callout-important appearance="simple" icon=false}
+## Answer key: threshold evidence
+
+Four percent of 2.50 V is 0.10 V, so the acceptable interval is 2.40 V through
+2.60 V. A conformance claim additionally needs recorded measurements from the
+built device, including the operating conditions, instrument range or
+uncertainty, and enough repeated observations to support the stated scope.
+:::
+:::

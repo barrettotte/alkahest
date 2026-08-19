@@ -7,12 +7,7 @@
     {"language": "fr-FR", "root": "fr", "mode": "translated"}
   ],
   "edition_manifests": ["editions.json"],
-  "companion_assets": {
-    "asset-sample-code": {
-      "path": "companion/sample.txt",
-      "media_type": "text/plain",
-      "description": "Small companion fixture."
-    }
-  },
+  "companion_registry": "companion.json",
+  "reusable_content_registry": "reusable-content.json",
   "migrations": []
 }

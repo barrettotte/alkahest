@@ -4,6 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
+edit="${script_dir}/replace-text.py"
 base_fixture="${repo_root}/tests/glossary/base"
 test_root="$(mktemp -d /tmp/alkahest-glossary-tests.XXXXXX)"
 
@@ -13,7 +14,7 @@ cleanup() {
 trap cleanup EXIT
 
 run_validator() {
-  ALKAHEST_GLOSSARY_BOOK_ROOT="$1" "${script_dir}/check-glossary"
+  ALKAHEST_GLOSSARY_BOOK_ROOT="$1" python3 "${script_dir}/check-glossary.py"
 }
 
 expect_failure() {
@@ -42,51 +43,51 @@ expect_failure() {
 }
 
 duplicate_display() {
-  perl -0pi -e 's/term: matrix/term: central processing unit/' "$1/glossary.yml"
+  python3 "${edit}" 'term: matrix' 'term: central processing unit' "$1/glossary.yml"
 }
 
 duplicate_alias() {
-  perl -0pi -e 's/      - array/      - cpu/' "$1/glossary.yml"
+  python3 "${edit}" '      - array' '      - cpu' "$1/glossary.yml"
 }
 
 undefined_term() {
-  perl -0pi -e 's/alk-term matrix/alk-term missing-term/' "$1/chapter-two.qmd"
+  python3 "${edit}" 'alk-term matrix' 'alk-term missing-term' "$1/chapter-two.qmd"
 }
 
 unused_entry() {
-  perl -0pi -e 's/ and\n+an unlinked \{\{< alk-term matrix form=first link=false >\}\} reference/ reference/' \
+  python3 "${edit}" --regex ' and\n+an unlinked \{\{< alk-term matrix form=first link=false >\}\} reference' ' reference' \
     "$1/chapter-two.qmd"
 }
 
 duplicate_first_use() {
-  perl -0pi -e 's/(examples begin here\.)/$1\n\n{{< alk-term cpu form=first >}} again./' \
+  python3 "${edit}" 'examples begin here.' $'examples begin here.\n\n{{< alk-term cpu form=first >}} again.' \
     "$1/chapter-one.qmd"
 }
 
 missing_first_use() {
-  perl -0pi -e 's/form=first case=sentence/form=term case=sentence/' \
+  python3 "${edit}" 'form=first case=sentence' 'form=term case=sentence' \
     "$1/chapter-one.qmd"
 }
 
 invalid_case() {
-  perl -0pi -e 's/case=sentence/case=uppercase/' "$1/chapter-one.qmd"
+  python3 "${edit}" 'case=sentence' 'case=uppercase' "$1/chapter-one.qmd"
 }
 
 invalid_link() {
-  perl -0pi -e 's/link=false/link=maybe/' "$1/chapter-two.qmd"
+  python3 "${edit}" 'link=false' 'link=maybe' "$1/chapter-two.qmd"
 }
 
 unavailable_form() {
-  perl -0pi -e 's/form=first link=false/form=acronym link=false/' \
+  python3 "${edit}" 'form=first link=false' 'form=acronym link=false' \
     "$1/chapter-two.qmd"
 }
 
 invalid_language() {
-  perl -0pi -e 's/lang: en-US/lang: en_US/' "$1/glossary.yml"
+  python3 "${edit}" 'lang: en-US' 'lang: en_US' "$1/glossary.yml"
 }
 
 missing_placeholder() {
-  perl -0pi -e 's/::: \{\.alkahest-glossary-placeholder\}\n:::\n//' \
+  python3 "${edit}" $'::: {.alkahest-glossary-placeholder}\n:::\n' '' \
     "$1/glossary-backmatter.qmd"
 }
 

@@ -14,7 +14,7 @@ render_edition_profile() {
   local staged_output="${stage_root}/_rendered"
   local canonical_output="${repo_root}/book/${output_dir}"
 
-  "${script_dir}/stage-edition" "${edition}" >/dev/null
+  python3 "${script_dir}/stage-edition.py" "${edition}" >/dev/null
   "${script_dir}/quarto" render "book/_build/staging/editions/${edition}" \
     --profile "edition-${edition},${profile}" \
     --output-dir _rendered

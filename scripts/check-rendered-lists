@@ -38,7 +38,7 @@ epub="book/_build/epub/Alkahest-Reference-Book.epub"
 typst_pdf="book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf"
 latex_pdf="book/_build/print/7x10/latex/Alkahest-Reference-Book.pdf"
 
-perl scripts/check-html-links "${html_root}"
+python3 scripts/check-html-links.py "${html_root}"
 test -f "${html_lists}"
 for structure in \
   'class="generated-reference-lists"' \
@@ -117,8 +117,7 @@ normalize_pdf() {
   local pdf="$1"
   local output="$2"
   pdftotext "${pdf}" - \
-    | perl -CSD -0777 -pe \
-      's/([\pL\pN])-[ \t]*\r?\n[ \t]*([\pL\pN])/$1-$2/g; s/\x{AD}\s*//g; s/\s+/ /g' \
+    | python3 scripts/text-normalize.py pdf \
     >"${output}"
 }
 normalize_pdf "${typst_pdf}" "${typst_text}"
@@ -144,15 +143,7 @@ for print_text in "${typst_text}" "${latex_text}"; do
     require_literal "${marker}" "${print_text}" "print generated lists"
   done
   reject_literal 'List of algorithms' "${print_text}" "print empty-list omission"
-  if ! perl -CSD -0777 -ne '
-    die "missing numbered figure list entry\n"
-      unless /Figure\s+1\.1\s+\x{2014}\s+Information flow through a half-adder/;
-    die "missing appendix-numbered list entry\n"
-      unless /Figure\s+A\.1\s+\x{2014}\s+Appendix signal-chain fixture/;
-    die "missing numbered equation terminology target\n"
-      unless /electric current\s+\(Equation\s+\(?1\.1\)?\)/;
-    die "unresolved generated-list reference\n" if /\?\?/;
-  ' "${print_text}"
+  if ! python3 scripts/check-text-contract.py generated-lists "${print_text}"
   then
     echo "error: print generated-list numbering contract failed" >&2
     exit 1

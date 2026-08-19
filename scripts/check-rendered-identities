@@ -29,25 +29,57 @@ require_id() {
   fi
 }
 
+require_literal() {
+  local file="$1"
+  local literal="$2"
+  local label="$3"
+  if ! grep -Fq "${literal}" "${file}"; then
+    echo "error: ${label} does not preserve '${literal}'" >&2
+    exit 1
+  fi
+}
+
 identity_rows="$(mktemp)"
 epub_content="$(mktemp)"
 trap 'rm -f "${identity_rows}" "${epub_content}"' EXIT
 
-perl -MJSON::PP -0777 -e '
-  my $lock = decode_json(<>);
-  for my $entry (@{ $lock->{identities} }) {
-    next if $entry->{status} ne "active";
-    print join("|", @{$entry}{qw(namespace kind id source)}), "\n";
-  }
-' "${lock_path}" >"${identity_rows}"
+python3 scripts/identity-lock-rows.py "${lock_path}" >"${identity_rows}"
+
+unzip -p "${epub_path}" 'EPUB/text/*.xhtml' >"${epub_content}"
 
 checked_content=0
+checked_assets=0
+checked_reuse=0
 while IFS='|' read -r namespace kind id source; do
   if [[ "${namespace}" == "asset" ]]; then
     if [[ ! -f "${repo_root}/book/${source}" ]]; then
       echo "error: rendered contract references missing companion identity '${id}'" >&2
       exit 1
     fi
+    require_id "${html_root}/companion-materials.html" "${id}" \
+      "HTML companion registry"
+    require_id "${locale_root}/companion-materials.html" "${id}" \
+      "locale companion registry"
+    require_id "${supplemental_root}/companion-materials.html" "${id}" \
+      "supplemental companion registry"
+    require_id "${private_root}/companion-materials.html" "${id}" \
+      "private companion registry"
+    checked_assets=$((checked_assets + 1))
+    continue
+  fi
+
+  if [[ "${namespace}" == "reuse" ]]; then
+    if [[ ! -f "${repo_root}/book/${source}" ]]; then
+      echo "error: rendered contract references missing reusable-content identity '${id}'" >&2
+      exit 1
+    fi
+    for root in "${html_root}" "${locale_root}" "${supplemental_root}" "${private_root}"; do
+      require_literal "${root}/content-reuse.html" "data-reuse-id=\"${id}\"" \
+        "rendered reusable-content registry"
+    done
+    require_literal "${epub_content}" "data-reuse-id=\"${id}\"" \
+      "EPUB reusable-content registry"
+    checked_reuse=$((checked_reuse + 1))
     continue
   fi
 
@@ -65,7 +97,7 @@ while IFS='|' read -r namespace kind id source; do
   fi
 
   case "${kind}" in
-    chapter|section|figure|table|equation|listing|exercise|solution)
+    chapter|section|figure|table|equation|listing|exercise|solution|learning-objectives|learning-prerequisites|learning-plan|learning-summary|review-question|question-hint|answer-key|reusable-use)
       relative_html="${source%.qmd}.html"
       canonical_file=""
       for root in "${html_root}" "${supplemental_root}" "${private_root}"; do
@@ -93,7 +125,6 @@ while IFS='|' read -r namespace kind id source; do
   esac
 done <"${identity_rows}"
 
-unzip -p "${epub_path}" 'EPUB/text/*.xhtml' >"${epub_content}"
 for id in \
   sec-core-feature-specimen \
   sec-heading-hierarchy \
@@ -102,9 +133,14 @@ for id in \
   eq-ohms-law \
   lst-half-adder \
   exr-divider-budget \
+  asset-half-adder-verilog \
+  asset-half-adder-data \
+  asset-half-adder-schematic \
+  asset-half-adder-bom \
+  asset-half-adder-project-pack \
   glossary-central-processing-unit \
   index-entry-technical-publishing; do
   require_id "${epub_content}" "${id}" "EPUB"
 done
 
-echo "ok: rendered identities (${checked_content} chapter/section/numbered-object IDs; glossary/index IDs; HTML, EPUB, preview, supplemental, private, and locale preservation)"
+echo "ok: rendered identities (${checked_content} chapter/section/numbered-object/use-site IDs; ${checked_assets} companion-asset IDs; ${checked_reuse} reusable-content IDs; glossary/index IDs; HTML, EPUB, preview, supplemental, private, and locale preservation)"

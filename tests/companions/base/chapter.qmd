@@ -1,0 +1,11 @@
+# Companion fixture {#sec-companion-fixture}
+
+{{< alk-companion asset-fixture-code >}}
+
+{{< alk-companion asset-fixture-data >}}
+
+{{< alk-companion asset-fixture-schematic >}}
+
+{{< alk-companion asset-fixture-bom >}}
+
+{{< alk-companion asset-fixture-download >}}

@@ -1,4 +1,6 @@
 .quarto/
+__pycache__/
+*.py[cod]
 
 book/_build/
 book/icons/*.pdf

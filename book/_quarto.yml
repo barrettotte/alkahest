@@ -2,14 +2,17 @@ project:
   type: book
   # Validate semantic sources, then stage generated vector and font build inputs.
   pre-render:
-    - ../scripts/check-identities
-    - ../scripts/check-editions
-    - ../scripts/check-citations
-    - ../scripts/check-glossary
-    - ../scripts/check-generated-lists
-    - ../scripts/check-icons
-    - ../scripts/check-index
-    - ../scripts/check-notes
+    - python3 ../scripts/check-identities.py
+    - python3 ../scripts/check-editions.py
+    - python3 ../scripts/check-learning.py
+    - python3 ../scripts/check-companions.py
+    - python3 ../scripts/check-reuse.py
+    - python3 ../scripts/check-citations.py
+    - python3 ../scripts/check-glossary.py
+    - python3 ../scripts/check-generated-lists.py
+    - python3 ../scripts/check-icons.py
+    - python3 ../scripts/check-index.py
+    - python3 ../scripts/check-notes.py
     - ../scripts/stage-icons
     - ../scripts/stage-webfonts
 
@@ -30,6 +33,9 @@ book:
         - math.qmd
         - figures.qmd
         - components.qmd
+        - learning.qmd
+        - companion-materials.qmd
+        - content-reuse.qmd
         - icons.qmd
         - glossary.qmd
     - references.qmd

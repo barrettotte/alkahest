@@ -11,6 +11,7 @@
     {"namespace": "content", "id": "sec-stable-section", "kind": "section", "source": "chapter.qmd", "status": "active"},
     {"namespace": "content", "id": "tbl-identity-sample", "kind": "table", "source": "chapter.qmd", "status": "active"},
     {"namespace": "glossary", "id": "stable-term", "kind": "glossary-term", "source": "glossary.yml", "status": "active"},
-    {"namespace": "index", "id": "stable-concept", "kind": "index-concept", "source": "index.yml", "status": "active"}
+    {"namespace": "index", "id": "stable-concept", "kind": "index-concept", "source": "index.yml", "status": "active"},
+    {"namespace": "reuse", "id": "reuse-fixture-notice", "kind": "reusable-content", "source": "reuse/fixture-notice.md", "status": "active"}
   ]
 }

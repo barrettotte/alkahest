@@ -2,10 +2,45 @@
    "book_id" : "alkahest-reference-book",
    "identities" : [
       {
+         "id" : "asset-half-adder-bom",
+         "kind" : "companion-asset",
+         "namespace" : "asset",
+         "source" : "companion/half-adder-bom.csv",
+         "status" : "active"
+      },
+      {
+         "id" : "asset-half-adder-data",
+         "kind" : "companion-asset",
+         "namespace" : "asset",
+         "source" : "companion/half-adder-truth-table.csv",
+         "status" : "active"
+      },
+      {
+         "id" : "asset-half-adder-project-pack",
+         "kind" : "companion-asset",
+         "namespace" : "asset",
+         "source" : "companion/half-adder-project-pack.md",
+         "status" : "active"
+      },
+      {
+         "id" : "asset-half-adder-schematic",
+         "kind" : "companion-asset",
+         "namespace" : "asset",
+         "source" : "companion/half-adder-schematic.svg",
+         "status" : "active"
+      },
+      {
          "id" : "asset-half-adder-verilog",
          "kind" : "companion-asset",
          "namespace" : "asset",
          "source" : "companion/half-adder.v",
+         "status" : "active"
+      },
+      {
+         "id" : "ans-threshold-reasoning",
+         "kind" : "answer-key",
+         "namespace" : "content",
+         "source" : "private/answer-key.qmd",
          "status" : "active"
       },
       {
@@ -55,6 +90,13 @@
          "kind" : "exercise",
          "namespace" : "content",
          "source" : "components.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "exr-learning-interval",
+         "kind" : "exercise",
+         "namespace" : "content",
+         "source" : "learning.qmd",
          "status" : "active"
       },
       {
@@ -128,6 +170,13 @@
          "status" : "active"
       },
       {
+         "id" : "hint-threshold-reasoning",
+         "kind" : "question-hint",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
          "id" : "icon-narrow-specimen",
          "kind" : "anchor",
          "namespace" : "content",
@@ -198,6 +247,27 @@
          "status" : "active"
       },
       {
+         "id" : "obj-threshold-reasoning",
+         "kind" : "learning-objectives",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "plan-threshold-reasoning",
+         "kind" : "learning-plan",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "pre-threshold-reasoning",
+         "kind" : "learning-prerequisites",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
          "id" : "project-threshold-indicator",
          "kind" : "anchor",
          "namespace" : "content",
@@ -209,6 +279,48 @@
          "kind" : "anchor",
          "namespace" : "content",
          "source" : "references.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-use-observed-value-definition",
+         "kind" : "reusable-use",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-use-project-prerequisites",
+         "kind" : "reusable-use",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-use-rights-review",
+         "kind" : "reusable-use",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-use-safety-disconnect",
+         "kind" : "reusable-use",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-use-tolerance-example",
+         "kind" : "reusable-use",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "rev-threshold-reasoning",
+         "kind" : "review-question",
+         "namespace" : "content",
+         "source" : "learning.qmd",
          "status" : "active"
       },
       {
@@ -303,6 +415,48 @@
          "status" : "active"
       },
       {
+         "id" : "sec-companion-bom",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "companion-materials.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-companion-code",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "companion-materials.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-companion-dataset",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "companion-materials.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-companion-download",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "companion-materials.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-companion-materials",
+         "kind" : "chapter",
+         "namespace" : "content",
+         "source" : "companion-materials.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-companion-schematic",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "companion-materials.qmd",
+         "status" : "active"
+      },
+      {
          "id" : "sec-component-boundary",
          "kind" : "section",
          "namespace" : "content",
@@ -349,6 +503,13 @@
          "kind" : "chapter",
          "namespace" : "content",
          "source" : "components.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-content-reuse",
+         "kind" : "chapter",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
          "status" : "active"
       },
       {
@@ -562,6 +723,20 @@
          "status" : "active"
       },
       {
+         "id" : "sec-learning-components",
+         "kind" : "chapter",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-learning-guided-reasoning",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
          "id" : "sec-links-emphasis-notes",
          "kind" : "section",
          "namespace" : "content",
@@ -709,6 +884,13 @@
          "status" : "active"
       },
       {
+         "id" : "sec-private-answer-key",
+         "kind" : "chapter",
+         "namespace" : "content",
+         "source" : "private/answer-key.qmd",
+         "status" : "active"
+      },
+      {
          "id" : "sec-private-editorial-questions",
          "kind" : "section",
          "namespace" : "content",
@@ -758,6 +940,48 @@
          "status" : "active"
       },
       {
+         "id" : "sec-reuse-boundary",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-reuse-definition",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-reuse-example",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-reuse-legal",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-reuse-notice",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sec-reuse-project-prerequisites",
+         "kind" : "section",
+         "namespace" : "content",
+         "source" : "content-reuse.qmd",
+         "status" : "active"
+      },
+      {
          "id" : "sec-running-head-stress",
          "kind" : "section",
          "namespace" : "content",
@@ -804,6 +1028,20 @@
          "kind" : "solution",
          "namespace" : "content",
          "source" : "components.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sol-learning-interval",
+         "kind" : "solution",
+         "namespace" : "content",
+         "source" : "learning.qmd",
+         "status" : "active"
+      },
+      {
+         "id" : "sum-threshold-reasoning",
+         "kind" : "learning-summary",
+         "namespace" : "content",
+         "source" : "learning.qmd",
          "status" : "active"
       },
       {
@@ -951,6 +1189,41 @@
          "kind" : "index-concept",
          "namespace" : "index",
          "source" : "index.yml",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-observed-value-definition",
+         "kind" : "reusable-content",
+         "namespace" : "reuse",
+         "source" : "reuse/observed-value-definition.md",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-project-prerequisites",
+         "kind" : "reusable-content",
+         "namespace" : "reuse",
+         "source" : "reuse/project-prerequisites.md",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-rights-review",
+         "kind" : "reusable-content",
+         "namespace" : "reuse",
+         "source" : "reuse/rights-review.md",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-safety-disconnect",
+         "kind" : "reusable-content",
+         "namespace" : "reuse",
+         "source" : "reuse/safety-disconnect.md",
+         "status" : "active"
+      },
+      {
+         "id" : "reuse-tolerance-example",
+         "kind" : "reusable-content",
+         "namespace" : "reuse",
+         "source" : "reuse/tolerance-example.md",
          "status" : "active"
       }
    ],

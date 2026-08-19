@@ -4,6 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
+edit="${script_dir}/replace-text.py"
 fixture_root="${repo_root}/tests/identities/base"
 case_parent="$(mktemp -d)"
 trap 'rm -rf "${case_parent}"' EXIT
@@ -17,11 +18,11 @@ new_case() {
 }
 
 run_check() {
-  ALKAHEST_IDENTITY_BOOK_ROOT="$1" "${script_dir}/check-identities"
+  ALKAHEST_IDENTITY_BOOK_ROOT="$1" python3 "${script_dir}/check-identities.py"
 }
 
 run_update() {
-  ALKAHEST_IDENTITY_BOOK_ROOT="$1" "${script_dir}/update-identities"
+  ALKAHEST_IDENTITY_BOOK_ROOT="$1" python3 "${script_dir}/update-identities.py"
 }
 
 expect_failure() {
@@ -42,20 +43,20 @@ expect_failure() {
 run_check "${fixture_root}/book" >/dev/null
 
 case_root="$(new_case implicit-heading)"
-perl -0pi -e 's/ \{#sec-stable-section\}//' "${case_root}/en/chapter.qmd"
+python3 "${edit}" ' {#sec-stable-section}' '' "${case_root}/en/chapter.qmd"
 expect_failure "${case_root}" "every heading must have exactly one explicit persistent ID"
 
 case_root="$(new_case setext-heading)"
-perl -0pi -e 's/## Stable section \{#sec-stable-section\}/Stable section\n--------------/' \
+python3 "${edit}" '## Stable section {#sec-stable-section}' $'Stable section\n--------------' \
   "${case_root}/en/chapter.qmd"
 expect_failure "${case_root}" "Setext headings cannot carry the required explicit ID"
 
 case_root="$(new_case duplicate-content)"
-perl -0pi -e 's/sec-stable-section/sec-identity-fixture/' "${case_root}/en/chapter.qmd"
+python3 "${edit}" 'sec-stable-section' 'sec-identity-fixture' "${case_root}/en/chapter.qmd"
 expect_failure "${case_root}" "duplicate content identity 'sec-identity-fixture'"
 
 case_root="$(new_case semantic-title-id)"
-perl -0pi -e 's/## Fixture exercise/## Fixture exercise {#sec-redundant-title}/' \
+python3 "${edit}" '## Fixture exercise' '## Fixture exercise {#sec-redundant-title}' \
   "${case_root}/en/chapter.qmd"
 expect_failure "${case_root}" "semantic block title must use its enclosing 'exr-identity-sample' identity"
 
@@ -65,24 +66,28 @@ printf '\n## Section ajoutée {#sec-added-section}\n' >>"${case_root}/fr/chapitr
 expect_failure "${case_root}" "new identity 'content:sec-added-section' is not locked"
 
 case_root="$(new_case missing-active)"
-perl -0pi -e 's/^## Stable section.*?\n\n//m' "${case_root}/en/chapter.qmd"
-perl -0pi -e 's/^## Section stable.*?\n\n//m' "${case_root}/fr/chapitre.qmd"
+python3 "${edit}" --regex '^## Stable section.*?\n\n' '' "${case_root}/en/chapter.qmd"
+python3 "${edit}" --regex '^## Section stable.*?\n\n' '' "${case_root}/fr/chapitre.qmd"
 expect_failure "${case_root}" "active identity 'content:sec-stable-section' disappeared"
 
 case_root="$(new_case translation-drift)"
-perl -0pi -e 's/sec-stable-section/sec-section-traduite/' "${case_root}/fr/chapitre.qmd"
+python3 "${edit}" 'sec-stable-section' 'sec-section-traduite' "${case_root}/fr/chapitre.qmd"
 expect_failure "${case_root}" "translation 'fr-FR' is missing content identity 'sec-stable-section'"
 
 case_root="$(new_case translated-glossary-drift)"
-perl -0pi -e 's/stable-term:/terme-stable:/' "${case_root}/fr/glossary.yml"
+python3 "${edit}" 'stable-term:' 'terme-stable:' "${case_root}/fr/glossary.yml"
 expect_failure "${case_root}" "translation 'fr-FR' is missing glossary identity 'stable-term'"
 
 case_root="$(new_case missing-companion)"
 mv "${case_root}/companion/sample.txt" "${case_root}/companion/not-sample.txt"
 expect_failure "${case_root}" "references missing file 'companion/sample.txt'"
 
+case_root="$(new_case missing-reusable-content)"
+mv "${case_root}/reuse/fixture-notice.md" "${case_root}/reuse/not-fixture.md"
+expect_failure "${case_root}" "references missing fragment 'reuse/fixture-notice.md'"
+
 case_root="$(new_case edition-drift)"
-perl -0pi -e 's/chapter\.qmd/missing.qmd/' "${case_root}/editions.json"
+python3 "${edit}" 'chapter.qmd' 'missing.qmd' "${case_root}/editions.json"
 expect_failure "${case_root}" "must resolve to one persistently identified chapter"
 
 case_root="$(new_case update-addition)"
@@ -92,7 +97,7 @@ run_update "${case_root}" >/dev/null
 run_check "${case_root}" >/dev/null
 
 case_root="$(new_case rename-without-migration)"
-perl -pi -e 's/sec-stable-section/sec-renamed-section/g' \
+python3 "${edit}" --all 'sec-stable-section' 'sec-renamed-section' \
   "${case_root}/en/chapter.qmd" "${case_root}/fr/chapitre.qmd"
 update_output="$(run_update "${case_root}" 2>&1 || true)"
 if [[ "${update_output}" != *"disappeared without a migration"* ]]; then
@@ -101,18 +106,18 @@ if [[ "${update_output}" != *"disappeared without a migration"* ]]; then
   exit 1
 fi
 
-perl -0pi -e 's/"migrations": \[\]/"migrations": [{"namespace":"content","from":"sec-stable-section","to":"sec-renamed-section","reason":"Fixture rename."}]/' \
+python3 "${edit}" '"migrations": []' '"migrations": [{"namespace":"content","from":"sec-stable-section","to":"sec-renamed-section","reason":"Fixture rename."}]' \
   "${case_root}/identities.json"
 run_update "${case_root}" >/dev/null
 run_check "${case_root}" >/dev/null
-perl -0777 -ne 'exit 0 if /"id"\s*:\s*"sec-stable-section".*?"status"\s*:\s*"retired"/s; exit 1' \
+python3 -c 'import json,sys; data=json.load(open(sys.argv[1])); raise SystemExit(not any(i.get("id") == "sec-stable-section" and i.get("status") == "retired" for i in data["identities"]))' \
   "${case_root}/identity-lock.json" || {
     echo "error: migrated identity was not retained as retired" >&2
     exit 1
   }
 
-perl -pi -e 's/sec-renamed-section/sec-stable-section/g' \
+python3 "${edit}" --all 'sec-renamed-section' 'sec-stable-section' \
   "${case_root}/en/chapter.qmd" "${case_root}/fr/chapitre.qmd"
 expect_failure "${case_root}" "retired identity 'content:sec-stable-section' was reused"
 
-echo "ok: identity fixtures (explicit IDs, uniqueness, lock drift, translations, editions, companion assets, migrations, and retired-ID reuse)"
+echo "ok: identity fixtures (explicit IDs, uniqueness, lock drift, translations, editions, companion assets, reusable content, migrations, and retired-ID reuse)"

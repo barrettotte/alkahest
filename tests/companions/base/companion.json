@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "items": {
+    "asset-fixture-code": {
+      "kind": "code",
+      "title": "Fixture code",
+      "path": "companion/sample.v",
+      "media_type": "text/x-verilog",
+      "version": "1.0.0",
+      "sha256": "959c2f8c35ba9e04622057794a1a972ab8178da0cfb50fa2fcfc79618016c63b",
+      "compatibility": ["Verilog fixture"],
+      "description": "Small source file for companion validation.",
+      "release_path": "companion/sample.v"
+    },
+    "asset-fixture-data": {
+      "kind": "dataset",
+      "title": "Fixture data",
+      "path": "companion/sample.csv",
+      "media_type": "text/csv",
+      "version": "1.0.0",
+      "sha256": "8ba4a5940580c83619712a218b0e3d6ed6fb6dadbc7cc9e696f8b4625d9e7378",
+      "compatibility": ["CSV fixture"],
+      "description": "Small dataset for companion validation.",
+      "release_path": "companion/sample.csv"
+    },
+    "asset-fixture-schematic": {
+      "kind": "schematic",
+      "title": "Fixture schematic",
+      "path": "companion/sample.svg",
+      "media_type": "image/svg+xml",
+      "version": "1.0.0",
+      "sha256": "eadda8789ffb9333b4b9b69e67b5a45184c7dac6e155171040adf1e16d2168de",
+      "compatibility": ["SVG fixture"],
+      "description": "Small schematic for companion validation.",
+      "release_path": "companion/sample.svg"
+    },
+    "asset-fixture-bom": {
+      "kind": "bill-of-materials",
+      "title": "Fixture bill of materials",
+      "path": "companion/bom.csv",
+      "media_type": "text/csv",
+      "version": "1.0.0",
+      "sha256": "8d5204cb8fd07be43037949f58fee3739e03e2347f2bd604b40befd5e7e0cc8d",
+      "compatibility": ["BOM fixture"],
+      "description": "Small parts list for companion validation.",
+      "release_path": "companion/bom.csv"
+    },
+    "asset-fixture-download": {
+      "kind": "download",
+      "title": "Fixture download",
+      "path": "companion/pack.md",
+      "media_type": "text/markdown",
+      "version": "1.0.0",
+      "sha256": "eaa9f0090859b1eec580c0f61346486efc157f3edf9ab4b40738e5d229263842",
+      "compatibility": ["Companion contract fixture"],
+      "description": "Small download manifest for companion validation.",
+      "release_path": "companion/pack.md"
+    }
+  }
+}

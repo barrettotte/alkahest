@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" role="img" aria-labelledby="title description">
+  <title id="title">Half-adder logic schematic</title>
+  <desc id="description">Inputs A and B feed an XOR gate producing Sum and an AND gate producing Carry.</desc>
+  <defs>
+    <style>
+      .wire { fill: none; stroke: #20252b; stroke-width: 4; }
+      .gate { fill: #f4efe6; stroke: #20252b; stroke-width: 4; }
+      .label { fill: #20252b; font: 28px sans-serif; }
+    </style>
+  </defs>
+  <path class="wire" d="M70 95 H260 M70 265 H260 M145 95 V225 H260 M145 265 V135 H260"/>
+  <path class="gate" d="M260 55 Q350 55 420 135 Q350 215 260 215 Q300 135 260 55 Z"/>
+  <path class="gate" d="M260 225 H340 Q420 225 420 305 H260 Z"/>
+  <path class="wire" d="M420 135 H650 M420 265 H650"/>
+  <text class="label" x="35" y="105">A</text>
+  <text class="label" x="35" y="275">B</text>
+  <text class="label" x="310" y="145">XOR</text>
+  <text class="label" x="310" y="275">AND</text>
+  <text class="label" x="570" y="120">Sum</text>
+  <text class="label" x="555" y="250">Carry</text>
+</svg>

@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-editions check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean render render-all test-editions test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
+.PHONY: bootstrap build-report check check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean render render-all test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
@@ -12,25 +12,43 @@ check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
 
 check-editions: ## Validate whole-book manifests, sources, privacy, and references.
-	./scripts/check-editions
+	python3 scripts/check-editions.py
 
 test-editions: ## Exercise valid, invalid, and staged edition contracts.
-	./scripts/test-editions
+	python3 scripts/test-editions.py
+
+check-learning: ## Validate learning roles, metadata, pairings, and private answers.
+	python3 scripts/check-learning.py
+
+test-learning: ## Exercise invalid learning-role, pairing, and privacy contracts.
+	python3 scripts/test-learning.py
+
+check-companions: ## Validate companion metadata, checksums, delivery, and references.
+	python3 scripts/check-companions.py
+
+test-companions: ## Exercise invalid companion registry, file, and reference contracts.
+	python3 scripts/test-companions.py
+
+check-reuse: ## Validate reusable fragments, parameters, contexts, and use sites.
+	python3 scripts/check-reuse.py
+
+test-reuse: ## Exercise invalid reusable-content and dependency contracts.
+	python3 scripts/test-reuse.py
 
 check-citations: ## Validate citation styles, bibliography keys, and manuscript calls.
-	./scripts/check-citations
+	python3 scripts/check-citations.py
 
 test-citations: ## Exercise valid and invalid citation contracts.
 	./scripts/test-citations
 
 check-generated-lists: ## Validate configured reference and terminology lists.
-	./scripts/check-generated-lists
+	python3 scripts/check-generated-lists.py
 
 test-generated-lists: ## Exercise valid and invalid generated-list contracts.
 	./scripts/test-generated-lists
 
 check-glossary: ## Validate glossary entries, aliases, forms, and references.
-	./scripts/check-glossary
+	python3 scripts/check-glossary.py
 
 test-glossary: ## Exercise valid and invalid glossary contracts.
 	./scripts/test-glossary
@@ -39,25 +57,25 @@ check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stac
 	./scripts/check-glyph-coverage
 
 check-icons: ## Validate semantic icon names, assets, aliases, and calls.
-	./scripts/check-icons
+	python3 scripts/check-icons.py
 
 check-identities: ## Validate persistent IDs, variants, assets, and the identity lock.
-	./scripts/check-identities
+	python3 scripts/check-identities.py
 
 test-identities: ## Exercise identity uniqueness, translation, edition, and migration rules.
 	./scripts/test-identities
 
 update-identities: ## Lock intentional identity additions and recorded migrations.
-	./scripts/update-identities
+	python3 scripts/update-identities.py
 
 check-index: ## Validate subject/person index entries, markers, ranges, and relations.
-	./scripts/check-index
+	python3 scripts/check-index.py
 
 test-index: ## Exercise valid and invalid subject/person index contracts.
 	./scripts/test-index
 
 check-notes: ## Validate semantic note definitions, repeats, and placements.
-	./scripts/check-notes
+	python3 scripts/check-notes.py
 
 test-notes: ## Exercise valid and invalid semantic-note contracts.
 	./scripts/test-notes

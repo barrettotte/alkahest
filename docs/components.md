@@ -5,6 +5,10 @@ tables, margin notes, general callouts, warnings, exercises, solutions,
 projects, and laboratory procedures. Authors use Quarto Markdown semantics;
 backend-specific markup is not part of the manuscript contract.
 
+Objectives, prerequisites, expected time, difficulty, summaries, review
+questions, hints, and private answer keys form the separate learning contract
+documented in `docs/learning-components.md`.
+
 ## Tables
 
 Use pipe tables for straightforward row-and-column relationships. Every
@@ -87,7 +91,7 @@ Exercises and solutions use Quarto's built-in theorem-family identifiers:
 Calculate the current and resistor powers.
 :::
 
-::: {#sol-divider-budget}
+::: {#sol-divider-budget data-for="exr-divider-budget"}
 ## Divider power budget
 
 The series current is ...

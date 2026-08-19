@@ -4,6 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
+edit="${script_dir}/replace-text.py"
 base_fixture="${repo_root}/tests/citations/base"
 test_root="$(mktemp -d /tmp/alkahest-citation-tests.XXXXXX)"
 
@@ -21,7 +22,7 @@ prepare_case() {
 }
 
 run_validator() {
-  ALKAHEST_CITATION_BOOK_ROOT="$1" "${script_dir}/check-citations"
+  ALKAHEST_CITATION_BOOK_ROOT="$1" python3 "${script_dir}/check-citations.py"
 }
 
 expect_failure() {
@@ -50,28 +51,28 @@ expect_failure() {
 }
 
 missing_key() {
-  perl -0pi -e 's/\@primary/\@missing/' "$1/chapter.qmd"
+  python3 "${edit}" '@primary' '@missing' "$1/chapter.qmd"
 }
 
 duplicate_key() {
-  perl -0pi -e 's/\@book\{secondary,/\@book{primary,/' "$1/references.bib"
+  python3 "${edit}" '@book{secondary,' '@book{primary,' "$1/references.bib"
 }
 
 unused_key() {
-  perl -0pi -e 's/nocite: \|\n  \@background\n//' "$1/_quarto.yml"
+  python3 "${edit}" $'nocite: |\n  @background\n' '' "$1/_quarto.yml"
 }
 
 missing_nocite_key() {
-  perl -0pi -e 's/\@background/\@missing/' "$1/_quarto.yml"
+  python3 "${edit}" '@background' '@missing' "$1/_quarto.yml"
 }
 
 changed_style() {
-  perl -0pi -e 's/<summary>/<summary>Modified /' \
+  python3 "${edit}" '<summary>' '<summary>Modified ' \
     "$1/citations/chicago-author-date.csl"
 }
 
 drifted_profile() {
-  perl -0pi -e 's/citations\/ieee\.csl/citations\/chicago-author-date.csl/' \
+  python3 "${edit}" 'citations/ieee.csl' 'citations/chicago-author-date.csl' \
     "$1/_quarto-citation-numeric.yml"
 }
 

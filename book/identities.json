@@ -18,12 +18,7 @@
   "edition_manifests": [
     "editions.json"
   ],
-  "companion_assets": {
-    "asset-half-adder-verilog": {
-      "path": "companion/half-adder.v",
-      "media_type": "text/x-verilog",
-      "description": "Reusable half-adder source matching the canonical listing specimen."
-    }
-  },
+  "companion_registry": "companion.json",
+  "reusable_content_registry": "reusable-content.json",
   "migrations": []
 }

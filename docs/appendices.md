@@ -54,7 +54,7 @@ See `docs/editions.md` for the complete structure/edition matrix, staging
 boundary, private-source policy, and reduced-book reference checks.
 
 Quarto concatenates project arrays while merging profiles, so a profile cannot
-safely remove a canonical appendix. `scripts/stage-edition` instead generates a
+safely remove a canonical appendix. `scripts/stage-edition.py` instead generates a
 temporary selectively symlinked project under `book/_build/staging/editions`,
 replaces the complete chapter and appendix lists there, renders inside that
 project, and promotes only a

@@ -83,7 +83,7 @@ Move a numbered object within this appendix and confirm that references update
 without editing prose.
 :::
 
-::: {#sol-appendix-review}
+::: {#sol-appendix-review data-for="exr-appendix-review"}
 ## Review an appendix reference
 
 Render every supported format and compare the generated reference rather than

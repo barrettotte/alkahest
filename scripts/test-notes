@@ -4,6 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
+edit="${script_dir}/replace-text.py"
 base_fixture="${repo_root}/tests/notes/base"
 test_root="$(mktemp -d /tmp/alkahest-note-tests.XXXXXX)"
 
@@ -17,7 +18,7 @@ prepare_case() {
 }
 
 run_validator() {
-  ALKAHEST_NOTES_BOOK_ROOT="$1" "${script_dir}/check-notes"
+  ALKAHEST_NOTES_BOOK_ROOT="$1" python3 "${script_dir}/check-notes.py"
 }
 
 expect_failure() {
@@ -46,55 +47,55 @@ expect_failure() {
 }
 
 missing_definition() {
-  perl -0pi -e 's/\n\[\^source-order\]:.*\n/\n/' "$1/components.qmd"
+  python3 "${edit}" --regex '\n\[\^source-order\]:.*?\n' '\n' "$1/components.qmd"
 }
 
 duplicate_definition() {
-  perl -0pi -e 's/(\[\^page-geometry\]:[^\n]+\n)/$1$1/' "$1/reference.qmd"
+  python3 "${edit}" --regex '(\[\^page-geometry\]:[^\n]+\n)' '\1\1' "$1/reference.qmd"
 }
 
 unregistered_definition() {
-  perl -0pi -e 's/source-order/extra-note/g' "$1/components.qmd"
+  python3 "${edit}" --all 'source-order' 'extra-note' "$1/components.qmd"
 }
 
 unknown_reference() {
-  perl -0pi -e 's/First reference\.\[\^page-geometry\]/First reference.[^missing]/' \
+  python3 "${edit}" 'First reference.[^page-geometry]' 'First reference.[^missing]' \
     "$1/reference.qmd"
 }
 
 forbidden_repeat() {
-  perl -0pi -e 's/repeat: reuse/repeat: once/' "$1/notes.yml"
+  python3 "${edit}" 'repeat: reuse' 'repeat: once' "$1/notes.yml"
 }
 
 reference_count_drift() {
-  perl -0pi -e 's/references: 2/references: 3/' "$1/notes.yml"
+  python3 "${edit}" 'references: 2' 'references: 3' "$1/notes.yml"
 }
 
 wrong_source() {
-  perl -0pi -e 's/source: reference\.qmd/source: components.qmd/' "$1/notes.yml"
+  python3 "${edit}" 'source: reference.qmd' 'source: components.qmd' "$1/notes.yml"
 }
 
 wrong_marker() {
-  perl -0pi -e 's/note-page-geometry/note-wrong/' "$1/reference.qmd"
+  python3 "${edit}" 'note-page-geometry' 'note-wrong' "$1/reference.qmd"
 }
 
 inline_note() {
-  perl -0pi -e 's/First reference/Inline^[unregistered note]. First reference/' \
+  python3 "${edit}" 'First reference' 'Inline^[unregistered note]. First reference' \
     "$1/reference.qmd"
 }
 
 missing_placeholder() {
-  perl -0pi -e 's/::: \{\.alkahest-book-notes-placeholder\}\n:::\n//' \
+  python3 "${edit}" $'::: {.alkahest-book-notes-placeholder}\n:::\n' '' \
     "$1/glossary-backmatter.qmd"
 }
 
 duplicate_placeholder() {
-  perl -0pi -e 's/(::: \{\.alkahest-book-notes-placeholder\}\n:::\n)/$1\n$1/' \
+  python3 "${edit}" $'::: {.alkahest-book-notes-placeholder}\n:::\n' $'::: {.alkahest-book-notes-placeholder}\n:::\n\n::: {.alkahest-book-notes-placeholder}\n:::\n' \
     "$1/glossary-backmatter.qmd"
 }
 
 missing_order_entry() {
-  perl -0pi -e 's/  - source-order\n//' "$1/notes.yml"
+  python3 "${edit}" $'  - source-order\n' '' "$1/notes.yml"
 }
 
 valid_root="${test_root}/valid"

@@ -162,18 +162,7 @@ check_pdf() {
     rm "${pdf_bbox}" "${pdftotext_stderr}"
     return 1
   fi
-  if ! perl -ne '
-    if (/<page width="([0-9.]+)"/) {
-      $page_width = $1;
-    }
-    while (/<word xMin="([0-9.-]+)"[^>]*xMax="([0-9.-]+)"/g) {
-      if ($1 < -0.1 || $2 > $page_width + 0.1) {
-        printf STDERR "word box %.3f..%.3f crosses %.3f-point page\n", $1, $2, $page_width;
-        $failed = 1;
-      }
-    }
-    END { exit($failed ? 1 : 0) }
-  ' "${pdf_bbox}"
+  if ! python3 scripts/check-text-contract.py bbox "${pdf_bbox}"
   then
     echo "error: ${label} contains text outside the physical page" >&2
     rm "${pdf_bbox}" "${pdftotext_stderr}"
@@ -220,8 +209,7 @@ check_pdf() {
   # Use Poppler's reading-order extraction for literal marker checks. Normalize
   # whitespace and discard discretionary soft hyphens so a profile-specific line
   # wrap cannot make otherwise identical generated text fail the contract.
-  pdf_text="$(pdftotext "${pdf_path}" - \
-    | perl -CSD -0777 -pe 's/([\pL\pN])-[ \t]*\r?\n[ \t]*([\pL\pN])/$1-$2/g; s/\x{AD}\s*//g; s/\s+/ /g; s{/\s+}{/}g')"
+  pdf_text="$(pdftotext "${pdf_path}" - | python3 scripts/text-normalize.py pdf)"
   for required_marker in \
     "Publication data" \
     "For the readers who build things to understand them." \
@@ -309,8 +297,30 @@ check_pdf() {
     "Solution 8.1" \
     "Project: build a threshold indicator" \
     "Lab: verify the threshold indicator" \
+    "Learning components" \
+    "Learning objectives" \
+    "Prerequisites" \
+    "Review question: threshold evidence" \
+    "Operating-interval exercise" \
+    "Companion materials" \
+    "Half-adder Verilog source" \
+    "Half-adder truth-table dataset" \
+    "Half-adder logic schematic" \
+    "Half-adder bill of materials" \
+    "Half-adder project pack manifest" \
+    "Release package:" \
+    "9f5af146dd48" \
+    "Controlled content reuse" \
+    "Safety notice — disconnect before changing connections." \
+    "Observed value" \
+    "Rights review notice." \
+    "Worked example — tolerance interval." \
+    "Project prerequisites." \
+    "test fixture, verify that its supply reads zero" \
+    "a current-limited supply and multimeter" \
+    "Dependency boundary" \
     "Semantic icons" \
-    "Table 9.1" \
+    "Table 12.1" \
     "Initial semantic icon registry" \
     "Equipment required." \
     "Check the stated limits before energizing the circuit." \
@@ -424,29 +434,24 @@ check_pdf() {
     echo "error: ${label} contains private manuscript content" >&2
     return 1
   fi
-  semantic_repeat_count="$(perl -e '
-    local $/;
-    $text = <STDIN>;
-    $needle = "A useful footnote should not depend on the geometry of a printed page.";
-    print scalar(() = $text =~ /\Q$needle\E/g);
-  ' <<<"${pdf_text}")"
+  if [[ "${pdf_text}" == *"Answer key: threshold evidence"* ]]; then
+    echo "error: ${label} contains private answer-key content" >&2
+    return 1
+  fi
+  semantic_repeat_count="$(grep -Fo 'A useful footnote should not depend on the geometry of a printed page.' <<<"${pdf_text}" | wc -l)"
   if [[ "${semantic_repeat_count}" -ne 2 ]]; then
     echo "error: ${label} has ${semantic_repeat_count} native occurrences of the reusable semantic note; expected 2" >&2
     return 1
   fi
-  if ! perl -CSD -0777 -ne '
-    die "missing two-location index entry\n"
-      unless /computation,\s*[0-9]+,\s*[0-9]+;\s*see also Turing, Alan/;
-    die "missing resolved index range\n"
-      unless /book design,\s*([0-9]+)\x{2013}([0-9]+)/ && $2 > $1;
-    die "missing person index page\n"
-      unless /Knuth, Donald E\.,\s*[0-9]+/;
-    die "unresolved index page\n" if /\?\?/;
-  ' <<<"${pdf_text}"
+  pdf_contract_text="$(mktemp)"
+  printf '%s' "${pdf_text}" >"${pdf_contract_text}"
+  if ! python3 scripts/check-text-contract.py index "${pdf_contract_text}"
   then
     echo "error: ${label} does not retain the page-resolved index contract" >&2
+    rm "${pdf_contract_text}"
     return 1
   fi
+  rm "${pdf_contract_text}"
   glossary_page_reference_count="$(awk '
     { count += gsub(/First use: p\. [0-9]+/, "&") }
     END { print count + 0 }
@@ -490,6 +495,7 @@ code-block chapter|This chapter defines how source code, terminal transcripts, p
 math chapter|This chapter defines the shared authoring contract for mathematical
 figure chapter|This chapter defines the shared contract for authored images
 component chapter|Technical books need more than prose, code, mathematics, and figures.
+controlled-reuse chapter|Repeated prose should have one reviewable source
 icon chapter|Technical books repeat a small visual vocabulary
 glossary chapter|Technical books need one durable definition
 generated glossary|The entries below are generated from glossary.yml
@@ -540,7 +546,7 @@ RECTO_MARKERS
     fi
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/component/icon/notice/glossary/semantic-note/index/generated-list contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/component/companion/reuse/icon/notice/glossary/semantic-note/index/generated-list contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

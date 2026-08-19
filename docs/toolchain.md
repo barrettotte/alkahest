@@ -27,8 +27,13 @@ the reference book's English, French, German, Greek, Russian, and Hebrew
 samples.
 
 The image also includes checksum-locked EPUBCheck 5.3.0 and its exact OpenJDK
-runtime from the Ubuntu snapshot. The pinned `librsvg2-bin` package supplies
-`rsvg-convert`, which Quarto uses to turn versioned SVG art into vector PDF
+runtime and a pinned Python 3 runtime from the Ubuntu snapshot. Publishing
+validators use only Python's standard library, so the template currently has
+no Python package-manager state. If a third-party dependency becomes necessary,
+it must be declared in `pyproject.toml`, locked in `uv.lock`, and run through
+`uv`; ad hoc `pip` installs and alternate package managers are out of scope.
+The pinned `librsvg2-bin` package supplies `rsvg-convert`, which Quarto uses to
+turn versioned SVG art into vector PDF
 inputs for LuaLaTeX. `make check-publication` uses EPUBCheck plus a local HTML
 target/fragment validator with container networking disabled.
 
@@ -43,6 +48,7 @@ The first successful build used:
 | Typst | 0.15.1 |
 | TeX Live | 2026 |
 | Chrome for Testing | 152.0.7977.42 |
+| Python | 3.8.10 |
 
 The exact binary hashes, TeX package revisions, and baseline font identities
 are recorded in `docs/toolchain-lock.md`. Run `make toolchain-report` to compare
@@ -122,6 +128,22 @@ reference integrity, format compatibility, and public/private isolation.
 supplemental HTML variants used by the rendered acceptance suite. The primary
 HTML command uses the `web` structure; EPUB and PDF commands use the core
 `full` structure through their format-specific editions.
+
+`make check-learning` validates learning-role metadata and stable pairings,
+including private answer-key isolation. `make test-learning` exercises its
+negative fixtures; rendered publication checks verify the public learning
+chapter in all four formats and the answer key only in the private edition.
+
+`make check-companions` validates companion-file versions, checksums,
+compatibility, delivery locations, and manuscript references.
+`make test-companions` exercises invalid registry, file, and packaging
+contracts; rendered checks verify web downloads and offline fallbacks.
+
+`make check-reuse` validates registered shared prose, exact checksums,
+provenance, allowed contexts, declared parameters, persistent use-site IDs, and
+the no-nested-dependency boundary. `make test-reuse` exercises invalid registry,
+fragment, context, parameter, and inclusion contracts; rendered checks verify
+the substituted semantic content in every publishing backend.
 
 Use `make clean` to remove the build directory, Quarto cache, and known leaked
 intermediates left by a failed or interrupted render. Its targets are explicit;

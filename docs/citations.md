@@ -67,7 +67,7 @@ Both files retain their upstream author, contributor, and rights metadata.
 They are licensed under Creative Commons Attribution-ShareAlike 3.0; the
 official CSL styles repository is <https://github.com/citation-style-language/styles>.
 An intentional style update must review output changes, update the locked hash
-in `scripts/check-citations`, and rerun the default and numeric acceptance set.
+in `scripts/check-citations.py`, and rerun the default and numeric acceptance set.
 
 ## Acceptance coverage
 

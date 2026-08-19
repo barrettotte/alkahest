@@ -38,7 +38,7 @@ if [[ "${ALKAHEST_GLYPH_CHECK_IN_CONTAINER:-0}" != "1" ]]; then
     "${ALKAHEST_TOOLCHAIN_IMAGE}"
 fi
 
-for required_command in fc-list perl; do
+for required_command in fc-list python3; do
   if ! command -v "${required_command}" >/dev/null 2>&1; then
     echo "error: ${required_command} is required for glyph coverage checks" >&2
     exit 1
@@ -48,15 +48,7 @@ done
 codepoints="$(mktemp)"
 find "${repo_root}/book" -type f \
   \( -name "*.qmd" -o -name "*.bib" -o -name "*.yml" -o -name "*.yaml" \) \
-  -print0 \
-  | xargs -0 perl -CSD -ne '
-      for (split //) {
-        my $codepoint = ord($_);
-        next if $codepoint < 0x80;
-        next if $codepoint == 0x00A0 || $codepoint == 0x202F;
-        printf "%04X\n", $codepoint;
-      }
-    ' \
+  -exec python3 "${repo_root}/scripts/list-codepoints.py" {} + \
   | sort -u >"${codepoints}"
 
 failed=0
