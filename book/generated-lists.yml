@@ -72,6 +72,10 @@ objects:
     title: Filtered waveform estimate
   - id: fig-system-map
     title: Closed-loop system map
+  - id: fig-build-dependency-graph
+    title: Validated source-to-publication dependency graph
+  - id: fig-response-time-chart
+    title: Response time by system load
   - id: tbl-measurement-plan
     title: Measurement and acceptance plan
   - id: tbl-icon-registry

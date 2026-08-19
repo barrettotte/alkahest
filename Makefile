@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean render render-all test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
+.PHONY: bootstrap build-report check check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean generate-graphs render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
@@ -10,6 +10,18 @@ build-report: ## Measure primary builds, warnings, and artifact sizes.
 
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
+
+check-execution-policy: ## Reject executable manuscript cells and policy overrides.
+	python3 scripts/check-execution-policy.py
+
+test-execution-policy: ## Exercise static-only source and execution-policy contracts.
+	python3 scripts/test-execution-policy.py
+
+generate-graphs: ## Regenerate committed graph/chart derivatives from source data.
+	python3 scripts/generate-graphs.py
+
+check-graphs: ## Validate diagram sources and deterministic chart derivatives.
+	python3 scripts/check-graphs.py
 
 check-editions: ## Validate whole-book manifests, sources, privacy, and references.
 	python3 scripts/check-editions.py

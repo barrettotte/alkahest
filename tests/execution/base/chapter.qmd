@@ -1,0 +1,10 @@
+# Static execution fixture
+
+```{.python}
+print("shown, not run")
+```
+
+```{mermaid}
+flowchart LR
+  Source --> Output
+```

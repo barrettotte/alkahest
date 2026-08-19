@@ -704,20 +704,32 @@ exec podman run --rm \
       "id=\"fig-waveform-filtered\"" \
       "data-ref-parent=\"fig-waveform-comparison\"" \
       "id=\"fig-system-map\" class=\"figure-full-width" \
+      "id=\"fig-build-dependency-graph\"" \
+      "id=\"fig-response-time-chart\"" \
       "class=\"figure-source\""
     do
       require_literal "${figure_structure}" "${html_figures}" "HTML figure specimen"
       require_literal "${figure_structure}" "${epub_language}" "EPUB figure specimen"
     done
+    # HTML preserves the manuscript-relative asset path. EPUB intentionally
+    # renames packaged media, so its alt text and figure ID are the stable
+    # publication contract rather than an implementation-specific filename.
+    require_literal "figures/generated/response-time.svg" "${html_figures}" "HTML chart asset"
     for figure_alt in \
       "A three-stage signal chain runs from a sensor through signal conditioning to a decision stage." \
       "A jagged sampled waveform varies around a broad rise and fall" \
       "A smooth waveform rises to one broad peak and falls" \
-      "Four modules form a closed loop: observe, model, decide, and act."
+      "Four modules form a closed loop: observe, model, decide, and act." \
+      "A line chart with five points. Response time rises from 18 milliseconds" \
+      "Diagram description: Manuscript source and data/assets"
     do
       require_literal "${figure_alt}" "${html_figures}" "HTML figure alternative"
       require_literal "${figure_alt}" "${epub_language}" "EPUB figure alternative"
     done
+    require_literal "Diagram description: Inputs A and B" \
+      book/_build/html/reference.html "HTML Mermaid description"
+    require_literal "Diagram description: Inputs A and B" \
+      "${epub_language}" "EPUB Mermaid description"
     require_literal "figures/system-map-screen.svg" "${html_figures}" "HTML figure variant"
     require_literal "screen edition" "${epub_svg}" "EPUB figure variant"
     if grep -Fq "system-map-print.svg" "${html_figures}" \

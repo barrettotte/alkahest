@@ -216,6 +216,10 @@ check_pdf() {
     "Lists and notation" \
     "List of figures" \
     "Information flow through a half-adder" \
+    "Validated source-to-publication dependency graph" \
+    "Response time by system load" \
+    "Diagram description: Inputs A and B" \
+    "Diagram description: Manuscript source and data/assets" \
     "List of tables" \
     "Measurement and acceptance plan" \
     "List of listings" \

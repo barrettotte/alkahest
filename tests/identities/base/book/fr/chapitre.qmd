@@ -4,6 +4,11 @@
 
 ![Un petit exemple.](sample.svg){#fig-identity-sample}
 
+```{dot}
+//| label: fig-identity-dot
+digraph { source -> output }
+```
+
 | Valeur |
 |-------:|
 | 1 |

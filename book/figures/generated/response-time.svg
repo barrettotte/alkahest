@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" role="img" aria-labelledby="title desc">
+  <title id="title">Response time by system load</title>
+  <desc id="desc">A line chart with five measured points. Response time rises from 18 milliseconds at zero percent load to 71 milliseconds at full load, with the steepest increase above 75 percent.</desc>
+  <metadata>Generated deterministically from figures/data/response-time.csv by scripts/generate-graphs.py; original Alkahest fixture, CC0 1.0.</metadata>
+  <rect width="800" height="460" fill="#ffffff"/>
+  <g font-family="Libertinus Sans, sans-serif" font-size="16" fill="#20262e">
+    <line x1="110" y1="375.0" x2="730" y2="375.0" stroke="#c5cbd3" stroke-width="1"/>
+    <text x="94" y="375.0" text-anchor="end" dominant-baseline="middle">0</text>
+    <line x1="110" y1="292.5" x2="730" y2="292.5" stroke="#c5cbd3" stroke-width="1"/>
+    <text x="94" y="292.5" text-anchor="end" dominant-baseline="middle">20</text>
+    <line x1="110" y1="210.0" x2="730" y2="210.0" stroke="#c5cbd3" stroke-width="1"/>
+    <text x="94" y="210.0" text-anchor="end" dominant-baseline="middle">40</text>
+    <line x1="110" y1="127.5" x2="730" y2="127.5" stroke="#c5cbd3" stroke-width="1"/>
+    <text x="94" y="127.5" text-anchor="end" dominant-baseline="middle">60</text>
+    <line x1="110" y1="45.0" x2="730" y2="45.0" stroke="#c5cbd3" stroke-width="1"/>
+    <text x="94" y="45.0" text-anchor="end" dominant-baseline="middle">80</text>
+    <line x1="110.0" y1="375" x2="110.0" y2="382" stroke="#20262e" stroke-width="2"/>
+    <text x="110.0" y="407" text-anchor="middle">0</text>
+    <line x1="265.0" y1="375" x2="265.0" y2="382" stroke="#20262e" stroke-width="2"/>
+    <text x="265.0" y="407" text-anchor="middle">25</text>
+    <line x1="420.0" y1="375" x2="420.0" y2="382" stroke="#20262e" stroke-width="2"/>
+    <text x="420.0" y="407" text-anchor="middle">50</text>
+    <line x1="575.0" y1="375" x2="575.0" y2="382" stroke="#20262e" stroke-width="2"/>
+    <text x="575.0" y="407" text-anchor="middle">75</text>
+    <line x1="730.0" y1="375" x2="730.0" y2="382" stroke="#20262e" stroke-width="2"/>
+    <text x="730.0" y="407" text-anchor="middle">100</text>
+    <line x1="110" y1="45" x2="110" y2="375" stroke="#20262e" stroke-width="2"/>
+    <line x1="110" y1="375" x2="730" y2="375" stroke="#20262e" stroke-width="2"/>
+    <polyline points="110.0,300.8 265.0,288.4 420.0,255.4 575.0,193.5 730.0,82.1" fill="none" stroke="#1f5d8f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="110.0" cy="300.8" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>
+    <circle cx="265.0" cy="288.4" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>
+    <circle cx="420.0" cy="255.4" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>
+    <circle cx="575.0" cy="193.5" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>
+    <circle cx="730.0" cy="82.1" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>
+    <text x="420" y="446" text-anchor="middle" font-weight="700">System load (%)</text>
+    <text x="28" y="210" text-anchor="middle" font-weight="700" transform="rotate(-90 28 210)">Response time (ms)</text>
+  </g>
+</svg>

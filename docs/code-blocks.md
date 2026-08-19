@@ -54,16 +54,27 @@ such as URLs or hashes.
 
 ## Executable examples
 
-For now, present an executable example as a source block followed immediately
-by a visibly labeled expected-output block. Normal publication builds do not
-run manuscript code. The later execution-policy roadmap item will decide
-allowed engines, isolation, dependency locking, caching, and output-drift
-checks; this contract defines only the stable presentation used before and
-after that decision.
+Present an executable example as a static source block followed immediately by
+a visibly labeled expected-output block. Normal, CI, preview, and release
+builds never run manuscript code. Use dotted language classes such as
+`{.python}`; executable cells such as `{python}` and per-document execution
+settings fail validation.
+
+The only brace-style cells admitted by the machine policy are declarative
+`{mermaid}` and Graphviz `{dot}` diagrams. Diagram renderers are reviewed
+separately and do not imply permission to execute a general-purpose language.
+
+`docs/execution-policy.md` defines the trust boundary and the requirements for
+any future, separate opt-in verifier. Publication caching and frozen results
+are disabled. A verifier would require a pinned offline environment, locked
+dependencies, read-only source, disposable output, resource limits, and drift
+checks before it could be enabled.
 
 ## Validation
 
-`make check-publication` checks the HTML/EPUB filename, numbering, annotation,
+`make check-execution-policy` first rejects executable cells, engine or policy
+overrides, and executable notebook chapters. `make check-publication` checks
+the HTML/EPUB filename, numbering, annotation,
 overflow, patch, terminal, and output structures. `make check-pdf-profiles`
 requires the same content in all six PDFs and rejects extracted word boxes that
 escape the physical page. Visual review starts with both 6 x 9 code chapters.

@@ -1,0 +1,6 @@
+load_percent,response_ms
+0,18
+25,21
+50,29
+75,44
+100,71

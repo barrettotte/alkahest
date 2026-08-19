@@ -104,6 +104,9 @@ sha256sum \
   "${EPUBCHECK_JAR}" \
   /opt/quarto/bin/tools/x86_64/typst \
   /opt/quarto/bin/tools/x86_64/pandoc \
+  /opt/quarto/share/formats/html/mermaid/mermaid.min.js \
+  /opt/quarto/share/js/graphviz-wasm.js \
+  /opt/quarto/share/wasm/graphvizlib.wasm \
   /opt/TinyTeX/bin/x86_64-linux/luahbtex \
   /usr/bin/rsvg-convert \
   /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf \

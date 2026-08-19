@@ -100,6 +100,9 @@ directly. Use raster inputs only for inherently photographic or textured
 subjects. Effective raster resolution, color space, and print preflight remain
 release-gate work rather than claims of this source-level contract.
 
+The selected Mermaid, Graphviz, and generated-chart workflows, including the
+deferred Vega-Lite path, are recorded in `docs/graph-chart-evaluation.md`.
+
 `book/figures/README.md` is the current asset registry. A production registry
 must record creator, origin, license or permission, modification history, and
 any required credit wording. Captions cannot be baked into image pixels.

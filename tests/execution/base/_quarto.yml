@@ -1,0 +1,11 @@
+project:
+  type: book
+
+execute:
+  enabled: false
+  cache: false
+  freeze: false
+
+book:
+  chapters:
+    - chapter.qmd

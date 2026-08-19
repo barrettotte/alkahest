@@ -512,6 +512,15 @@ h4.table-title {
   font-size: 0.88em;
 }
 
+.diagram-description {
+  display: block;
+  margin: 0.4rem 0 1rem;
+  padding-left: 0.75rem;
+  border-left: 0.2rem solid $alkahest-line;
+  color: $alkahest-muted;
+  font-size: 0.9em;
+}
+
 .index-marker {
   display: inline;
 }

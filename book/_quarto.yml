@@ -2,6 +2,8 @@ project:
   type: book
   # Validate semantic sources, then stage generated vector and font build inputs.
   pre-render:
+    - python3 ../scripts/check-execution-policy.py
+    - python3 ../scripts/check-graphs.py
     - python3 ../scripts/check-identities.py
     - python3 ../scripts/check-editions.py
     - python3 ../scripts/check-learning.py
@@ -15,6 +17,14 @@ project:
     - python3 ../scripts/check-notes.py
     - ../scripts/stage-icons
     - ../scripts/stage-webfonts
+
+# Publication builds render source listings but never execute manuscript code
+# or trust cached/frozen results. See execution-policy.json for the locked
+# boundary and docs/execution-policy.md for a future opt-in verifier design.
+execute:
+  enabled: false
+  cache: false
+  freeze: false
 
 book:
   title: "Alkahest Reference Book"

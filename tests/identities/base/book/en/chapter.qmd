@@ -4,6 +4,11 @@
 
 ![A small fixture.](sample.svg){#fig-identity-sample}
 
+```{dot}
+//| label: fig-identity-dot
+digraph { source -> output }
+```
+
 | Value |
 |------:|
 | 1 |

@@ -68,7 +68,7 @@ def _scan_qmd(path, source, records):
     for number, line in enumerate(lines, 1):
         if fence:
             if re.fullmatch(re.escape(fence) + r"\s*\n?", line): fence, executable = "", False; continue
-            label = re.fullmatch(r"\s*(?:#|%%)\|\s*label:\s*([A-Za-z][A-Za-z0-9_.:-]*)\s*\n?", line) if executable else None
+            label = re.fullmatch(r"\s*(?:#|%%|//)\|\s*label:\s*([A-Za-z][A-Za-z0-9_.:-]*)\s*\n?", line) if executable else None
             if label: _add(records, {"namespace": "content", "id": label.group(1), "kind": _content_kind(label.group(1)), "source": source, "line": number})
             continue
         opening = re.match(r"^(`{3,}|~{3,})(.*)$", line)
@@ -264,4 +264,3 @@ def validate_migrations(policy):
         while cursor in edges:
             if cursor in seen: fail("identity migrations contain a cycle")
             seen.add(cursor); cursor = edges[cursor]
-

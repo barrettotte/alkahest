@@ -126,9 +126,12 @@ done
 
 An executable example is presented as a named source block followed immediately
 by its expected standard output. Both remain static, reviewable manuscript
-content for now: normal publication builds do not execute code. A later roadmap
-decision will determine which engines may run, how dependencies are locked, and
-how generated output is verified without granting manuscripts ambient access.
+content: normal, CI, preview, and release builds do not execute code. Authors
+use dotted language classes such as `{.python}`; executable cell syntax such as
+`{python}` is rejected before rendering. This keeps cloning or publishing a
+book from granting its manuscript ambient command execution. Declarative
+`{mermaid}` and Graphviz `{dot}` diagram cells are the only machine-locked
+exceptions and do not grant a general-purpose command interface.
 
 ::: {.code-with-filename}
 [`checksum.py`]{.code-with-filename-file}
@@ -148,5 +151,8 @@ print(sum(values))
 :::
 
 The source/output pair is deliberately small enough to verify by inspection.
-When execution is enabled later, generated results must remain distinguishable
-from commands and must fail validation when they no longer match their source.
+If a separate opt-in verifier is added later, it must run offline in a locked
+environment with read-only sources, disposable outputs, explicit resource
+limits, and output-drift checks. Publication caching and frozen execution
+results remain disabled; generated results must stay distinguishable from
+commands and authored prose.

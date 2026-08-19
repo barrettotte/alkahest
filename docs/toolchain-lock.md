@@ -43,6 +43,8 @@ post-install checks.
 | OpenJDK | 11.0.27; Ubuntu package `openjdk-11-jre-headless` version `11.0.27+6~us1-0ubuntu1~20.04` |
 | Poppler | 0.86.1; Ubuntu package `poppler-utils` version `0.86.1-0ubuntu1.7` |
 | librsvg | 2.48.9; Ubuntu package `librsvg2-bin` version `2.48.9-1ubuntu0.20.04.4`; `rsvg-convert` SHA-256 `daaec6e04e775ff7582545e055d0559590ff44a75664ff94b0ec3562afeb9509` |
+| Mermaid runtime | Bundled with Quarto; JavaScript SHA-256 `07e37dfa97b337ccc85365d57eddf99b9706f09db3b59b260d0333b23b343c4b` |
+| Graphviz runtime | Bundled with Quarto; wrapper SHA-256 `8d6c1517a55aea0aa05c1fae0eb221a6473bdc018e0c9e10e3e893ec4832ad4f`; WASM SHA-256 `75d33c9c6e0f3972b7fa064e67d03ce09c68a453f0adefdacd1c4dc1ed3ed943` |
 
 ## Selected font stack
 
