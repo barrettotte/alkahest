@@ -286,6 +286,14 @@ check_pdf() {
     "Full-width and output-specific art" \
     "Chemistry-diagram workflow evaluation" \
     "Fischer esterification of acetic acid with ethanol" \
+    "Computing-diagram workflow" \
+    "A synchronous memory read cycle with explicit validity timing" \
+    "A half-adder expressed as a conventional two-gate network" \
+    "Explicit address ranges and bit positions keep a memory map" \
+    "A minimal processor datapath distinguishes data and address paths" \
+    "Physics-diagram workflow" \
+    "A velocity vector with explicit components and preserved display precision" \
+    "A normalized inverse-square field with an explicit sampling grid" \
     "Figure 7.1" \
     "Figure 7.2" \
     "Figure 7.2a" \

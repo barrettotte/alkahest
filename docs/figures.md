@@ -106,6 +106,10 @@ The portable electrical-circuit SVG workflow and evaluated CircuitikZ/Typst
 alternatives are recorded in `docs/circuit-workflow-evaluation.md`.
 The portable chemistry SVG workflow and evaluated Chemfig/typed-smiles
 alternatives are recorded in `docs/chemistry-workflow-evaluation.md`.
+The data-driven timing, gate, memory/instruction, and processor architecture
+workflow is recorded in `docs/computing-diagram-evaluation.md`.
+The portable physics vector/field workflow and its unit, precision, and data-
+provenance contract are recorded in `docs/physics-diagram-evaluation.md`.
 
 `book/figures/README.md` is the current asset registry. A production registry
 must record creator, origin, license or permission, modification history, and
@@ -131,3 +135,9 @@ self-containment. Visual review begins with the 6 x 9 panels, full-width
 figure, voltage-divider labels and symbols, and reaction structures at the
 smallest trim. `make check-chemistry` applies the equivalent deterministic,
 accessible, self-contained SVG checks to the selected reaction workflow.
+`make check-computing-diagrams` additionally validates bit counts, address
+coverage, signal spans, node/edge references, visible labels, and deterministic
+portable SVG derivatives for the computing fixtures.
+`make check-physics-diagrams` validates the physics unit registry, displayed
+significant figures, vector and field relationships, provenance, and two
+deterministic accessible SVG derivatives.

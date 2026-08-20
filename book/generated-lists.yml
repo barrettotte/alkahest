@@ -80,6 +80,18 @@ objects:
     title: A nine-volt resistive voltage divider
   - id: fig-fischer-esterification
     title: Fischer esterification of acetic acid with ethanol
+  - id: fig-memory-read-cycle
+    title: Synchronous memory read-cycle timing
+  - id: fig-half-adder-gates
+    title: Half-adder gate network
+  - id: fig-memory-instruction-layout
+    title: Memory map and instruction-word layout
+  - id: fig-processor-datapath
+    title: Minimal processor datapath
+  - id: fig-velocity-vector
+    title: Velocity vector and components
+  - id: fig-inverse-square-field
+    title: Normalized inverse-square field
   - id: tbl-measurement-plan
     title: Measurement and acceptance plan
   - id: tbl-icon-registry

@@ -1,0 +1,9 @@
+{
+  "signal": [
+    {"name": "CLK", "wave": "p......."},
+    {"name": "READ", "wave": "0.1...0."},
+    {"name": "ADDR", "wave": "x.=...x.", "data": ["0x2A"]},
+    {"name": "DATA", "wave": "x....=x.", "data": ["0xC7"]}
+  ],
+  "head": {"text": "Synchronous memory read cycle", "tick": 0}
+}

@@ -708,6 +708,12 @@ exec podman run --rm \
       "id=\"fig-response-time-chart\"" \
       "id=\"fig-voltage-divider\"" \
       "id=\"fig-fischer-esterification\"" \
+      "id=\"fig-memory-read-cycle\"" \
+      "id=\"fig-half-adder-gates\"" \
+      "id=\"fig-memory-instruction-layout\"" \
+      "id=\"fig-processor-datapath\"" \
+      "id=\"fig-velocity-vector\"" \
+      "id=\"fig-inverse-square-field\"" \
       "class=\"figure-source\""
     do
       require_literal "${figure_structure}" "${html_figures}" "HTML figure specimen"
@@ -719,6 +725,12 @@ exec podman run --rm \
     require_literal "figures/generated/response-time.svg" "${html_figures}" "HTML chart asset"
     require_literal "figures/generated/voltage-divider.svg" "${html_figures}" "HTML circuit asset"
     require_literal "figures/generated/fischer-esterification.svg" "${html_figures}" "HTML chemistry asset"
+    require_literal "figures/generated/read-cycle-timing.svg" "${html_figures}" "HTML timing-diagram asset"
+    require_literal "figures/generated/half-adder-gates.svg" "${html_figures}" "HTML logic-gate asset"
+    require_literal "figures/generated/memory-instruction-layout.svg" "${html_figures}" "HTML computing-layout asset"
+    require_literal "figures/generated/processor-datapath.svg" "${html_figures}" "HTML processor-datapath asset"
+    require_literal "figures/generated/velocity-vector.svg" "${html_figures}" "HTML velocity-vector asset"
+    require_literal "figures/generated/inverse-square-field.svg" "${html_figures}" "HTML inverse-square-field asset"
     for figure_alt in \
       "A three-stage signal chain runs from a sensor through signal conditioning to a decision stage." \
       "A jagged sampled waveform varies around a broad rise and fall" \
@@ -727,6 +739,12 @@ exec podman run --rm \
       "A line chart with five points. Response time rises from 18 milliseconds" \
       "A nine-volt source drives a one-kiloohm upper resistor" \
       "Skeletal structures show acetic acid plus ethanol yielding ethyl acetate plus water" \
+      "Four timing lanes show a clock, an active-high read control" \
+      "Inputs A and B each branch to an XOR gate producing SUM" \
+      "A sixteen-bit address space is divided into equal ROM, RAM, reserved" \
+      "A program counter addresses instruction memory" \
+      "A velocity vector points up and right" \
+      "Twenty-four arrows sampled on a one-meter square grid point inward" \
       "Diagram description: Manuscript source and data/assets"
     do
       require_literal "${figure_alt}" "${html_figures}" "HTML figure alternative"

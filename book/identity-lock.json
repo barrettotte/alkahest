@@ -128,6 +128,41 @@
          "status": "active"
       },
       {
+         "id": "fig-half-adder-gates",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "fig-inverse-square-field",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "fig-memory-instruction-layout",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "fig-memory-read-cycle",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "fig-processor-datapath",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
          "id": "fig-response-time-chart",
          "kind": "figure",
          "namespace": "content",
@@ -143,6 +178,13 @@
       },
       {
          "id": "fig-system-map",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "fig-velocity-vector",
          "kind": "figure",
          "namespace": "content",
          "source": "figures.qmd",
@@ -548,6 +590,13 @@
          "status": "active"
       },
       {
+         "id": "sec-computing-diagram-workflow",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
          "id": "sec-content-reuse",
          "kind": "chapter",
          "namespace": "content",
@@ -923,6 +972,13 @@
          "kind": "section",
          "namespace": "content",
          "source": "page-continuity.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-physics-diagram-workflow",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
          "status": "active"
       },
       {

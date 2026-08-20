@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540" role="img" aria-labelledby="title desc">
+<title id="title">Velocity vector and components</title>
+<desc id="desc">A velocity vector points up and right. Dashed projections label its horizontal component as 20.0 meters per second and vertical component as 15.0 meters per second; the magnitude is 25.0 meters per second at 36.9 degrees.</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#111827"/>
+</marker>
+<marker id="small-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#111827"/>
+</marker>
+</defs>
+<rect width="1000" height="540" fill="#ffffff"/>
+<text x="500" y="40" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="#111827">Velocity vector and components</text>
+<line x1="105" y1="430" x2="890" y2="430" stroke="#111827" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="170" y1="475" x2="170" y2="75" stroke="#111827" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="975" y="438" text-anchor="end" font-family="sans-serif" font-size="24" font-weight="normal" fill="#111827">v_x (m/s)</text>
+<text x="162" y="65" text-anchor="end" font-family="sans-serif" font-size="24" font-weight="normal" fill="#111827">v_y (m/s)</text>
+<line x1="280" y1="424" x2="280" y2="436" stroke="#111827" stroke-width="1"/>
+<text x="280" y="461" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">5</text>
+<line x1="390" y1="424" x2="390" y2="436" stroke="#111827" stroke-width="1"/>
+<text x="390" y="461" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">10</text>
+<line x1="500" y1="424" x2="500" y2="436" stroke="#111827" stroke-width="1"/>
+<text x="500" y="461" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">15</text>
+<line x1="610" y1="424" x2="610" y2="436" stroke="#111827" stroke-width="1"/>
+<text x="610" y="461" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">20</text>
+<line x1="720" y1="424" x2="720" y2="436" stroke="#111827" stroke-width="1"/>
+<text x="720" y="461" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">25</text>
+<line x1="830" y1="424" x2="830" y2="436" stroke="#111827" stroke-width="1"/>
+<text x="830" y="461" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">30</text>
+<line x1="164" y1="320" x2="176" y2="320" stroke="#111827" stroke-width="1"/>
+<text x="156" y="327" text-anchor="end" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">5</text>
+<line x1="164" y1="210" x2="176" y2="210" stroke="#111827" stroke-width="1"/>
+<text x="156" y="217" text-anchor="end" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">10</text>
+<line x1="164" y1="100" x2="176" y2="100" stroke="#111827" stroke-width="1"/>
+<text x="156" y="107" text-anchor="end" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">15</text>
+<line x1="170" y1="100" x2="610" y2="100" stroke="#475569" stroke-width="2" stroke-dasharray="8 6"/>
+<line x1="610" y1="430" x2="610" y2="100" stroke="#475569" stroke-width="2" stroke-dasharray="8 6"/>
+<line x1="170" y1="430" x2="610" y2="100" stroke="#111827" stroke-width="4" marker-end="url(#arrow)"/>
+<text x="390" y="81" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="normal" fill="#111827">v_x = 20.0 m/s</text>
+<text x="628" y="265" text-anchor="start" font-family="sans-serif" font-size="24" font-weight="normal" fill="#111827">v_y = 15.0 m/s</text>
+<text x="385" y="170" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="#111827">|v| = 25.0 m/s</text>
+<path d="M 248 430 A 78 78 0 0 0 232.4 383.2" fill="none" stroke="#111827" stroke-width="2"/>
+<text x="290" y="382" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="normal" fill="#111827">theta = 36.9°</text>
+<text x="500" y="510" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="normal" fill="#475569">Displayed precision is preserved explicitly in the versioned source.</text>
+</svg>

@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-chemistry check-circuits check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean generate-chemistry generate-circuits generate-graphs render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
+.PHONY: bootstrap build-report check check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-graphs render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
@@ -34,6 +34,18 @@ generate-chemistry: ## Regenerate committed chemistry SVG derivatives.
 
 check-chemistry: ## Validate chemistry candidates and deterministic SVG derivatives.
 	./scripts/python-tools scripts/check-chemistry.py
+
+generate-computing-diagrams: ## Regenerate committed computing-diagram SVG derivatives.
+	python3 scripts/generate-computing-diagrams.py
+
+check-computing-diagrams: ## Validate computing-diagram data, candidates, and SVG derivatives.
+	python3 scripts/check-computing-diagrams.py
+
+generate-physics-diagrams: ## Regenerate committed physics-diagram SVG derivatives.
+	python3 scripts/generate-physics-diagrams.py
+
+check-physics-diagrams: ## Validate physics data, units, precision, provenance, and SVG derivatives.
+	python3 scripts/check-physics-diagrams.py
 
 check-editions: ## Validate whole-book manifests, sources, privacy, and references.
 	python3 scripts/check-editions.py

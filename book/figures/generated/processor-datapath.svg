@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450" role="img" aria-labelledby="title desc">
+<title id="title">Minimal processor datapath</title>
+<desc id="desc">A program counter addresses instruction memory. Instruction fields feed decode and the register file; control selects registers and the ALU operation. The ALU accesses data memory, with load data and next-PC feedback paths.</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#111827"/>
+</marker>
+</defs>
+<rect width="1000" height="450" fill="#ffffff"/>
+<text x="500" y="34" text-anchor="middle" font-family="sans-serif" font-size="25" font-weight="bold" fill="#111827">
+<tspan x="500" dy="0">Minimal processor datapath</tspan>
+</text>
+<polyline points="160,160.0 185.0,160.0 185.0,160.0 210,160.0" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="161.0" y="136" width="48" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="185" y="150" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="185" dy="0">addr</tspan>
+</text>
+<polyline points="345,160.0 370.0,160.0 370.0,98.0 395,98.0" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="341.5" y="90" width="57" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="370" y="104" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="370" dy="0">inst.</tspan>
+</text>
+<polyline points="345,160.0 370.0,160.0 370.0,222.0 395,222.0" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="335.0" y="210" width="66" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="368" y="224" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="368" dy="0">fields</tspan>
+</text>
+<polyline points="467.5,126 467.5,194" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="457.0" y="151" width="66" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="490" y="165" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="490" dy="0">select</tspan>
+</text>
+<polyline points="540,98.0 565,98.0 565,222.0 590,222.0" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<rect x="542.0" y="131" width="46" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="565" y="145" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="565" dy="0">op</tspan>
+</text>
+<polyline points="540,222.0 565.0,222.0 565.0,222.0 590,222.0" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="541.0" y="198" width="48" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="565" y="212" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="565" dy="0">args</tspan>
+</text>
+<polyline points="700,222.0 725.0,222.0 725.0,222.0 750,222.0" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="702.0" y="198" width="46" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="725" y="212" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="725" dy="0">bus</tspan>
+</text>
+<polyline points="815.0,250 815.0,310 467.5,310 467.5,250" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="611.0" y="311" width="48" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="635" y="325" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="635" dy="0">load</tspan>
+</text>
+<polyline points="645.0,250 645.0,352 100.0,352 100.0,188" fill="none" stroke="#111827" stroke-width="2" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="292.5" y="353" width="75" height="18" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<text x="330" y="367" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="normal" fill="#475569">
+<tspan x="330" dy="0">next PC</tspan>
+</text>
+<rect x="40" y="132" width="120" height="56" rx="8" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="100.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#111827">
+<tspan x="100.0" dy="0">Program</tspan>
+<tspan x="100.0" dy="23.0">counter</tspan>
+</text>
+<rect x="210" y="132" width="135" height="56" rx="8" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="277.5" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#111827">
+<tspan x="277.5" dy="0">Instruction</tspan>
+<tspan x="277.5" dy="23.0">memory</tspan>
+</text>
+<rect x="395" y="70" width="145" height="56" rx="8" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="467.5" y="89.0" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#111827">
+<tspan x="467.5" dy="0">Decoder and</tspan>
+<tspan x="467.5" dy="23.0">control</tspan>
+</text>
+<rect x="395" y="194" width="145" height="56" rx="8" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="467.5" y="213.0" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#111827">
+<tspan x="467.5" dy="0">Register</tspan>
+<tspan x="467.5" dy="23.0">file</tspan>
+</text>
+<rect x="590" y="194" width="110" height="56" rx="8" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="645.0" y="228.0" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#111827">
+<tspan x="645.0" dy="0">ALU</tspan>
+</text>
+<rect x="750" y="194" width="130" height="56" rx="8" fill="#f8fafc" stroke="#111827" stroke-width="2"/>
+<text x="815.0" y="213.0" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#111827">
+<tspan x="815.0" dy="0">Data</tspan>
+<tspan x="815.0" dy="23.0">memory</tspan>
+</text>
+<text x="500" y="434" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="normal" fill="#475569">
+<tspan x="500" dy="0">solid = data/address path · dashed = control path</tspan>
+</text>
+</svg>

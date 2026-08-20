@@ -169,6 +169,103 @@ accessibility contract. Chemfig remains a mature LaTeX-only option, while
 typed-smiles remains a capable Typst-only community package. Generated
 structures are explanatory artwork and must still receive scientific review.
 
+## Computing-diagram workflow {#sec-computing-diagram-workflow}
+
+One versioned source at `figures/data/computing-diagrams.json` drives four
+portable SVGs through `scripts/generate-computing-diagrams.py`. Together they
+exercise the five recurring computing forms: @fig-memory-read-cycle shows a
+timing diagram, @fig-half-adder-gates uses conventional logic-gate shapes,
+@fig-memory-instruction-layout combines a memory map with an instruction
+format, and @fig-processor-datapath shows an architecture block diagram.
+
+::: {#fig-memory-read-cycle fig-pos="H"}
+
+![](figures/generated/read-cycle-timing.svg){fig-alt="Four timing lanes show a clock, an active-high read control, address 0x2A, and returned data 0xC7. The address becomes valid at slot two and the returned data at slot five." width="100%"}
+
+A synchronous memory read cycle with explicit validity timing. [Source:
+generated from `figures/data/computing-diagrams.json` by
+`scripts/generate-computing-diagrams.py`; original Alkahest fixture, CC0
+1.0.]{.figure-source}
+:::
+
+::: {#fig-half-adder-gates fig-pos="H"}
+
+![](figures/generated/half-adder-gates.svg){fig-alt="Inputs A and B each branch to an XOR gate producing SUM and an AND gate producing CARRY." width="90%"}
+
+A half-adder expressed as a conventional two-gate network. [Source: generated
+from `figures/data/computing-diagrams.json` by
+`scripts/generate-computing-diagrams.py`; original Alkahest fixture, CC0
+1.0.]{.figure-source}
+:::
+
+::: {#fig-memory-instruction-layout fig-pos="H"}
+
+![](figures/generated/memory-instruction-layout.svg){fig-alt="A sixteen-bit address space is divided into equal ROM, RAM, reserved, and memory-mapped input-output regions. Beside it, a sixteen-bit instruction contains a four-bit opcode, two-bit mode, three-bit destination, three-bit source, and four-bit immediate field." width="100%"}
+
+Explicit address ranges and bit positions keep a memory map and instruction
+format auditable. [Source: generated from
+`figures/data/computing-diagrams.json` by
+`scripts/generate-computing-diagrams.py`; original Alkahest fixture, CC0
+1.0.]{.figure-source}
+:::
+
+::: {#fig-processor-datapath fig-pos="H"}
+
+![](figures/generated/processor-datapath.svg){fig-alt="A program counter addresses instruction memory. Instruction fields feed decoder-control and the register file; dashed control lines select registers and the ALU operation. The ALU accesses data memory, with load-data and next-program-counter feedback paths." width="100%"}
+
+A minimal processor datapath distinguishes data and address paths from dashed
+control paths without relying on color. [Source: generated from
+`figures/data/computing-diagrams.json` by
+`scripts/generate-computing-diagrams.py`; original Alkahest fixture, CC0
+1.0.]{.figure-source}
+:::
+
+WaveDrom 3.5.0 is retained as a serious evaluation candidate in
+`figures/candidates/read-cycle-wavedrom.json` and
+`figures/candidates/instruction-word-wavedrom.json`. Its compact WaveJSON and
+register-field syntax are attractive, but normal builds do not yet carry a
+pinned offline WaveDrom renderer. Mermaid and Graphviz remain appropriate for
+automatically laid-out relationships; these bit- and timing-sensitive fixtures
+instead use explicit geometry, selectable labels, fixed view boxes, embedded
+descriptions, and byte-checked regeneration.
+
+## Physics-diagram workflow {#sec-physics-diagram-workflow}
+
+The versioned `figures/data/physics-diagrams.json` source separates numeric
+values from their displayed precision, assigns every quantity a declared unit,
+and records fixture provenance. `scripts/generate-physics-diagrams.py` turns it
+into portable SVG without a plotting runtime. @fig-velocity-vector exercises
+components, a derived magnitude, an angle, units, and three significant
+figures; @fig-inverse-square-field exercises a sampled analytic field whose
+direction and relative magnitude remain legible without color.
+
+::: {#fig-velocity-vector fig-pos="H"}
+
+![](figures/generated/velocity-vector.svg){fig-alt="A velocity vector points up and right. Dashed projections label its horizontal component as 20.0 meters per second and vertical component as 15.0 meters per second. Its magnitude is 25.0 meters per second at 36.9 degrees." width="100%"}
+
+A velocity vector with explicit components and preserved display precision.
+[Source: generated from synthetic instructional data in
+`figures/data/physics-diagrams.json` by
+`scripts/generate-physics-diagrams.py`; original Alkahest fixture, CC0 1.0.]{.figure-source}
+:::
+
+::: {#fig-inverse-square-field fig-pos="H"}
+
+![](figures/generated/inverse-square-field.svg){fig-alt="Twenty-four arrows sampled on a one-meter square grid point inward toward an excluded central source. Arrows nearer the source are longer and heavier, showing greater relative inverse-square field strength without using color." width="100%"}
+
+A normalized inverse-square field with an explicit sampling grid, reference
+radius, exclusion radius, and visual-strength legend. [Source: analytically
+generated from synthetic instructional data in
+`figures/data/physics-diagrams.json` by
+`scripts/generate-physics-diagrams.py`; original Alkahest fixture, CC0 1.0.]{.figure-source}
+:::
+
+These are explanatory fixtures, not experimental results. Real data must name
+the measurand, acquisition or calculation method, source/version, units,
+uncertainty where applicable, transformations, creator, date, license, and any
+limits on reuse. Significant figures must reflect the stated measurement and
+uncertainty policy rather than merely the number of digits a program can print.
+
 ## Float and placement policy {#sec-figure-floats}
 
 Author figures at the document's top level, close to their first reference.

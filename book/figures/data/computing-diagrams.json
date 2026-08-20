@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "timing": {
+    "title": "Synchronous memory read cycle",
+    "slots": 8,
+    "signals": [
+      {"name": "CLK", "kind": "digital", "values": [0, 1, 0, 1, 0, 1, 0, 1]},
+      {"name": "READ", "kind": "digital", "values": [0, 0, 1, 1, 1, 1, 0, 0]},
+      {"name": "ADDR", "kind": "bus", "spans": [{"start": 2, "end": 6, "label": "0x2A"}]},
+      {"name": "DATA", "kind": "bus", "spans": [{"start": 5, "end": 7, "label": "0xC7"}]}
+    ],
+    "annotations": [
+      {"slot": 2, "label": "address valid"},
+      {"slot": 5, "label": "data valid"}
+    ]
+  },
+  "logic": {
+    "title": "Half-adder gate network",
+    "inputs": ["A", "B"],
+    "gates": [
+      {"id": "sum", "kind": "xor", "label": "XOR", "output": "SUM"},
+      {"id": "carry", "kind": "and", "label": "AND", "output": "CARRY"}
+    ]
+  },
+  "layout": {
+    "title": "Memory map and instruction word",
+    "address_bits": 16,
+    "regions": [
+      {"start": 0, "end": 16383, "name": "16 KiB ROM"},
+      {"start": 16384, "end": 32767, "name": "16 KiB RAM"},
+      {"start": 32768, "end": 49151, "name": "Reserved"},
+      {"start": 49152, "end": 65535, "name": "Memory-mapped I/O"}
+    ],
+    "instruction_bits": 16,
+    "fields": [
+      {"name": "opcode", "width": 4},
+      {"name": "mode", "width": 2},
+      {"name": "rd", "width": 3},
+      {"name": "rs", "width": 3},
+      {"name": "immediate", "width": 4}
+    ]
+  },
+  "architecture": {
+    "title": "Minimal processor datapath",
+    "nodes": [
+      {"id": "pc", "label": "Program\ncounter", "x": 40, "y": 132, "width": 120, "height": 56},
+      {"id": "imem", "label": "Instruction\nmemory", "x": 210, "y": 132, "width": 135, "height": 56},
+      {"id": "decode", "label": "Decoder and\ncontrol", "x": 395, "y": 70, "width": 145, "height": 56},
+      {"id": "regs", "label": "Register\nfile", "x": 395, "y": 194, "width": 145, "height": 56},
+      {"id": "alu", "label": "ALU", "x": 590, "y": 194, "width": 110, "height": 56},
+      {"id": "dmem", "label": "Data\nmemory", "x": 750, "y": 194, "width": 130, "height": 56}
+    ],
+    "edges": [
+      {"from": "pc", "to": "imem", "label": "addr", "label_x": 185, "label_y": 150},
+      {"from": "imem", "to": "decode", "label": "inst.", "label_x": 370, "label_y": 104},
+      {"from": "imem", "to": "regs", "label": "fields", "label_x": 368, "label_y": 224},
+      {"from": "decode", "to": "regs", "label": "select", "kind": "control", "label_x": 490, "label_y": 165},
+      {"from": "decode", "to": "alu", "label": "op", "kind": "control", "route": "control-right", "label_x": 565, "label_y": 145},
+      {"from": "regs", "to": "alu", "label": "args", "label_x": 565, "label_y": 212},
+      {"from": "alu", "to": "dmem", "label": "bus", "label_x": 725, "label_y": 212},
+      {"from": "dmem", "to": "regs", "label": "load", "route": "bottom", "label_x": 635, "label_y": 325},
+      {"from": "alu", "to": "pc", "label": "next PC", "route": "bottom", "label_x": 330, "label_y": 367}
+    ]
+  }
+}

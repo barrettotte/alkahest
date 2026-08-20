@@ -54,7 +54,7 @@ do
   require_literal "${structure}" "${html_lists}" "HTML generated lists"
 done
 for group_count in \
-  'figures:11' \
+  'figures:17' \
   'tables:4' \
   'listings:2' \
   'equations:5' \
