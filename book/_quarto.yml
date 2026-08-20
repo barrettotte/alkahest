@@ -4,6 +4,8 @@ project:
   pre-render:
     - python3 ../scripts/check-execution-policy.py
     - python3 ../scripts/check-graphs.py
+    - /opt/alkahest/tools/bin/python ../scripts/check-circuits.py
+    - /opt/alkahest/tools/bin/python ../scripts/check-chemistry.py
     - python3 ../scripts/check-identities.py
     - python3 ../scripts/check-editions.py
     - python3 ../scripts/check-learning.py

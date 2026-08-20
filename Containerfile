@@ -18,6 +18,8 @@ ENV ALKAHEST_UBUNTU_SNAPSHOT="https://snapshot.ubuntu.com/ubuntu/20260816T000000
     ALKAHEST_SOURCE_CODE_PRO_WOFF2_ARCHIVE_SHA256="2184c1f2bac48f4f7d952b0147dc0e48069fd1fb4a8c31b869b708efc978d365" \
     ALKAHEST_SOURCE_CODE_PRO_LICENSE_URL="https://raw.githubusercontent.com/adobe-fonts/source-code-pro/d3f1a5962cde503f9409c21e58527611d4a19ef1/LICENSE.md" \
     ALKAHEST_SOURCE_CODE_PRO_LICENSE_SHA256="7c940e28a5388e9bba866cf0e408edda45fe0899ba98665b8f6ab31dc5e4b8ff" \
+    ALKAHEST_UV_ARCHIVE_URL="https://github.com/astral-sh/uv/releases/download/0.12.5/uv-x86_64-unknown-linux-gnu.tar.gz" \
+    ALKAHEST_UV_ARCHIVE_SHA256="68a509da24b06b4223a1c0175fb5eb5bc79342b76cbeff0cfe51ac3f5b17b6b2" \
     ALKAHEST_TEXLIVE_REPOSITORY="https://texlive.info/tlnet-archive/2026/08/16/tlnet" \
     ALKAHEST_TEXLIVE_TLPDB_SHA256="a1b87eb64a6ffd2076f6bfc872e9ea0aa1e56ba7fe585636eed18a388d4adf8e"
 
@@ -256,13 +258,52 @@ RUN groupadd --gid 10001 alkahest \
         alkahest \
     && install --directory --owner=10001 --group=10001 /workspace
 
-# Validators use the standard library only. Install Python after the large
-# publishing stack so adding validator tooling does not invalidate TeX, fonts,
+# Core validators use the system Python standard library. Install it after the
+# large publishing stack so validator changes do not invalidate TeX, fonts,
 # browser, or EPUB checker layers.
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
         python3=3.8.2-0ubuntu2 \
     && rm -rf /var/lib/apt/lists/*
+
+# Install the exact uv release used to lock the small Python media toolchain.
+# uv then installs its checksum-verified Python build and the fully locked
+# diagram environment; neither normal rendering nor regeneration needs the
+# network or writes package state into the bind-mounted repository.
+RUN curl --fail --location --silent --show-error \
+        --output /tmp/uv.tar.gz \
+        "${ALKAHEST_UV_ARCHIVE_URL}" \
+    && echo "${ALKAHEST_UV_ARCHIVE_SHA256}  /tmp/uv.tar.gz" \
+        | sha256sum --check \
+    && tar --extract --gzip --file /tmp/uv.tar.gz --directory /tmp \
+    && install -m 0755 /tmp/uv-x86_64-unknown-linux-gnu/uv /usr/local/bin/uv \
+    && install -m 0755 /tmp/uv-x86_64-unknown-linux-gnu/uvx /usr/local/bin/uvx \
+    && rm -rf /tmp/uv.tar.gz /tmp/uv-x86_64-unknown-linux-gnu \
+    && echo "b65f23a420c4acc96427efb30e5ed9bc0f7e25d2d712000f6ede77c1a0de5f46  /usr/local/bin/uv" \
+        | sha256sum --check \
+    && uv --version
+
+COPY tools/pyproject.toml tools/uv.lock tools/.python-version /opt/alkahest/tools-project/
+
+RUN UV_CACHE_DIR=/tmp/uv-cache \
+        UV_PYTHON_INSTALL_DIR=/opt/alkahest/python \
+        UV_PROJECT_ENVIRONMENT=/opt/alkahest/tools \
+        UV_LINK_MODE=copy \
+        uv python install 3.12.13 \
+    && UV_CACHE_DIR=/tmp/uv-cache \
+        UV_PYTHON_INSTALL_DIR=/opt/alkahest/python \
+        UV_PROJECT_ENVIRONMENT=/opt/alkahest/tools \
+        UV_LINK_MODE=copy \
+        uv sync \
+            --project /opt/alkahest/tools-project \
+            --locked \
+            --no-dev \
+            --no-install-project \
+            --python 3.12.13 \
+    && /opt/alkahest/tools/bin/python -c \
+        'import schemdraw; from rdkit import rdBase; assert schemdraw.__version__ == "0.23"; assert rdBase.rdkitVersion == "2026.03.5"' \
+    && chmod -R a+rX /opt/alkahest/python /opt/alkahest/tools /opt/alkahest/tools-project \
+    && rm -rf /tmp/uv-cache
 
 ENV HOME=/home/alkahest
 WORKDIR /workspace

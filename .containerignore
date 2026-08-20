@@ -1,0 +1,8 @@
+.git
+.quarto
+**/__pycache__
+**/*.pyc
+tools/.venv
+book/_build
+book/site_libs
+book/theme/fonts

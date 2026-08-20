@@ -706,6 +706,8 @@ exec podman run --rm \
       "id=\"fig-system-map\" class=\"figure-full-width" \
       "id=\"fig-build-dependency-graph\"" \
       "id=\"fig-response-time-chart\"" \
+      "id=\"fig-voltage-divider\"" \
+      "id=\"fig-fischer-esterification\"" \
       "class=\"figure-source\""
     do
       require_literal "${figure_structure}" "${html_figures}" "HTML figure specimen"
@@ -715,12 +717,16 @@ exec podman run --rm \
     # renames packaged media, so its alt text and figure ID are the stable
     # publication contract rather than an implementation-specific filename.
     require_literal "figures/generated/response-time.svg" "${html_figures}" "HTML chart asset"
+    require_literal "figures/generated/voltage-divider.svg" "${html_figures}" "HTML circuit asset"
+    require_literal "figures/generated/fischer-esterification.svg" "${html_figures}" "HTML chemistry asset"
     for figure_alt in \
       "A three-stage signal chain runs from a sensor through signal conditioning to a decision stage." \
       "A jagged sampled waveform varies around a broad rise and fall" \
       "A smooth waveform rises to one broad peak and falls" \
       "Four modules form a closed loop: observe, model, decide, and act." \
       "A line chart with five points. Response time rises from 18 milliseconds" \
+      "A nine-volt source drives a one-kiloohm upper resistor" \
+      "Skeletal structures show acetic acid plus ethanol yielding ethyl acetate plus water" \
       "Diagram description: Manuscript source and data/assets"
     do
       require_literal "${figure_alt}" "${html_figures}" "HTML figure alternative"

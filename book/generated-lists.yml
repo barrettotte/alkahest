@@ -76,6 +76,10 @@ objects:
     title: Validated source-to-publication dependency graph
   - id: fig-response-time-chart
     title: Response time by system load
+  - id: fig-voltage-divider
+    title: A nine-volt resistive voltage divider
+  - id: fig-fischer-esterification
+    title: Fischer esterification of acetic acid with ethanol
   - id: tbl-measurement-plan
     title: Measurement and acceptance plan
   - id: tbl-icon-registry

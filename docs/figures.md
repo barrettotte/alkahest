@@ -102,6 +102,10 @@ release-gate work rather than claims of this source-level contract.
 
 The selected Mermaid, Graphviz, and generated-chart workflows, including the
 deferred Vega-Lite path, are recorded in `docs/graph-chart-evaluation.md`.
+The portable electrical-circuit SVG workflow and evaluated CircuitikZ/Typst
+alternatives are recorded in `docs/circuit-workflow-evaluation.md`.
+The portable chemistry SVG workflow and evaluated Chemfig/typed-smiles
+alternatives are recorded in `docs/chemistry-workflow-evaluation.md`.
 
 `book/figures/README.md` is the current asset registry. A production registry
 must record creator, origin, license or permission, modification history, and
@@ -121,4 +125,9 @@ text, source spans, full-width semantics, and only the screen variant in HTML
 and EPUB. EPUBCheck validates the packaged SVG resources. `make
 check-pdf-profiles` requires the print variant, captions, references, source
 credit, recto chapter start, embedded fonts, and physical text containment in
-all six PDFs. Visual review begins with the 6 x 9 panels and full-width figure.
+all six PDFs. `make check-circuits` also performs an offline regeneration and
+byte comparison, then checks SVG accessibility, labels, vector geometry, and
+self-containment. Visual review begins with the 6 x 9 panels, full-width
+figure, voltage-divider labels and symbols, and reaction structures at the
+smallest trim. `make check-chemistry` applies the equivalent deterministic,
+accessible, self-contained SVG checks to the selected reaction workflow.

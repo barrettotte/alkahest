@@ -27,11 +27,14 @@ the reference book's English, French, German, Greek, Russian, and Hebrew
 samples.
 
 The image also includes checksum-locked EPUBCheck 5.3.0 and its exact OpenJDK
-runtime and a pinned Python 3 runtime from the Ubuntu snapshot. Publishing
-validators use only Python's standard library, so the template currently has
-no Python package-manager state. If a third-party dependency becomes necessary,
-it must be declared in `pyproject.toml`, locked in `uv.lock`, and run through
-`uv`; ad hoc `pip` installs and alternate package managers are out of scope.
+runtime, plus a pinned Python 3 runtime from the Ubuntu snapshot for
+standard-library validators. Circuit SVG generation uses a separate
+uv-managed Python 3.12.13 environment with Schemdraw 0.23 and RDKit 2026.3.5 declared in
+`tools/pyproject.toml` and fully resolved in `tools/uv.lock`. The image installs
+the checksum-locked uv 0.12.5 binary and resolves that environment only during
+bootstrap; normal generation and validation run rootless and offline through
+`scripts/python-tools`. Ad hoc `pip` installs and alternate package managers
+remain out of scope.
 The pinned `librsvg2-bin` package supplies `rsvg-convert`, which Quarto uses to
 turn versioned SVG art into vector PDF
 inputs for LuaLaTeX. Quarto's bundled Mermaid and Graphviz WebAssembly runtimes
@@ -52,7 +55,10 @@ The first successful build used:
 | Typst | 0.15.1 |
 | TeX Live | 2026 |
 | Chrome for Testing | 152.0.7977.42 |
-| Python | 3.8.10 |
+| Python | 3.8.10 system; 3.12.13 media environment |
+| uv | 0.12.5 |
+| Schemdraw | 0.23 |
+| RDKit | 2026.03.5 |
 
 The exact binary hashes, TeX package revisions, and baseline font identities
 are recorded in `docs/toolchain-lock.md`. Run `make toolchain-report` to compare

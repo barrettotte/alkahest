@@ -114,6 +114,13 @@
          "status": "active"
       },
       {
+         "id": "fig-fischer-esterification",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
          "id": "fig-half-adder",
          "kind": "figure",
          "namespace": "content",
@@ -136,6 +143,13 @@
       },
       {
          "id": "fig-system-map",
+         "kind": "figure",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "fig-voltage-divider",
          "kind": "figure",
          "namespace": "content",
          "source": "figures.qmd",
@@ -377,6 +391,20 @@
          "kind": "section",
          "namespace": "content",
          "source": "layout-stress.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-chemistry-workflow-evaluation",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-circuit-workflow-evaluation",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
          "status": "active"
       },
       {

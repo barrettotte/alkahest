@@ -218,6 +218,7 @@ check_pdf() {
     "Information flow through a half-adder" \
     "Validated source-to-publication dependency graph" \
     "Response time by system load" \
+    "A nine-volt resistive voltage divider" \
     "Diagram description: Inputs A and B" \
     "Diagram description: Manuscript source and data/assets" \
     "List of tables" \
@@ -283,6 +284,8 @@ check_pdf() {
     "Captions, alternatives, and provenance" \
     "Subfigures and panel references" \
     "Full-width and output-specific art" \
+    "Chemistry-diagram workflow evaluation" \
+    "Fischer esterification of acetic acid with ethanol" \
     "Figure 7.1" \
     "Figure 7.2" \
     "Figure 7.2a" \

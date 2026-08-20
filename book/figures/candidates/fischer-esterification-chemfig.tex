@@ -1,0 +1,17 @@
+% Evaluate a Chemfig-native reaction scheme against the portable SVG workflow.
+\documentclass{article}
+\usepackage{chemfig}
+\pagestyle{empty}
+\setchemfig{atom sep=1.5em}
+
+\begin{document}
+\schemestart
+  \chemfig{CH_3-C(=[:90]O)-OH}
+  \+
+  \chemfig{CH_3-CH_2-OH}
+  \arrow{->}
+  \chemfig{CH_3-C(=[:90]O)-O-CH_2-CH_3}
+  \+
+  \chemfig{H_2O}
+\schemestop
+\end{document}

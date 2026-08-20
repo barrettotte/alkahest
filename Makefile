@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean generate-graphs render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
+.PHONY: bootstrap build-report check check-chemistry check-circuits check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean generate-chemistry generate-circuits generate-graphs render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
 	render-html render-epub render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
@@ -22,6 +22,18 @@ generate-graphs: ## Regenerate committed graph/chart derivatives from source dat
 
 check-graphs: ## Validate diagram sources and deterministic chart derivatives.
 	python3 scripts/check-graphs.py
+
+generate-circuits: ## Regenerate committed electrical-circuit SVG derivatives.
+	./scripts/python-tools scripts/generate-circuits.py
+
+check-circuits: ## Validate circuit candidates and deterministic SVG derivatives.
+	./scripts/python-tools scripts/check-circuits.py
+
+generate-chemistry: ## Regenerate committed chemistry SVG derivatives.
+	./scripts/python-tools scripts/generate-chemistry.py
+
+check-chemistry: ## Validate chemistry candidates and deterministic SVG derivatives.
+	./scripts/python-tools scripts/check-chemistry.py
 
 check-editions: ## Validate whole-book manifests, sources, privacy, and references.
 	python3 scripts/check-editions.py
