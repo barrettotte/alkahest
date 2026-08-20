@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# Run spelling and prose reports over canonical authored sources.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/toolchain.sh
+source "${script_dir}/lib/toolchain.sh"
+repo_root="$(alkahest_repo_root)"
+invoking_uid="$(id -u)"
+invoking_gid="$(id -g)"
+mode="${1:-all}"
+
+case "${mode}" in
+  all | spelling | prose) ;;
+  *)
+    echo "usage: $0 [all|spelling|prose]" >&2
+    exit 2
+    ;;
+esac
+
+if [[ "${invoking_uid}" -eq 0 ]]; then
+  echo "error: writing checks must run as a non-root host user" >&2
+  exit 1
+fi
+
+python3 "${script_dir}/generate-writing-terminology.py" --check
+
+if ! command -v podman >/dev/null 2>&1; then
+  echo "error: Podman is required but was not found" >&2
+  exit 1
+fi
+
+if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
+  echo "error: publishing image is not available locally" >&2
+  echo "run make bootstrap once while connected to the network" >&2
+  exit 1
+fi
+
+mapfile -t writing_sources < <(python3 "${script_dir}/writing-sources.py")
+if ((${#writing_sources[@]} == 0)); then
+  echo "error: no canonical writing sources found" >&2
+  exit 1
+fi
+
+run_in_toolchain() {
+  podman run --rm \
+    --pull=never \
+    --network=none \
+    --userns=keep-id \
+    --user "${invoking_uid}:${invoking_gid}" \
+    --security-opt label=disable \
+    --tmpfs /tmp:rw,size=256m,mode=1777 \
+    --env HOME=/tmp \
+    --volume "${repo_root}:/workspace:ro" \
+    --workdir /workspace \
+    "${ALKAHEST_TOOLCHAIN_IMAGE}" \
+    "$@"
+}
+
+check_spelling() {
+  echo "Writing spelling report (${#writing_sources[@]} canonical sources; report-only baseline)"
+  run_in_toolchain \
+    cspell lint \
+    --config cspell.json \
+    --no-config-search \
+    --root /workspace \
+    --no-cache \
+    --no-progress \
+    --no-summary \
+    --no-color \
+    --unique \
+    --validate-directives \
+    --no-exit-code \
+    "${writing_sources[@]}"
+}
+
+check_prose() {
+  echo "Writing prose report (${#writing_sources[@]} canonical sources; report-only baseline)"
+  run_in_toolchain \
+    vale \
+    --config=.vale.ini \
+    --no-global \
+    --no-wrap \
+    --no-exit \
+    --output=line \
+    "${writing_sources[@]}"
+}
+
+case "${mode}" in
+  all)
+    check_spelling
+    check_prose
+    ;;
+  spelling) check_spelling ;;
+  prose) check_prose ;;
+esac

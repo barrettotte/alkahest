@@ -135,6 +135,10 @@ case "${target}" in
   html|epub|typst|latex|typst-6x9|latex-6x9|typst-review|latex-review)
     render_profile "${target}"
     ;;
+  pdf)
+    # The scored backend decision names Typst as the reversible default.
+    render_profile typst
+    ;;
   print-6x9)
     render_profile typst-6x9
     render_profile latex-6x9
@@ -175,7 +179,7 @@ case "${target}" in
     render_notes_smoke
     ;;
   *)
-    echo "usage: $0 [all|complete|html|epub|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke]" >&2
+    echo "usage: $0 [all|complete|html|epub|pdf|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke]" >&2
     exit 2
     ;;
 esac

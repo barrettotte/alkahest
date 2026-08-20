@@ -737,7 +737,7 @@ exec podman run --rm \
       "A smooth waveform rises to one broad peak and falls" \
       "Four modules form a closed loop: observe, model, decide, and act." \
       "A line chart with five points. Response time rises from 18 milliseconds" \
-      "A nine-volt source drives a one-kiloohm upper resistor" \
+      "A nine-volt source drives a one-kilohm upper resistor" \
       "Skeletal structures show acetic acid plus ethanol yielding ethyl acetate plus water" \
       "Four timing lanes show a clock, an active-high read control" \
       "Inputs A and B each branch to an XOR gate producing SUM" \

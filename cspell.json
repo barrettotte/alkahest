@@ -1,0 +1,78 @@
+{
+  "version": "0.2",
+  "import": ["./config/writing/cspell-terms.json"],
+  "language": "en-US",
+  "useGitignore": false,
+  "enabledLanguageIds": ["markdown"],
+  "patterns": [
+    {
+      "name": "markdown-fenced-code-backticks",
+      "pattern": "/^(\\s*)(`{3,})[^\\n]*\\n[\\s\\S]*?^\\1\\2\\s*$/gm"
+    },
+    {
+      "name": "markdown-fenced-code-tildes",
+      "pattern": "/^(\\s*)(~{3,})[^\\n]*\\n[\\s\\S]*?^\\1\\2\\s*$/gm"
+    },
+    {
+      "name": "markdown-inline-code",
+      "pattern": "/(`+)[^\\n]*?\\1/g"
+    },
+    {
+      "name": "pandoc-display-dollar-math",
+      "pattern": "/(?<!\\\\)\\$\\$[\\s\\S]*?(?<!\\\\)\\$\\$/g"
+    },
+    {
+      "name": "pandoc-inline-dollar-math",
+      "pattern": "/(?<![\\\\$])\\$(?![\\s$])(?:\\\\.|[^\\n$\\\\])*(?<![\\\\\\s])\\$(?!\\$)/g"
+    },
+    {
+      "name": "pandoc-delimited-math",
+      "pattern": "/\\\\(?:\\([\\s\\S]*?\\\\\\)|\\[[\\s\\S]*?\\\\\\])/g"
+    },
+    {
+      "name": "pandoc-citation-and-crossref-key",
+      "pattern": "/(?<![A-Za-z0-9_@])@[-A-Za-z0-9_:.\\/]+/g"
+    },
+    {
+      "name": "pandoc-attribute-name",
+      "pattern": "/(?:^|[\\s{])(?:[.#][-A-Za-z0-9_:]+|[-A-Za-z0-9_:]+(?=\\s*=))/gm"
+    },
+    {
+      "name": "quarto-shortcode",
+      "pattern": "/\\{\\{[<%][\\s\\S]*?[>%]\\}\\}/g"
+    }
+  ],
+  "ignoreRegExpList": [
+    "Urls",
+    "markdown-fenced-code-backticks",
+    "markdown-fenced-code-tildes",
+    "markdown-inline-code",
+    "pandoc-display-dollar-math",
+    "pandoc-inline-dollar-math",
+    "pandoc-delimited-math",
+    "pandoc-citation-and-crossref-key",
+    "pandoc-attribute-name",
+    "quarto-shortcode"
+  ],
+  "overrides": [
+    {
+      "filename": "**/*.qmd",
+      "languageId": "markdown"
+    }
+  ],
+  "ignorePaths": [
+    "**/.quarto/**",
+    "**/.cache/**",
+    "**/.venv/**",
+    "**/_build/**",
+    "**/_freeze/**",
+    "**/_site/**",
+    "**/*_files/**",
+    "**/node_modules/**",
+    "**/site_libs/**",
+    "book/theme/fonts/**",
+    "tests/**",
+    "tools/**",
+    "AGENTS.md"
+  ]
+}

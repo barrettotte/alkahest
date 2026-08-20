@@ -305,6 +305,67 @@ RUN UV_CACHE_DIR=/tmp/uv-cache \
     && chmod -R a+rX /opt/alkahest/python /opt/alkahest/tools /opt/alkahest/tools-project \
     && rm -rf /tmp/uv-cache
 
+# Keep the writing-tool identities beside their late install layers so changes
+# do not invalidate the much larger TeX, font, browser, and media environments.
+ENV ALKAHEST_NODE_VERSION="22.23.2" \
+    ALKAHEST_NODE_ARCHIVE_URL="https://nodejs.org/download/release/v22.23.2/node-v22.23.2-linux-x64.tar.xz" \
+    ALKAHEST_NODE_ARCHIVE_SHA256="d60acfe00a2932254bb0ad20e01b0d74397a0875595de719654b214f4b03f307" \
+    ALKAHEST_NPM_VERSION="10.9.8" \
+    ALKAHEST_VALE_VERSION="3.17.1" \
+    ALKAHEST_VALE_ARCHIVE_URL="https://github.com/vale-cli/vale/releases/download/v3.17.1/vale_3.17.1_Linux_64-bit.tar.gz" \
+    ALKAHEST_VALE_ARCHIVE_SHA256="db947f89f2292e6a0381a61de155f6a5f5cb4cb460ca178ea412ef605559cefd" \
+    ALKAHEST_CSPELL_VERSION="10.0.1"
+
+# Install the writing-quality executables from immutable inputs. Node is a
+# declared CSpell runtime rather than an accidental base-image dependency;
+# Vale is a standalone binary. Downloads use /tmp only as transient build
+# storage, while the finished tools live in /opt and /usr/local/bin.
+RUN test "$(dpkg --print-architecture)" = "amd64" \
+    && curl --fail --location --silent --show-error \
+        --output /tmp/node.tar.xz \
+        "${ALKAHEST_NODE_ARCHIVE_URL}" \
+    && curl --fail --location --silent --show-error \
+        --output /tmp/vale.tar.gz \
+        "${ALKAHEST_VALE_ARCHIVE_URL}" \
+    && echo "${ALKAHEST_NODE_ARCHIVE_SHA256}  /tmp/node.tar.xz" | sha256sum --check \
+    && echo "${ALKAHEST_VALE_ARCHIVE_SHA256}  /tmp/vale.tar.gz" | sha256sum --check \
+    && install --directory /opt/node /tmp/vale \
+    && tar --extract --xz --file /tmp/node.tar.xz --directory /opt/node --strip-components=1 \
+    && tar --extract --gzip --file /tmp/vale.tar.gz --directory /tmp/vale \
+    && install -m 0755 /tmp/vale/vale /usr/local/bin/vale \
+    && install -d /usr/local/share/doc/vale \
+    && install -m 0644 /tmp/vale/LICENSE /usr/local/share/doc/vale/LICENSE \
+    && ln -s /opt/node/bin/node /usr/local/bin/node \
+    && ln -s /opt/node/bin/npm /usr/local/bin/npm \
+    && echo "3517c2df0b2f8cd7f422b4b8450ef81c6889f08eb03e281d6de9079b15e6a327  /opt/node/bin/node" | sha256sum --check \
+    && echo "ae9c62ed1c422cc5641f83a0045790cb2029c2bd9a21d2b7c216f3cb254f1231  /usr/local/bin/vale" | sha256sum --check \
+    && test "$(/opt/node/bin/node --version)" = "v${ALKAHEST_NODE_VERSION}" \
+    && test "$(/opt/node/bin/npm --version)" = "${ALKAHEST_NPM_VERSION}" \
+    && test "$(vale --version)" = "vale version ${ALKAHEST_VALE_VERSION}" \
+    && rm -rf /tmp/node.tar.xz /tmp/vale /tmp/vale.tar.gz
+
+ENV PATH="/opt/node/bin:/opt/alkahest/writing/node_modules/.bin:${PATH}"
+
+# npm's lockfile records the integrity of CSpell and every transitive package.
+# Ignore lifecycle scripts and remove the temporary package cache so runtime
+# checks are offline, deterministic, and writable by neither the manuscript nor
+# the unprivileged publishing user.
+COPY tools/writing/package.json tools/writing/package-lock.json /opt/alkahest/writing/
+
+RUN npm ci \
+        --prefix /opt/alkahest/writing \
+        --omit=dev \
+        --ignore-scripts \
+        --no-audit \
+        --no-fund \
+        --cache /tmp/npm-cache \
+    && test "$(cspell --version)" = "${ALKAHEST_CSPELL_VERSION}" \
+    && echo "fb0e83febdda495e211bc95d9676d3146cea78f240e1a815cb73ef3005be6cfd  /opt/alkahest/writing/node_modules/cspell/bin.mjs" \
+        | sha256sum --check \
+    && ln -s /opt/alkahest/writing/node_modules/.bin/cspell /usr/local/bin/cspell \
+    && chmod -R a+rX /opt/alkahest/writing \
+    && rm -rf /tmp/npm-cache
+
 ENV HOME=/home/alkahest
 WORKDIR /workspace
 

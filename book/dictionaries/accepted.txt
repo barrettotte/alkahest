@@ -1,0 +1,24 @@
+# Technical terms and names accepted only for the reference-book specimen.
+BIPM
+bitfield
+Chemfig
+Circuitik
+CircuitikZ
+combinational
+conditionalizing
+datapath
+Donaudampfschifffahrtsgesellschaft
+Drom
+esterification
+Fischer
+Juliett
+kilohm
+Matplotlib
+measurand
+nonlinearly
+RDKit
+Schemdraw
+typed-smiles
+Verilog
+WaveDrom
+WaveJSON

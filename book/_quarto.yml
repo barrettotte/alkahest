@@ -9,6 +9,7 @@ project:
     - python3 ../scripts/check-computing-diagrams.py
     - python3 ../scripts/check-physics-diagrams.py
     - python3 ../scripts/check-rich-media.py
+    - python3 ../scripts/check-pdf-backend-decision.py
     - python3 ../scripts/check-identities.py
     - python3 ../scripts/check-editions.py
     - python3 ../scripts/check-learning.py

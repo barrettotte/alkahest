@@ -1,5 +1,5 @@
-.PHONY: bootstrap build-report check check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
-	render-html render-epub render-typst render-latex render-print-6x9 render-review \
+.PHONY: bootstrap build-report check check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
+	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
 bootstrap: ## Build the pinned local publishing container.
@@ -52,6 +52,9 @@ generate-rich-media-fixtures: ## Regenerate the deterministic rich-media audio f
 
 check-rich-media: ## Validate rich-media assets, accessibility, rights, and fallbacks.
 	python3 scripts/check-rich-media.py
+
+check-pdf-backend-decision: ## Validate the scored PDF default and compatibility policy.
+	python3 scripts/check-pdf-backend-decision.py
 
 check-editions: ## Validate whole-book manifests, sources, privacy, and references.
 	python3 scripts/check-editions.py
@@ -140,6 +143,24 @@ check-publication: ## Validate internal HTML links and EPUB conformance.
 check-pdf-profiles: ## Verify PDF dimensions and embedded/subset fonts.
 	./scripts/check-pdf-profiles
 
+check-writing-toolchain: ## Verify pinned Vale and CSpell tools offline and rootless.
+	./scripts/check-writing-toolchain
+
+check-writing: ## Report spelling and prose findings in canonical authored sources.
+	./scripts/check-writing
+
+check-spelling: ## Report CSpell findings in canonical authored sources.
+	./scripts/check-writing spelling
+
+check-prose: ## Report markup-aware Vale findings in canonical authored sources.
+	./scripts/check-writing prose
+
+check-writing-terminology: ## Validate accepted words and generated rejected-term rules.
+	python3 scripts/generate-writing-terminology.py --check
+
+generate-writing-terminology: ## Regenerate CSpell and Vale terminology derivatives.
+	python3 scripts/generate-writing-terminology.py
+
 ci: ## Run the complete local/CI publishing validation pipeline.
 	./scripts/ci
 
@@ -178,6 +199,9 @@ render-html: ## Render the HTML web book.
 render-epub: ## Render the reflowable EPUB book.
 	./scripts/render epub
 
+render-pdf: ## Render the default primary 7 x 10 Typst PDF.
+	./scripts/render pdf
+
 render-typst: ## Render the primary 7 x 10 PDF with Typst.
 	./scripts/render typst
 
@@ -206,4 +230,4 @@ render-notes-smoke: ## Render chapter, book, and sidenote placement editions.
 	./scripts/render notes-smoke
 
 help: ## Show available Make targets and their descriptions.
-	@awk 'BEGIN { FS = ":.*## " } /^[[:alnum:]_-]+:.*## / { printf "  %-24s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+	@awk 'BEGIN { FS = ":.*## " } /^[[:alnum:]_-]+:.*## / { printf "  %-30s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)

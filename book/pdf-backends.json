@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "decision": {
+    "date": "2026-08-19",
+    "default": "typst",
+    "compatibility_backend": "lualatex",
+    "policy": "Typst is the default PDF path; LuaLaTeX remains a supported compatibility and diagnostic backend.",
+    "review_triggers": [
+      "a publisher or printer requires a backend-specific source or PDF feature",
+      "PDF/UA evaluation materially changes the accessibility comparison",
+      "a required technical-book feature fails in the default backend",
+      "a pinned toolchain upgrade changes reliability or output fidelity"
+    ]
+  },
+  "backends": {
+    "typst": {
+      "profile": "typst",
+      "status": "default"
+    },
+    "lualatex": {
+      "profile": "latex",
+      "status": "supported-compatibility"
+    }
+  },
+  "measurement": {
+    "captured": "2026-08-19",
+    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v14",
+    "method": "One sequential primary 7 x 10 render per backend with network disabled and ephemeral container caches.",
+    "typst": {
+      "seconds": 8.07,
+      "warnings": 1,
+      "pages": 75,
+      "bytes": 1123994,
+      "tagged": true
+    },
+    "lualatex": {
+      "seconds": 24.10,
+      "warnings": 0,
+      "pages": 82,
+      "bytes": 571261,
+      "tagged": false
+    }
+  },
+  "criteria": [
+    {
+      "id": "required-feature-fidelity",
+      "label": "Required-feature fidelity",
+      "weight": 25,
+      "scores": {
+        "typst": 5,
+        "lualatex": 4
+      },
+      "rationale": "Both preserve the shared specimen contract; Typst also has the evaluated sidenote profile while LuaLaTeX currently uses the semantic footnote fallback."
+    },
+    {
+      "id": "typography-page-control",
+      "label": "Typography and page control",
+      "weight": 20,
+      "scores": {
+        "typst": 4,
+        "lualatex": 5
+      },
+      "rationale": "Both pass trim, containment, recto, blank-page, font, and pagination checks; LuaLaTeX retains the deeper mature page-composition system."
+    },
+    {
+      "id": "reliability-diagnostics",
+      "label": "Reliability and diagnostics",
+      "weight": 15,
+      "scores": {
+        "typst": 3,
+        "lualatex": 4
+      },
+      "rationale": "Both build reproducibly, but Typst currently emits the known typst-gather glibc fallback warning while LuaLaTeX completes without a captured warning."
+    },
+    {
+      "id": "template-maintainability",
+      "label": "Template maintainability",
+      "weight": 15,
+      "scores": {
+        "typst": 4,
+        "lualatex": 3
+      },
+      "rationale": "Typst keeps the primary adapter in one modern source file and consumes SVG directly; LuaLaTeX requires several TeX partials, package knowledge, and staged PDF-vector assets."
+    },
+    {
+      "id": "accessibility-pdf-standards",
+      "label": "Accessibility and PDF standards",
+      "weight": 10,
+      "scores": {
+        "typst": 3,
+        "lualatex": 1
+      },
+      "rationale": "Typst emits a tagged PDF and LuaLaTeX does not, but neither output has passed the later PDF/UA structure and assistive-technology evaluation."
+    },
+    {
+      "id": "build-speed",
+      "label": "Build speed",
+      "weight": 5,
+      "scores": {
+        "typst": 5,
+        "lualatex": 2
+      },
+      "rationale": "On the recorded sequential run Typst took 8.07 seconds and LuaLaTeX took 24.10 seconds for the same primary specimen."
+    },
+    {
+      "id": "technical-ecosystem-fit",
+      "label": "Ecosystem fit for circuits, chemistry, and math",
+      "weight": 5,
+      "scores": {
+        "typst": 4,
+        "lualatex": 5
+      },
+      "rationale": "Portable generators cover selected workflows equally, while the mature TeX ecosystem remains broader for specialized mathematical and scientific publishing."
+    },
+    {
+      "id": "long-term-portability",
+      "label": "Long-term portability",
+      "weight": 5,
+      "scores": {
+        "typst": 3,
+        "lualatex": 5
+      },
+      "rationale": "Both are pinned and open source; TeX has the longer archival history and broader publisher tooling, while Typst and its Quarto integration are still evolving."
+    }
+  ],
+  "weighted_scores": {
+    "typst": 4.0,
+    "lualatex": 3.75
+  }
+}

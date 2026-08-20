@@ -1,0 +1,32 @@
+# Generated from config/writing/terminology.json; do not edit directly.
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: warning
+scope: text
+ignorecase: false
+swap:
+  "alot": "a lot"
+  "backwards-compatible": "backward-compatible"
+  "Cspell": "CSpell"
+  "cspell": "CSpell"
+  "e-book": "ebook"
+  "Epub": "EPUB"
+  "epub": "EPUB"
+  "Github": "GitHub"
+  "github": "GitHub"
+  "GraphViz": "Graphviz"
+  "graphviz": "Graphviz"
+  "irregardless": "regardless"
+  "Javascript": "JavaScript"
+  "javascript": "JavaScript"
+  "Latex": "LaTeX"
+  "latex": "LaTeX"
+  "LaTex": "LaTeX"
+  "LuaLatex": "LuaLaTeX"
+  "lualatex": "LuaLaTeX"
+  "occured": "occurred"
+  "seperate": "separate"
+  "teh": "the"
+  "typst": "Typst"
+  "vale": "Vale"
+  "web site": "website"

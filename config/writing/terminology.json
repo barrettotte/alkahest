@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "scopes": [
+    {
+      "id": "shared",
+      "description": "Publishing, toolchain, accessibility, and template terminology shared by every book.",
+      "files": null,
+      "vale_style": "Alkahest"
+    },
+    {
+      "id": "reference-book",
+      "description": "Names and technical terminology used by the current reference-book specimen.",
+      "files": "book/**",
+      "vale_style": "AlkahestReferenceBook"
+    }
+  ],
+  "dictionaries": [
+    {
+      "name": "alkahest-shared",
+      "scope": "shared",
+      "path": "config/writing/dictionaries/shared.txt",
+      "description": "Reusable publishing and toolchain vocabulary.",
+      "add_words": false
+    },
+    {
+      "name": "alkahest-reference-book",
+      "scope": "reference-book",
+      "path": "book/dictionaries/accepted.txt",
+      "description": "Technical vocabulary accepted only for the reference book.",
+      "add_words": true
+    }
+  ],
+  "rejected_terms": [
+    {
+      "term": "alot",
+      "preferred": "a lot",
+      "scope": "shared",
+      "category": "misspelling",
+      "checks": ["cspell", "vale"],
+      "reason": "Use the standard two-word form."
+    },
+    {
+      "term": "backwards-compatible",
+      "preferred": "backward-compatible",
+      "scope": "shared",
+      "category": "house-style",
+      "checks": ["vale"],
+      "reason": "Use the attributive form selected by the template house style."
+    },
+    {
+      "term": "Cspell",
+      "preferred": "CSpell",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the tool's official capitalization."
+    },
+    {
+      "term": "cspell",
+      "preferred": "CSpell",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the tool's official capitalization in prose."
+    },
+    {
+      "term": "e-book",
+      "preferred": "ebook",
+      "scope": "shared",
+      "category": "house-style",
+      "checks": ["vale"],
+      "reason": "Use one consistent closed form in reader-facing prose."
+    },
+    {
+      "term": "Epub",
+      "preferred": "EPUB",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "EPUB is written as an uppercase initialism."
+    },
+    {
+      "term": "epub",
+      "preferred": "EPUB",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Use uppercase EPUB in prose; lowercase executable paths remain code."
+    },
+    {
+      "term": "Github",
+      "preferred": "GitHub",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the product's official capitalization."
+    },
+    {
+      "term": "github",
+      "preferred": "GitHub",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the product's official capitalization in prose."
+    },
+    {
+      "term": "GraphViz",
+      "preferred": "Graphviz",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the project's official capitalization."
+    },
+    {
+      "term": "graphviz",
+      "preferred": "Graphviz",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the project's official capitalization in prose."
+    },
+    {
+      "term": "irregardless",
+      "preferred": "regardless",
+      "scope": "shared",
+      "category": "deprecated",
+      "checks": ["cspell", "vale"],
+      "reason": "Use the clearer standard form."
+    },
+    {
+      "term": "Javascript",
+      "preferred": "JavaScript",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the language's official capitalization."
+    },
+    {
+      "term": "javascript",
+      "preferred": "JavaScript",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the language's official capitalization in prose."
+    },
+    {
+      "term": "Latex",
+      "preferred": "LaTeX",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the typesetting system's conventional capitalization."
+    },
+    {
+      "term": "latex",
+      "preferred": "LaTeX",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Use LaTeX in prose; lowercase format names and paths remain code."
+    },
+    {
+      "term": "LaTex",
+      "preferred": "LaTeX",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the typesetting system's conventional capitalization."
+    },
+    {
+      "term": "LuaLatex",
+      "preferred": "LuaLaTeX",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the engine's conventional capitalization."
+    },
+    {
+      "term": "lualatex",
+      "preferred": "LuaLaTeX",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Use LuaLaTeX in prose; the lowercase executable name remains code."
+    },
+    {
+      "term": "occured",
+      "preferred": "occurred",
+      "scope": "shared",
+      "category": "misspelling",
+      "checks": ["cspell", "vale"],
+      "reason": "Use the standard double-r spelling."
+    },
+    {
+      "term": "seperate",
+      "preferred": "separate",
+      "scope": "shared",
+      "category": "misspelling",
+      "checks": ["cspell", "vale"],
+      "reason": "Use the standard spelling."
+    },
+    {
+      "term": "teh",
+      "preferred": "the",
+      "scope": "shared",
+      "category": "misspelling",
+      "checks": ["cspell", "vale"],
+      "reason": "Reject the common transposition."
+    },
+    {
+      "term": "typst",
+      "preferred": "Typst",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Use Typst in prose; lowercase package paths remain code."
+    },
+    {
+      "term": "vale",
+      "preferred": "Vale",
+      "scope": "shared",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the prose checker's official capitalization."
+    },
+    {
+      "term": "web site",
+      "preferred": "website",
+      "scope": "shared",
+      "category": "house-style",
+      "checks": ["vale"],
+      "reason": "Use the modern closed form consistently."
+    },
+    {
+      "term": "chemfig",
+      "preferred": "Chemfig",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the package's project-name capitalization in prose."
+    },
+    {
+      "term": "circuitikz",
+      "preferred": "CircuitikZ",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the package's project-name capitalization in prose."
+    },
+    {
+      "term": "kiloohm",
+      "preferred": "kilohm",
+      "scope": "reference-book",
+      "category": "technical",
+      "checks": ["cspell", "vale"],
+      "reason": "NIST SI guidance omits the final vowel of kilo before ohm."
+    },
+    {
+      "term": "matplotlib",
+      "preferred": "Matplotlib",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the project's official capitalization in prose."
+    },
+    {
+      "term": "rdkit",
+      "preferred": "RDKit",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the project's official capitalization in prose."
+    },
+    {
+      "term": "schemdraw",
+      "preferred": "Schemdraw",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the project's official capitalization in prose."
+    },
+    {
+      "term": "verilog",
+      "preferred": "Verilog",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the language's conventional capitalization in prose."
+    },
+    {
+      "term": "wavedrom",
+      "preferred": "WaveDrom",
+      "scope": "reference-book",
+      "category": "capitalization",
+      "checks": ["vale"],
+      "reason": "Preserve the project's official capitalization in prose."
+    }
+  ]
+}

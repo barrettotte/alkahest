@@ -38,6 +38,7 @@ contrast problems that should instead fail a deliberate preflight check.
 | Command | Outputs |
 |---|---|
 | `make render` | HTML, EPUB, and both primary 7 x 10 PDFs |
+| `make render-pdf` | Default primary 7 x 10 Typst PDF |
 | `make render-print-6x9` | Typst and LuaLaTeX 6 x 9 PDFs |
 | `make render-review` | Typst and LuaLaTeX US Letter PDFs |
 | `make render-pdf-profiles` | All six PDF variants |
@@ -46,6 +47,9 @@ contrast problems that should instead fail a deliberate preflight check.
 
 Artifacts are grouped under `book/_build/print/7x10/`,
 `book/_build/print/6x9/`, and `book/_build/review/letter/` by PDF backend.
+Typst is the scored default; LuaLaTeX remains a tested compatibility and
+diagnostic backend. The evidence, exceptions, and reversal policy are recorded
+in [`pdf-backend-decision.md`](pdf-backend-decision.md).
 
 The initial 2026-08-16 validation confirmed 504 x 720 point media boxes for
 7 x 10, 432 x 648 for 6 x 9, and 612 x 792 for Letter. All fonts in all six

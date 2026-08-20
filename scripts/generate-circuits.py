@@ -14,7 +14,7 @@ DEFAULT_OUTPUT = REPO_ROOT / "book" / "figures" / "generated" / "voltage-divider
 
 TITLE = "Nine-volt resistive voltage divider"
 DESCRIPTION = (
-    "A 9 volt DC source feeds a 1 kiloohm upper resistor and a 2 kiloohm "
+    "A 9 volt DC source feeds a 1 kilohm upper resistor and a 2 kilohm "
     "lower resistor in series. The output node is between the resistors, and "
     "the lower rail returns to ground and the negative source terminal."
 )
