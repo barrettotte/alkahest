@@ -13,11 +13,29 @@ from alkahest.common import ContractError, fail
 from alkahest.editions import edition_paths, load_editions, render_book_structure
 
 
+def stage_resource_tree(source_root, destination_root):
+    """Copy a resource tree so Quarto can traverse and package every file."""
+    destination_root.mkdir(parents=True)
+    for source in sorted(source_root.rglob("*")):
+        destination = destination_root / source.relative_to(source_root)
+        if source.is_dir():
+            destination.mkdir()
+        elif source.is_file():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+        else:
+            fail(f"unsupported resource entry: {source}")
+
+
 def main():
-    if len(sys.argv) != 2 or not re.fullmatch(r"[a-z][a-z0-9-]*", sys.argv[1]):
-        print(f"usage: {sys.argv[0]} EDITION", file=sys.stderr)
+    valid_options = len(sys.argv) in (2, 3) and (
+        len(sys.argv) == 2 or sys.argv[2] == "--html-resources"
+    )
+    if not valid_options or not re.fullmatch(r"[a-z][a-z0-9-]*", sys.argv[1]):
+        print(f"usage: {sys.argv[0]} EDITION [--html-resources]", file=sys.stderr)
         raise SystemExit(2)
     edition_name = sys.argv[1]
+    materialize_html_resources = len(sys.argv) == 3
     book_root = SCRIPT_DIR.parent / "book"
     registry = load_editions(book_root / "editions.json")
     if edition_name not in registry["editions"]:
@@ -34,6 +52,12 @@ def main():
     generated = re.compile(r"^(?:Alkahest-Reference-Book\.(?:epub|pdf)|index\.(?:html|log|tex|typ)|reference\.html|references\.html)$")
     for entry in sorted(book_root.iterdir(), key=lambda path: path.name):
         if entry.name in skip or entry.name in registered_top or entry.name.endswith("_files") or generated.fullmatch(entry.name):
+            continue
+        # Quarto follows explicitly referenced files but does not expand a
+        # resource glob through a symlinked directory. A real resource tree
+        # keeps web-only captions and posters discoverable without collisions.
+        if materialize_html_resources and entry.name == "media" and entry.is_dir():
+            stage_resource_tree(entry, stage_root / entry.name)
             continue
         (stage_root / entry.name).symlink_to(Path("../../../../") / entry.name)
     for relative in edition_paths(registry, edition_name):

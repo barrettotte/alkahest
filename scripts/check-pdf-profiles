@@ -294,6 +294,16 @@ check_pdf() {
     "Physics-diagram workflow" \
     "A velocity vector with explicit components and preserved display precision" \
     "A normalized inverse-square field with an explicit sampling grid" \
+    "Rich-media workflow" \
+    "One-second reference tone" \
+    "Constant horizontal motion" \
+    "Circular-orbit animation" \
+    "Vector-component interactive" \
+    "Transcript and description" \
+    "A steady 440 hertz sine tone plays for one second" \
+    "one solid black square moves from left to right" \
+    "A visible checkbox pauses the motion" \
+    "Arrow keys operate the focused range control" \
     "Figure 7.1" \
     "Figure 7.2" \
     "Figure 7.2a" \
@@ -561,7 +571,7 @@ RECTO_MARKERS
     fi
   fi
 
-  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/component/companion/reuse/icon/notice/glossary/semantic-note/index/generated-list contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
+  echo "ok: ${label} (${actual_width} x ${actual_height} points; ${page_count} pages; physical containment, bidirectional appendix references, shared bibliography, appendix numbering, code/math/figure/rich-media/component/companion/reuse/icon/notice/glossary/semantic-note/index/generated-list contracts, fonts, language scripts, recto/blank-page policy, pagination stress, headings, and references verified)"
 }
 
 check_pdf "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf" 504 720 "Typst 7 x 10"

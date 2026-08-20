@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Circular-orbit animation</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #111827; }
+    body { margin: 0; padding: 1rem; background: #fff; }
+    .controls { text-align: center; margin-bottom: .5rem; }
+    .stage { position: relative; width: 18rem; height: 18rem; margin: auto; border: 2px solid #64748b; border-radius: 50%; }
+    .center { position: absolute; width: 3rem; height: 3rem; left: 7.5rem; top: 7.5rem; border-radius: 50%; background: #111827; }
+    .body { position: absolute; width: 1.5rem; height: 1.5rem; left: 8.25rem; top: -.75rem; border: 3px solid #111827; border-radius: 50%; background: #fff; transform-origin: .75rem 9.75rem; animation: orbit 4s linear infinite; }
+    #pause:checked ~ .stage .body { animation-play-state: paused; }
+    @keyframes orbit { to { transform: rotate(-360deg); } }
+    @media (prefers-reduced-motion: reduce) { .body { animation: none; } }
+  </style>
+</head>
+<body>
+  <div class="controls"><label><input id="pause" type="checkbox"> Pause animation</label></div>
+  <div class="stage" role="img" aria-label="A small outlined body moves counterclockwise around a solid central body on a circular path.">
+    <div class="center"></div>
+    <div class="body"></div>
+  </div>
+</body>
+</html>

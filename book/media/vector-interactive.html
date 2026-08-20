@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vector-component interactive</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #111827; }
+    body { margin: 0; padding: 1rem; background: #fff; }
+    .controls { display: grid; gap: .5rem; max-width: 34rem; margin: auto; }
+    input { width: 100%; }
+    svg { display: block; width: min(100%, 34rem); height: auto; margin: 1rem auto 0; border: 1px solid #cbd5e1; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label for="angle">Vector angle: <output id="angle-value" for="angle">37°</output></label>
+    <input id="angle" type="range" min="0" max="90" step="1" value="37">
+    <small>Use the Left and Right Arrow keys when the slider has focus.</small>
+    <p id="result" aria-live="polite">Horizontal component 8.0 units; vertical component 6.0 units.</p>
+  </div>
+  <svg viewBox="0 0 600 330" role="img" aria-labelledby="vector-title vector-desc">
+    <title id="vector-title">Adjustable vector and components</title>
+    <desc id="vector-desc">A ten-unit vector and its horizontal and vertical projections update with the angle slider.</desc>
+    <line x1="70" y1="270" x2="550" y2="270" stroke="#111827" stroke-width="2"/>
+    <line x1="70" y1="290" x2="70" y2="35" stroke="#111827" stroke-width="2"/>
+    <line id="horizontal" x1="70" y1="270" x2="390" y2="270" stroke="#475569" stroke-width="2" stroke-dasharray="8 6"/>
+    <line id="vertical" x1="390" y1="270" x2="390" y2="78" stroke="#475569" stroke-width="2" stroke-dasharray="8 6"/>
+    <line id="vector" x1="70" y1="270" x2="390" y2="78" stroke="#111827" stroke-width="5"/>
+    <circle id="tip" cx="390" cy="78" r="7" fill="#111827"/>
+  </svg>
+  <script>
+    const angle = document.getElementById('angle');
+    const value = document.getElementById('angle-value');
+    const result = document.getElementById('result');
+    const vector = document.getElementById('vector');
+    const horizontal = document.getElementById('horizontal');
+    const vertical = document.getElementById('vertical');
+    const tip = document.getElementById('tip');
+    function update() {
+      const degrees = Number(angle.value);
+      const radians = degrees * Math.PI / 180;
+      const xComponent = 10 * Math.cos(radians);
+      const yComponent = 10 * Math.sin(radians);
+      const x = 70 + xComponent * 40;
+      const y = 270 - yComponent * 32;
+      value.textContent = `${degrees}°`;
+      result.textContent = `Horizontal component ${xComponent.toFixed(1)} units; vertical component ${yComponent.toFixed(1)} units.`;
+      for (const line of [vector, horizontal]) line.setAttribute('x2', x.toFixed(2));
+      vector.setAttribute('y2', y.toFixed(2));
+      vertical.setAttribute('x1', x.toFixed(2));
+      vertical.setAttribute('x2', x.toFixed(2));
+      vertical.setAttribute('y2', y.toFixed(2));
+      tip.setAttribute('cx', x.toFixed(2));
+      tip.setAttribute('cy', y.toFixed(2));
+    }
+    angle.addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

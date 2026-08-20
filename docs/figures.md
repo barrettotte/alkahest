@@ -110,6 +110,8 @@ The data-driven timing, gate, memory/instruction, and processor architecture
 workflow is recorded in `docs/computing-diagram-evaluation.md`.
 The portable physics vector/field workflow and its unit, precision, and data-
 provenance contract are recorded in `docs/physics-diagram-evaluation.md`.
+Audio, video, animation, and interactive enhancements use the format-aware
+registry and static-equivalence policy in `docs/rich-media.md`.
 
 `book/figures/README.md` is the current asset registry. A production registry
 must record creator, origin, license or permission, modification history, and
@@ -141,3 +143,7 @@ portable SVG derivatives for the computing fixtures.
 `make check-physics-diagrams` validates the physics unit registry, displayed
 significant figures, vector and field relationships, provenance, and two
 deterministic accessible SVG derivatives.
+`make check-rich-media` validates media registry coverage, checksums,
+accessibility behavior, rights, transcripts, captions, and deterministic
+fallbacks. Rendered checks require native enhancements only in HTML and the
+complete static lesson in EPUB and PDF.

@@ -762,6 +762,83 @@ exec podman run --rm \
       echo "error: a reflowable output contains the print-only figure variant" >&2
       exit 1
     fi
+
+    # Rich media is a progressive HTML enhancement. Stable IDs, descriptions,
+    # and transcripts remain in every output; EPUB deliberately packages only
+    # the portable SVG alternatives rather than uneven player/script support.
+    for media_id in \
+      media-reference-tone \
+      media-moving-square-video \
+      media-circular-orbit \
+      media-vector-components
+    do
+      require_literal "id=\"${media_id}\" class=\"rich-media" \
+        "${html_figures}" "HTML rich-media specimen"
+      require_literal "id=\"${media_id}\" class=\"rich-media" \
+        "${epub_language}" "EPUB rich-media specimen"
+    done
+    for media_structure in \
+      "class=\"rich-media-player rich-media-audio\" controls=\"\" preload=\"metadata\"" \
+      "class=\"rich-media-player rich-media-video\" controls=\"\" preload=\"metadata\"" \
+      "<track kind=\"captions\" src=\"media/moving-square-captions.vtt\"" \
+      "class=\"rich-media-player rich-media-animation\"" \
+      "title=\"Circular-orbit animation\" loading=\"lazy\" sandbox=\"\"" \
+      "class=\"rich-media-player rich-media-interactive\"" \
+      "title=\"Vector-component interactive\" loading=\"lazy\" sandbox=\"allow-scripts\""
+    do
+      require_literal "${media_structure}" "${html_figures}" \
+        "HTML rich-media enhancement"
+    done
+    for media_asset in \
+      reference-tone.wav \
+      tone-waveform.svg \
+      tone-transcript.md \
+      moving-square.webm \
+      moving-square-poster.svg \
+      moving-square-captions.vtt \
+      moving-square-transcript.md \
+      orbit-animation.html \
+      orbit-poster.svg \
+      orbit-transcript.md \
+      vector-interactive.html \
+      vector-interactive-poster.svg \
+      vector-interactive-transcript.md
+    do
+      test -f "book/_build/html/media/${media_asset}"
+    done
+    for media_text in \
+      "Transcript and description" \
+      "A steady 440 hertz sine tone plays for one second" \
+      "one solid black square moves from left to right" \
+      "A visible checkbox pauses the motion" \
+      "Arrow keys operate the focused range control"
+    do
+      require_literal "${media_text}" "${html_figures}" \
+        "HTML rich-media static equivalent"
+      require_literal "${media_text}" "${epub_language}" \
+        "EPUB rich-media static equivalent"
+    done
+    for media_alt in \
+      "A regular sine wave oscillates around a horizontal center line" \
+      "Five outlined square positions trace motion from left to right" \
+      "A small body is shown at four positions on a dashed circular path" \
+      "A ten-unit vector at thirty-seven degrees"
+    do
+      require_literal "${media_alt}" "${epub_language}" \
+        "EPUB rich-media alternative"
+    done
+    if grep -Eq "<(audio|video)[^>]*autoplay" "${html_figures}"; then
+      echo "error: HTML rich media must not autoplay" >&2
+      exit 1
+    fi
+    if grep -Eq "<(audio|video|iframe)([ >])" "${epub_language}"; then
+      echo "error: EPUB contains a playable or scripted rich-media enhancement" >&2
+      exit 1
+    fi
+    if grep -Eq "^EPUB/media/.*\.(wav|webm|html|vtt|js)$" "${epub_listing}"; then
+      echo "error: EPUB packages an HTML-only rich-media asset" >&2
+      exit 1
+    fi
     if grep -Fq "1.1.1.1" "${html_text}" || grep -Fq "1.1.1.1" "${epub_text}"; then
       echo "error: a reflowable output incorrectly numbers the H4 detail heading" >&2
       exit 1
@@ -1188,5 +1265,5 @@ exec podman run --rm \
       "${supplemental_text}" \
       "${numeric_html_text}" \
       "${numeric_pdf_text}"
-    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, whole-book edition grouping/omission/privacy/numbering, code/math/figure/component/companion/reuse/icon/notice/glossary/semantic-note/index/generated-list/persistent-ID contracts, locale semantics, theme, embedded fonts, and heading markers"
+    echo "ok: HTML/EPUB structure, citation-style parity and numeric override, bidirectional appendix references, shared bibliography, whole-book edition grouping/omission/privacy/numbering, code/math/figure/rich-media/component/companion/reuse/icon/notice/glossary/semantic-note/index/generated-list/persistent-ID contracts, locale semantics, theme, embedded fonts, and heading markers"
   '

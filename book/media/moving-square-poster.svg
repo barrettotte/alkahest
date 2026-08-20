@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
+  <title id="title">Moving-square video poster</title>
+  <desc id="desc">Five outlined square positions trace motion from left to right, ending in a solid square beside an arrow labeled two seconds.</desc>
+  <rect width="800" height="450" fill="#ffffff"/>
+  <text x="400" y="55" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="bold" fill="#111827">Constant horizontal motion</text>
+  <line x1="90" y1="320" x2="710" y2="320" stroke="#111827" stroke-width="3"/>
+  <path d="M680 310 L710 320 L680 330" fill="none" stroke="#111827" stroke-width="3"/>
+  <g fill="#ffffff" stroke="#475569" stroke-width="4">
+    <rect x="110" y="210" width="60" height="60" opacity="0.35"/>
+    <rect x="230" y="210" width="60" height="60" opacity="0.5"/>
+    <rect x="350" y="210" width="60" height="60" opacity="0.65"/>
+    <rect x="470" y="210" width="60" height="60" opacity="0.8"/>
+  </g>
+  <rect x="590" y="210" width="60" height="60" fill="#111827"/>
+  <text x="140" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#475569">start</text>
+  <text x="620" y="190" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#475569">2.00 s</text>
+  <text x="400" y="390" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#475569">Position changes; size and vertical position remain constant.</text>
+</svg>

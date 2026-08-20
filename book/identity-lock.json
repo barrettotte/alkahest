@@ -1087,6 +1087,41 @@
          "status": "active"
       },
       {
+         "id": "sec-rich-media-animation",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-rich-media-audio",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-rich-media-interactive",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-rich-media-video",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
+         "id": "sec-rich-media-workflow",
+         "kind": "section",
+         "namespace": "content",
+         "source": "figures.qmd",
+         "status": "active"
+      },
+      {
          "id": "sec-running-head-stress",
          "kind": "section",
          "namespace": "content",

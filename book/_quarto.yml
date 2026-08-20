@@ -8,6 +8,7 @@ project:
     - /opt/alkahest/tools/bin/python ../scripts/check-chemistry.py
     - python3 ../scripts/check-computing-diagrams.py
     - python3 ../scripts/check-physics-diagrams.py
+    - python3 ../scripts/check-rich-media.py
     - python3 ../scripts/check-identities.py
     - python3 ../scripts/check-editions.py
     - python3 ../scripts/check-learning.py

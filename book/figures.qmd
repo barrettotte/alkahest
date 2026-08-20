@@ -220,14 +220,16 @@ control paths without relying on color. [Source: generated from
 1.0.]{.figure-source}
 :::
 
-WaveDrom 3.5.0 is retained as a serious evaluation candidate in
-`figures/candidates/read-cycle-wavedrom.json` and
-`figures/candidates/instruction-word-wavedrom.json`. Its compact WaveJSON and
-register-field syntax are attractive, but normal builds do not yet carry a
-pinned offline WaveDrom renderer. Mermaid and Graphviz remain appropriate for
-automatically laid-out relationships; these bit- and timing-sensitive fixtures
-instead use explicit geometry, selectable labels, fixed view boxes, embedded
-descriptions, and byte-checked regeneration.
+The evaluated WaveDrom 3.5.0 sources are:
+
+- `figures/candidates/read-cycle-wavedrom.json`
+- `figures/candidates/instruction-word-wavedrom.json`
+
+WaveDrom's compact WaveJSON and register-field syntax are attractive, but
+normal builds do not yet carry a pinned offline renderer. Mermaid and Graphviz
+remain appropriate for automatically laid-out relationships; these bit- and
+timing-sensitive fixtures instead use explicit geometry, selectable labels,
+fixed view boxes, embedded descriptions, and byte-checked regeneration.
 
 ## Physics-diagram workflow {#sec-physics-diagram-workflow}
 
@@ -265,6 +267,39 @@ the measurand, acquisition or calculation method, source/version, units,
 uncertainty where applicable, transformations, creator, date, license, and any
 limits on reuse. Significant figures must reflect the stated measurement and
 uncertainty policy rather than merely the number of digits a program can print.
+
+## Rich-media workflow {#sec-rich-media-workflow}
+
+The `alk-media` shortcode resolves stable entries from the versioned
+`media.json` registry. HTML receives a native player or sandboxed local frame;
+EPUB, Typst, and LuaLaTeX receive the registered SVG fallback, accessible
+description, and complete transcript. The registry locks source bytes,
+fallbacks, transcripts, captions, provenance, license, and public-distribution
+permission so an unsupported player never becomes missing content.
+
+### Audio with a waveform fallback {#sec-rich-media-audio}
+
+{{< alk-media media-reference-tone >}}
+
+### Captioned video with a poster fallback {#sec-rich-media-video}
+
+{{< alk-media media-moving-square-video >}}
+
+### Controllable animation with reduced motion {#sec-rich-media-animation}
+
+{{< alk-media media-circular-orbit >}}
+
+### Keyboard-operable interactive demonstration {#sec-rich-media-interactive}
+
+{{< alk-media media-vector-components >}}
+
+Media must never autoplay with sound. Time-based content needs appropriate
+controls, synchronized captions where relevant, visual description, and a
+descriptive transcript. Animation must offer pause/stop behavior and respect
+reduced-motion preferences. Interactives must preserve native keyboard access,
+visible labels and focus, programmatic state, and a text result. The static
+fallback must communicate the lesson rather than merely showing a generic
+play-button poster.
 
 ## Float and placement policy {#sec-figure-floats}
 

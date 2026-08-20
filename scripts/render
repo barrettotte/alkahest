@@ -10,11 +10,17 @@ render_edition_profile() {
   local edition="$1"
   local profile="$2"
   local output_dir="$3"
+  local -a stage_arguments=("${edition}")
   local stage_root="${repo_root}/book/_build/staging/editions/${edition}"
   local staged_output="${stage_root}/_rendered"
   local canonical_output="${repo_root}/book/${output_dir}"
 
-  python3 "${script_dir}/stage-edition.py" "${edition}" >/dev/null
+  # Only HTML needs Quarto to discover raw poster/track resources. Other
+  # formats keep the media directory linked and avoid copying large web assets.
+  case ",${profile}," in
+    *,html,*) stage_arguments+=(--html-resources) ;;
+  esac
+  python3 "${script_dir}/stage-edition.py" "${stage_arguments[@]}" >/dev/null
   "${script_dir}/quarto" render "book/_build/staging/editions/${edition}" \
     --profile "edition-${edition},${profile}" \
     --output-dir _rendered
