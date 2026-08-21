@@ -1,0 +1,3 @@
+# Warning-only prose
+
+The AND and AND gates are deliberately repeated here.

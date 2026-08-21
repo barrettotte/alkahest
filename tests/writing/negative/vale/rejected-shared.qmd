@@ -1,0 +1,3 @@
+# Shared terminology
+
+The typst backend name uses rejected capitalization here.

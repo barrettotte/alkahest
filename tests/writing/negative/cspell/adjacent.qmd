@@ -1,0 +1,9 @@
+# Exclusion boundary
+
+`inlinecodemisspellng` is syntax, but adjacentmisspellng remains visible prose.
+
+$$
+mathmisspellng = 1
+$$
+
+The display is followed by displayadjacentmisspellng in prose.

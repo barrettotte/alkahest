@@ -5,7 +5,7 @@
     {
       "name": "alkahest-shared",
       "path": "dictionaries/shared.txt",
-      "description": "Reusable publishing and toolchain vocabulary.",
+      "description": "Reusable publishing, toolchain, and cross-book technical vocabulary.",
       "addWords": false
     },
     {

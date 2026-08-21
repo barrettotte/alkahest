@@ -143,11 +143,52 @@ a {
   text-underline-offset: 0.14em;
 }
 
+main.content a:not(.anchorjs-link):not(.code-annotation-anchor) {
+  text-decoration-line: underline;
+}
+
+.quarto-page-breadcrumbs a {
+  display: inline-block;
+  min-block-size: 24px;
+  line-height: 24px;
+}
+
 a:focus-visible,
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+textarea:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
   outline: 3px solid $alkahest-copper;
   outline-offset: 3px;
+}
+
+.alkahest-skip-link {
+  position: fixed;
+  z-index: 2000;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  color: $alkahest-paper;
+  background: $alkahest-slate;
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  transform: translateY(-200%);
+}
+
+.alkahest-skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .book-endnote-reference {

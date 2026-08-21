@@ -39,8 +39,12 @@ thin rule in reflowable output, H3 a compact sans-serif title, and H4 an
 ink-colored local heading. Code blocks use a mist field and defined boundary;
 reflowable output and Typst add a slate leading rule. Tables use a strong top
 rule, light internal structure, and sans-serif headings. Captions are smaller
-and muted. Reflowable links use slate plus an underline; keyboard focus uses a
-three-pixel copper outline in HTML.
+and muted. Reflowable content links use slate plus an underline; keyboard focus
+uses a three-pixel copper outline in HTML. A first-focus skip link bypasses
+repeated navigation, breadcrumb targets retain a 24-pixel minimum height, and
+actually overflowing code and math regions enter the ordinary keyboard order.
+The reduced-motion query suppresses nonessential theme animation and
+transitions while the media-specific adapter preserves its static state.
 
 Display equations retain their normal mathematical size and use a local
 horizontal scroll region only when a reflowable viewport is too narrow.

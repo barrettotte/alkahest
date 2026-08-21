@@ -212,8 +212,8 @@ def generate_vale(scope_id, rejected):
         "# Generated from config/writing/terminology.json; do not edit directly.",
         "extends: substitution",
         "message: \"Use '%s' instead of '%s'.\"",
-        "level: warning",
-        "scope: text",
+        "level: error",
+        "scope: ~frontmatter",
         "ignorecase: false",
         "swap:",
     ]

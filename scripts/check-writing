@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run spelling and prose reports over canonical authored sources.
+# Run spelling and prose quality gates over canonical authored sources.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,6 +24,7 @@ if [[ "${invoking_uid}" -eq 0 ]]; then
 fi
 
 python3 "${script_dir}/generate-writing-terminology.py" --check
+python3 "${script_dir}/check-writing-overrides.py"
 
 if ! command -v podman >/dev/null 2>&1; then
   echo "error: Podman is required but was not found" >&2
@@ -58,7 +59,7 @@ run_in_toolchain() {
 }
 
 check_spelling() {
-  echo "Writing spelling report (${#writing_sources[@]} canonical sources; report-only baseline)"
+  echo "Writing spelling gate (${#writing_sources[@]} canonical sources)"
   run_in_toolchain \
     cspell lint \
     --config cspell.json \
@@ -70,26 +71,26 @@ check_spelling() {
     --no-color \
     --unique \
     --validate-directives \
-    --no-exit-code \
     "${writing_sources[@]}"
 }
 
 check_prose() {
-  echo "Writing prose report (${#writing_sources[@]} canonical sources; report-only baseline)"
+  echo "Writing prose gate (${#writing_sources[@]} canonical sources; subjective rules remain warnings)"
   run_in_toolchain \
     vale \
     --config=.vale.ini \
     --no-global \
     --no-wrap \
-    --no-exit \
     --output=line \
     "${writing_sources[@]}"
 }
 
 case "${mode}" in
   all)
-    check_spelling
-    check_prose
+    status=0
+    check_spelling || status=$?
+    check_prose || status=$?
+    exit "${status}"
     ;;
   spelling) check_spelling ;;
   prose) check_prose ;;

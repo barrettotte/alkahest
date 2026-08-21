@@ -1,0 +1,3 @@
+# Visible spelling error
+
+This visiblemisspellng must fail the spelling gate.

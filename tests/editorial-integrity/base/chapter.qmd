@@ -1,0 +1,27 @@
+# Editorial integrity fixture {#sec-fixture}
+
+The [other section](other.qmd#sec-other) is a local source link, while the
+[Quarto website](https://quarto.org/) remains an offline external boundary.
+The cross-reference @sec-other. retains sentence punctuation without changing
+its target.
+
+![A fixture pixel](assets/pixel.svg){#fig-pixel}
+
+![](assets/pixel.svg){.decorative}
+
+```{mermaid}
+%%| label: fig-diagram
+%%| fig-alt: "One node named A."
+flowchart LR
+  A[A]
+```
+
+The fenced examples below must not create links, IDs, references, or image
+requirements.
+
+```markdown
+[missing](absent.qmd#sec-absent)
+![](absent.svg)
+@sec-absent
+## Example {#sec-fixture}
+```

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "standard": "https://www.w3.org/TR/WCAG22/",
+  "target": "WCAG 2.2 Level AA",
+  "conformance_claim": false,
+  "artifact_revision": null,
+  "reviews": [
+    {
+      "category": "semantics-and-reading-order",
+      "status": "pending",
+      "rationale": "Review landmark, heading, table, math, figure, note, and generated-list reading order with browser accessibility trees and a screen reader."
+    },
+    {
+      "category": "keyboard-and-focus-order",
+      "status": "pending",
+      "rationale": "Traverse navigation, search, links, notes, media controls, and the interactive fixture by keyboard in forward and reverse order."
+    },
+    {
+      "category": "contrast-and-color",
+      "status": "pending",
+      "rationale": "Inspect computed text, component, hover, focus, diagram, and forced-color presentations beyond the locked palette pairs."
+    },
+    {
+      "category": "reflow-and-zoom",
+      "status": "pending",
+      "rationale": "Review every representative page at 200 percent text zoom and 400 percent browser zoom without loss of content or two-dimensional page scrolling."
+    },
+    {
+      "category": "reduced-motion",
+      "status": "pending",
+      "rationale": "Confirm navigation and rich-media behavior with the operating-system reduced-motion preference enabled."
+    },
+    {
+      "category": "responsive-and-target-size",
+      "status": "pending",
+      "rationale": "Review representative phone, tablet, and desktop widths plus pointer target size and spacing under WCAG 2.5.8 exceptions."
+    },
+    {
+      "category": "assistive-technology",
+      "status": "pending",
+      "rationale": "Test representative pages with current screen-reader and browser combinations before making any accessibility claim."
+    }
+  ]
+}

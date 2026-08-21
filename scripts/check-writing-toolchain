@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verify the pinned writing tools run unprivileged and without network access.
+# Verify pinned JavaScript and prose tools run unprivileged and without network.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -35,10 +35,13 @@ test "$(node --version)" = "v${ALKAHEST_NODE_VERSION}"
 test "$(npm --version)" = "${ALKAHEST_NPM_VERSION}"
 test "$(vale --version)" = "vale version ${ALKAHEST_VALE_VERSION}"
 test "$(cspell --version)" = "${ALKAHEST_CSPELL_VERSION}"
+grep -Fq "\"version\": \"${ALKAHEST_AXE_CORE_VERSION}\"" \
+  /opt/alkahest/writing/node_modules/axe-core/package.json
 
-printf "Node %s, npm %s, Vale %s, and CSpell %s passed offline rootless validation.\n" \
+printf "Node %s, npm %s, Vale %s, CSpell %s, and axe-core %s passed offline rootless validation.\n" \
   "${ALKAHEST_NODE_VERSION}" \
   "${ALKAHEST_NPM_VERSION}" \
   "${ALKAHEST_VALE_VERSION}" \
-  "${ALKAHEST_CSPELL_VERSION}"
+  "${ALKAHEST_CSPELL_VERSION}" \
+  "${ALKAHEST_AXE_CORE_VERSION}"
 '

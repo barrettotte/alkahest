@@ -1,0 +1,16 @@
+<a class="alkahest-skip-link" href="#quarto-document-content">Skip to main content</a>
+<script>
+  // Give code and math overflow regions a keyboard stop only when they scroll.
+  function alkahestPrepareScrollableRegions() {
+    const candidates = document.querySelectorAll(
+      "pre, div.sourceCode, span[id^='eq-']"
+    );
+    for (const region of candidates) {
+      if (region.scrollWidth > region.clientWidth && !region.hasAttribute("tabindex")) {
+        region.setAttribute("tabindex", "0");
+      }
+    }
+  }
+  document.addEventListener("DOMContentLoaded", alkahestPrepareScrollableRegions);
+  window.addEventListener("load", alkahestPrepareScrollableRegions);
+</script>

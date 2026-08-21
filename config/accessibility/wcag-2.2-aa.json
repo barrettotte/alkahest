@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "standard": "https://www.w3.org/TR/WCAG22/",
+  "target": "WCAG 2.2 Level AA",
+  "rendered_root": "book/_build/html",
+  "engine": {
+    "name": "axe-core",
+    "version": "4.13.0",
+    "tags": ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
+    "supplemental_rules": ["tabindex"]
+  },
+  "contrast_pairs": [
+    {"foreground": "ink", "background": "paper", "minimum": 4.5, "use": "body text"},
+    {"foreground": "slate", "background": "paper", "minimum": 4.5, "use": "headings and links"},
+    {"foreground": "muted", "background": "paper", "minimum": 4.5, "use": "captions and secondary text"},
+    {"foreground": "copper", "background": "paper", "minimum": 3.0, "use": "focus and component boundaries"},
+    {"foreground": "slate", "background": "mist", "minimum": 4.5, "use": "text on quiet fields"}
+  ],
+  "manual_evidence": "book/accessibility-review.json",
+  "manual_categories": [
+    "semantics-and-reading-order",
+    "keyboard-and-focus-order",
+    "contrast-and-color",
+    "reflow-and-zoom",
+    "reduced-motion",
+    "responsive-and-target-size",
+    "assistive-technology"
+  ]
+}

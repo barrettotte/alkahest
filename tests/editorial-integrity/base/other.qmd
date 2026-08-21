@@ -1,0 +1,3 @@
+# Other fixture section {#sec-other}
+
+This source provides the local link and cross-reference target.

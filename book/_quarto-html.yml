@@ -13,6 +13,7 @@ brand: false
 format:
   html:
     code-copy: true
+    include-before-body: theme/accessibility-before-body.html
     # Interactive pages preserve source columns; print CSS still forces wrap.
     code-overflow: scroll
     # Native MathML keeps the web book semantic and independent of a CDN.

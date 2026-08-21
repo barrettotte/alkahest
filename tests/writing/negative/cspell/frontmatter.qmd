@@ -1,0 +1,8 @@
+---
+structuralkeymisspellng: review
+title: "Frontmattermisspellng remains reader-facing"
+---
+
+# Correct body
+
+The body is spelled correctly.

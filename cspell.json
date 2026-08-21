@@ -40,6 +40,10 @@
     {
       "name": "quarto-shortcode",
       "pattern": "/\\{\\{[<%][\\s\\S]*?[>%]\\}\\}/g"
+    },
+    {
+      "name": "yaml-front-matter-key",
+      "pattern": "/^[ \\t-]*[A-Za-z_][A-Za-z0-9_.-]*(?=[ \\t]*:)/gm"
     }
   ],
   "ignoreRegExpList": [
@@ -52,7 +56,8 @@
     "pandoc-delimited-math",
     "pandoc-citation-and-crossref-key",
     "pandoc-attribute-name",
-    "quarto-shortcode"
+    "quarto-shortcode",
+    "yaml-front-matter-key"
   ],
   "overrides": [
     {

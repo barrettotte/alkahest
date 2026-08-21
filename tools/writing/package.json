@@ -2,12 +2,13 @@
   "name": "alkahest-writing-tools",
   "private": true,
   "version": "0.0.0",
-  "description": "Locked JavaScript dependencies for offline manuscript checks.",
+  "description": "Locked JavaScript dependencies for offline publishing checks.",
   "license": "UNLICENSED",
   "engines": {
     "node": "22.23.2"
   },
   "dependencies": {
+    "axe-core": "4.13.0",
     "cspell": "10.0.1"
   }
 }

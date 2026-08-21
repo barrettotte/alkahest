@@ -114,7 +114,7 @@ structures.
 ```{mermaid}
 %%| label: fig-half-adder
 %%| fig-cap: "The information flow through a half-adder."
-%%| fig-alt: "Inputs A and B each feed an XOR gate and an AND gate; XOR produces Sum and AND produces Carry."
+%%| fig-alt: "Inputs A and B each feed two gates: XOR produces Sum, while AND produces Carry."
 flowchart LR
   A[Input A] --> XOR[XOR]
   B[Input B] --> XOR
@@ -124,8 +124,8 @@ flowchart LR
   AND --> C[Carry]
 ```
 
-[Diagram description: Inputs A and B each feed an XOR gate and an AND gate;
-XOR produces Sum and AND produces Carry.]{.diagram-description}
+[Diagram description: Inputs A and B each feed two gates: XOR produces Sum,
+while AND produces Carry.]{.diagram-description}
 
 ## Tables {#sec-reference-tables}
 

@@ -85,6 +85,8 @@ printf "  Vale: "
 vale --version | sed "s/^vale version //"
 printf "  CSpell: "
 cspell --version
+printf "  axe-core: "
+node -p "require(\"/opt/alkahest/writing/node_modules/axe-core/package.json\").version"
 printf "  Schemdraw: "
 /opt/alkahest/tools/bin/python -c "import schemdraw; print(schemdraw.__version__)"
 printf "  RDKit: "
@@ -131,6 +133,7 @@ sha256sum \
   /usr/local/bin/vale \
   /opt/alkahest/writing/package-lock.json \
   /opt/alkahest/writing/node_modules/cspell/bin.mjs \
+  /opt/alkahest/writing/node_modules/axe-core/axe.min.js \
   /opt/alkahest/tools-project/uv.lock \
   /opt/alkahest/tools/lib/python3.12/site-packages/schemdraw/__init__.py \
   /opt/alkahest/tools/lib/python3.12/site-packages/rdkit/Chem/rdchem.so \

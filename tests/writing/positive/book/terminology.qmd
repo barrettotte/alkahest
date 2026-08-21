@@ -1,0 +1,5 @@
+# Scoped terminology
+
+The Donaudampfschifffahrtsgesellschaft specimen uses a 2-kilohm resistor.
+Verilog, WaveDrom, and RDKit are accepted reference-book terms with their
+preferred capitalization.

@@ -1,0 +1,43 @@
+---
+title: "Syntax exclusion fixture"
+structuralkeymisspellng: typst
+description: "Reader-facing metadata remains correctly spelled."
+---
+
+# Syntax exclusions
+
+Correct prose surrounds every deliberately invalid syntax token below.
+
+```{.python}
+codeblockmisspellng = "typst"
+```
+
+~~~text
+tildefencemisspellng typst
+~~~
+
+Inline code contains `inlinecodemisspellng typst` without becoming prose.
+
+The link destination is <https://example.invalid/urlmisspellng>.
+
+Inline math uses $mathmisspellng + typst = 1$ and \(delimitedmathmisspellng + typst\).
+
+$$
+displaymathmisspellng + typst = 2
+$$
+
+\[
+bracketmathmisspellng + typst = 3
+\]
+
+Citation syntax includes [@citationkeymisspellng] and narrative @secondcitationmisspellng.
+
+```{=latex}
+\rawbackendmisspellng{typst}
+```
+
+Raw inline markup is `\inlinebackendmisspellng{typst}`{=latex}.
+
+[Correct visible attribute text]{.attributeclassmisspellng attributekeymisspellng="structural-value"}
+
+{{< alk-icon iconnamemisspellng label="Correct warning label" >}} **Warning.** Correct visible icon wording remains checked.

@@ -3,7 +3,7 @@
   "scopes": [
     {
       "id": "shared",
-      "description": "Publishing, toolchain, accessibility, and template terminology shared by every book.",
+      "description": "Publishing, toolchain, accessibility, and reusable technical terminology shared by every book.",
       "files": null,
       "vale_style": "Alkahest"
     },
@@ -19,7 +19,7 @@
       "name": "alkahest-shared",
       "scope": "shared",
       "path": "config/writing/dictionaries/shared.txt",
-      "description": "Reusable publishing and toolchain vocabulary.",
+      "description": "Reusable publishing, toolchain, and cross-book technical vocabulary.",
       "add_words": false
     },
     {

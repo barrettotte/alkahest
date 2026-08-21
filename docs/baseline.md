@@ -66,7 +66,7 @@ inside the ephemeral cache; this was informational output, not a warning.
   targets across three documents; five external targets were deliberately not
   fetched by the reproducible check.
 - EPUBCheck 5.3.0 validated the book with EPUB 3.3 rules and reported zero
-  fatals, errors, warnings, or informational messages.
+  fatal errors, other errors, warnings, or informational messages.
 - `pdfinfo` confirmed page count, page size, PDF version, and tag status.
 - Shell scripts pass `bash -n`; the working diff passes `git diff --check`.
 

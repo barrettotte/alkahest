@@ -13,6 +13,7 @@
   </style>
 </head>
 <body>
+<main>
   <div class="controls">
     <label for="angle">Vector angle: <output id="angle-value" for="angle">37°</output></label>
     <input id="angle" type="range" min="0" max="90" step="1" value="37">
@@ -57,5 +58,6 @@
     angle.addEventListener('input', update);
     update();
   </script>
+</main>
 </body>
 </html>

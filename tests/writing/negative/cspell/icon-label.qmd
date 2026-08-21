@@ -1,0 +1,3 @@
+# Visible icon wording
+
+{{< alk-icon iconnamemisspellng >}} **Warnnglabel.** The visible label must remain checked.

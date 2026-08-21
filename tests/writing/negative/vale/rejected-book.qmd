@@ -1,0 +1,3 @@
+# Book terminology
+
+The verilog language name uses rejected capitalization here.

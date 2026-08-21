@@ -1,0 +1,26 @@
+# Narrow overrides
+
+<!-- cspell:words Fixturebrand -->
+Fixturebrand appears twice inside this Fixturebrand-only case study.
+
+<!-- cspell:ignore Oneofftokn -->
+Oneofftokn appears once.
+
+<!-- writing-override: Preserve the quoted historical spelling on this single line. -->
+<!-- cspell:disable-next-line -->
+singlelinemisspellng is quoted from the original label.
+
+<!-- writing-override: Preserve this deliberately unedited historical sample as written. -->
+<!-- cspell:disable -->
+rangemisspellng appears only inside this bounded quotation.
+<!-- cspell:enable -->
+
+<!-- writing-override: Preserve the historical lowercase product name in this quotation. -->
+<!-- vale Alkahest.Terminology["typst"] = NO -->
+The typst spelling is deliberate in this one quotation.
+<!-- vale Alkahest.Terminology["typst"] = YES -->
+
+<!-- writing-override: Preserve several historical product spellings in this bounded quotation. -->
+<!-- vale Alkahest.Terminology = NO -->
+The vale and typst spellings are deliberate in this bounded quotation.
+<!-- vale Alkahest.Terminology = YES -->

@@ -1,4 +1,4 @@
-.PHONY: bootstrap build-report check check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology render render-all test-execution-policy test-editions test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes update-identities \
+.PHONY: bootstrap build-report check check-accessibility check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology render render-all test-accessibility test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
 
@@ -61,6 +61,12 @@ check-editions: ## Validate whole-book manifests, sources, privacy, and referenc
 
 test-editions: ## Exercise valid, invalid, and staged edition contracts.
 	python3 scripts/test-editions.py
+
+check-editorial-integrity: ## Validate source links, alternatives, IDs, and references.
+	python3 scripts/check-editorial-integrity.py
+
+test-editorial-integrity: ## Exercise valid and invalid editorial-integrity contracts.
+	python3 scripts/test-editorial-integrity.py
 
 check-learning: ## Validate learning roles, metadata, pairings, and private answers.
 	python3 scripts/check-learning.py
@@ -140,23 +146,38 @@ check-rendered-lists: ## Verify generated lists, links, numbering, and empty omi
 check-publication: ## Validate internal HTML links and EPUB conformance.
 	./scripts/check-publication
 
+check-accessibility: ## Gate rendered HTML against WCAG 2.2 A/AA automation.
+	./scripts/check-accessibility
+
+test-accessibility: ## Exercise accessibility policy and browser-rule fixtures.
+	./scripts/check-accessibility test
+
 check-pdf-profiles: ## Verify PDF dimensions and embedded/subset fonts.
 	./scripts/check-pdf-profiles
 
 check-writing-toolchain: ## Verify pinned Vale and CSpell tools offline and rootless.
 	./scripts/check-writing-toolchain
 
-check-writing: ## Report spelling and prose findings in canonical authored sources.
+check-writing: ## Gate spelling/terminology and report subjective prose warnings.
 	./scripts/check-writing
 
-check-spelling: ## Report CSpell findings in canonical authored sources.
+check-spelling: ## Gate CSpell findings in canonical authored sources.
 	./scripts/check-writing spelling
 
-check-prose: ## Report markup-aware Vale findings in canonical authored sources.
+check-prose: ## Gate rejected terms and report subjective Vale warnings.
 	./scripts/check-writing prose
 
 check-writing-terminology: ## Validate accepted words and generated rejected-term rules.
 	python3 scripts/generate-writing-terminology.py --check
+
+check-writing-overrides: ## Validate narrow, balanced, and justified writing overrides.
+	python3 scripts/check-writing-overrides.py
+
+test-writing-overrides: ## Exercise valid and invalid writing-override policy fixtures.
+	python3 scripts/test-writing-overrides.py
+
+test-writing-quality: ## Exercise pinned positive and negative writing fixtures.
+	python3 scripts/test-writing-quality.py
 
 generate-writing-terminology: ## Regenerate CSpell and Vale terminology derivatives.
 	python3 scripts/generate-writing-terminology.py
