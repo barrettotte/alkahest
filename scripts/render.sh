@@ -21,7 +21,7 @@ render_edition_profile() {
     *,html,*) stage_arguments+=(--html-resources) ;;
   esac
   python3 "${script_dir}/stage-edition.py" "${stage_arguments[@]}" >/dev/null
-  "${script_dir}/quarto" render "book/_build/staging/editions/${edition}" \
+  "${script_dir}/quarto.sh" render "book/_build/staging/editions/${edition}" \
     --profile "edition-${edition},${profile}" \
     --output-dir _rendered
 
@@ -132,6 +132,13 @@ render_notes_smoke() {
     _build/smoke/notes/sidenote/typst
 }
 
+render_pdf_accessibility_smoke() {
+  local status=0
+  "${BASH_SOURCE[0]}" pdf-ua-typst || status=$?
+  "${BASH_SOURCE[0]}" pdf-ua-latex || status=$?
+  return "${status}"
+}
+
 case "${target}" in
   html|epub|typst|latex|typst-6x9|latex-6x9|typst-review|latex-review)
     render_profile "${target}"
@@ -163,6 +170,17 @@ case "${target}" in
   notes-smoke)
     render_notes_smoke
     ;;
+  pdf-ua-typst)
+    render_edition_profile print typst,pdf-ua-typst \
+      _build/smoke/pdf-accessibility/typst
+    ;;
+  pdf-ua-latex)
+    render_edition_profile print latex,pdf-ua-latex \
+      _build/smoke/pdf-accessibility/lualatex
+    ;;
+  pdf-accessibility-smoke)
+    render_pdf_accessibility_smoke
+    ;;
   all)
     render_profile html
     render_profile epub
@@ -180,7 +198,7 @@ case "${target}" in
     render_notes_smoke
     ;;
   *)
-    echo "usage: $0 [all|complete|html|epub|pdf|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke]" >&2
+    echo "usage: $0 [all|complete|html|epub|pdf|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke|pdf-accessibility-smoke|pdf-ua-typst|pdf-ua-latex]" >&2
     exit 2
     ;;
 esac

@@ -86,7 +86,7 @@ furniture, and recto rules already defined for print. See
 ## Offline font packaging
 
 The locked toolchain contains WOFF2 files from the same releases as the PDF
-OTF faces. Before each render, `scripts/stage-webfonts` copies only the selected
+OTF faces. Before each render, `scripts/stage-webfonts.sh` copies only the selected
 faces into the ignored `book/theme/fonts/` build-input directory. HTML copies
 the twelve faces and standalone OFL notices. EPUB embeds the twelve faces in
 its manifest and carries the copyright notices and complete SIL OFL 1.1 text

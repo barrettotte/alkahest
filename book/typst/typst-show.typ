@@ -1,11 +1,46 @@
 // Adapt Quarto's bundled orange-book partial for Alkahest's shared page system.
-// Keep wrappers narrow so future Quarto upgrades remain easy to compare.
+// The PDF/UA evaluation uses native Typst structure because orange-book's
+// boxed outline rows cannot be represented as valid split structure tags.
+$if(alkahest-pdf-ua)$
+$else$
 #import "@preview/orange-book:0.7.1" as orange-book
+$endif$
 
 #set text(font: "$mainfont$", fallback: false)
 
 // Quarto's book filter emits these function names into the generated Typst.
 // The wrappers preserve that interface while applying the selected display face.
+$if(alkahest-pdf-ua)$
+#let alkahest-part-counter = counter("alkahest-part-counter")
+#let alkahest-appendix-state = state("appendix-state", none)
+
+#let part(title) = context {
+  let previous-heading = counter(heading).get()
+  pagebreak(to: "odd")
+  alkahest-part-counter.step()
+  heading(level: 1, numbering: none, outlined: true)[
+    #text(font: "$displayfont$", fallback: false)[
+      Part #alkahest-part-counter.display("I"): #title
+    ]
+  ]
+  // A part is real navigable structure but must not consume a chapter number.
+  counter(heading).update(previous-heading)
+}
+#let chapter(title, image: none, l: none) = {
+  if l != none {
+    heading(level: 1, title) + label(l)
+  } else {
+    heading(level: 1, title)
+  }
+}
+#let appendices(title, doc, hide-parent: false) = {
+  counter(heading).update(0)
+  alkahest-appendix-state.update(title)
+  set figure(numbering: num => numbering("A.1", counter(heading).get().first(), num))
+  set heading(numbering: (..numbers) => numbering("A.1", ..numbers.pos()))
+  doc
+}
+$else$
 #let part(title) = orange-book.part(text(font: "$displayfont$", fallback: false, title))
 #let chapter(title, image: none, l: none) = orange-book.chapter(
   text(font: "$displayfont$", fallback: false, title),
@@ -17,6 +52,7 @@
   doc,
   hide-parent: hide-parent,
 )
+$endif$
 
 // Orange-book accepts one copyright content value. Isolated page functions
 // give us separate, furniture-free publication-data and dedication pages.
@@ -44,6 +80,40 @@
   #page(header: none, footer: none, numbering: none)[]
 ]
 
+$if(alkahest-pdf-ua)$
+#let alkahest-accessible-book(body) = {
+  set document(title: "$title$", author: "$for(by-author)$$it.name.literal$$sep$, $endfor$")
+  set text(font: "$mainfont$", fallback: false, size: $body-font-size$, lang: "$lang$")
+  set page(
+    width: $trim-width$,
+    height: $trim-height$,
+    margin: (inside: $margin-geometry.inner.far$, outside: $margin-geometry.outer.far$, top: $margin.top$, bottom: $margin.bottom$),
+    numbering: "1",
+  )
+  set heading(numbering: (..numbers) => numbering("1.1", ..numbers.pos()))
+  show heading.where(level: 1): set heading(supplement: "Chapter")
+  set figure(numbering: number => numbering("1.1", counter(heading).get().first(), number))
+  set math.equation(numbering: number => numbering("(1.1)", counter(heading).get().first(), number))
+
+  page(header: none, footer: none, numbering: none)[
+    #align(center + horizon, block(width: 86%)[
+      #set par(justify: false)
+      #text(font: "$displayfont$", fallback: false, size: 30pt, weight: "bold")[$title$]
+      #v(1.2em)
+      #text(font: "$sansfont$", fallback: false, size: 16pt)[$subtitle$]
+      #v(2em)
+      #text(font: "$sansfont$", fallback: false)[$for(by-author)$$it.name.literal$$sep$, $endfor$]
+    ])
+  ]
+  alkahest-front-matter
+  pagebreak(to: "odd")
+  outline(title: [Contents], depth: $toc-depth$)
+  pagebreak(to: "odd")
+  body
+}
+
+#show: alkahest-accessible-book
+$else$
 #show: orange-book.book.with(
 $if(title)$
   title: [#text(font: "$displayfont$", fallback: false)[$title$]],
@@ -105,7 +175,10 @@ $if(margin-geometry)$
   padded-heading-number: false,
 $endif$
 )
+$endif$
 
+$if(alkahest-pdf-ua)$
+$else$
 $if(margin-geometry)$
 // Apply book-aware inside/outside margins after orange-book's page setup.
 #import "@preview/marginalia:0.3.1" as marginalia
@@ -127,6 +200,7 @@ $if(margin-geometry)$
   clearance: $margin-geometry.clearance$,
 )
 $endif$
+$endif$
 
 // Use one restrained body rhythm across Typst and LuaLaTeX. This rule is
 // intentionally applied after orange-book so it replaces the package's extra
@@ -139,7 +213,11 @@ $endif$
 
   // Orange-book places a second folio in the default footer; its running head
   // already provides the single outward folio required by the design contract.
+$if(alkahest-pdf-ua)$
+  set page(numbering: "1")
+$else$
   set page(numbering: none)
+$endif$
   // Typst prevents widows and orphans by default. State the nonzero costs
   // explicitly so a future engine or package default cannot weaken the policy.
   set text(

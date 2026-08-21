@@ -9,7 +9,7 @@ license_root="/usr/local/share/doc/fonts"
 destination="${repo_root}/book/theme/fonts"
 
 if [[ ! -d "${source_root}" ]]; then
-  echo "error: locked webfonts are unavailable; render through ./scripts/render" >&2
+  echo "error: locked webfonts are unavailable; render through ./scripts/render.sh" >&2
   exit 1
 fi
 

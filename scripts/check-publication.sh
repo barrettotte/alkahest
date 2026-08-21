@@ -21,7 +21,7 @@ fi
 
 if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   echo "error: publishing image is not available locally" >&2
-  echo "run ./scripts/bootstrap once while connected to the network" >&2
+  echo "run ./scripts/bootstrap.sh once while connected to the network" >&2
   exit 1
 fi
 
@@ -45,10 +45,10 @@ exec podman run --rm \
     for edition in abridged preview public private supplemental; do
       python3 scripts/check-html-links.py "book/_build/smoke/editions/${edition}/html"
     done
-    scripts/check-rendered-notes
-    scripts/check-rendered-identities
-    scripts/check-rendered-index
-    scripts/check-rendered-lists
+    scripts/check-rendered-notes.sh
+    scripts/check-rendered-identities.sh
+    scripts/check-rendered-index.sh
+    scripts/check-rendered-lists.sh
     java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
     python3 scripts/check-publication-contract.py
   '

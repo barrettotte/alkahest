@@ -108,30 +108,35 @@ terms:
   electric-current:
     list: symbols
     display: I
+    alt: capital I, electric current
     meaning: electric current
     sort: current
     target: eq-ohms-law
   electrical-resistance:
     list: symbols
     display: R
+    alt: capital R, electrical resistance
     meaning: electrical resistance
     sort: resistance
     target: eq-ohms-law
   electric-potential:
     list: symbols
     display: V
+    alt: capital V, electric potential difference
     meaning: electric potential difference
     sort: voltage
     target: eq-ohms-law
   state-vector:
     list: nomenclature
     display: x_k
-    meaning: system state vector at discrete step $k$
+    alt: x sub k, system state vector at discrete step k
+    meaning: system state vector at discrete step k
     sort: state vector
     target: eq-state-update
   input-vector:
     list: nomenclature
     display: u_k
-    meaning: system input vector at discrete step $k$
+    alt: u sub k, system input vector at discrete step k
+    meaning: system input vector at discrete step k
     sort: input vector
     target: eq-state-update

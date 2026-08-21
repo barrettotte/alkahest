@@ -4,8 +4,8 @@ project:
   # one dispatcher, then stage generated vector and font build inputs.
   pre-render:
     - python3 ../scripts/check-source.py
-    - ../scripts/stage-icons
-    - ../scripts/stage-webfonts
+    - ../scripts/stage-icons.sh
+    - ../scripts/stage-webfonts.sh
 
 # Publication builds render source listings but never execute manuscript code
 # or trust cached/frozen results. See execution-policy.json for the locked
@@ -95,6 +95,7 @@ filters:
   - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
   - _extensions/alkahest-index/alkahest-index-filter.lua
   - _extensions/alkahest-generated-lists/alkahest-generated-lists.lua
+  - filters/math-alt.lua
   - at: post-render
     path: filters/strip-invalid-alt.lua
 

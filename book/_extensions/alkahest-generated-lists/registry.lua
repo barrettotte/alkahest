@@ -87,6 +87,7 @@ for name, raw_term in pairs(metadata.terms or {}) do
   end
   table.insert(owner.entries, {
     id = name,
+    alt = value_as_string(raw_term.alt),
     display = value_as_string(raw_term.display),
     meaning = value_as_string(raw_term.meaning),
     sort = value_as_string(raw_term.sort),
@@ -139,4 +140,3 @@ return {
   lists = lists,
   order = order,
 }
-

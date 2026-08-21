@@ -3,18 +3,18 @@
 PUBLIC_TARGETS := bootstrap check render render-html render-epub render-pdf \
 	render-typst render-latex render-all check-source check-writing ci clean help-all
 
-.PHONY: bootstrap build-report check check-accessibility check-epub-accessibility check-epub-review check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-epub-accessibility test-epub-review test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
+.PHONY: bootstrap build-report check check-accessibility check-epub-accessibility check-epub-review check-pdf-accessibility-policy check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-epub-accessibility test-epub-review test-pdf-accessibility-policy test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
-	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help help-all
+	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke render-pdf-accessibility-smoke toolchain-report help help-all
 
 bootstrap: ## Build the pinned local publishing container.
-	./scripts/bootstrap
+	./scripts/bootstrap.sh
 
 build-report: ## Measure primary builds, warnings, and artifact sizes.
-	./scripts/build-report
+	./scripts/build-report.sh
 
 check: ## Report Quarto and publishing-toolchain diagnostics.
-	./scripts/quarto check
+	./scripts/quarto.sh check
 
 check-source: ## Validate every configured semantic source policy.
 	python3 scripts/check-source.py
@@ -35,13 +35,13 @@ check-graphs: ## Validate diagram sources and deterministic chart derivatives.
 	python3 scripts/check-source.py graphs
 
 generate-circuits: ## Regenerate committed electrical-circuit SVG derivatives.
-	./scripts/python-tools scripts/generate-circuits.py
+	./scripts/python-tools.sh scripts/generate-circuits.py
 
 check-circuits: ## Validate circuit candidates and deterministic SVG derivatives.
 	python3 scripts/check-source.py circuits
 
 generate-chemistry: ## Regenerate committed chemistry SVG derivatives.
-	./scripts/python-tools scripts/generate-chemistry.py
+	./scripts/python-tools.sh scripts/generate-chemistry.py
 
 check-chemistry: ## Validate chemistry candidates and deterministic SVG derivatives.
 	python3 scripts/check-source.py chemistry
@@ -116,7 +116,7 @@ test-glossary: ## Exercise valid and invalid glossary contracts.
 	python3 scripts/check-source.py --tests glossary
 
 check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stack.
-	./scripts/check-glyph-coverage
+	./scripts/check-glyph-coverage.sh
 
 check-icons: ## Validate semantic icon names, assets, aliases, and calls.
 	python3 scripts/check-source.py icons
@@ -143,31 +143,31 @@ test-notes: ## Exercise valid and invalid semantic-note contracts.
 	python3 scripts/check-source.py --tests notes
 
 check-rendered-notes: ## Verify rendered chapter, book, and sidenote behavior.
-	./scripts/check-rendered-notes
+	./scripts/check-rendered-notes.sh
 
 check-rendered-identities: ## Verify IDs survive rendered editions and locales.
-	./scripts/check-rendered-identities
+	./scripts/check-rendered-identities.sh
 
 check-rendered-index: ## Verify linked reflowable and page-resolved print indexes.
-	./scripts/check-rendered-index
+	./scripts/check-rendered-index.sh
 
 check-rendered-lists: ## Verify generated lists, links, numbering, and empty omission.
-	./scripts/check-rendered-lists
+	./scripts/check-rendered-lists.sh
 
 check-publication: ## Validate internal HTML links and EPUB conformance.
-	./scripts/check-publication
+	./scripts/check-publication.sh
 
 check-accessibility: ## Gate rendered HTML against WCAG 2.2 A/AA automation.
-	./scripts/check-accessibility
+	./scripts/check-accessibility.sh
 
 test-accessibility: ## Exercise accessibility policy and browser-rule fixtures.
-	./scripts/check-accessibility test
+	./scripts/check-accessibility.sh test
 
 check-epub-accessibility: ## Gate EPUB structure, accessibility automation, and review policy.
-	./scripts/check-epub-accessibility
+	./scripts/check-epub-accessibility.sh
 
 test-epub-accessibility: ## Exercise EPUB semantics, automation, and manual-review fixtures.
-	./scripts/check-epub-accessibility test
+	./scripts/check-epub-accessibility.sh test
 
 check-epub-review: ## Validate the manual EPUB reader matrix and evidence ledger.
 	python3 scripts/check-epub-reading-system-review.py
@@ -179,19 +179,25 @@ prepare-epub-review: ## Bind a clean revision and rendered EPUB to manual review
 	python3 scripts/prepare-epub-review.py
 
 check-pdf-profiles: ## Verify PDF dimensions and embedded/subset fonts.
-	./scripts/check-pdf-profiles
+	./scripts/check-pdf-profiles.sh
+
+check-pdf-accessibility-policy: ## Validate PDF/UA evidence and prevent premature claims.
+	python3 scripts/check-source.py pdf-accessibility-policy
+
+test-pdf-accessibility-policy: ## Exercise PDF/UA evidence and claim-state fixtures.
+	python3 scripts/check-source.py --tests pdf-accessibility-policy
 
 check-writing-toolchain: ## Verify pinned Vale and CSpell tools offline and rootless.
-	./scripts/check-writing-toolchain
+	./scripts/check-writing-toolchain.sh
 
 check-writing: ## Gate spelling/terminology and report subjective prose warnings.
-	./scripts/check-writing
+	./scripts/check-writing.sh
 
 check-spelling: ## Gate CSpell findings in canonical authored sources.
-	./scripts/check-writing spelling
+	./scripts/check-writing.sh spelling
 
 check-prose: ## Gate rejected terms and report subjective Vale warnings.
-	./scripts/check-writing prose
+	./scripts/check-writing.sh prose
 
 check-writing-terminology: ## Validate accepted words and generated rejected-term rules.
 	python3 scripts/generate-writing-terminology.py --check
@@ -209,10 +215,10 @@ generate-writing-terminology: ## Regenerate CSpell and Vale terminology derivati
 	python3 scripts/generate-writing-terminology.py
 
 ci: ## Run the complete local/CI publishing validation pipeline.
-	./scripts/ci
+	./scripts/ci.sh
 
 toolchain-report: ## Report immutable sources, exact tools, font packages, and hashes.
-	./scripts/toolchain-report
+	./scripts/toolchain-report.sh
 
 clean: ## Remove generated books, intermediates, and Quarto caches.
 	podman unshare rm -rf \
@@ -235,46 +241,49 @@ clean: ## Remove generated books, intermediates, and Quarto caches.
 		book/references.html
 
 render: ## Render HTML, EPUB, and both primary 7 x 10 PDFs.
-	./scripts/render all
+	./scripts/render.sh all
 
 render-all: ## Render HTML, EPUB, and every PDF profile.
-	./scripts/render complete
+	./scripts/render.sh complete
 
 render-html: ## Render the HTML web book.
-	./scripts/render html
+	./scripts/render.sh html
 
 render-epub: ## Render the reflowable EPUB book.
-	./scripts/render epub
+	./scripts/render.sh epub
 
 render-pdf: ## Render the default primary 7 x 10 Typst PDF.
-	./scripts/render pdf
+	./scripts/render.sh pdf
 
 render-typst: ## Render the primary 7 x 10 PDF with Typst.
-	./scripts/render typst
+	./scripts/render.sh typst
 
 render-latex: ## Render the primary 7 x 10 PDF with LuaLaTeX.
-	./scripts/render latex
+	./scripts/render.sh latex
 
 render-print-6x9: ## Render both 6 x 9 economy-print PDFs.
-	./scripts/render print-6x9
+	./scripts/render.sh print-6x9
 
 render-review: ## Render both US Letter review PDFs.
-	./scripts/render review
+	./scripts/render.sh review
 
 render-pdf-profiles: ## Render every Typst and LuaLaTeX PDF profile.
-	./scripts/render pdf-profiles
+	./scripts/render.sh pdf-profiles
 
 render-locale-smoke: ## Render the French-locale HTML smoke edition.
-	./scripts/render locale-smoke
+	./scripts/render.sh locale-smoke
 
 render-citation-smoke: ## Render numeric-citation HTML and Typst smoke editions.
-	./scripts/render citation-smoke
+	./scripts/render.sh citation-smoke
 
 render-edition-smoke: ## Render abridged, preview, public, private, and supplemental editions.
-	./scripts/render edition-smoke
+	./scripts/render.sh edition-smoke
 
 render-notes-smoke: ## Render chapter, book, and sidenote placement editions.
-	./scripts/render notes-smoke
+	./scripts/render.sh notes-smoke
+
+render-pdf-accessibility-smoke: ## Render separate Typst PDF/UA-1 and LuaLaTeX PDF/UA-2 evaluations.
+	./scripts/render.sh pdf-accessibility-smoke
 
 help: ## Show the common author workflow commands.
 	@printf 'Common author commands:\n'

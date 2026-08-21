@@ -21,7 +21,7 @@ fi
 
 if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   echo "error: publishing image is not available locally" >&2
-  echo "run ./scripts/bootstrap once while connected to the network" >&2
+  echo "run ./scripts/bootstrap.sh once while connected to the network" >&2
   exit 1
 fi
 

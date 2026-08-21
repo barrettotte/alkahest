@@ -50,6 +50,9 @@ LINK_PATTERN = re.compile(
     r"(?<!!)\[([^]\n]+)\]\(\s*(<[^>\n]+>|(?:\\.|[^)\s])+)"
     r"(?:\s+(?:\"[^\"\n]*\"|'[^'\n]*'))?\s*\)"
 )
+INLINE_MATH_PATTERN = re.compile(
+    r"(?<![$\\])\$(?!\$)(?:\\.|[^$\\\n])+(?<!\\)\$(?!\$)"
+)
 
 
 def fail(errors):
@@ -108,7 +111,7 @@ def scan_sources(root, sources):
     per_source_ids = {source: set() for source in sources}
     links = []
     references = []
-    image_count = diagram_count = external_count = 0
+    image_count = diagram_count = math_count = external_count = 0
 
     for source in sources:
         fence_char = None
@@ -116,6 +119,7 @@ def scan_sources(root, sources):
         diagram = None
         diagram_alt = False
         diagram_line = 0
+        display_math_line = None
         for line_number, line in enumerate(
             source.read_text(encoding="utf-8").splitlines(), 1
         ):
@@ -151,6 +155,34 @@ def scan_sources(root, sources):
                         diagram_alt = bool(option_value(option.group(2)))
                 continue
 
+            if display_math_line is not None:
+                closing = re.fullmatch(r"\s*\$\$\s*(\{[^}\n]*\})?\s*", line)
+                if closing:
+                    attributes = closing.group(1) or ""
+                    for identity in re.findall(rf"#({ID_PATTERN})", attributes):
+                        add_id(
+                            identities,
+                            errors,
+                            identity,
+                            source,
+                            line_number,
+                            root,
+                        )
+                        per_source_ids[source].add(identity)
+                    alt = re.search(r'''\balt\s*=\s*(["'])(.*?)\1''', attributes)
+                    if not alt or not alt.group(2).strip():
+                        errors.append(
+                            f"{source.relative_to(root)}:{display_math_line}: "
+                            "display math needs nonempty alt text"
+                        )
+                    math_count += 1
+                    display_math_line = None
+                continue
+
+            if re.fullmatch(r"\s*\$\$\s*", line):
+                display_math_line = line_number
+                continue
+
             opening = re.match(r"^\s*(`{3,}|~{3,})(.*)$", line)
             if opening:
                 marker, info = opening.groups()
@@ -161,7 +193,10 @@ def scan_sources(root, sources):
                     if engine and engine.group(1).lower() in DIAGRAM_ENGINES
                     else None
                 )
-                diagram_alt = False
+                inline_alt = re.search(
+                    r'''\bfig-alt\s*=\s*(["'])(.*?)\1''', info
+                )
+                diagram_alt = bool(inline_alt and inline_alt.group(2).strip())
                 diagram_line = line_number
                 if diagram:
                     diagram_count += 1
@@ -173,6 +208,22 @@ def scan_sources(root, sources):
                 continue
 
             visible = strip_inline_code(line)
+            for math in INLINE_MATH_PATTERN.finditer(visible):
+                annotation = None
+                if math.start() > 0 and visible[math.start() - 1] == "[":
+                    annotation = re.match(r"\]\{([^}\n]*)\}", visible[math.end():])
+                attributes = annotation.group(1) if annotation else ""
+                alt = re.search(r'''\balt\s*=\s*(["'])(.*?)\1''', attributes)
+                if (
+                    not re.search(r"(?:^|\s)\.alkahest-math-alt(?:\s|$)", attributes)
+                    or not alt
+                    or not alt.group(2).strip()
+                ):
+                    errors.append(
+                        f"{source.relative_to(root)}:{line_number}: inline math "
+                        "needs an .alkahest-math-alt span with nonempty alt text"
+                    )
+                math_count += 1
             for attributes in re.findall(r"\{([^}\n]*)\}", visible):
                 for identity in re.findall(rf"#({ID_PATTERN})", attributes):
                     add_id(
@@ -210,6 +261,10 @@ def scan_sources(root, sources):
 
         if fence_char:
             errors.append(f"{source.relative_to(root)}: unclosed fenced block")
+        if display_math_line is not None:
+            errors.append(
+                f"{source.relative_to(root)}:{display_math_line}: unclosed display math"
+            )
 
     source_set = set(sources)
     for source, line_number, raw_target, kind in links:
@@ -262,7 +317,15 @@ def scan_sources(root, sources):
                 f"cross-reference '@{reference}'"
             )
 
-    return errors, len(identities), len(links), image_count, diagram_count, external_count
+    return (
+        errors,
+        len(identities),
+        len(links),
+        image_count,
+        diagram_count,
+        math_count,
+        external_count,
+    )
 
 
 def main():
@@ -276,13 +339,16 @@ def main():
     sources = sources_below(root)
     if not sources:
         raise RuntimeError("error: editorial book root contains no .qmd sources")
-    errors, identities, links, images, diagrams, external = scan_sources(root, sources)
+    errors, identities, links, images, diagrams, math, external = scan_sources(
+        root, sources
+    )
     if errors:
         fail(errors)
     print(
         "ok: editorial source integrity "
         f"({len(sources)} sources; {links} local/external targets; "
-        f"{images} images; {diagrams} diagrams; {identities} unique IDs; "
+        f"{images} images; {diagrams} diagrams; {math} math expressions; "
+        f"{identities} unique IDs; "
         f"{external} external targets skipped offline)"
     )
 

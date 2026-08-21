@@ -26,7 +26,7 @@ fi
 
 if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   echo "error: publishing image is not available locally" >&2
-  echo "run ./scripts/bootstrap once while connected to the network" >&2
+  echo "run ./scripts/bootstrap.sh once while connected to the network" >&2
   exit 1
 fi
 
@@ -68,7 +68,7 @@ measure_target() {
   # Time only the render. Metadata collection happens afterward and is excluded
   # so PDF inspection startup does not distort backend comparisons.
   start_ns="$(date +%s%N)"
-  if ! "${script_dir}/render" "${target}" >"${log_path}" 2>&1; then
+  if ! "${script_dir}/render.sh" "${target}" >"${log_path}" 2>&1; then
     echo "error: ${label} render failed" >&2
     sed 's/^/  /' "${log_path}" >&2
     return 1

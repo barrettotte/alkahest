@@ -5,7 +5,10 @@ Donaudampfschifffahrtsgesellschaft
 Fischer
 Juliett
 kilohm
+kilohms
 measurand
+milliwatt
+milliwatts
 nonlinearly
 RDKit
 Verilog

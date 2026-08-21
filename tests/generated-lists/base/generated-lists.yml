@@ -52,13 +52,14 @@ terms:
   current:
     list: symbols
     display: I
+    alt: capital I, electric current
     meaning: electric current
     sort: current
     target: eq-sample
   state:
     list: nomenclature
     display: x_k
-    meaning: state at step $k$
+    alt: x sub k, state at step k
+    meaning: state at step k
     sort: state
     target: eq-sample
-

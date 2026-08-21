@@ -66,7 +66,7 @@ def main():
             current_term = match.group(1)
             if current_term in terms: fail(f"{path}:{number}: duplicate term {current_term}")
             terms[current_term] = {"line": number}; continue
-        match = re.fullmatch(r"    (list|display|meaning|sort|target): (\S.*)", line) if section == "terms" else None
+        match = re.fullmatch(r"    (list|display|alt|meaning|sort|target): (\S.*)", line) if section == "terms" else None
         if match:
             if current_term is None: fail(f"{path}:{number}: term field before term ID")
             field, raw = match.groups()
@@ -133,7 +133,7 @@ def main():
     display_seen = set()
     for name in sorted(terms):
         term = terms[name]
-        for field in ("list", "display", "meaning", "sort", "target"):
+        for field in ("list", "display", "alt", "meaning", "sort", "target"):
             if not term.get(field, "").strip(): fail(f"generated-list term {name} has no {field}")
         if "$" in term["display"]: fail(f"generated-list term {name} display is a TeX fragment without dollar delimiters")
         owner = lists.get(term["list"])

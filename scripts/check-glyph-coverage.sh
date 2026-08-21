@@ -21,7 +21,7 @@ if [[ "${ALKAHEST_GLYPH_CHECK_IN_CONTAINER:-0}" != "1" ]]; then
   fi
   if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
     echo "error: publishing image is not available locally" >&2
-    echo "run ./scripts/bootstrap once while connected to the network" >&2
+    echo "run ./scripts/bootstrap.sh once while connected to the network" >&2
     exit 1
   fi
 
@@ -34,7 +34,7 @@ if [[ "${ALKAHEST_GLYPH_CHECK_IN_CONTAINER:-0}" != "1" ]]; then
     --env ALKAHEST_GLYPH_CHECK_IN_CONTAINER=1 \
     --volume "${repo_root}:/workspace:ro" \
     --workdir /workspace \
-    --entrypoint /workspace/scripts/check-glyph-coverage \
+    --entrypoint /workspace/scripts/check-glyph-coverage.sh \
     "${ALKAHEST_TOOLCHAIN_IMAGE}"
 fi
 

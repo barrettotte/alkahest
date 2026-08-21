@@ -145,8 +145,8 @@ def check_scores(data):
 
 def check_repository_integration(data):
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
-    render = (ROOT / "scripts/render").read_text(encoding="utf-8")
-    ci = (ROOT / "scripts/ci").read_text(encoding="utf-8")
+    render = (ROOT / "scripts/render.sh").read_text(encoding="utf-8")
+    ci = (ROOT / "scripts/ci.sh").read_text(encoding="utf-8")
     source_dispatcher = (ROOT / "scripts/check-source.py").read_text(
         encoding="utf-8"
     )
@@ -156,7 +156,7 @@ def check_repository_integration(data):
         "check-pdf-backend-decision:",
         "render-pdf:",
         "python3 scripts/check-source.py pdf-backend",
-        "./scripts/render pdf",
+        "./scripts/render.sh pdf",
     )
     if any(marker not in makefile for marker in required_make):
         fail("Makefile does not expose the backend decision and default PDF commands")

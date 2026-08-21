@@ -79,25 +79,7 @@ Python and committed as SVG. A real Vega-Lite candidate specification at
 publication input until an offline static renderer and its dependency lock is
 added.
 
-```{dot}
-//| label: fig-build-dependency-graph
-//| fig-cap: "A validated source-to-publication dependency graph."
-//| fig-alt: "Source and data both feed validation; validation feeds rendering; rendering produces HTML, EPUB, Typst PDF, and LuaLaTeX PDF outputs."
-digraph build {
-  graph [rankdir=LR, bgcolor="transparent", pad="0.2"];
-  node [shape=box, style="rounded", fontname="sans-serif"];
-  edge [color="#475569"];
-  source [label="Manuscript"];
-  data [label="Data and assets"];
-  validate [label="Validate"];
-  render [label="Render"];
-  outputs [label="HTML · EPUB · Typst · LuaLaTeX"];
-  source -> validate;
-  data -> validate;
-  validate -> render;
-  render -> outputs;
-}
-```
+![A validated source-to-publication dependency graph.](figures/generated/build-dependency-graph.svg){#fig-build-dependency-graph fig-alt="Source and data both feed validation; validation feeds rendering; rendering produces HTML, EPUB, Typst PDF, and LuaLaTeX PDF outputs." width="100%"}
 
 [Diagram description: Manuscript source and data/assets both feed validation;
 validation feeds rendering; rendering produces HTML, EPUB, Typst PDF, and

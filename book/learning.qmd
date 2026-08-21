@@ -41,7 +41,7 @@ equipment is required for the review question.
 ## Guided reasoning {#sec-learning-guided-reasoning}
 
 A nominal 3.3 V signal with a tolerance of 5% has a permitted deviation of
-$3.3 \times 0.05 = 0.165\,\mathrm{V}$. Its acceptable interval is therefore
+[$3.3 \times 0.05 = 0.165\,\mathrm{V}$]{.alkahest-math-alt alt="three point three times zero point zero five equals zero point one six five volts"}. Its acceptable interval is therefore
 3.135 V through 3.465 V. That calculation predicts a range; it does not prove
 that a particular circuit stays inside it. Recorded measurements provide the
 evidence needed to make that claim.

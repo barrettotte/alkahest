@@ -23,8 +23,8 @@ Books that require numbered engineering citations compose the
 `citation-numeric` profile with an output profile:
 
 ```console
-./scripts/quarto render book --profile citation-numeric,html
-./scripts/quarto render book --profile citation-numeric,typst
+./scripts/quarto.sh render book --profile citation-numeric,html
+./scripts/quarto.sh render book --profile citation-numeric,typst
 ```
 
 `make render-citation-smoke` builds both numeric acceptance editions in

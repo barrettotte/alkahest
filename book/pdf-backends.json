@@ -23,21 +23,21 @@
     }
   },
   "measurement": {
-    "captured": "2026-08-19",
-    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v16",
+    "captured": "2026-08-20",
+    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v17",
     "method": "One sequential primary 7 x 10 render per backend with network disabled and ephemeral container caches.",
     "typst": {
-      "seconds": 8.07,
+      "seconds": 8.76,
       "warnings": 1,
       "pages": 75,
-      "bytes": 1123994,
+      "bytes": 1123989,
       "tagged": true
     },
     "lualatex": {
-      "seconds": 24.10,
+      "seconds": 23.53,
       "warnings": 0,
       "pages": 82,
-      "bytes": 571261,
+      "bytes": 571275,
       "tagged": false
     }
   },
@@ -100,7 +100,7 @@
         "typst": 5,
         "lualatex": 2
       },
-      "rationale": "On the recorded sequential run Typst took 8.07 seconds and LuaLaTeX took 24.10 seconds for the same primary specimen."
+      "rationale": "On the recorded sequential run Typst took 8.76 seconds and LuaLaTeX took 23.53 seconds for the same primary specimen."
     },
     {
       "id": "technical-ecosystem-fit",

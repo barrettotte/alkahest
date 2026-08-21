@@ -80,7 +80,31 @@ def main():
             parent,
             "missing-diagram-alt",
             "mermaid diagram needs a nonempty fig-alt option",
-            lambda root: replace(root / "chapter.qmd", '%%| fig-alt: "One node named A."', '%%| fig-alt: ""'),
+            lambda root: replace(
+                root / "chapter.qmd",
+                'fig-alt="One node named A."',
+                'fig-alt=""',
+            ),
+        )
+        expect_failure(
+            parent,
+            "missing-inline-math-alt",
+            "inline math needs an .alkahest-math-alt span",
+            lambda root: replace(
+                root / "chapter.qmd",
+                '[$V = I R$]{.alkahest-math-alt alt="voltage equals current times resistance"}',
+                "$V = I R$",
+            ),
+        )
+        expect_failure(
+            parent,
+            "missing-display-math-alt",
+            "display math needs nonempty alt text",
+            lambda root: replace(
+                root / "chapter.qmd",
+                '$$ {#eq-fixture alt="Ohm\'s law"}',
+                "$$ {#eq-fixture}",
+            ),
         )
         expect_failure(
             parent,
@@ -103,7 +127,7 @@ def main():
     print(
         "ok: editorial-integrity fixtures "
         "(valid links, alternatives, decorative image, diagram, IDs, and references; "
-        "7 invalid contracts rejected)"
+        "9 invalid contracts rejected)"
     )
 
 

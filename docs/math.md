@@ -20,13 +20,19 @@ $$ {#eq-mass-energy alt="Mass-energy equivalence"}
 As @eq-mass-energy shows, ...
 ```
 
-The description states the equation's purpose; it is not a spoken
-transcription of every symbol. Quarto currently uses this display metadata in
-its Typst path. HTML and EPUB use native MathML, including the original TeX
-annotation, so their mathematics remains semantic and does not require a
-MathJax service. The source description is retained as the stable input for
-later accessibility adapters and audits. Surrounding prose must still define
-symbols and explain the mathematical claim.
+Inline expressions use the same natural-language contract through an annotated
+span:
+
+```markdown
+[$V = I R$]{.alkahest-math-alt alt="voltage equals current times resistance"}
+```
+
+The description states the equation's purpose; it is not necessarily a spoken
+transcription of every symbol. Quarto uses display metadata in its Typst path;
+`filters/math-alt.lua` supplies the equivalent `math.equation` alternative for
+annotated inline expressions. HTML and EPUB keep native MathML, including the
+original TeX annotation, while LuaLaTeX keeps tagged native math. Surrounding
+prose must still define symbols and explain the mathematical claim.
 
 Use `aligned` when several lines form one numbered relationship, `cases` for a
 piecewise definition, and a standard matrix environment such as `bmatrix`.
@@ -68,13 +74,14 @@ remain equivalent.
 
 The baseline is TeX math that Pandoc can translate to MathML, Typst, and
 LuaLaTeX. Raw MathJax, raw Typst, and raw LaTeX are allowed only as documented,
-output-specific fallbacks with a portable alternative. Inline mathematics
-cannot carry per-expression descriptions through standard Pandoc Markdown;
-introduce every inline symbol and its purpose in adjacent prose.
+output-specific fallbacks with a portable alternative. The
+`.alkahest-math-alt` span is the one template extension to ordinary inline
+math; it unwraps to native math outside Typst and remains readable source.
 
 ## Validation
 
-`make check-publication` requires native inline and display MathML, equation
+The source-integrity check rejects inline or display math without a nonempty
+alternative. `make check-publication` requires native inline and display MathML, equation
 targets, theorem/proof structure, source descriptions, and the absence of a
 MathJax dependency in HTML and EPUB. `make check-pdf-profiles` requires the math
 chapter, equation and theorem references, embedded Libertinus Math, recto

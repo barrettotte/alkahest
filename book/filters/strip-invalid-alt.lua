@@ -2,9 +2,21 @@
 function Div(div)
   local changed = false
 
-  -- The nested Image retains its explicit alternative; Div elements do not
-  -- permit alt and otherwise fail EPUBCheck.
+  -- Generated Mermaid and Graphviz figures can leave their source fig-alt on
+  -- the wrapper instead of the converted image. Restore it before removing
+  -- the invalid wrapper attribute; ordinary figures already carry their own.
   if div.attributes["alt"] ~= nil then
+    local wrapper_alt = div.attributes["alt"]
+    div = div:walk({
+      Image = function(image)
+        if image.attributes["alt"] == nil
+            and pandoc.utils.stringify(image.caption):match("^%s*$") then
+          image.attributes["alt"] = wrapper_alt
+          changed = true
+          return image
+        end
+      end,
+    })
     div.attributes["alt"] = nil
     changed = true
   end

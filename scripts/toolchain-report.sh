@@ -18,7 +18,7 @@ fi
 
 if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   echo "error: publishing image is not available locally" >&2
-  echo "run ./scripts/bootstrap once while connected to the network" >&2
+  echo "run ./scripts/bootstrap.sh once while connected to the network" >&2
   exit 1
 fi
 
@@ -39,6 +39,8 @@ printf "  Chrome archive: %s\n" "${ALKAHEST_CHROME_ARCHIVE_URL}"
 printf "  Chrome archive SHA-256: %s\n" "${ALKAHEST_CHROME_ARCHIVE_SHA256}"
 printf "  EPUBCheck archive: %s\n" "${ALKAHEST_EPUBCHECK_ARCHIVE_URL}"
 printf "  EPUBCheck archive SHA-256: %s\n" "${ALKAHEST_EPUBCHECK_ARCHIVE_SHA256}"
+printf "  veraPDF archive: %s\n" "${ALKAHEST_VERAPDF_ARCHIVE_URL}"
+printf "  veraPDF archive SHA-256: %s\n" "${ALKAHEST_VERAPDF_ARCHIVE_SHA256}"
 printf "  Libertinus archive: %s\n" "${ALKAHEST_LIBERTINUS_ARCHIVE_URL}"
 printf "  Libertinus archive SHA-256: %s\n" "${ALKAHEST_LIBERTINUS_ARCHIVE_SHA256}"
 printf "  Source Code Pro OTF archive: %s\n" "${ALKAHEST_SOURCE_CODE_PRO_OTF_ARCHIVE_URL}"
@@ -67,6 +69,8 @@ printf "  Chrome for Testing: "
 "${QUARTO_CHROMIUM}" --version | sed "s/^Google Chrome for Testing //"
 printf "  EPUBCheck: "
 java -jar "${EPUBCHECK_JAR}" --version 2>&1 | sed "s/^EPUBCheck v//"
+printf "  veraPDF: "
+verapdf --version 2>&1 | sed -n "1s/^veraPDF //p"
 printf "  OpenJDK: "
 java -version 2>&1 | sed -n "1s/^openjdk version \"\([^\"]*\)\".*/\1/p"
 printf "  Poppler: "
@@ -106,7 +110,7 @@ tlmgr info --only-installed \
   lm lm-math \
   babel-english babel-french babel-german babel-greek babel-hebrew babel-russian \
   hyphen-english hyphen-french hyphen-german hyphen-greek hyphen-russian ruhyphen \
-  caption fvextra pgf tcolorbox tikzfill pdfcol fontawesome5 koma-script \
+  latex l3kernel luamml caption fvextra pgf tcolorbox tikzfill pdfcol fontawesome5 latex-lab pdfmanagement tagpdf koma-script \
   | grep -E "^(package|revision|cat-version):" \
   | sed "s/^/  /"
 

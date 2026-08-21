@@ -21,7 +21,7 @@ fi
 
 if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
   echo "error: publishing image is not available locally" >&2
-  echo "run ./scripts/bootstrap once while connected to the network" >&2
+  echo "run ./scripts/bootstrap.sh once while connected to the network" >&2
   exit 1
 fi
 
@@ -36,6 +36,7 @@ exec podman run --rm \
   --security-opt label=disable \
   --tmpfs /tmp:rw,size=2g,mode=1777 \
   --env HOME=/tmp \
+  --env JAVA_TOOL_OPTIONS=-Duser.home=/tmp \
   --env TEXMFCACHE=/tmp \
   --env TEXMFVAR=/tmp \
   --env XDG_CACHE_HOME=/tmp/cache \

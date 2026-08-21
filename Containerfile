@@ -102,6 +102,32 @@ RUN curl --fail --location --silent --show-error \
 
 ENV EPUBCHECK_JAR=/opt/epubcheck/epubcheck.jar
 
+# Install only veraPDF's CLI from its official checksum-locked installer. It
+# supplies machine-verifiable PDF/UA-1 and PDF/UA-2 rules; human checkpoints
+# remain a separate evidence requirement.
+ENV ALKAHEST_VERAPDF_VERSION="1.30.2" \
+    ALKAHEST_VERAPDF_ARCHIVE_URL="https://software.verapdf.org/releases/1.30/verapdf-greenfield-1.30.2-installer.zip" \
+    ALKAHEST_VERAPDF_ARCHIVE_SHA256="6cc6341cb1af644044054b81f00a6590a7918abb18f762243de115258bcad838"
+
+COPY config/pdf/verapdf-install.xml /tmp/verapdf-install.xml
+
+RUN curl --fail --location --silent --show-error \
+        --output /tmp/verapdf-installer.zip \
+        "${ALKAHEST_VERAPDF_ARCHIVE_URL}" \
+    && echo "${ALKAHEST_VERAPDF_ARCHIVE_SHA256}  /tmp/verapdf-installer.zip" \
+        | sha256sum --check \
+    && unzip -q /tmp/verapdf-installer.zip -d /tmp/verapdf-installer \
+    && java -jar \
+        "/tmp/verapdf-installer/verapdf-greenfield-${ALKAHEST_VERAPDF_VERSION}/verapdf-izpack-installer-${ALKAHEST_VERAPDF_VERSION}.jar" \
+        /tmp/verapdf-install.xml \
+    && ln -s /opt/verapdf/verapdf /usr/local/bin/verapdf \
+    && chmod -R a+rX /opt/verapdf \
+    && verapdf --version 2>&1 | grep -Fq "${ALKAHEST_VERAPDF_VERSION}" \
+    && rm -rf \
+        /tmp/verapdf-install.xml \
+        /tmp/verapdf-installer \
+        /tmp/verapdf-installer.zip
+
 # Install one versioned, OFL-licensed font stack for both PDF backends. Keep
 # WOFF2 siblings beside it so the later web/EPUB theme can use identical source
 # releases without introducing another network-resolved build input.
@@ -184,6 +210,7 @@ RUN tlmgr install \
         tikzfill \
         pdfcol \
         fontawesome5 \
+        latex-lab \
         koma-script
 
 # Assert package revisions and the original baseline font bytes so
@@ -212,6 +239,7 @@ RUN set -eu; \
     check_revision tikzfill 78793; \
     check_revision pdfcol 79618; \
     check_revision fontawesome5 77682; \
+    check_revision latex-lab 79404; \
     check_revision koma-script 77575; \
     check_revision lm 77682; \
     check_revision lm-math 67718; \
@@ -376,6 +404,22 @@ RUN npm ci \
     && ln -s /opt/alkahest/writing/node_modules/.bin/cspell /usr/local/bin/cspell \
     && chmod -R a+rX /opt/alkahest/writing \
     && rm -rf /tmp/npm-cache
+
+# Quarto's LuaLaTeX PDF/UA-2 profile needs a coherent LaTeX kernel,
+# PDF-management, and tagging stack from the locked TeX Live snapshot. Keep
+# this late so accessibility-tool changes do not invalidate larger tool layers.
+RUN tlmgr update latex l3kernel \
+    && tlmgr install luamml pdfmanagement tagpdf \
+    && test "$(tlmgr info --only-installed latex \
+        | sed -n 's/^revision:[[:space:]]*//p')" = "79618" \
+    && test "$(tlmgr info --only-installed l3kernel \
+        | sed -n 's/^revision:[[:space:]]*//p')" = "79868" \
+    && test "$(tlmgr info --only-installed luamml \
+        | sed -n 's/^revision:[[:space:]]*//p')" = "79442" \
+    && test "$(tlmgr info --only-installed pdfmanagement \
+        | sed -n 's/^revision:[[:space:]]*//p')" = "79164" \
+    && test "$(tlmgr info --only-installed tagpdf \
+        | sed -n 's/^revision:[[:space:]]*//p')" = "79799"
 
 ENV HOME=/home/alkahest
 WORKDIR /workspace

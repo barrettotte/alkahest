@@ -1,7 +1,7 @@
 # Toolchain lock record
 
 - Captured: 2026-08-20
-- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v16`
+- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v17`
 - Base image: `ghcr.io/quarto-dev/quarto-full:1.10.18`
 - Base manifest: `sha256:280aa58ecdb814dcced42066e4f64d1825020ce5822f2ca2749fc6396020d7de`
 
@@ -23,6 +23,7 @@ requires an intentional lock update.
 | JavaScript checks | npm lockfile v3 SHA-256 `d098069504bec89dc161f5be7359f5a217ff13dc617699094a29dc06e7c714f1`; CSpell 10.0.1, axe-core 4.13.0, Ace by DAISY 1.4.6, and all 343 installed packages carry registry integrity hashes |
 | Chrome Headless Shell | Official Linux64 archive for 152.0.7977.42; SHA-256 `129686a270d84ac4637c614802c554634aa827aa13214216f81e0a0b9410f8cf` |
 | EPUBCheck | Official 5.3.0 archive; SHA-256 `6c07e68584b2e2ce2f89fe06e1246dfead3eb36b46b340e7d93524f29dcff6c5` |
+| veraPDF | Official Greenfield CLI installer 1.30.2; SHA-256 `6cc6341cb1af644044054b81f00a6590a7918abb18f762243de115258bcad838` |
 | Chicago author–date CSL | Pandoc 3.10.0 bundled `default.csl`; SHA-256 `91fa1fe9787e737dff0c15d7cf8254c9f2bab4ebb4dccf4553a1f991ebddb7d1` |
 | IEEE numeric CSL | CSL styles commit `1f32ca7259171b3c35b008ef41613df1215dad75`; SHA-256 `b4c7619fc16c45a31e4cc3271eab94ffe83192d3b4c7fc729470a3b459448de3` |
 | Libertinus | Official 7.051 archive; SHA-256 `4d9be29b5cb380c35af8ba967abcc752ad1e07be1f738a9789c33e0dd7478c92` |
@@ -45,6 +46,7 @@ post-install checks.
 | LuaHBTeX | 1.24.0, TeX Live 2026; binary SHA-256 `9d7a1a55bb2503181d71ada62a6ef78303acdd9d99910ea8da33b059e89c8a8a` |
 | Chrome for Testing | 152.0.7977.42; binary SHA-256 `7e0227229e5d5d6050a743ec8c2954b2e7b90e84d73c6796ab6ae61a0dde9bce` |
 | EPUBCheck | 5.3.0; JAR SHA-256 `f7f96617c929371821609b88c8484d6dc9f24fe916499863c46094c5fb778a65` |
+| veraPDF | 1.30.2 Greenfield CLI; PDF/UA-1 and PDF/UA-2 machine-verifiable profiles |
 | OpenJDK | 11.0.27; Ubuntu package `openjdk-11-jre-headless` version `11.0.27+6~us1-0ubuntu1~20.04` |
 | Poppler | 0.86.1; Ubuntu package `poppler-utils` version `0.86.1-0ubuntu1.7` |
 | librsvg | 2.48.9; Ubuntu package `librsvg2-bin` version `2.48.9-1ubuntu0.20.04.4`; `rsvg-convert` SHA-256 `daaec6e04e775ff7582545e055d0559590ff44a75664ff94b0ec3562afeb9509` |
@@ -98,6 +100,12 @@ and `lm-math` 1.959 at revision 67718.
 | tikzfill | 78793 | 1.2.0 |
 | pdfcol | 79618 | 1.8 |
 | fontawesome5 | 77682 | 5.15.4 |
+| `latex` | 79618 | not reported |
+| `l3kernel` | 79868 | not reported |
+| `luamml` | 79442 | 0.9.2 |
+| `latex-lab` | 79404 | not reported |
+| `pdfmanagement` | 79164 | not reported |
+| `tagpdf` | 79799 | 1.0d |
 | koma-script | 77575 | 3.49.2 |
 
 The Babel language modules and separate hyphenation-pattern packages provide

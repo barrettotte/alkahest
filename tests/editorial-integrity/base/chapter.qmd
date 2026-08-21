@@ -9,9 +9,14 @@ its target.
 
 ![](assets/pixel.svg){.decorative}
 
-```{mermaid}
-%%| label: fig-diagram
-%%| fig-alt: "One node named A."
+Inline [$V = I R$]{.alkahest-math-alt alt="voltage equals current times resistance"}
+and display mathematics are both described.
+
+$$
+V = I R
+$$ {#eq-fixture alt="Ohm's law"}
+
+```{mermaid #fig-diagram fig-alt="One node named A."}
 flowchart LR
   A[A]
 ```
@@ -24,4 +29,8 @@ requirements.
 ![](absent.svg)
 @sec-absent
 ## Example {#sec-fixture}
+$x$
+$$
+x = 1
+$$
 ```

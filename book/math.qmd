@@ -7,7 +7,7 @@ of the manuscript contract.
 
 ## Inline and display mathematics {#sec-math-inline-display}
 
-Inline expressions such as $E_k = \tfrac{1}{2} m v^2$ belong grammatically to
+Inline expressions such as [$E_k = \tfrac{1}{2} m v^2$]{.alkahest-math-alt alt="kinetic energy at step k equals one half mass times velocity squared"} belong grammatically to
 their sentence and should align with the surrounding text. Use a display when
 an expression needs a stable reference, a multi-line derivation, or enough
 space to expose its structure.
@@ -49,7 +49,7 @@ u,    & x > u.
 $$ {#eq-saturation alt="Piecewise saturation of x between lower and upper bounds"}
 
 The prose can reuse the operator inline as
-$\operatorname{sat}_{[0,1]}(x)$ without changing its source syntax.
+[$\operatorname{sat}_{[0,1]}(x)$]{.alkahest-math-alt alt="saturate x to the closed interval from zero to one"} without changing its source syntax.
 
 ## Matrices and vectors {#sec-math-matrices}
 
@@ -87,14 +87,23 @@ and retain a distinct proof label in every output.
 ::: {#thm-saturation-bounds}
 ## Saturation bounds
 
-For real numbers $x$, $\ell$, and $u$ with $\ell \le u$,
-$\operatorname{sat}_{[\ell,u]}(x)$ belongs to the closed interval $[\ell,u]$.
+For real numbers [$x$]{.alkahest-math-alt alt="x"},
+[$\ell$]{.alkahest-math-alt alt="lower bound ell"}, and
+[$u$]{.alkahest-math-alt alt="upper bound u"} with
+[$\ell \le u$]{.alkahest-math-alt alt="the lower bound ell is less than or equal to the upper bound u"},
+[$\operatorname{sat}_{[\ell,u]}(x)$]{.alkahest-math-alt alt="x saturated to the closed interval from ell to u"} belongs to the closed interval
+[$[\ell,u]$]{.alkahest-math-alt alt="the closed interval from ell to u"}.
 :::
 
 ::: {.proof}
-The three branches of @eq-saturation are exhaustive. If $x < \ell$, the result
-is $\ell$; if $\ell \le x \le u$, the result is $x$; and if $x > u$, the result
-is $u$. Each result belongs to $[\ell,u]$.
+The three branches of @eq-saturation are exhaustive. If
+[$x < \ell$]{.alkahest-math-alt alt="x is less than the lower bound ell"}, the result
+is [$\ell$]{.alkahest-math-alt alt="the lower bound ell"}; if
+[$\ell \le x \le u$]{.alkahest-math-alt alt="x is between ell and u, inclusive"}, the result is
+[$x$]{.alkahest-math-alt alt="x"}; and if
+[$x > u$]{.alkahest-math-alt alt="x is greater than the upper bound u"}, the result
+is [$u$]{.alkahest-math-alt alt="the upper bound u"}. Each result belongs to
+[$[\ell,u]$]{.alkahest-math-alt alt="the closed interval from ell to u"}.
 :::
 
 ## Authoring boundary {#sec-math-boundary}
@@ -104,7 +113,6 @@ native MathML, Typst mathematics, and LuaLaTeX. Raw MathJax, raw Typst, and raw
 LaTeX are reserved for an explicitly documented output-specific fallback.
 Equation numbers and theorem numbers are generated; authors never type them.
 
-Displayed equations should carry meaningful alternative descriptions. Inline
-mathematics cannot receive per-expression alternative text through standard
-Pandoc Markdown, so surrounding prose must introduce every symbol and state
-the expression's purpose.
+Displayed equations and annotated inline-math spans carry meaningful natural-
+language alternatives. Surrounding prose must still introduce every symbol
+and state the expression's purpose.

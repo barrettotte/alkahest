@@ -128,8 +128,9 @@ edition or collected later without changing either identifier.
 ::: {#exr-divider-budget}
 ## Divider power budget
 
-A 12 V source drives two series resistors, $R_1 = 2\,\mathrm{k}\Omega$ and
-$R_2 = 4\,\mathrm{k}\Omega$. Calculate the current, the voltage across each
+A 12 V source drives two series resistors,
+[$R_1 = 2\,\mathrm{k}\Omega$]{.alkahest-math-alt alt="resistor R one equals two kilohms"} and
+[$R_2 = 4\,\mathrm{k}\Omega$]{.alkahest-math-alt alt="resistor R two equals four kilohms"}. Calculate the current, the voltage across each
 resistor, and the power dissipated by each resistor. State a suitable minimum
 power rating using a safety factor of two.
 :::
@@ -137,10 +138,13 @@ power rating using a safety factor of two.
 ::: {#sol-divider-budget data-for="exr-divider-budget"}
 ## Divider power budget
 
-The series resistance is $6\,\mathrm{k}\Omega$, so the current is
-$I = 12\,\mathrm{V}/6\,\mathrm{k}\Omega = 2\,\mathrm{mA}$. Therefore
-$V_1 = 4\,\mathrm{V}$ and $V_2 = 8\,\mathrm{V}$. The dissipations are
-$P_1 = I^2R_1 = 8\,\mathrm{mW}$ and $P_2 = I^2R_2 = 16\,\mathrm{mW}$;
+The series resistance is
+[$6\,\mathrm{k}\Omega$]{.alkahest-math-alt alt="six kilohms"}, so the current is
+[$I = 12\,\mathrm{V}/6\,\mathrm{k}\Omega = 2\,\mathrm{mA}$]{.alkahest-math-alt alt="current equals twelve volts divided by six kilohms, which equals two milliamperes"}. Therefore
+[$V_1 = 4\,\mathrm{V}$]{.alkahest-math-alt alt="voltage V one equals four volts"} and
+[$V_2 = 8\,\mathrm{V}$]{.alkahest-math-alt alt="voltage V two equals eight volts"}. The dissipations are
+[$P_1 = I^2R_1 = 8\,\mathrm{mW}$]{.alkahest-math-alt alt="power P one equals current squared times R one, which equals eight milliwatts"} and
+[$P_2 = I^2R_2 = 16\,\mathrm{mW}$]{.alkahest-math-alt alt="power P two equals current squared times R two, which equals sixteen milliwatts"};
 doubling either value still fits comfortably within a 0.125 W rating.
 :::
 

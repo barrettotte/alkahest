@@ -75,8 +75,12 @@ local function acronym_entry(list, entry)
 end
 
 local function term_entry(list, entry)
+  local math = pandoc.Span(
+    { pandoc.Math("InlineMath", entry.display) },
+    pandoc.Attr("", { "alkahest-math-alt" }, { alt = entry.alt })
+  )
   local content = {
-    pandoc.Strong({ pandoc.Math("InlineMath", entry.display) }),
+    pandoc.Strong({ math }),
   }
   separator(content)
   append_all(content, markdown_inlines(entry.meaning))

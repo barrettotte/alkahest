@@ -66,12 +66,12 @@ em dashes, and ellipses… without synthetic styling or fallback.
 
 ## Equations {#sec-equations}
 
-Inline mathematics such as $V = I R$ should share a baseline with prose. The
+Inline mathematics such as [$V = I R$]{.alkahest-math-alt alt="voltage equals current times resistance"} should share a baseline with prose. The
 same relationship can be numbered for later reference:
 
 $$
 V = I R
-$$ {#eq-ohms-law}
+$$ {#eq-ohms-law alt="Ohm's law: voltage equals current times resistance"}
 
 @eq-ohms-law must be legible in print, responsive on the web, and
 represented accessibly where the output permits it.
@@ -111,18 +111,7 @@ The code face must keep commonly confused characters distinct:
 logic symbols, timing diagrams, electrical schematics, plots, and chemical
 structures.
 
-```{mermaid}
-%%| label: fig-half-adder
-%%| fig-cap: "The information flow through a half-adder."
-%%| fig-alt: "Inputs A and B each feed two gates: XOR produces Sum, while AND produces Carry."
-flowchart LR
-  A[Input A] --> XOR[XOR]
-  B[Input B] --> XOR
-  A --> AND[AND]
-  B --> AND
-  XOR --> S[Sum]
-  AND --> C[Carry]
-```
+![The information flow through a half-adder.](figures/generated/half-adder-gates.svg){#fig-half-adder fig-alt="Inputs A and B each feed two gates: XOR produces Sum, while AND produces Carry." width="90%"}
 
 [Diagram description: Inputs A and B each feed two gates: XOR produces Sum,
 while AND produces Carry.]{.diagram-description}

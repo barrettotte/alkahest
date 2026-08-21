@@ -14,6 +14,11 @@ BOOK_ROOT = REPO_ROOT / "book"
 DATA_PATH = BOOK_ROOT / "figures" / "data" / "response-time.csv"
 VEGA_PATH = BOOK_ROOT / "figures" / "data" / "response-time.vl.json"
 SVG_PATH = BOOK_ROOT / "figures" / "generated" / "response-time.svg"
+DEPENDENCY_SVG_PATH = (
+    BOOK_ROOT / "figures" / "generated" / "build-dependency-graph.svg"
+)
+MERMAID_SOURCE_PATH = BOOK_ROOT / "figures" / "source" / "half-adder.mmd"
+DOT_SOURCE_PATH = BOOK_ROOT / "figures" / "source" / "build-dependency.dot"
 
 
 def fail(message):
@@ -25,6 +30,7 @@ def check_derivative():
         fail("missing generated chart; run make generate-graphs")
     with tempfile.TemporaryDirectory(prefix="alkahest-graphs.") as directory:
         candidate = Path(directory) / "response-time.svg"
+        dependency_candidate = Path(directory) / "build-dependency-graph.svg"
         result = subprocess.run(
             [
                 sys.executable,
@@ -33,6 +39,8 @@ def check_derivative():
                 str(DATA_PATH),
                 "--output",
                 str(candidate),
+                "--dependency-output",
+                str(dependency_candidate),
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -42,6 +50,11 @@ def check_derivative():
             fail("chart regeneration failed: " + result.stdout.strip())
         if candidate.read_bytes() != SVG_PATH.read_bytes():
             fail("generated chart drifted; run make generate-graphs and review the derivative")
+        if dependency_candidate.read_bytes() != DEPENDENCY_SVG_PATH.read_bytes():
+            fail(
+                "generated dependency graph drifted; run make generate-graphs and "
+                "review the derivative"
+            )
 
 
 def check_svg():
@@ -59,6 +72,20 @@ def check_svg():
         fail("generated chart must contain title and description elements")
     if not root.findall(".//" + namespace + "text") or len(root.findall(".//" + namespace + "circle")) != 5:
         fail("generated chart must preserve labels and five measured points")
+
+    dependency_text = DEPENDENCY_SVG_PATH.read_text(encoding="utf-8")
+    try:
+        dependency = ET.fromstring(dependency_text)
+    except ET.ParseError as error:
+        fail("generated dependency graph is invalid SVG: " + str(error))
+    if dependency.get("viewBox") != "0 0 1200 320" or dependency.get("role") != "img":
+        fail("generated dependency graph must declare the locked viewBox and image role")
+    labels = " ".join(
+        "".join(node.itertext()) for node in dependency.findall(".//" + namespace + "text")
+    )
+    for expected in ("Manuscript", "Data and assets", "Validate", "Render", "Outputs"):
+        if expected not in labels:
+            fail("generated dependency graph is missing label: " + expected)
 
 
 def check_vega_candidate():
@@ -82,14 +109,17 @@ def check_manuscript():
     required = {
         "reference.qmd": (
             reference,
-            ("```{mermaid}", "label: fig-half-adder", "fig-alt:", "Diagram description: Inputs A and B"),
+            (
+                "figures/generated/half-adder-gates.svg",
+                "#fig-half-adder",
+                "Diagram description: Inputs A and B",
+            ),
         ),
         "figures.qmd": (
             figures,
             (
-                "```{dot}",
-                "label: fig-build-dependency-graph",
-                "fig-alt:",
+                "figures/generated/build-dependency-graph.svg",
+                "#fig-build-dependency-graph",
                 "Diagram description: Manuscript source and data/assets",
                 "figures/generated/response-time.svg",
                 "figures/data/response-time.vl.json",
@@ -100,6 +130,13 @@ def check_manuscript():
         for marker in markers:
             if marker not in text:
                 fail(name + " is missing graph/chart contract marker: " + marker)
+
+    mermaid = MERMAID_SOURCE_PATH.read_text(encoding="utf-8")
+    dot = DOT_SOURCE_PATH.read_text(encoding="utf-8")
+    if "flowchart LR" not in mermaid or "XOR" not in mermaid or "AND" not in mermaid:
+        fail("evaluated Mermaid source is incomplete")
+    if "digraph build" not in dot or "validate -> render" not in dot:
+        fail("evaluated Graphviz source is incomplete")
 
 
 def main():

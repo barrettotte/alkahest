@@ -62,9 +62,12 @@ def check_svg():
         fail("generated circuit must contain a titled accessibility node")
     if description is None or description.get("id") != "desc" or not description.text:
         fail("generated circuit must contain a descriptive accessibility node")
-    labels = " ".join(
-        "".join(element.itertext()) for element in root.findall(".//" + namespace + "text")
-    )
+    text_elements = root.findall(".//" + namespace + "text")
+    if not text_elements or any(
+        element.get("font-family") != "Libertinus Sans" for element in text_elements
+    ):
+        fail("generated circuit labels must use the locked Libertinus Sans family")
+    labels = " ".join("".join(element.itertext()) for element in text_elements)
     for marker in ("9 V", "1 kΩ", "2 kΩ", "6 V", "3 mA"):
         if marker not in labels:
             fail("generated circuit is missing electrical label: " + marker)

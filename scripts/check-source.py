@@ -20,6 +20,7 @@ CHECKS = (
     ("physics-diagrams", "check-physics-diagrams.py", False),
     ("rich-media", "check-rich-media.py", False),
     ("pdf-backend", "check-pdf-backend-decision.py", False),
+    ("pdf-accessibility-policy", "check-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "check-editorial-integrity.py", False),
     ("identities", "check-identities.py", False),
     ("editions", "check-editions.py", False),
@@ -36,17 +37,18 @@ CHECKS = (
 
 TESTS = (
     ("execution-policy", "test-execution-policy.py", False),
+    ("pdf-accessibility-policy", "test-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "test-editorial-integrity.py", False),
-    ("identities", "test-identities", False),
+    ("identities", "test-identities.sh", False),
     ("editions", "test-editions.py", False),
     ("learning", "test-learning.py", False),
     ("companions", "test-companions.py", False),
     ("reuse", "test-reuse.py", False),
-    ("citations", "test-citations", False),
-    ("generated-lists", "test-generated-lists", False),
-    ("glossary", "test-glossary", False),
-    ("index", "test-index", False),
-    ("notes", "test-notes", False),
+    ("citations", "test-citations.sh", False),
+    ("generated-lists", "test-generated-lists.sh", False),
+    ("glossary", "test-glossary.sh", False),
+    ("index", "test-index.sh", False),
+    ("notes", "test-notes.sh", False),
 )
 
 
@@ -61,7 +63,7 @@ def command(script, needs_locked_python, test_mode=False):
         return [configured, str(path)]
     if ROOT == Path("/workspace") and LOCKED_PYTHON.is_file():
         return [str(LOCKED_PYTHON), str(path)]
-    return [str(SCRIPTS / "python-tools"), str(path.relative_to(ROOT))]
+    return [str(SCRIPTS / "python-tools.sh"), str(path.relative_to(ROOT))]
 
 
 def parse_arguments():

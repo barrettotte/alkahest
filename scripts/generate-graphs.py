@@ -1,4 +1,4 @@
-"""Generate deterministic SVG chart specimens from versioned source data."""
+"""Generate deterministic SVG graph and chart publication derivatives."""
 
 import argparse
 import csv
@@ -9,6 +9,9 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 DEFAULT_DATA = REPO_ROOT / "book" / "figures" / "data" / "response-time.csv"
 DEFAULT_OUTPUT = REPO_ROOT / "book" / "figures" / "generated" / "response-time.svg"
+DEFAULT_DEPENDENCY_OUTPUT = (
+    REPO_ROOT / "book" / "figures" / "generated" / "build-dependency-graph.svg"
+)
 
 
 def load_rows(path):
@@ -78,15 +81,59 @@ def render_svg(rows):
     return "\n".join(lines)
 
 
+def render_dependency_svg():
+    return "\n".join(
+        [
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">',
+            '  <title id="title">Validated source-to-publication dependency graph</title>',
+            '  <desc id="desc">Manuscript source and data and assets both feed validation. Validation feeds rendering, which produces HTML, EPUB, Typst PDF, and LuaLaTeX PDF outputs.</desc>',
+            '  <metadata>Generated deterministically by scripts/generate-graphs.py from the evaluated Graphviz design in figures/source/build-dependency.dot; original Alkahest fixture, CC0 1.0.</metadata>',
+            '  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>',
+            '  <rect width="1200" height="320" fill="#ffffff"/>',
+            '  <g fill="none" stroke="#334155" stroke-width="4" marker-end="url(#arrow)">',
+            '    <path d="M 245 92 C 310 92, 315 160, 380 160"/>',
+            '    <path d="M 245 228 C 310 228, 315 160, 380 160"/>',
+            '    <path d="M 590 160 L 690 160"/>',
+            '    <path d="M 900 160 L 980 160"/>',
+            '  </g>',
+            '  <g fill="#f8fafc" stroke="#1f5d8f" stroke-width="3">',
+            '    <rect x="35" y="42" width="210" height="100" rx="18"/>',
+            '    <rect x="35" y="178" width="210" height="100" rx="18"/>',
+            '    <rect x="380" y="110" width="210" height="100" rx="18"/>',
+            '    <rect x="690" y="110" width="210" height="100" rx="18"/>',
+            '    <rect x="980" y="74" width="190" height="172" rx="18"/>',
+            '  </g>',
+            '  <g font-family="Libertinus Sans, sans-serif" font-size="25" fill="#172033" text-anchor="middle">',
+            '    <text x="140" y="100">Manuscript</text>',
+            '    <text x="140" y="222">Data and assets</text>',
+            '    <text x="485" y="168">Validate</text>',
+            '    <text x="795" y="168">Render</text>',
+            '    <text x="1075" y="116" font-weight="700">Outputs</text>',
+            '    <text x="1075" y="153" font-size="21">HTML · EPUB</text>',
+            '    <text x="1075" y="186" font-size="21">Typst PDF</text>',
+            '    <text x="1075" y="219" font-size="21">LuaLaTeX PDF</text>',
+            '  </g>',
+            '</svg>',
+            '',
+        ]
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--dependency-output", type=Path, default=DEFAULT_DEPENDENCY_OUTPUT
+    )
     arguments = parser.parse_args()
     output = arguments.output.resolve()
+    dependency_output = arguments.dependency_output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
+    dependency_output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(render_svg(load_rows(arguments.data.resolve())), encoding="utf-8")
-    print("generated " + str(output))
+    dependency_output.write_text(render_dependency_svg(), encoding="utf-8")
+    print("generated " + str(output) + " and " + str(dependency_output))
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ uv-managed Python 3.12.13 environment with Schemdraw 0.23 and RDKit 2026.3.5 dec
 `tools/pyproject.toml` and fully resolved in `tools/uv.lock`. The image installs
 the checksum-locked uv 0.12.5 binary and resolves that environment only during
 bootstrap; normal generation and validation run rootless and offline through
-`scripts/python-tools`. Ad hoc `pip` installs and alternate package managers
+`scripts/python-tools.sh`. Ad hoc `pip` installs and alternate package managers
 remain out of scope.
 The pinned `librsvg2-bin` package supplies `rsvg-convert`, which Quarto uses to
 turn versioned SVG art into vector PDF

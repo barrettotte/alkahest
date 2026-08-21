@@ -48,7 +48,7 @@ The specimen relationship is
 
 $$
 s_{n+1} = 2s_n + 1.
-$$ {#eq-appendix-scale}
+$$ {#eq-appendix-scale alt="The next scale value equals twice the current value plus one"}
 
 ```{#lst-appendix-check .text lst-cap="A backend-neutral appendix check"}
 assert current_appendix == "A"

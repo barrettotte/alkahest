@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "evaluated_at": "2026-08-21",
+  "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v17",
+  "verifier": {
+    "name": "veraPDF",
+    "version": "1.30.2",
+    "limitation": "veraPDF evaluates machine-verifiable requirements only; a passing report cannot replace human inspection of semantics and reading order."
+  },
+  "criteria": [
+    {"id": "tags-and-reading-order", "method": "automated-and-manual"},
+    {"id": "headings", "method": "automated-and-manual"},
+    {"id": "lists", "method": "automated-and-manual"},
+    {"id": "tables", "method": "automated-and-manual"},
+    {"id": "mathematics", "method": "automated-and-manual"},
+    {"id": "figures", "method": "automated-and-manual"},
+    {"id": "links", "method": "automated-and-manual"},
+    {"id": "document-language", "method": "automated-and-manual"},
+    {"id": "bookmarks", "method": "automated-and-manual"},
+    {"id": "form-free-navigation", "method": "automated-and-manual"},
+    {"id": "metadata-and-claim", "method": "automated-and-manual"}
+  ],
+  "backends": [
+    {
+      "id": "typst",
+      "target_standard": "PDF/UA-1",
+      "verapdf_flavour": "ua1",
+      "profile": "book/_quarto-pdf-ua-typst.yml",
+      "candidate_artifact": "book/_build/smoke/pdf-accessibility/typst/Alkahest-Reference-Book.pdf",
+      "candidate": {
+        "render": {
+          "status": "rendered-unbound",
+          "source_revision": null,
+          "artifact_sha256": "dae487dd29f7f132b60861801db886c8233e3c65fa1bb54011748823327fb474",
+          "pages": 41,
+          "tagged": true,
+          "forms": "none",
+          "pdf_version": "1.7",
+          "note": "The accessibility profile replaces orange-book's boxed contents with native structure, supplies natural-language alternatives for every equation, and uses deterministic SVG derivatives for evaluated Mermaid and Graphviz sources whose native Quarto conversion loses fig-alt."
+        },
+        "automated_validation": {
+          "status": "pass",
+          "passed_rule_count": 106,
+          "passed_check_count": 239975,
+          "failed_rules": [],
+          "summary": "veraPDF 1.30.2 reports the PDF/UA-1 candidate compliant with all 106 evaluated rules and 239,975 checks."
+        },
+        "manual_review": {"status": "pending", "reviewer": null, "evaluated_at": null, "results": []}
+      },
+      "ordinary_pdf_observation": {
+        "artifact": "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf",
+        "tagged": true,
+        "pages": 75,
+        "automated_validation": {
+          "status": "fail",
+          "failed_rule_count_observed": 4,
+          "failed_check_count_observed": 20,
+          "check_limit": 20,
+          "failed_rules": ["5-1", "7.1-10", "7.3-1", "7.7-1"]
+        },
+        "summary": "Tagged output is not PDF/UA-1: veraPDF reports missing PDF/UA identification, DisplayDocTitle, a figure alternative, and alternatives or replacement text for formulas."
+      }
+    },
+    {
+      "id": "lualatex",
+      "target_standard": "PDF/UA-2",
+      "verapdf_flavour": "ua2",
+      "profile": "book/_quarto-pdf-ua-latex.yml",
+      "candidate_artifact": "book/_build/smoke/pdf-accessibility/lualatex/Alkahest-Reference-Book.pdf",
+      "candidate": {
+        "render": {
+          "status": "rendered-unbound",
+          "source_revision": null,
+          "artifact_sha256": "2670040508ea45488cf744c6a917d040d38be5f81977cce9f38d4aa4fd5fc88a",
+          "pages": 84,
+          "tagged": true,
+          "forms": "none",
+          "pdf_version": "2.0",
+          "note": "This candidate uses plain code to avoid the current fancyvrb/tagpdf stack imbalance, three LaTeX passes to stabilize the ParentTree, and explicitly locked Libertinus Sans text in generated circuit SVGs."
+        },
+        "automated_validation": {
+          "status": "pass",
+          "passed_rule_count": 1727,
+          "passed_check_count": 217333,
+          "failed_rules": [],
+          "parser_warning_count": 25,
+          "interoperability_observation": "Poppler's structure-text parser reports TextPosition, TextAlign, and ListNumbering attribute warnings that require viewer and assistive-technology review.",
+          "summary": "veraPDF 1.30.2 reports the PDF/UA-2 candidate compliant with all 1,727 evaluated rules and 217,333 checks; its parser also logs 25 duplicated Group-key warnings that remain recorded for follow-up."
+        },
+        "manual_review": {"status": "pending", "reviewer": null, "evaluated_at": null, "results": []}
+      },
+      "ordinary_pdf_observation": {
+        "artifact": "book/_build/print/7x10/latex/Alkahest-Reference-Book.pdf",
+        "tagged": false,
+        "pages": 82,
+        "automated_validation": {
+          "status": "fail",
+          "failed_rule_count_observed": 5,
+          "failed_check_count_observed": 10,
+          "check_limit": 10,
+          "failed_rules": ["6.2-1", "8.2.1-1", "8.2.2-1", "8.11.1-2", "8.11.2-1"]
+        },
+        "summary": "The ordinary LuaLaTeX PDF is not PDF/UA-2: it lacks tagged structure, a structure tree, required metadata, and DisplayDocTitle, and it contains untagged non-artifact content."
+      }
+    }
+  ],
+  "claim": {
+    "status": "pending-manual-review",
+    "target_backends": [],
+    "conformance_claim": false,
+    "conformance_string": null,
+    "report_location": null,
+    "summary": "Both experimental backend candidates now pass their selected veraPDF profiles, but neither may carry a conformance claim until a complete human assistive-technology and structural review is recorded."
+  }
+}

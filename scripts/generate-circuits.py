@@ -35,7 +35,14 @@ def generate(output):
     output.parent.mkdir(parents=True, exist_ok=True)
     schemdraw.use("svg")
     drawing = schemdraw.Drawing(show=False, canvas="svg")
-    drawing.config(unit=2.6, fontsize=13, color="#111827", lw=1.7, margin=0.18)
+    drawing.config(
+        unit=2.6,
+        fontsize=13,
+        font="Libertinus Sans",
+        color="#111827",
+        lw=1.7,
+        margin=0.18,
+    )
 
     source = drawing.add(elm.SourceV().up().length(5.2).label("Vₛ = 9 V", loc="top"))
     drawing.add(elm.Line().right().length(3.6))

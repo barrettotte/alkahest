@@ -128,6 +128,13 @@ rm -rf -- "${case_root}"
 
 case_root="$(mktemp -d)"
 copy_fixture "${case_root}/book"
+python3 "${edit}" $'    alt: capital I, electric current\n' '' \
+  "${case_root}/book/generated-lists.yml"
+run_invalid "${case_root}/book" "term current has no alt"
+rm -rf -- "${case_root}"
+
+case_root="$(mktemp -d)"
+copy_fixture "${case_root}/book"
 python3 "${edit}" 'lang: en-US' 'lang: english_US' \
   "${case_root}/book/generated-lists.yml"
 run_invalid "${case_root}/book" "BCP 47"
@@ -158,4 +165,4 @@ python3 "${edit}" $'  algorithms:\n    title: List of algorithms\n    source: cr
   "${case_root}/book/generated-lists.yml"
 run_invalid "${case_root}/book" "at most one glossary-acronyms list"
 
-echo "ok: generated-list fixtures (seven populated kinds plus empty omission; 18 invalid contracts rejected)"
+echo "ok: generated-list fixtures (seven populated kinds plus empty omission; 19 invalid contracts rejected)"
