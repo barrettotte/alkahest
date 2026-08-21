@@ -1,7 +1,7 @@
 # Toolchain lock record
 
 - Captured: 2026-08-20
-- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v15`
+- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v16`
 - Base image: `ghcr.io/quarto-dev/quarto-full:1.10.18`
 - Base manifest: `sha256:280aa58ecdb814dcced42066e4f64d1825020ce5822f2ca2749fc6396020d7de`
 
@@ -20,7 +20,7 @@ requires an intentional lock update.
 | Python media dependencies | `tools/uv.lock` SHA-256 `a93c81bbeba8557e6fe303d53ee833c5b14be84b853e974cbacd3ee275741472`; Schemdraw 0.23, RDKit 2026.3.5, NumPy 2.5.2, and Pillow 12.3.0 distributions are hash-locked there |
 | Node.js | Official 22.23.2 LTS Linux x64 archive; SHA-256 `d60acfe00a2932254bb0ad20e01b0d74397a0875595de719654b214f4b03f307` |
 | Vale | Official 3.17.1 Linux 64-bit archive; SHA-256 `db947f89f2292e6a0381a61de155f6a5f5cb4cb460ca178ea412ef605559cefd` |
-| JavaScript checks | npm lockfile v3 SHA-256 `cecdc774c6b8b903881068ff04db1247ff7e6fe24eb6888f2dc88e39664351b4`; CSpell 10.0.1, axe-core 4.13.0, and all 109 installed packages carry registry integrity hashes |
+| JavaScript checks | npm lockfile v3 SHA-256 `d098069504bec89dc161f5be7359f5a217ff13dc617699094a29dc06e7c714f1`; CSpell 10.0.1, axe-core 4.13.0, Ace by DAISY 1.4.6, and all 343 installed packages carry registry integrity hashes |
 | Chrome Headless Shell | Official Linux64 archive for 152.0.7977.42; SHA-256 `129686a270d84ac4637c614802c554634aa827aa13214216f81e0a0b9410f8cf` |
 | EPUBCheck | Official 5.3.0 archive; SHA-256 `6c07e68584b2e2ce2f89fe06e1246dfead3eb36b46b340e7d93524f29dcff6c5` |
 | Chicago author–date CSL | Pandoc 3.10.0 bundled `default.csl`; SHA-256 `91fa1fe9787e737dff0c15d7cf8254c9f2bab4ebb4dccf4553a1f991ebddb7d1` |
@@ -53,6 +53,7 @@ post-install checks.
 | Vale | 3.17.1; binary SHA-256 `ae9c62ed1c422cc5641f83a0045790cb2029c2bd9a21d2b7c216f3cb254f1231` |
 | CSpell | 10.0.1; CLI SHA-256 `fb0e83febdda495e211bc95d9676d3146cea78f240e1a815cb73ef3005be6cfd`; resolved by npm from the committed lock |
 | axe-core | 4.13.0; browser bundle SHA-256 `c24f097bd2f451d4f933e8bc7d8d539f8672a2ebcb5cc9f9f3eec8ca9470a0c1`; WCAG rules execute through the locked Chrome runtime |
+| Ace by DAISY | 1.4.6; CLI SHA-256 `39909ce78d85972fb694db2f485d117e051b6bb925f01c149fab303df6eef537`; its Puppeteer runner uses the locked Chrome runtime without downloading a browser |
 | Python media environment | Python 3.12.13; Schemdraw 0.23; RDKit 2026.03.5; RDKit `rdchem.so` SHA-256 `f5ecfd5a6a6557919f45b820e56e4bb78d73a3627066bef800937ef011906415`; resolved by uv from the committed lock |
 | Mermaid runtime | Bundled with Quarto; JavaScript SHA-256 `07e37dfa97b337ccc85365d57eddf99b9706f09db3b59b260d0333b23b343c4b` |
 | Graphviz runtime | Bundled with Quarto; wrapper SHA-256 `8d6c1517a55aea0aa05c1fae0eb221a6473bdc018e0c9e10e3e893ec4832ad4f`; WASM SHA-256 `75d33c9c6e0f3972b7fa064e67d03ce09c68a453f0adefdacd1c4dc1ed3ed943` |
@@ -119,10 +120,13 @@ Bootstrap still needs network access to retrieve the immutable base manifest,
 Ubuntu snapshot, browser archive, Node and Vale archives, checksum-locked npm
 packages, uv-managed Python and locked wheels, and TeX snapshot. Normal checks,
 generators, and renders run without network access. `make
-check-writing-toolchain` additionally proves Vale, CSpell, and axe-core start
+check-writing-toolchain` additionally proves Vale, CSpell, axe-core, and Ace start
 inside the unprivileged container with networking disabled. The accessibility
-workflow executes axe-core through locked Chrome after rendering and keeps
-manual evidence separate from automated results.
+web workflow executes axe-core through locked Chrome after rendering; the EPUB
+workflow runs EPUBCheck and Ace through the same offline image. Both keep manual
+evidence separate from automated results. The EPUB gate additionally validates
+the three-engine reader matrix, representative locations, text-scale plan,
+artifact identity, result completeness, and conformance-claim state.
 The upstream archives remain an availability dependency, so a future archival
 phase should mirror the locked inputs when the project establishes durable
 artifact storage.

@@ -65,6 +65,7 @@ render_profile() {
       ;;
     epub)
       render_edition_profile epub epub _build/epub
+      python3 "${script_dir}/finalize-epub.py"
       ;;
     typst)
       render_edition_profile print typst _build/print/7x10/typst

@@ -24,7 +24,7 @@
   },
   "measurement": {
     "captured": "2026-08-19",
-    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v15",
+    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v16",
     "method": "One sequential primary 7 x 10 render per backend with network disabled and ephemeral container caches.",
     "typst": {
       "seconds": 8.07,

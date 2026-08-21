@@ -147,12 +147,15 @@ def check_repository_integration(data):
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
     render = (ROOT / "scripts/render").read_text(encoding="utf-8")
     ci = (ROOT / "scripts/ci").read_text(encoding="utf-8")
+    source_dispatcher = (ROOT / "scripts/check-source.py").read_text(
+        encoding="utf-8"
+    )
     quarto = (BOOK / "_quarto.yml").read_text(encoding="utf-8")
     documentation = (ROOT / "docs/pdf-backend-decision.md").read_text(encoding="utf-8")
     required_make = (
         "check-pdf-backend-decision:",
         "render-pdf:",
-        "python3 scripts/check-pdf-backend-decision.py",
+        "python3 scripts/check-source.py pdf-backend",
         "./scripts/render pdf",
     )
     if any(marker not in makefile for marker in required_make):
@@ -162,8 +165,10 @@ def check_repository_integration(data):
     expected_call = f"render_profile {PROFILES[default]}"
     if not alias or expected_call not in alias.group("body"):
         fail("render wrapper does not map the PDF command to the selected default")
-    if "check-pdf-backend-decision.py" not in ci or "check-pdf-backend-decision.py" not in quarto:
-        fail("backend decision check is not integrated into CI and rendering")
+    if '"pdf-backend", "check-pdf-backend-decision.py"' not in source_dispatcher:
+        fail("source dispatcher does not include the PDF backend decision")
+    if "check-source.py" not in ci or "check-source.py" not in quarto:
+        fail("source policy dispatcher is not integrated into CI and rendering")
     scores = data["weighted_scores"]
     for marker in (
         f"{DISPLAY_NAMES[default]} is the default PDF backend",

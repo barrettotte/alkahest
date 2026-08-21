@@ -304,7 +304,7 @@ pre code {
 .code-output,
 .code-output div.sourceCode,
 .code-output pre {
-  border-left-color: #64748b;
+  border-left-color: #5f6b7c;
 }
 
 table {
@@ -330,7 +330,7 @@ th {
 
 figcaption,
 table caption {
-  color: #64748b;
+  color: #5f6b7c;
   font-family: "Libertinus Sans", sans-serif;
   font-size: 0.88em;
 }
@@ -362,7 +362,7 @@ span[id^="eq-"] {
 }
 
 .proof {
-  border-left-color: #64748b;
+  border-left-color: #5f6b7c;
 }
 
 .theorem p,
@@ -385,7 +385,7 @@ span[id^="eq-"] {
 
 .theorem[id^="sol-"] {
   background: #ffffff;
-  border-left-color: #64748b;
+  border-left-color: #5f6b7c;
 }
 
 .learning-objectives,
@@ -423,7 +423,7 @@ span[id^="eq-"] {
 .table-note {
   display: block;
   margin-top: -0.5em;
-  color: #64748b;
+  color: #5f6b7c;
   font-size: 0.86em;
 }
 
@@ -482,7 +482,7 @@ h4.table-title {
 
 .glossary-entry-forms,
 .glossary-page-reference {
-  color: #64748b;
+  color: #5f6b7c;
   font-family: "Libertinus Sans", sans-serif;
   font-size: 0.88em;
 }
@@ -527,7 +527,7 @@ h4.table-title {
 
 .callout.optional-material-block,
 .optional-material-block > .callout {
-  border-left-color: #64748b;
+  border-left-color: #5f6b7c;
 }
 
 .reusable-content {
@@ -572,7 +572,7 @@ h4.table-title {
 .figure-source {
   display: block;
   margin-top: 0.2em;
-  color: #64748b;
+  color: #5f6b7c;
   font-size: 0.88em;
 }
 
@@ -581,7 +581,7 @@ h4.table-title {
   margin: 0.4em 0 1em;
   padding-left: 0.75em;
   border-left: 0.2em solid #c5cbd3;
-  color: #64748b;
+  color: #5f6b7c;
   font-size: 0.9em;
 }
 
@@ -609,7 +609,7 @@ nav#landmarks a {
 }
 
 .book-endnote-backlink {
-  color: #64748b;
+  color: #5f6b7c;
   font-family: "Libertinus Sans", sans-serif;
   font-size: 0.9em;
 }

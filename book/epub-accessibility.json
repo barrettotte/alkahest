@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "standard": "EPUB Accessibility 1.1",
+  "language": "en-US",
+  "claim_status": "pending-manual-review",
+  "discovery": {
+    "access_modes": [
+      "textual",
+      "visual"
+    ],
+    "access_mode_sufficient": [
+      "textual"
+    ],
+    "accessibility_features": [
+      "MathML",
+      "alternativeText",
+      "readingOrder",
+      "structuralNavigation",
+      "tableOfContents"
+    ],
+    "accessibility_hazards": [
+      "none"
+    ],
+    "accessibility_summary": "Automated EPUBCheck and Ace by DAISY checks are part of this publication workflow. Manual EPUB Accessibility 1.1 review is pending, so this reference specimen makes no accessibility conformance claim."
+  },
+  "sections": [
+    {
+      "id": "sec-preface",
+      "epub_type": "preface",
+      "role": "doc-preface",
+      "body_type": "frontmatter"
+    },
+    {
+      "id": "generated-lists",
+      "epub_type": null,
+      "role": null,
+      "body_type": "frontmatter"
+    },
+    {
+      "id": "sec-references",
+      "epub_type": "bibliography",
+      "role": "doc-bibliography",
+      "body_type": "backmatter"
+    },
+    {
+      "id": "glossary",
+      "epub_type": "glossary",
+      "role": "doc-glossary",
+      "body_type": "backmatter"
+    },
+    {
+      "id": "index-backmatter",
+      "epub_type": "index",
+      "role": "doc-index",
+      "body_type": "backmatter"
+    },
+    {
+      "id": "sec-page-system-checklist",
+      "epub_type": "appendix",
+      "role": "doc-appendix",
+      "body_type": "backmatter"
+    },
+    {
+      "id": "sec-format-behavior",
+      "epub_type": "appendix",
+      "role": "doc-appendix",
+      "body_type": "backmatter"
+    },
+    {
+      "id": "sec-language-and-script",
+      "epub_type": "appendix",
+      "role": "doc-appendix",
+      "body_type": "backmatter"
+    }
+  ],
+  "landmarks": [
+    {
+      "type": "titlepage",
+      "special": "titlepage",
+      "label": "Title page"
+    },
+    {
+      "type": "toc",
+      "special": "toc",
+      "label": "Table of contents"
+    },
+    {
+      "type": "bodymatter",
+      "target_id": "sec-core-feature-specimen",
+      "label": "Start of main content"
+    },
+    {
+      "type": "bibliography",
+      "target_id": "sec-references",
+      "label": "References"
+    },
+    {
+      "type": "glossary",
+      "target_id": "glossary",
+      "label": "Glossary"
+    },
+    {
+      "type": "index",
+      "target_id": "index-backmatter",
+      "label": "Index"
+    }
+  ],
+  "pagination": {
+    "mode": "not-applicable",
+    "rationale": "The reference specimen is not distributed as the dynamically paginated equivalent of one identified print edition. Its Typst and LuaLaTeX profiles deliberately paginate differently. Before a print/EPUB bundle is published, select one final print edition, record its identifier as page_break_source, and add every retained page boundary to pages."
+  }
+}

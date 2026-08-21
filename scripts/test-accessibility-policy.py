@@ -149,7 +149,7 @@ def main():
             parent,
             "contrast-drift",
             "theme contrast for captions and secondary text",
-            edit_text("theme", "$alkahest-muted: #64748b;", "$alkahest-muted: #aaaaaa;"),
+            edit_text("theme", "$alkahest-muted: #5f6b7c;", "$alkahest-muted: #aaaaaa;"),
         )
         expect_failure(
             parent,

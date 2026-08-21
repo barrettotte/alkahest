@@ -315,7 +315,8 @@ ENV ALKAHEST_NODE_VERSION="22.23.2" \
     ALKAHEST_VALE_ARCHIVE_URL="https://github.com/vale-cli/vale/releases/download/v3.17.1/vale_3.17.1_Linux_64-bit.tar.gz" \
     ALKAHEST_VALE_ARCHIVE_SHA256="db947f89f2292e6a0381a61de155f6a5f5cb4cb460ca178ea412ef605559cefd" \
     ALKAHEST_CSPELL_VERSION="10.0.1" \
-    ALKAHEST_AXE_CORE_VERSION="4.13.0"
+    ALKAHEST_AXE_CORE_VERSION="4.13.0" \
+    ALKAHEST_ACE_VERSION="1.4.6"
 
 # Install the writing-quality executables from immutable inputs. Node is a
 # declared CSpell runtime rather than an accidental base-image dependency;
@@ -346,9 +347,11 @@ RUN test "$(dpkg --print-architecture)" = "amd64" \
     && rm -rf /tmp/node.tar.xz /tmp/vale /tmp/vale.tar.gz
 
 ENV PATH="/opt/node/bin:/opt/alkahest/writing/node_modules/.bin:${PATH}"
+ENV PUPPETEER_EXECUTABLE_PATH="${QUARTO_CHROMIUM}" \
+    PUPPETEER_SKIP_DOWNLOAD="true"
 
-# npm's lockfile records the integrity of CSpell, axe-core, and every
-# transitive package.
+# npm's lockfile records the integrity of CSpell, axe-core, Ace by DAISY, and
+# every transitive package.
 # Ignore lifecycle scripts and remove the temporary package cache so runtime
 # checks are offline, deterministic, and writable by neither the manuscript nor
 # the unprivileged publishing user.
@@ -363,9 +366,12 @@ RUN npm ci \
         --cache /tmp/npm-cache \
     && test "$(cspell --version)" = "${ALKAHEST_CSPELL_VERSION}" \
     && test "$(node -p "require('/opt/alkahest/writing/node_modules/axe-core/package.json').version")" = "${ALKAHEST_AXE_CORE_VERSION}" \
+    && test "$(HOME=/tmp ace-cli --version)" = "${ALKAHEST_ACE_VERSION}" \
     && echo "fb0e83febdda495e211bc95d9676d3146cea78f240e1a815cb73ef3005be6cfd  /opt/alkahest/writing/node_modules/cspell/bin.mjs" \
         | sha256sum --check \
     && echo "c24f097bd2f451d4f933e8bc7d8d539f8672a2ebcb5cc9f9f3eec8ca9470a0c1  /opt/alkahest/writing/node_modules/axe-core/axe.min.js" \
+        | sha256sum --check \
+    && echo "39909ce78d85972fb694db2f485d117e051b6bb925f01c149fab303df6eef537  /opt/alkahest/writing/node_modules/@daisy/ace-cli/bin/ace.js" \
         | sha256sum --check \
     && ln -s /opt/alkahest/writing/node_modules/.bin/cspell /usr/local/bin/cspell \
     && chmod -R a+rX /opt/alkahest/writing \

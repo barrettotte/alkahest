@@ -1,6 +1,11 @@
-.PHONY: bootstrap build-report check check-accessibility check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology render render-all test-accessibility test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
+.DEFAULT_GOAL := help
+
+PUBLIC_TARGETS := bootstrap check render render-html render-epub render-pdf \
+	render-typst render-latex render-all check-source check-writing ci clean help-all
+
+.PHONY: bootstrap build-report check check-accessibility check-epub-accessibility check-epub-review check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-epub-accessibility test-epub-review test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
-	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help
+	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke toolchain-report help help-all
 
 bootstrap: ## Build the pinned local publishing container.
 	./scripts/bootstrap
@@ -11,125 +16,131 @@ build-report: ## Measure primary builds, warnings, and artifact sizes.
 check: ## Report Quarto and publishing-toolchain diagnostics.
 	./scripts/quarto check
 
+check-source: ## Validate every configured semantic source policy.
+	python3 scripts/check-source.py
+
+test-source: ## Exercise every semantic source-policy fixture suite.
+	python3 scripts/check-source.py --tests
+
 check-execution-policy: ## Reject executable manuscript cells and policy overrides.
-	python3 scripts/check-execution-policy.py
+	python3 scripts/check-source.py execution-policy
 
 test-execution-policy: ## Exercise static-only source and execution-policy contracts.
-	python3 scripts/test-execution-policy.py
+	python3 scripts/check-source.py --tests execution-policy
 
 generate-graphs: ## Regenerate committed graph/chart derivatives from source data.
 	python3 scripts/generate-graphs.py
 
 check-graphs: ## Validate diagram sources and deterministic chart derivatives.
-	python3 scripts/check-graphs.py
+	python3 scripts/check-source.py graphs
 
 generate-circuits: ## Regenerate committed electrical-circuit SVG derivatives.
 	./scripts/python-tools scripts/generate-circuits.py
 
 check-circuits: ## Validate circuit candidates and deterministic SVG derivatives.
-	./scripts/python-tools scripts/check-circuits.py
+	python3 scripts/check-source.py circuits
 
 generate-chemistry: ## Regenerate committed chemistry SVG derivatives.
 	./scripts/python-tools scripts/generate-chemistry.py
 
 check-chemistry: ## Validate chemistry candidates and deterministic SVG derivatives.
-	./scripts/python-tools scripts/check-chemistry.py
+	python3 scripts/check-source.py chemistry
 
 generate-computing-diagrams: ## Regenerate committed computing-diagram SVG derivatives.
 	python3 scripts/generate-computing-diagrams.py
 
 check-computing-diagrams: ## Validate computing-diagram data, candidates, and SVG derivatives.
-	python3 scripts/check-computing-diagrams.py
+	python3 scripts/check-source.py computing-diagrams
 
 generate-physics-diagrams: ## Regenerate committed physics-diagram SVG derivatives.
 	python3 scripts/generate-physics-diagrams.py
 
 check-physics-diagrams: ## Validate physics data, units, precision, provenance, and SVG derivatives.
-	python3 scripts/check-physics-diagrams.py
+	python3 scripts/check-source.py physics-diagrams
 
 generate-rich-media-fixtures: ## Regenerate the deterministic rich-media audio fixture.
 	python3 scripts/generate-rich-media-fixtures.py
 
 check-rich-media: ## Validate rich-media assets, accessibility, rights, and fallbacks.
-	python3 scripts/check-rich-media.py
+	python3 scripts/check-source.py rich-media
 
 check-pdf-backend-decision: ## Validate the scored PDF default and compatibility policy.
-	python3 scripts/check-pdf-backend-decision.py
+	python3 scripts/check-source.py pdf-backend
 
 check-editions: ## Validate whole-book manifests, sources, privacy, and references.
-	python3 scripts/check-editions.py
+	python3 scripts/check-source.py editions
 
 test-editions: ## Exercise valid, invalid, and staged edition contracts.
-	python3 scripts/test-editions.py
+	python3 scripts/check-source.py --tests editions
 
 check-editorial-integrity: ## Validate source links, alternatives, IDs, and references.
-	python3 scripts/check-editorial-integrity.py
+	python3 scripts/check-source.py editorial-integrity
 
 test-editorial-integrity: ## Exercise valid and invalid editorial-integrity contracts.
-	python3 scripts/test-editorial-integrity.py
+	python3 scripts/check-source.py --tests editorial-integrity
 
 check-learning: ## Validate learning roles, metadata, pairings, and private answers.
-	python3 scripts/check-learning.py
+	python3 scripts/check-source.py learning
 
 test-learning: ## Exercise invalid learning-role, pairing, and privacy contracts.
-	python3 scripts/test-learning.py
+	python3 scripts/check-source.py --tests learning
 
 check-companions: ## Validate companion metadata, checksums, delivery, and references.
-	python3 scripts/check-companions.py
+	python3 scripts/check-source.py companions
 
 test-companions: ## Exercise invalid companion registry, file, and reference contracts.
-	python3 scripts/test-companions.py
+	python3 scripts/check-source.py --tests companions
 
 check-reuse: ## Validate reusable fragments, parameters, contexts, and use sites.
-	python3 scripts/check-reuse.py
+	python3 scripts/check-source.py reuse
 
 test-reuse: ## Exercise invalid reusable-content and dependency contracts.
-	python3 scripts/test-reuse.py
+	python3 scripts/check-source.py --tests reuse
 
 check-citations: ## Validate citation styles, bibliography keys, and manuscript calls.
-	python3 scripts/check-citations.py
+	python3 scripts/check-source.py citations
 
 test-citations: ## Exercise valid and invalid citation contracts.
-	./scripts/test-citations
+	python3 scripts/check-source.py --tests citations
 
 check-generated-lists: ## Validate configured reference and terminology lists.
-	python3 scripts/check-generated-lists.py
+	python3 scripts/check-source.py generated-lists
 
 test-generated-lists: ## Exercise valid and invalid generated-list contracts.
-	./scripts/test-generated-lists
+	python3 scripts/check-source.py --tests generated-lists
 
 check-glossary: ## Validate glossary entries, aliases, forms, and references.
-	python3 scripts/check-glossary.py
+	python3 scripts/check-source.py glossary
 
 test-glossary: ## Exercise valid and invalid glossary contracts.
-	./scripts/test-glossary
+	python3 scripts/check-source.py --tests glossary
 
 check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stack.
 	./scripts/check-glyph-coverage
 
 check-icons: ## Validate semantic icon names, assets, aliases, and calls.
-	python3 scripts/check-icons.py
+	python3 scripts/check-source.py icons
 
 check-identities: ## Validate persistent IDs, variants, assets, and the identity lock.
-	python3 scripts/check-identities.py
+	python3 scripts/check-source.py identities
 
 test-identities: ## Exercise identity uniqueness, translation, edition, and migration rules.
-	./scripts/test-identities
+	python3 scripts/check-source.py --tests identities
 
 update-identities: ## Lock intentional identity additions and recorded migrations.
 	python3 scripts/update-identities.py
 
 check-index: ## Validate subject/person index entries, markers, ranges, and relations.
-	python3 scripts/check-index.py
+	python3 scripts/check-source.py index
 
 test-index: ## Exercise valid and invalid subject/person index contracts.
-	./scripts/test-index
+	python3 scripts/check-source.py --tests index
 
 check-notes: ## Validate semantic note definitions, repeats, and placements.
-	python3 scripts/check-notes.py
+	python3 scripts/check-source.py notes
 
 test-notes: ## Exercise valid and invalid semantic-note contracts.
-	./scripts/test-notes
+	python3 scripts/check-source.py --tests notes
 
 check-rendered-notes: ## Verify rendered chapter, book, and sidenote behavior.
 	./scripts/check-rendered-notes
@@ -151,6 +162,21 @@ check-accessibility: ## Gate rendered HTML against WCAG 2.2 A/AA automation.
 
 test-accessibility: ## Exercise accessibility policy and browser-rule fixtures.
 	./scripts/check-accessibility test
+
+check-epub-accessibility: ## Gate EPUB structure, accessibility automation, and review policy.
+	./scripts/check-epub-accessibility
+
+test-epub-accessibility: ## Exercise EPUB semantics, automation, and manual-review fixtures.
+	./scripts/check-epub-accessibility test
+
+check-epub-review: ## Validate the manual EPUB reader matrix and evidence ledger.
+	python3 scripts/check-epub-reading-system-review.py
+
+test-epub-review: ## Exercise manual EPUB evidence and conformance-claim contracts.
+	python3 scripts/test-epub-reading-system-review.py
+
+prepare-epub-review: ## Bind a clean revision and rendered EPUB to manual review evidence.
+	python3 scripts/prepare-epub-review.py
 
 check-pdf-profiles: ## Verify PDF dimensions and embedded/subset fonts.
 	./scripts/check-pdf-profiles
@@ -250,5 +276,12 @@ render-edition-smoke: ## Render abridged, preview, public, private, and suppleme
 render-notes-smoke: ## Render chapter, book, and sidenote placement editions.
 	./scripts/render notes-smoke
 
-help: ## Show available Make targets and their descriptions.
+help: ## Show the common author workflow commands.
+	@printf 'Common author commands:\n'
+	@for target in $(PUBLIC_TARGETS); do \
+		awk -v target="$$target" 'BEGIN { FS = ":.*## " } $$1 == target { printf "  %-30s %s\n", $$1, $$2 }' $(MAKEFILE_LIST); \
+	done
+	@printf '\nRun make help-all for maintainer, fixture, and specialist commands.\n'
+
+help-all: ## Show every available Make target and its description.
 	@awk 'BEGIN { FS = ":.*## " } /^[[:alnum:]_-]+:.*## / { printf "  %-30s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)

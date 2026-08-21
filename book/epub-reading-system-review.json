@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "standard": "EPUB Accessibility 1.1",
+  "target": "WCAG 2.2 Level AA",
+  "policy": "book/epub-accessibility.json",
+  "artifact": {
+    "path": "book/_build/epub/Alkahest-Reference-Book.epub",
+    "source_revision": null,
+    "content_sha256": null,
+    "prepared_at": null
+  },
+  "claim": {
+    "status": "pending-manual-review",
+    "conformance_claim": false,
+    "conformance_string": null,
+    "evaluator": null,
+    "evaluator_credential": null,
+    "evaluated_at": null,
+    "report_location": null,
+    "summary": "Reading-system and human accessibility review is pending. Automated validation alone does not establish EPUB Accessibility 1.1 conformance."
+  },
+  "text_scales": [
+    {
+      "id": "default",
+      "minimum_percent": 100,
+      "instruction": "Use the reading system's default text size and record the displayed setting."
+    },
+    {
+      "id": "enlarged",
+      "minimum_percent": 150,
+      "instruction": "Increase text to at least 150 percent, or the nearest available setting above it."
+    },
+    {
+      "id": "extra-large",
+      "minimum_percent": 200,
+      "instruction": "Increase text to at least 200 percent, or the nearest available setting above it."
+    }
+  ],
+  "representative_locations": [
+    {
+      "id": "frontmatter-and-navigation",
+      "target_id": "sec-preface",
+      "purpose": "Publication information, front matter, landmarks, and entry into the reading order."
+    },
+    {
+      "id": "generated-navigation",
+      "target_id": "generated-lists",
+      "purpose": "Generated lists, linked entries, and navigation into numbered objects."
+    },
+    {
+      "id": "core-structure",
+      "target_id": "sec-core-feature-specimen",
+      "purpose": "Heading hierarchy, notes, citations, equations, figures, tables, and book divisions."
+    },
+    {
+      "id": "code",
+      "target_id": "sec-code-blocks",
+      "purpose": "Long code lines, line numbers, annotations, filenames, diffs, and terminal output."
+    },
+    {
+      "id": "mathematics",
+      "target_id": "sec-math-system",
+      "purpose": "Inline and display MathML, aligned expressions, matrices, and theorem structures."
+    },
+    {
+      "id": "figures-and-diagrams",
+      "target_id": "sec-figure-system",
+      "purpose": "Images, captions, alternatives, technical diagrams, panels, and static media fallbacks."
+    },
+    {
+      "id": "tables-and-components",
+      "target_id": "sec-components",
+      "purpose": "Simple and complex tables, callouts, exercises, projects, and reusable components."
+    },
+    {
+      "id": "backmatter",
+      "target_id": "glossary",
+      "purpose": "Bibliography, glossary, index, backlinks, and semantic back-matter navigation."
+    },
+    {
+      "id": "language-and-script",
+      "target_id": "sec-language-and-script",
+      "purpose": "Language changes, mixed writing systems, symbols, and pronunciation behavior."
+    }
+  ],
+  "criteria": [
+    {
+      "id": "import-and-publication-information",
+      "instruction": "Import and reopen the EPUB; confirm title, author, language, cover, reading position, and publication information are exposed correctly."
+    },
+    {
+      "id": "navigation-and-landmarks",
+      "instruction": "Use the table of contents, landmarks, next and previous navigation, search, glossary, index, and generated lists without dead ends."
+    },
+    {
+      "id": "reading-order-and-structure",
+      "instruction": "Confirm headings, lists, notes, figures, tables, appendices, bibliography, and back matter occur in a logical spoken and visual order."
+    },
+    {
+      "id": "keyboard-and-focus",
+      "instruction": "Operate the reader and publication in both directions by keyboard, with visible focus, predictable focus order, and no keyboard trap."
+    },
+    {
+      "id": "code-and-tables",
+      "instruction": "Inspect code and every table pattern for readable labels, headers, order, local overflow behavior, and retention at enlarged text sizes."
+    },
+    {
+      "id": "images-and-diagrams",
+      "instruction": "Confirm images and technical diagrams expose useful alternatives and descriptions without duplicating decorative or positioning content."
+    },
+    {
+      "id": "mathematics",
+      "instruction": "Navigate representative MathML with assistive technology and confirm visual layout, speech, copy behavior, and source fallback remain understandable."
+    },
+    {
+      "id": "links-notes-and-backlinks",
+      "instruction": "Follow internal and external links, citations, footnotes, semantic notes, and return links while preserving understandable context and focus."
+    },
+    {
+      "id": "language-and-pronunciation",
+      "instruction": "Review declared book language and tagged language changes, symbols, abbreviations, and mixed scripts visually and through speech output."
+    },
+    {
+      "id": "assistive-technology",
+      "instruction": "Use a current screen reader to inspect names, roles, states, landmarks, headings, alternatives, tables, MathML, and reading progression."
+    }
+  ],
+  "reading_systems": [
+    {
+      "id": "thorium-readium",
+      "name": "Thorium Reader",
+      "planned_version": "3.4.0",
+      "engine_family": "Readium Desktop with Chromium",
+      "platform": "Linux",
+      "release_source": "https://github.com/edrlab/thorium-reader/releases/tag/v3.4.0",
+      "environment": {
+        "reader_version": null,
+        "engine_version": null,
+        "os_version": null,
+        "assistive_technology": null,
+        "tester": null,
+        "tested_at": null
+      },
+      "results": [
+        {"criterion": "import-and-publication-information", "status": "pending", "evidence": null},
+        {"criterion": "navigation-and-landmarks", "status": "pending", "evidence": null},
+        {"criterion": "reading-order-and-structure", "status": "pending", "evidence": null},
+        {"criterion": "keyboard-and-focus", "status": "pending", "evidence": null},
+        {"criterion": "code-and-tables", "status": "pending", "evidence": null},
+        {"criterion": "images-and-diagrams", "status": "pending", "evidence": null},
+        {"criterion": "mathematics", "status": "pending", "evidence": null},
+        {"criterion": "links-notes-and-backlinks", "status": "pending", "evidence": null},
+        {"criterion": "language-and-pronunciation", "status": "pending", "evidence": null},
+        {"criterion": "assistive-technology", "status": "pending", "evidence": null}
+      ],
+      "scale_results": [
+        {"scale": "default", "status": "pending", "actual_percent": null, "evidence": null},
+        {"scale": "enlarged", "status": "pending", "actual_percent": null, "evidence": null},
+        {"scale": "extra-large", "status": "pending", "actual_percent": null, "evidence": null}
+      ]
+    },
+    {
+      "id": "calibre-qt-webengine",
+      "name": "Calibre E-book viewer",
+      "planned_version": "9.13",
+      "engine_family": "Qt WebEngine",
+      "platform": "Linux",
+      "release_source": "https://calibre-ebook.com/whats-new",
+      "environment": {
+        "reader_version": null,
+        "engine_version": null,
+        "os_version": null,
+        "assistive_technology": null,
+        "tester": null,
+        "tested_at": null
+      },
+      "results": [
+        {"criterion": "import-and-publication-information", "status": "pending", "evidence": null},
+        {"criterion": "navigation-and-landmarks", "status": "pending", "evidence": null},
+        {"criterion": "reading-order-and-structure", "status": "pending", "evidence": null},
+        {"criterion": "keyboard-and-focus", "status": "pending", "evidence": null},
+        {"criterion": "code-and-tables", "status": "pending", "evidence": null},
+        {"criterion": "images-and-diagrams", "status": "pending", "evidence": null},
+        {"criterion": "mathematics", "status": "pending", "evidence": null},
+        {"criterion": "links-notes-and-backlinks", "status": "pending", "evidence": null},
+        {"criterion": "language-and-pronunciation", "status": "pending", "evidence": null},
+        {"criterion": "assistive-technology", "status": "pending", "evidence": null}
+      ],
+      "scale_results": [
+        {"scale": "default", "status": "pending", "actual_percent": null, "evidence": null},
+        {"scale": "enlarged", "status": "pending", "actual_percent": null, "evidence": null},
+        {"scale": "extra-large", "status": "pending", "actual_percent": null, "evidence": null}
+      ]
+    },
+    {
+      "id": "foliate-webkitgtk",
+      "name": "Foliate",
+      "planned_version": "3.2.1",
+      "engine_family": "WebKitGTK",
+      "platform": "Linux",
+      "release_source": "https://github.com/johnfactotum/foliate/releases/tag/3.2.1",
+      "environment": {
+        "reader_version": null,
+        "engine_version": null,
+        "os_version": null,
+        "assistive_technology": null,
+        "tester": null,
+        "tested_at": null
+      },
+      "results": [
+        {"criterion": "import-and-publication-information", "status": "pending", "evidence": null},
+        {"criterion": "navigation-and-landmarks", "status": "pending", "evidence": null},
+        {"criterion": "reading-order-and-structure", "status": "pending", "evidence": null},
+        {"criterion": "keyboard-and-focus", "status": "pending", "evidence": null},
+        {"criterion": "code-and-tables", "status": "pending", "evidence": null},
+        {"criterion": "images-and-diagrams", "status": "pending", "evidence": null},
+        {"criterion": "mathematics", "status": "pending", "evidence": null},
+        {"criterion": "links-notes-and-backlinks", "status": "pending", "evidence": null},
+        {"criterion": "language-and-pronunciation", "status": "pending", "evidence": null},
+        {"criterion": "assistive-technology", "status": "pending", "evidence": null}
+      ],
+      "scale_results": [
+        {"scale": "default", "status": "pending", "actual_percent": null, "evidence": null},
+        {"scale": "enlarged", "status": "pending", "actual_percent": null, "evidence": null},
+        {"scale": "extra-large", "status": "pending", "actual_percent": null, "evidence": null}
+      ]
+    }
+  ]
+}

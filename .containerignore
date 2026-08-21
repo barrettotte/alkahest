@@ -2,6 +2,7 @@
 .quarto
 **/__pycache__
 **/*.pyc
+**/node_modules
 tools/.venv
 book/_build
 book/site_libs

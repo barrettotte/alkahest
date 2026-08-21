@@ -1,27 +1,9 @@
 project:
   type: book
-  # Validate semantic sources, then stage generated vector and font build inputs.
+  # Keep the authoring config compact by routing semantic validation through
+  # one dispatcher, then stage generated vector and font build inputs.
   pre-render:
-    - python3 ../scripts/check-execution-policy.py
-    - python3 ../scripts/check-graphs.py
-    - /opt/alkahest/tools/bin/python ../scripts/check-circuits.py
-    - /opt/alkahest/tools/bin/python ../scripts/check-chemistry.py
-    - python3 ../scripts/check-computing-diagrams.py
-    - python3 ../scripts/check-physics-diagrams.py
-    - python3 ../scripts/check-rich-media.py
-    - python3 ../scripts/check-pdf-backend-decision.py
-    - python3 ../scripts/check-editorial-integrity.py
-    - python3 ../scripts/check-identities.py
-    - python3 ../scripts/check-editions.py
-    - python3 ../scripts/check-learning.py
-    - python3 ../scripts/check-companions.py
-    - python3 ../scripts/check-reuse.py
-    - python3 ../scripts/check-citations.py
-    - python3 ../scripts/check-glossary.py
-    - python3 ../scripts/check-generated-lists.py
-    - python3 ../scripts/check-icons.py
-    - python3 ../scripts/check-index.py
-    - python3 ../scripts/check-notes.py
+    - python3 ../scripts/check-source.py
     - ../scripts/stage-icons
     - ../scripts/stage-webfonts
 
