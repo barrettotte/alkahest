@@ -36,4 +36,19 @@ artifacts are written below `book/_build/` and ignored by Git.
 - `docs/` records author workflows and evaluated design decisions.
 - `tools/` locks the Python environment used by specialized diagram checks.
 
+## Documentation map
+
+- [Content architecture](docs/content-architecture.md) covers identities,
+  editions, controlled reuse, companions, generated lists, and learning roles.
+- [Media workflows](docs/media-workflows.md) covers generated diagrams, charts,
+  circuits, chemistry, computing, physics, and rich-media fallbacks.
+- [Accessibility](docs/accessibility.md) covers HTML, EPUB, reader review, and
+  PDF/UA evidence without making premature conformance claims.
+- [Source and writing quality](docs/quality.md) covers integrity checks, the
+  static-only execution boundary, spelling, terminology, and overrides.
+- [Publication profiles](docs/publication-profiles.md) covers page geometry and
+  the reversible Typst/LuaLaTeX backend decision.
+- [Toolchain](docs/toolchain.md) covers the rootless offline environment and
+  links to its exact lock record.
+
 Named after the theoretical “universal solvent” in Renaissance alchemy.

@@ -100,18 +100,9 @@ directly. Use raster inputs only for inherently photographic or textured
 subjects. Effective raster resolution, color space, and print preflight remain
 release-gate work rather than claims of this source-level contract.
 
-The selected Mermaid, Graphviz, and generated-chart workflows, including the
-deferred Vega-Lite path, are recorded in `docs/graph-chart-evaluation.md`.
-The portable electrical-circuit SVG workflow and evaluated CircuitikZ/Typst
-alternatives are recorded in `docs/circuit-workflow-evaluation.md`.
-The portable chemistry SVG workflow and evaluated Chemfig/typed-smiles
-alternatives are recorded in `docs/chemistry-workflow-evaluation.md`.
-The data-driven timing, gate, memory/instruction, and processor architecture
-workflow is recorded in `docs/computing-diagram-evaluation.md`.
-The portable physics vector/field workflow and its unit, precision, and data-
-provenance contract are recorded in `docs/physics-diagram-evaluation.md`.
-Audio, video, animation, and interactive enhancements use the format-aware
-registry and static-equivalence policy in `docs/rich-media.md`.
+Graphs, charts, circuits, chemistry, computing, physics, and rich media share
+the deterministic derivative, accessibility, provenance, and review contract
+in [`media-workflows.md`](media-workflows.md).
 
 `book/figures/README.md` is the current asset registry. A production registry
 must record creator, origin, license or permission, modification history, and

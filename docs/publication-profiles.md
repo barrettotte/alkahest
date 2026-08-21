@@ -48,8 +48,59 @@ contrast problems that should instead fail a deliberate preflight check.
 Artifacts are grouped under `book/_build/print/7x10/`,
 `book/_build/print/6x9/`, and `book/_build/review/letter/` by PDF backend.
 Typst is the scored default; LuaLaTeX remains a tested compatibility and
-diagnostic backend. The evidence, exceptions, and reversal policy are recorded
-in [`pdf-backend-decision.md`](pdf-backend-decision.md).
+diagnostic backend. The decision and reversal policy follow below.
+
+## PDF backend decision
+
+Typst is the default PDF backend. LuaLaTeX remains a supported compatibility
+and diagnostic backend; ordinary renders and CI continue building both so the
+fallback cannot decay unnoticed. The machine-readable scorecard is
+`book/pdf-backends.json`.
+
+| Criterion | Weight | Typst | LuaLaTeX |
+|---|---:|---:|---:|
+| Required-feature fidelity | 25% | 5 | 4 |
+| Typography and page control | 20% | 4 | 5 |
+| Reliability and diagnostics | 15% | 3 | 4 |
+| Template maintainability | 15% | 4 | 3 |
+| Accessibility and PDF standards | 10% | 3 | 1 |
+| Build speed | 5% | 5 | 2 |
+| Specialist ecosystem fit | 5% | 4 | 5 |
+| Long-term portability | 5% | 3 | 5 |
+| **Weighted result** | **100%** | **4.00** | **3.75** |
+
+Typst leads on the evaluated feature path, direct SVG consumption, tagged
+output, maintainability, and iteration speed. LuaLaTeX retains more mature page
+composition, specialist packages, archival history, and publisher familiarity.
+The margin is intentionally reversible rather than a reason to remove either
+backend.
+
+### Known exceptions
+
+- Quarto's bundled `typst-gather` needs a newer glibc than the pinned base
+  image, so Quarto uses its offline fallback and emits one known warning.
+- Typst and its Quarto integration are younger and require locks plus regression
+  coverage against upstream change.
+- Ordinary LuaLaTeX output remains untagged and its clean-container render is
+  slower; the experimental PDF/UA profile is evaluated separately.
+- Neither backend is yet certified for a printer or publisher workflow. PDF/UA
+  automation passes, but human review remains pending in
+  [`accessibility.md`](accessibility.md#pdf-and-pdfua).
+
+### Migration and reversal
+
+Canonical chapters remain neutral Quarto Markdown. Backend code stays in
+`book/typst/`, `book/latex/`, profiles, filters, and asset adapters. A production
+blocker can switch the default alias to LuaLaTeX without rewriting content.
+
+Review the decision when a publisher requires backend-specific source or PDF
+features, accessibility evidence changes, a required feature fails, or a
+toolchain upgrade materially changes fidelity or reliability. Reversal updates
+the registry, render alias, scorecard, and evidence while stable content IDs and
+authoring syntax remain unchanged.
+
+`make check-pdf-backend-decision` validates score arithmetic, operational
+default, adapters, documentation markers, and neutral manuscript source.
 
 The initial 2026-08-16 validation confirmed 504 x 720 point media boxes for
 7 x 10, 432 x 648 for 6 x 9, and 612 x 792 for Letter. All fonts in all six

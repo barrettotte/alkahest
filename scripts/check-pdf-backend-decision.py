@@ -151,7 +151,7 @@ def check_repository_integration(data):
         encoding="utf-8"
     )
     quarto = (BOOK / "_quarto.yml").read_text(encoding="utf-8")
-    documentation = (ROOT / "docs/pdf-backend-decision.md").read_text(encoding="utf-8")
+    documentation = (ROOT / "docs/publication-profiles.md").read_text(encoding="utf-8")
     required_make = (
         "check-pdf-backend-decision:",
         "render-pdf:",

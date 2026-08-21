@@ -50,7 +50,7 @@ appendix groups. Standard render commands select `web` for HTML, `epub` for
 EPUB, and `print` for PDFs. The preview retains core Appendix A, the web edition
 adds online-only D, and the supplemental edition adds its own D instead.
 
-See `docs/editions.md` for the complete structure/edition matrix, staging
+See `docs/content-architecture.md` for the complete structure/edition matrix, staging
 boundary, private-source policy, and reduced-book reference checks.
 
 Quarto concatenates project arrays while merging profiles, so a profile cannot

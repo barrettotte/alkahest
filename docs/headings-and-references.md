@@ -43,7 +43,7 @@ an ID merely because wording changes.
 
 The checked ledger, glossary/index namespaces, companion-asset IDs, translation
 parity, edition behavior, and explicit migration workflow are defined in
-[`persistent-identities.md`](persistent-identities.md).
+[`content-architecture.md`](content-architecture.md#persistent-identities).
 
 References may cross chapter, part, back-matter, and appendix boundaries in
 either direction without different syntax. The renderer supplies the correct

@@ -9,7 +9,7 @@ project:
 
 # Publication builds render source listings but never execute manuscript code
 # or trust cached/frozen results. See execution-policy.json for the locked
-# boundary and docs/execution-policy.md for a future opt-in verifier design.
+# boundary and docs/quality.md for a future opt-in verifier design.
 execute:
   enabled: false
   cache: false

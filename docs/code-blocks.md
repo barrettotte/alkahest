@@ -64,7 +64,7 @@ The only brace-style cells admitted by the machine policy are declarative
 `{mermaid}` and Graphviz `{dot}` diagrams. Diagram renderers are reviewed
 separately and do not imply permission to execute a general-purpose language.
 
-`docs/execution-policy.md` defines the trust boundary and the requirements for
+`docs/quality.md` defines the trust boundary and the requirements for
 any future, separate opt-in verifier. Publication caching and frozen results
 are disabled. A verifier would require a pinned offline environment, locked
 dependencies, read-only source, disposable output, resource limits, and drift

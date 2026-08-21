@@ -108,7 +108,7 @@ second copy of the complete suite list.
 Publication renders are also static-only: `_quarto.yml` disables execution,
 caching, and frozen results, while `make check-execution-policy` rejects
 executable manuscript cells, engine declarations, profile overrides, and
-notebook chapters. `docs/execution-policy.md` records the isolation, locking,
+notebook chapters. `docs/quality.md` records the isolation, locking,
 cache-key, and output-drift requirements for a future separate opt-in verifier.
 
 Run `make build-report` to perform one sequential measurement of all four

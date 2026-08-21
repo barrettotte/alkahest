@@ -6,8 +6,8 @@ projects, and laboratory procedures. Authors use Quarto Markdown semantics;
 backend-specific markup is not part of the manuscript contract.
 
 Objectives, prerequisites, expected time, difficulty, summaries, review
-questions, hints, and private answer keys form the separate learning contract
-documented in `docs/learning-components.md`.
+questions, hints, and private answer keys follow the learning contract in
+[`content-architecture.md`](content-architecture.md#learning-components).
 
 ## Tables
 
