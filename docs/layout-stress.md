@@ -62,3 +62,5 @@ then sample 7 x 10 and Letter. Confirm that:
 
 Typst and LuaLaTeX may produce different line endings and page counts. The
 acceptance target is a coherent result in each backend, not pixel identity.
+Golden-page regression checks preserve that rule: each backend is compared
+only with its own prior primary-profile baseline, never with the other backend.

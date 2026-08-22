@@ -24,6 +24,7 @@ python3 "${script_dir}/check-source.py" --tests
 # content equality with the complete render. The full six-PDF repeat remains a
 # deliberate pre-release command because fresh LuaLaTeX caches are expensive.
 python3 "${script_dir}/check-reproducibility.py" --repeat quick
+"${script_dir}/check-golden-pages.sh"
 "${script_dir}/check-accessibility.sh"
 "${script_dir}/check-epub-accessibility.sh"
 "${script_dir}/check-publication.sh"

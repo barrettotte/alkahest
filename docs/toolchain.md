@@ -125,6 +125,12 @@ HTML, EPUB, and default Typst artifacts as a faster continuous sentinel. Build
 duration and host diagnostics from `make build-report` are documented local
 variation rather than publication content.
 
+After PDF rendering, `make check-golden-pages` uses the image's pinned Poppler
+to compare five semantic layout fixtures in each primary backend with committed
+decoded-pixel baselines. Its policy and pure-Python PNG/comparison fixtures run
+through `make test-golden-pages`; intentional baseline replacement is a
+separate maintenance operation documented in `quality.md`.
+
 Run `make build-report` to perform one sequential measurement of all four
 primary formats. It reports wall-clock duration, captured Quarto warnings,
 artifact size, and PDF page metadata without deleting existing outputs. Treat

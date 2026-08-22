@@ -46,6 +46,9 @@ visible; a future vendor profile may perform a declared press conversion.
 | `make check-pdf-preflight` | Check PDF boxes, font packaging, raster resolution, color spaces, and unsafe document features |
 | `make test-pdf-preflight` | Exercise valid and invalid preflight parser fixtures without rendering |
 | `make check-pdf-profiles` | Run preflight plus the specimen's layout, content, and page-system checks |
+| `make check-golden-pages` | Compare fragile primary-profile pages with committed backend-specific baselines |
+| `make test-golden-pages` | Exercise golden-page policy, marker, PNG, comparison, and coverage fixtures |
+| `make update-golden-pages` | Deliberately replace baselines after reviewing an intended layout change |
 
 Artifacts are grouped under `book/_build/print/7x10/`,
 `book/_build/print/6x9/`, and `book/_build/review/letter/` by PDF backend.
@@ -81,6 +84,24 @@ output intent, PDF/X standard, total-ink limit, or bleed geometry. Add those as
 an explicit vendor profile rather than silently converting the generic files.
 Cover bleed and output intent remain part of the separate cover/vendor
 pipeline.
+
+## Golden-page visual regression
+
+The structural PDF checks catch page-box, font, text-boundary, and content
+failures. The complementary golden-page gate catches subtler composition drift
+in five deliberately fragile layouts: long code, aligned mathematics, a
+circuit, a multipage table, and multilingual text. Semantic markers resolve
+the current PDF page, so ordinary pagination changes do not require hard-coded
+page numbers.
+
+The compact baseline covers each fixture in both primary 7 x 10 backends.
+Comparison is exact after decoding a pinned 96-DPI grayscale raster; Typst is
+compared only with its Typst baseline and LuaLaTeX only with its LuaLaTeX
+baseline. The other trim profiles retain structural and preflight coverage
+without multiplying low-value image snapshots. Failures create a Markdown
+report plus current and red-difference images under
+`book/_build/qa/golden-pages/`. Baseline replacement is available only through
+the explicit `make update-golden-pages` maintenance target.
 
 ## PDF backend decision
 

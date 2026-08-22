@@ -18,6 +18,7 @@ the pinned rootless image.
 | Private edition leakage | Edition staging checks | Public-artifact canary search |
 | Unlicensed or private assets | `make check-asset-rights` | `make check-release-assets` across HTML, EPUB, and six PDFs |
 | Nondeterministic output | Reproducibility policy and fixed build inputs | Exact HTML-tree, EPUB, and PDF fingerprints across repeated builds |
+| Fragile PDF composition | Golden-page policy and semantic markers | Exact decoded-pixel comparison with backend-specific baselines |
 
 Use `.decorative`, `role="presentation"`, or `aria-hidden="true"` only for an
 image that carries no information. Otherwise supply useful Markdown alt text
@@ -87,6 +88,31 @@ unstable EPUB/PDF dates, markup ordering, missing artifacts, and changed content
 time, wall-clock duration, host CPU count, and Podman version describe the
 measurement environment and therefore vary; the rendered books it measures do
 not receive an exception.
+
+## Golden-page visual regression
+
+`config/pdf/golden-pages.json` selects five composition-sensitive fixtures by
+semantic text marker: a long code line, aligned mathematics, a circuit figure,
+a multipage table, and multilingual layout. Each fixture has a separate
+committed baseline for the primary Typst and LuaLaTeX 7 x 10 profiles. The gate
+therefore detects drift within a backend; it does not require two independently
+composed backends to have identical pixels.
+
+The locked rootless image converts the resolved pages to 96-DPI grayscale images
+with its pinned Poppler version. The checker decodes the PNGs before comparing
+exact pixels, so compression differences do not create false changes. A normal
+check is read-only with respect to baselines:
+
+```sh
+make check-golden-pages
+make test-golden-pages
+```
+
+On failure, inspect `book/_build/qa/golden-pages/report.md` together with the
+current and red-difference images beside it. Only an intentional, reviewed
+layout change should run `make update-golden-pages`; review every changed PNG
+before committing it. CI runs the normal comparison after rendering the PDF
+profiles and never updates baselines.
 
 ## Asset rights and release privacy
 
