@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alkahest:schema:rights:1",
+  "title": "Alkahest asset rights registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "allowed_licenses", "collections", "registries", "runtime_bundles", "artifact_contract"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "allowed_licenses": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "collections": {"type": "array", "items": {"$ref": "#/$defs/identifiedRecord"}},
+    "registries": {"type": "array", "items": {"$ref": "#/$defs/identifiedRecord"}},
+    "runtime_bundles": {"type": "array", "items": {"$ref": "#/$defs/identifiedRecord"}},
+    "artifact_contract": {"type": "object"}
+  },
+  "$defs": {
+    "identifiedRecord": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {"id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}}
+    }
+  }
+}

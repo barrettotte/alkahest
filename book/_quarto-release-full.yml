@@ -1,0 +1,26 @@
+# Generated from shared release defaults and book/releases.json; do not edit.
+book:
+  subtitle: "A feature specimen for a universal technical-book template"
+  description: "A comprehensive technical-book specimen for evaluating reusable HTML, EPUB, Typst, and LuaLaTeX publication workflows."
+subtitle: "A feature specimen for a universal technical-book template"
+description: "A comprehensive technical-book specimen for evaluating reusable HTML, EPUB, Typst, and LuaLaTeX publication workflows."
+identifier: "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8"
+
+alkahest:
+  edition: "Development specimen; not for publication."
+  identifier: "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8"
+  release:
+    profile: full
+    formats: ["html", "epub", "typst", "latex"]
+  preview:
+    enabled: false
+    label: "Full edition"
+    message: "This is the complete edition."
+    full-edition-label: "Read the full edition"
+    full-edition-url: ""
+    purchase-label: "Purchase the full edition"
+    purchase-url: ""
+    links-pending: "Publication links have not been assigned."
+    watermark:
+      enabled: false
+      text: "PREVIEW"

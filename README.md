@@ -27,6 +27,9 @@ make generate-rights-report # Build the release rights and credits inventory.
 make package-template-engine # Build the reusable presentation-engine ZIP.
 make new-book DEST=../my-book TITLE="My Book" AUTHOR="Author Name" # Create a book.
 make generate-theme  # Apply book/theme.json to every output adapter.
+make generate-release-profiles  # Apply full/preview allowlists and metadata.
+make check-extension-apis # Verify the shipped author and maintainer API reference.
+make check-book-contracts # Verify schemas and book-owned metadata layers.
 make package-source-archive # Build the private recovery source ZIP.
 make ci              # Run the complete rendering and validation pipeline.
 make help-all        # Show maintainer and specialist commands.
@@ -70,5 +73,11 @@ artifacts are written below `book/_build/` and ignored by Git.
   independent metadata, engine provenance, and the starter author workflow.
 - [Shared defaults and book themes](docs/theme-overrides.md) explains the
   versioned baseline, small per-book overrides, and generated format adapters.
+- [Full and preview releases](docs/release-profiles.md) covers per-book chapter
+  allowlists, product metadata overrides, and isolated public staging.
+- [Extension APIs](docs/extension-apis.md) defines stable author syntax,
+  book-local registries, engine hooks, filters, and deterministic generators.
+- [Reusable book contracts](docs/book-contracts.md) defines the schemas,
+  ownership, and override boundary for book-specific facts.
 
 Named after the theoretical “universal solvent” in Renaissance alchemy.

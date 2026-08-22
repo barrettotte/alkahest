@@ -133,7 +133,7 @@ def main():
         output_root = Path(temporary)
         write_outputs(output_root, first)
         result = check_template_package(ROOT, output_root=output_root)
-        if result["source_files"] != 45 or result["members"] != 47:
+        if result["source_files"] != 60 or result["members"] != 62:
             raise RuntimeError("error: valid template package returned incorrect facts")
 
     policy_failure(

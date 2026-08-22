@@ -16,6 +16,7 @@ from alkahest.new_book import (
     validate_new_book_integration,
     validate_scaffold,
 )
+from alkahest.release_profiles import stage_project_release
 
 
 ROOT = SCRIPT_DIR.parent
@@ -34,6 +35,10 @@ def main():
     second = scaffold_members(ROOT, options)
     if first != second:
         raise RuntimeError("error: new-book scaffold is not deterministic")
+    if b"--profile release-preview,epub" not in first["Makefile"]:
+        raise RuntimeError("error: new-book preview profile precedence is incorrect")
+    if b"alkahest-preview-placeholder" not in first["book/index.qmd"]:
+        raise RuntimeError("error: new-book preview notice placeholder is missing")
     with tempfile.TemporaryDirectory(prefix="alkahest-new-book-check.") as temporary:
         destination = Path(temporary) / "small-book"
         result = create_new_book(
@@ -46,10 +51,18 @@ def main():
         facts = validate_scaffold(destination, first)
         if result["files"] != facts["files"]:
             raise RuntimeError("error: new-book result file count is inconsistent")
+        full = stage_project_release(destination, "full")
+        preview = stage_project_release(destination, "preview")
+        if (
+            full["sources"] != ["index.qmd", "chapter-01.qmd", "references.qmd"]
+            or preview["sources"] != full["sources"]
+            or not (preview["stage"] / "chapter-01.qmd").is_symlink()
+        ):
+            raise RuntimeError("error: generated-book release staging is inconsistent")
     print(
         "ok: new-book generator "
         f"({facts['files']} files; {facts['engine_files']} installed engine files; "
-        f"version {policy['generator']['version']}; deterministic smoke passed)"
+        f"version {policy['generator']['version']}; deterministic release smoke passed)"
     )
 
 

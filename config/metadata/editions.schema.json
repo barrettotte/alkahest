@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alkahest:schema:editions:1",
+  "title": "Alkahest edition manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sources", "structures", "editions"],
+  "properties": {
+    "version": {"const": 1},
+    "sources": {"type": "object"},
+    "structures": {"type": "object"},
+    "editions": {"type": "object"}
+  }
+}

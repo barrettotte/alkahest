@@ -42,12 +42,9 @@ def validate_preview_presentation(root: Path):
 
     if (config + "\n" + defaults).count("  - filters/preview.lua") != 1:
         fail("canonical Quarto config must register the preview filter exactly once")
-    placeholder = (
-        '::: {.content-visible when-profile="edition-preview"}\n'
-        "::: {.alkahest-preview-placeholder}\n:::\n:::"
-    )
-    if index.count(placeholder) != 1:
-        fail("shared preface must contain one edition-preview presentation placeholder")
+    placeholder = "::: {.alkahest-preview-placeholder}\n:::"
+    if index.count(placeholder) != 1 or 'when-profile="edition-preview"' in index:
+        fail("shared preface must contain one unconditional preview presentation placeholder")
     for marker in (
         "alkahest-preview-placeholder",
         "alkahest-preview-notice",

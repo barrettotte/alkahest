@@ -5,10 +5,12 @@ PUBLIC_TARGETS := bootstrap check render render-html render-epub render-pdf \
 	package-companion-bundles check-companion-bundles generate-covers \
 	check-cover-artifacts generate-rights-report check-rights-report \
 	package-template-engine check-template-package new-book generate-theme \
-	check-theme-defaults package-source-archive \
+	check-theme-defaults generate-release-profiles check-release-profiles \
+	check-extension-apis check-book-contracts \
+	package-source-archive \
 	check-source-archive check-writing ci clean help-all
 
-.PHONY: bootstrap build-report check check-accessibility check-archive-policy check-asset-rights check-companion-bundles check-cover-artifacts check-covers check-epub-accessibility check-epub-review check-golden-pages check-manifestations check-metadata-generation check-new-book check-publication-metadata check-pdf-accessibility-policy check-pdf-preflight check-preview check-release-assets check-reproducibility check-rights-report check-source check-source-archive check-template-engine check-template-package check-theme-defaults check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-covers generate-metadata generate-physics-diagrams generate-publication-metadata generate-rich-media-fixtures generate-graphs generate-rights-report generate-theme generate-writing-terminology new-book package-companion-bundles package-source-archive package-template-engine prepare-epub-review render render-all render-preview test-accessibility test-asset-rights test-companion-bundles test-covers test-epub-accessibility test-epub-review test-golden-pages test-manifestations test-metadata-generation test-new-book test-preview test-publication-metadata test-rights-report test-source-archive test-template-engine test-theme-defaults test-localization test-pdf-accessibility-policy test-pdf-preflight test-reproducibility test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-golden-pages update-identities verify-reproducibility \
+.PHONY: bootstrap build-report check check-accessibility check-archive-policy check-asset-rights check-book-contracts check-companion-bundles check-cover-artifacts check-covers check-epub-accessibility check-epub-review check-extension-apis check-golden-pages check-manifestations check-metadata-generation check-new-book check-publication-metadata check-pdf-accessibility-policy check-pdf-preflight check-preview check-release-assets check-release-profiles check-reproducibility check-rights-report check-source check-source-archive check-template-engine check-template-package check-theme-defaults check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-covers generate-metadata generate-physics-diagrams generate-publication-metadata generate-release-profiles generate-rich-media-fixtures generate-graphs generate-rights-report generate-theme generate-writing-terminology new-book package-companion-bundles package-source-archive package-template-engine prepare-epub-review render render-all render-preview test-accessibility test-asset-rights test-book-contracts test-companion-bundles test-covers test-epub-accessibility test-epub-review test-extension-apis test-golden-pages test-manifestations test-metadata-generation test-new-book test-preview test-publication-metadata test-release-profiles test-rights-report test-source-archive test-template-engine test-theme-defaults test-localization test-pdf-accessibility-policy test-pdf-preflight test-reproducibility test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-golden-pages update-identities verify-reproducibility \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke render-pdf-accessibility-smoke toolchain-report help help-all
 
@@ -181,6 +183,27 @@ check-theme-defaults: ## Verify shared theme policy and exact format adapters.
 
 test-theme-defaults: ## Exercise theme inheritance, schema, and stale-output failures.
 	python3 scripts/check-source.py --tests theme-defaults
+
+generate-release-profiles: ## Resolve reusable full/preview profiles and book overrides.
+	python3 scripts/sync-release-profiles.py
+
+check-release-profiles: ## Verify release allowlists, metadata, and exact profiles.
+	python3 scripts/check-source.py release-profiles
+
+test-release-profiles: ## Exercise release schema, isolation, and stale-output failures.
+	python3 scripts/check-source.py --tests release-profiles
+
+check-extension-apis: ## Validate the shipped extension API inventory and reference.
+	python3 scripts/check-source.py extension-apis
+
+test-extension-apis: ## Exercise extension API schema, path, and coverage failures.
+	python3 scripts/check-source.py --tests extension-apis
+
+check-book-contracts: ## Validate reusable schemas and book-owned override layers.
+	python3 scripts/check-source.py book-contracts
+
+test-book-contracts: ## Exercise contract inventory, schema, and record failures.
+	python3 scripts/check-source.py --tests book-contracts
 
 check-pdf-backend-decision: ## Validate the scored PDF default and compatibility policy.
 	python3 scripts/check-source.py pdf-backend

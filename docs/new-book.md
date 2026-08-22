@@ -39,12 +39,22 @@ the bundled theme synchronizer lives under `scripts/`. Its license, package
 README, source manifest, and checksums are retained under `.alkahest/engine/`, while
 `.alkahest/scaffold.json` records the generator version, book identity, stable
 EPUB identifier, and hashes for all installed engine files. Run `make help`
-inside the generated project for theme synchronization, HTML, EPUB, Typst PDF,
-LuaLaTeX PDF, and clean commands. Edit only `book/theme.json` for book-local
-colors and fonts; `make theme` refreshes every format adapter without changing
-the installed defaults. Empty book-local registries let every semantic extension initialize
+inside the generated project for theme/release synchronization, HTML, EPUB,
+Typst PDF, LuaLaTeX PDF, preview, and clean commands. Edit only
+`book/theme.json` for book-local colors and fonts; `make theme` refreshes every
+format adapter without changing the installed defaults. Register new chapters
+and set the full/preview allowlists and metadata overrides in
+`book/releases.json`, then run `make releases`. Rendering uses an isolated
+allowlisted staging project so omitted or private manuscripts are not present
+in a public release stage. Empty book-local registries let every semantic extension initialize
 without importing specimen data; fill them only as the manuscript needs those
-features. The profiles expect Quarto and the PDF tools on `PATH`, or the pinned
+features. The shipped `docs/extension-apis.md` reference identifies which
+syntax is author-stable, which registries are book-local, and which changes
+require an engine update. `docs/book-contracts.md`,
+`book/.alkahest/book-contracts.json`, and the schemas under
+`book/.alkahest/schemas/` define the matching book-owned metadata boundary;
+engine upgrades may replace those evidence files but never the book records.
+The profiles expect Quarto and the PDF tools on `PATH`, or the pinned
 Alkahest publishing environment.
 
 Repository validation uses `make check-new-book` for a fresh deterministic

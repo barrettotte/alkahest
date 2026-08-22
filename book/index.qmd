@@ -1,8 +1,6 @@
 # Preface {.unnumbered #sec-preface}
 
-::: {.content-visible when-profile="edition-preview"}
 ::: {.alkahest-preview-placeholder}
-:::
 :::
 
 This deliberately small book is an executable specification for Alkahest. Each

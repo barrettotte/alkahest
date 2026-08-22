@@ -102,7 +102,7 @@ def main():
         expect_preview_failure(
             parent,
             "missing-placeholder",
-            "one edition-preview presentation placeholder",
+            "one unconditional preview presentation placeholder",
             lambda root: replace(
                 root / "book/index.qmd",
                 "alkahest-preview-placeholder",

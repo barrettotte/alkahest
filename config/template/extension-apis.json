@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "api_version": "0.1.0",
+  "stability": "provisional",
+  "entries": [
+    {
+      "id": "components",
+      "title": "Components and instructional blocks",
+      "level": "author",
+      "documentation_anchor": "api-components",
+      "entrypoints": ["book/theme/alkahest.scss", "book/theme/alkahest-epub.css", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
+      "book_inputs": [],
+      "author_markers": ["::: {.callout-note", ".project-block", ".lab-block"]
+    },
+    {
+      "id": "semantic-icons",
+      "title": "Semantic icons",
+      "level": "author",
+      "documentation_anchor": "api-semantic-icons",
+      "entrypoints": ["book/_extensions/alkahest-icons/_extension.yml", "book/_extensions/alkahest-icons/alkahest-icons.lua", "book/_extensions/alkahest-icons/registry.lua"],
+      "book_inputs": [],
+      "author_markers": ["{{< alk-icon", "label=", ".icon-notice"]
+    },
+    {
+      "id": "icon-themes",
+      "title": "Icon-theme customization",
+      "level": "engine-maintainer",
+      "documentation_anchor": "api-icon-themes",
+      "entrypoints": ["book/_extensions/alkahest-icons/registry.lua", "book/icons/warning.svg", "book/theme/alkahest.scss", "book/theme/alkahest-epub.css"],
+      "book_inputs": [],
+      "author_markers": ["book/_extensions/alkahest-icons/registry.lua", "make check-icons"]
+    },
+    {
+      "id": "glossary",
+      "title": "Glossary sources and presentation",
+      "level": "book-config",
+      "documentation_anchor": "api-glossary",
+      "entrypoints": ["book/_extensions/alkahest-glossary/_extension.yml", "book/_extensions/alkahest-glossary/alkahest-glossary.lua", "book/_extensions/alkahest-glossary/alkahest-glossary-filter.lua", "book/_extensions/alkahest-glossary/registry.lua"],
+      "book_inputs": ["book/glossary.yml"],
+      "author_markers": ["{{< alk-term", ".alkahest-glossary-placeholder", "make check-glossary"]
+    },
+    {
+      "id": "appendices",
+      "title": "Appendix structure and numbering",
+      "level": "book-config",
+      "documentation_anchor": "api-appendices",
+      "entrypoints": ["scripts/lib/alkahest/editions.py", "scripts/lib/alkahest/release_profiles.py", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
+      "book_inputs": ["book/editions.json", "book/releases.json"],
+      "author_markers": ["book.appendices", "role: appendix", "make check-editions"]
+    },
+    {
+      "id": "notes",
+      "title": "Notes and placement",
+      "level": "book-config",
+      "documentation_anchor": "api-notes",
+      "entrypoints": ["book/_extensions/alkahest-notes/_extension.yml", "book/_extensions/alkahest-notes/alkahest-notes-filter.lua", "book/_extensions/alkahest-notes/registry.lua"],
+      "book_inputs": ["book/notes.yml"],
+      "author_markers": ["[^note-id]", ".alkahest-note", "alkahest.notes.placement"]
+    },
+    {
+      "id": "indexes",
+      "title": "Subject and person indexes",
+      "level": "book-config",
+      "documentation_anchor": "api-indexes",
+      "entrypoints": ["book/_extensions/alkahest-index/_extension.yml", "book/_extensions/alkahest-index/alkahest-index.lua", "book/_extensions/alkahest-index/alkahest-index-filter.lua", "book/_extensions/alkahest-index/registry.lua"],
+      "book_inputs": ["book/index.yml"],
+      "author_markers": ["{{< alk-index", ".alkahest-index-placeholder", "make check-index"]
+    },
+    {
+      "id": "generated-lists",
+      "title": "Generated lists",
+      "level": "book-config",
+      "documentation_anchor": "api-generated-lists",
+      "entrypoints": ["book/_extensions/alkahest-generated-lists/_extension.yml", "book/_extensions/alkahest-generated-lists/alkahest-generated-lists.lua", "book/_extensions/alkahest-generated-lists/registry.lua"],
+      "book_inputs": ["book/generated-lists.yml", "book/glossary.yml"],
+      "author_markers": [".alkahest-generated-lists-placeholder", "objects:", "make check-generated-lists"]
+    },
+    {
+      "id": "learning-blocks",
+      "title": "Learning blocks",
+      "level": "author",
+      "documentation_anchor": "api-learning-blocks",
+      "entrypoints": ["scripts/lib/alkahest/learning.py", "book/theme/alkahest.scss", "book/theme/alkahest-epub.css", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
+      "book_inputs": ["book/editions.json"],
+      "author_markers": [".learning-objectives", ".review-question", "data-for="]
+    },
+    {
+      "id": "companions",
+      "title": "Companion materials",
+      "level": "book-config",
+      "documentation_anchor": "api-companions",
+      "entrypoints": ["book/_extensions/alkahest-companions/_extension.yml", "book/_extensions/alkahest-companions/alkahest-companions.lua", "book/_extensions/alkahest-companions/registry.lua", "scripts/lib/alkahest/companion_bundles.py"],
+      "book_inputs": ["book/companion.json"],
+      "author_markers": ["{{< alk-companion", "bundle-", "make package-companion-bundles"]
+    },
+    {
+      "id": "localization",
+      "title": "Localization",
+      "level": "book-config",
+      "documentation_anchor": "api-localization",
+      "entrypoints": ["book/alkahest-defaults.yml", "scripts/check-localization.py", "scripts/lib/alkahest/markup.py"],
+      "book_inputs": ["config/localization/locales.json", "book/_quarto-locale-fr.yml"],
+      "author_markers": ["lang=", "dir=\"rtl\"", "make check-localization"]
+    },
+    {
+      "id": "rich-media",
+      "title": "Rich-media fallbacks",
+      "level": "book-config",
+      "documentation_anchor": "api-rich-media",
+      "entrypoints": ["book/_extensions/alkahest-media/_extension.yml", "book/_extensions/alkahest-media/alkahest-media.lua", "book/_extensions/alkahest-media/registry.lua"],
+      "book_inputs": ["book/media.json"],
+      "author_markers": ["{{< alk-media", "fallback_alt", "make check-rich-media"]
+    },
+    {
+      "id": "controlled-reuse",
+      "title": "Controlled content reuse",
+      "level": "book-config",
+      "documentation_anchor": "api-controlled-reuse",
+      "entrypoints": ["book/_extensions/alkahest-reuse/_extension.yml", "book/_extensions/alkahest-reuse/alkahest-reuse.lua", "book/_extensions/alkahest-reuse/registry.lua"],
+      "book_inputs": ["book/reusable-content.json"],
+      "author_markers": ["{{< alk-reuse", "allowed_contexts", "make check-reuse"]
+    },
+    {
+      "id": "filters",
+      "title": "Portable document filters",
+      "level": "engine-maintainer",
+      "documentation_anchor": "api-filters",
+      "entrypoints": ["book/filters/math-alt.lua", "book/filters/pdf-metadata.lua", "book/filters/preview.lua", "book/filters/strip-invalid-alt.lua"],
+      "book_inputs": ["book/alkahest-defaults.yml"],
+      "author_markers": ["filters:", ".math-inline-alt", ".alkahest-preview-placeholder"]
+    },
+    {
+      "id": "generators",
+      "title": "Deterministic generators",
+      "level": "maintainer-tooling",
+      "documentation_anchor": "api-generators",
+      "entrypoints": ["scripts/generate-chemistry.py", "scripts/generate-circuits.py", "scripts/generate-computing-diagrams.py", "scripts/generate-covers.py", "scripts/generate-graphs.py", "scripts/generate-physics-diagrams.py", "scripts/generate-publication-metadata.py", "scripts/generate-rich-media-fixtures.py", "scripts/generate-rights-report.py", "scripts/generate-writing-terminology.py"],
+      "book_inputs": ["book/reproducibility.json"],
+      "author_markers": ["make generate-graphs", "generated derivatives", "do not edit"]
+    }
+  ]
+}

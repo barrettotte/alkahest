@@ -9,11 +9,17 @@ that could silently drift.
 `config/template/template-package.json` selects five complete reusable source
 trees—Quarto extensions, Lua filters, LuaLaTeX adapters, web/EPUB themes, and
 the Typst adapter—plus the shared brand, package README, and MIT license. It
-maps 45 source files to standalone package-relative paths. Installed fonts are
+maps 60 source files to standalone package-relative paths. Installed fonts are
 excluded because they are locked build dependencies rather than template
 source; a generated book obtains them through the existing toolchain. The
-package also carries shared Quarto defaults, shared theme defaults, and the
-small deterministic theme synchronizer used by generated repositories.
+package also carries shared Quarto, theme, and release defaults plus the small
+deterministic theme/release synchronizers and isolated release stager used by
+generated repositories. It also ships the consolidated extension API reference
+and its machine-readable inventory, so a generated repository retains the same
+author, book-configuration, engine, filter, and generator boundaries. Seven
+JSON Schemas and their ownership inventory define stable IDs, editions,
+publication facts, rights, accessibility, covers, and localized labels without
+copying laboratory metadata.
 
 Run:
 
@@ -42,14 +48,19 @@ This package includes:
 - portable preview, PDF-metadata, math-alternative, and HTML-cleanup filters;
 - the shared visual brand and HTML/EPUB theme adapters; and
 - Typst and LuaLaTeX title, page, typography, and component behavior; and
-- versioned Quarto/theme defaults and the cross-format theme synchronizer.
+- versioned Quarto/theme defaults and the cross-format theme synchronizer; and
+- reusable full/preview behavior, deterministic profile generation, and
+  allowlist-based staging; and
+- `docs/extension-apis.md` plus its exact provisional API inventory; and
+- `docs/book-contracts.md`, seven reusable schemas, and the exact record-layer
+  inventory.
 
 It deliberately excludes reference-book chapters and fixtures, book metadata,
-identities, rights decisions, edition allowlists, release profiles, source
+identities, rights decisions, book-specific edition and release allowlists, source
 assets, generated fonts, maintainer scripts, and tests. Those do not belong in
-a reusable presentation engine. The generated-book and per-book theme layers
-now surround this package; subsequent roadmap items add reusable full/preview
-profiles, schemas, upgrade migrations, and compatibility policy.
+a reusable presentation engine. The generated-book, theme, and release layers
+now surround this package; subsequent roadmap items add upgrade migrations and
+compatibility policy.
 
 The reference specimen remains the exhaustive acceptance consumer in this
 repository. Packaging from its canonical engine files proves extraction, and

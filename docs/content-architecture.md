@@ -70,6 +70,13 @@ edition. Every retained reference must resolve, and required definitions,
 warnings, prerequisites, and accessibility context must never exist only in
 omitted content.
 
+The reusable book product has a narrower two-profile contract documented in
+[`release-profiles.md`](release-profiles.md). Its engine-owned defaults and
+book-local `releases.json` extract the ordinary full/preview author workflow
+without copying this reference specimen's abridged, private, web-only, or
+supplemental acceptance structures. Both staging paths enforce physical source
+isolation.
+
 Use `make render-preview` for the standalone HTML, EPUB, and Typst-PDF product,
 then `make check-preview` to enforce its exact page/chapter allowlist, private
 content and path exclusions, metadata, notice and watermark, contents,

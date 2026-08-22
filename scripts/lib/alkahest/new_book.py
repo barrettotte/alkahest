@@ -12,6 +12,11 @@ from datetime import date, datetime, timezone
 from pathlib import Path, PurePosixPath
 
 from .common import fail, load_json
+from .release_profiles import (
+    ReleaseProfileError,
+    release_outputs,
+    sync_project_releases,
+)
 from .template_package import template_members
 from .theme import ThemeError, sync_project_theme, theme_outputs
 
@@ -149,6 +154,7 @@ def normalize_book_options(
         fail("book creation date must be 1980-01-01 or later")
     namespace = uuid.UUID(policy["generator"]["uuid_namespace"])
     epub_uuid = uuid.uuid5(namespace, identifier)
+    preview_uuid = uuid.uuid5(namespace, identifier + ":preview")
     return {
         "id": identifier,
         "title": title,
@@ -160,6 +166,7 @@ def normalize_book_options(
         "created": created_date.isoformat(),
         "copyright_year": created_date.year,
         "epub_identifier": f"urn:uuid:{epub_uuid}",
+        "preview_identifier": f"urn:uuid:{preview_uuid}",
         "source_date_epoch": int(
             datetime(
                 created_date.year,
@@ -290,6 +297,56 @@ def _publication(options):
     }
 
 
+def _releases(options):
+    """Return book-local full/preview allowlists and product metadata."""
+    return {
+        "schema_version": 1,
+        "sources": {
+            "front": {
+                "path": "index.qmd",
+                "role": "front",
+                "availability": "release",
+            },
+            "chapter-01": {
+                "path": "chapter-01.qmd",
+                "role": "chapter",
+                "availability": "release",
+            },
+            "references": {
+                "path": "references.qmd",
+                "role": "back",
+                "availability": "release",
+            },
+        },
+        "profiles": {
+            "full": {
+                "chapters": ["front", "chapter-01", "references"],
+                "appendices": [],
+                "metadata": {
+                    "subtitle": options["subtitle"],
+                    "description": options["description"],
+                    "edition": "Development edition",
+                    "identifier": options["epub_identifier"],
+                },
+                "presentation": {},
+            },
+            "preview": {
+                "chapters": ["front", "chapter-01", "references"],
+                "appendices": [],
+                "metadata": {
+                    "subtitle": "One-chapter preview edition",
+                    "description": f"A one-chapter preview of {options['title']}.",
+                    "edition": "Preview edition; not for publication.",
+                    "identifier": options["preview_identifier"],
+                },
+                "presentation": {
+                    "message": "This preview contains one selected chapter, not the complete book."
+                },
+            },
+        },
+    }
+
+
 def _authored_files(options):
     quote = _yaml_string
     files = {
@@ -300,8 +357,9 @@ This book repository was created by Alkahest. Edit the Markdown files under
 `book/`, keep canonical publication facts in `book/publication.json`, and keep
 the Quarto adapter in `book/generated/metadata.yml` aligned when facts change.
 
-Edit `book/theme.json` and run `make theme` to apply book-local colors or fonts
-without changing the shared engine. Run `make help` to see the author workflow.
+Edit `book/theme.json` and run `make theme` to apply book-local colors or fonts.
+Edit `book/releases.json` to choose full/preview chapters and product metadata,
+then run `make releases`. Run `make help` to see the author workflow.
 Rendering requires Quarto, Typst, and LuaLaTeX on `PATH`, or the pinned Alkahest
 publishing environment.
 """.encode("utf-8"),
@@ -309,7 +367,7 @@ publishing environment.
 
 QUARTO ?= quarto
 
-.PHONY: help theme check-theme render render-html render-epub render-typst render-latex clean
+.PHONY: help theme check-theme releases check-releases stage-full stage-preview render render-html render-epub render-typst render-latex render-preview clean
 
 help: ## Show available author commands.
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\\n\\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-16s %s\\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -320,19 +378,46 @@ theme: ## Regenerate format adapters from book/theme.json.
 check-theme: ## Verify that generated theme adapters are current.
 	python3 scripts/sync-theme.py --check
 
-render: render-html render-epub render-typst render-latex ## Build every publication format.
+releases: ## Regenerate full and preview profiles from book/releases.json.
+	python3 scripts/sync-release-profiles.py
 
-render-html: theme ## Build the HTML book.
-	cd book && $(QUARTO) render --profile html
+check-releases: ## Verify release profiles and metadata adapters are current.
+	python3 scripts/sync-release-profiles.py --check
 
-render-epub: theme ## Build the EPUB book.
-	cd book && $(QUARTO) render --profile epub
+stage-full: releases ## Stage only sources allowlisted for the full release.
+	python3 scripts/stage-release.py full --html-resources
 
-render-typst: theme ## Build the Typst PDF.
-	cd book && $(QUARTO) render --profile typst
+stage-preview: releases ## Stage only sources allowlisted for the preview release.
+	python3 scripts/stage-release.py preview --html-resources
 
-render-latex: theme ## Build the LuaLaTeX PDF.
-	cd book && $(QUARTO) render --profile latex
+render: theme releases ## Build the isolated full release in every format.
+	python3 scripts/stage-release.py full --html-resources
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,html
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,epub
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,typst
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,latex
+
+render-html: theme releases ## Build the allowlisted full HTML book.
+	python3 scripts/stage-release.py full --html-resources
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,html
+
+render-epub: theme releases ## Build the allowlisted full EPUB book.
+	python3 scripts/stage-release.py full
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,epub
+
+render-typst: theme releases ## Build the allowlisted full Typst PDF.
+	python3 scripts/stage-release.py full
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,typst
+
+render-latex: theme releases ## Build the allowlisted full LuaLaTeX PDF.
+	python3 scripts/stage-release.py full
+	cd book/_build/staging/releases/full && $(QUARTO) render --profile release-full,latex
+
+render-preview: theme releases ## Build the isolated HTML, EPUB, and Typst preview.
+	python3 scripts/stage-release.py preview --html-resources
+	cd book/_build/staging/releases/preview && $(QUARTO) render --profile release-preview,html
+	cd book/_build/staging/releases/preview && $(QUARTO) render --profile release-preview,epub
+	cd book/_build/staging/releases/preview && $(QUARTO) render --profile release-preview,typst
 
 clean: ## Remove generated book artifacts and Quarto state.
 	rm -rf book/_build book/.quarto
@@ -464,7 +549,11 @@ entries: {{}}
                 "engine": {"id": "alkahest-book-template-engine", "version": "0.1.0"},
             }
         ),
+        "book/releases.json": _json(_releases(options)),
         "book/index.qmd": f"""# Welcome {{.unnumbered}}
+
+::: {{.alkahest-preview-placeholder}}
+:::
 
 This is **{options['title']}** by {options['author']}.
 
@@ -496,8 +585,18 @@ def _engine_destination(member):
         return member
     if member == "defaults/quarto.yml":
         return "book/.alkahest/quarto.yml"
+    if member == "defaults/extension-apis.json":
+        return "book/.alkahest/extension-apis.json"
+    if member == "defaults/book-contracts.json":
+        return "book/.alkahest/book-contracts.json"
+    if member == "defaults/releases.json":
+        return "book/.alkahest/release-defaults.json"
     if member == "defaults/theme.json":
         return "book/.alkahest/theme-defaults.json"
+    if member.startswith("schemas/"):
+        return str(PurePosixPath("book/.alkahest") / member)
+    if member.startswith("docs/"):
+        return member
     return str(PurePosixPath("book") / member)
 
 
@@ -530,6 +629,17 @@ def scaffold_members(root, options):
         destination = str(PurePosixPath("book") / relative)
         if destination in files:
             fail(f"new-book scaffold path conflicts with theme adapter: {destination}")
+        files[destination] = content
+    try:
+        _releases_resolved, release_files = release_outputs(
+            files["book/.alkahest/release-defaults.json"], files["book/releases.json"]
+        )
+    except ReleaseProfileError as error:
+        fail(str(error).removeprefix("error: "))
+    for relative, content in release_files.items():
+        destination = str(PurePosixPath("book") / relative)
+        if destination in files:
+            fail(f"new-book scaffold path conflicts with release adapter: {destination}")
         files[destination] = content
     manifest_sha = _sha256(engine["MANIFEST.json"])
     files[".alkahest/scaffold.json"] = _json(
@@ -589,6 +699,10 @@ def validate_scaffold(root, expected=None):
     try:
         sync_project_theme(root, check=True)
     except ThemeError as error:
+        fail(str(error).removeprefix("error: "))
+    try:
+        sync_project_releases(root, check=True)
+    except ReleaseProfileError as error:
         fail(str(error).removeprefix("error: "))
     for path in actual:
         text = actual[path].decode("utf-8", errors="ignore")

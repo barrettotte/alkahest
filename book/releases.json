@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "preface": {"path": "index.qmd", "role": "front", "availability": "release"},
+    "generated-lists": {"path": "generated-lists.qmd", "role": "front", "availability": "release"},
+    "reference": {"path": "reference.qmd", "role": "chapter", "availability": "release"},
+    "layout-stress": {"path": "layout-stress.qmd", "role": "chapter", "availability": "release"},
+    "page-continuity": {"path": "page-continuity.qmd", "role": "chapter", "availability": "release"},
+    "layout-acceptance": {"path": "layout-acceptance.qmd", "role": "chapter", "availability": "release"},
+    "code-blocks": {"path": "code-blocks.qmd", "role": "chapter", "availability": "release"},
+    "math": {"path": "math.qmd", "role": "chapter", "availability": "release"},
+    "figures": {"path": "figures.qmd", "role": "chapter", "availability": "release"},
+    "components": {"path": "components.qmd", "role": "chapter", "availability": "release"},
+    "learning": {"path": "learning.qmd", "role": "chapter", "availability": "release"},
+    "companion-materials": {"path": "companion-materials.qmd", "role": "chapter", "availability": "release"},
+    "content-reuse": {"path": "content-reuse.qmd", "role": "chapter", "availability": "release"},
+    "icons": {"path": "icons.qmd", "role": "chapter", "availability": "release"},
+    "glossary-authoring": {"path": "glossary.qmd", "role": "chapter", "availability": "release"},
+    "references": {"path": "references.qmd", "role": "back", "availability": "release"},
+    "glossary": {"path": "glossary-backmatter.qmd", "role": "back", "availability": "release"},
+    "index": {"path": "index-backmatter.qmd", "role": "back", "availability": "release"},
+    "page-system-checklist": {"path": "appendices/page-system-checklist.qmd", "role": "appendix", "availability": "release"},
+    "format-behavior": {"path": "appendices/format-behavior.qmd", "role": "appendix", "availability": "release"},
+    "language-and-script": {"path": "appendices/language-and-script.qmd", "role": "appendix", "availability": "release"},
+    "online-lab-notes": {"path": "appendices/online-lab-notes.qmd", "role": "appendix", "availability": "supplemental"},
+    "supplemental-workbook": {"path": "appendices/supplemental-workbook.qmd", "role": "appendix", "availability": "supplemental"},
+    "private-working-notes": {"path": "private/working-notes.qmd", "role": "chapter", "availability": "private"},
+    "private-answer-key": {"path": "private/answer-key.qmd", "role": "chapter", "availability": "private"}
+  },
+  "profiles": {
+    "full": {
+      "chapters": [
+        "preface",
+        "generated-lists",
+        "reference",
+        "layout-stress",
+        "page-continuity",
+        "layout-acceptance",
+        "code-blocks",
+        "math",
+        "figures",
+        "components",
+        "learning",
+        "companion-materials",
+        "content-reuse",
+        "icons",
+        "glossary-authoring",
+        "references",
+        "glossary",
+        "index"
+      ],
+      "appendices": ["page-system-checklist", "format-behavior", "language-and-script"],
+      "metadata": {
+        "subtitle": "A feature specimen for a universal technical-book template",
+        "description": "A comprehensive technical-book specimen for evaluating reusable HTML, EPUB, Typst, and LuaLaTeX publication workflows.",
+        "edition": "Development specimen; not for publication.",
+        "identifier": "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8"
+      },
+      "presentation": {}
+    },
+    "preview": {
+      "chapters": ["preface", "reference", "glossary-authoring", "references", "glossary", "index"],
+      "appendices": ["page-system-checklist"],
+      "metadata": {
+        "subtitle": "Two-chapter preview edition",
+        "description": "A two-chapter preview of Alkahest Reference Book for evaluating the book before the full edition is published.",
+        "edition": "Two-chapter preview edition; not for publication.",
+        "identifier": "urn:uuid:551be2aa-8be0-4078-b9dc-3f29e1088092"
+      },
+      "presentation": {
+        "message": "This preview contains two selected chapters and supporting back matter, not the complete book."
+      }
+    }
+  }
+}

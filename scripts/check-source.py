@@ -30,6 +30,9 @@ CHECKS = (
     ("template-engine", "check-template-engine.py", False),
     ("new-book", "check-new-book.py", False),
     ("theme-defaults", "check-theme-defaults.py", False),
+    ("release-profiles", "check-release-profiles.py", False),
+    ("extension-apis", "check-extension-apis.py", False),
+    ("book-contracts", "check-book-contracts.py", False),
     ("pdf-backend", "check-pdf-backend-decision.py", False),
     ("pdf-accessibility-policy", "check-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "check-editorial-integrity.py", False),
@@ -75,6 +78,9 @@ TESTS = (
     ("template-engine", "test-template-engine.py", False),
     ("new-book", "test-new-book.py", False),
     ("theme-defaults", "test-theme-defaults.py", False),
+    ("release-profiles", "test-release-profiles.py", False),
+    ("extension-apis", "test-extension-apis.py", False),
+    ("book-contracts", "test-book-contracts.py", False),
     ("preview-artifacts", "test-preview.py", False),
 )
 

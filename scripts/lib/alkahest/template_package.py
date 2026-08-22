@@ -253,7 +253,7 @@ def validate_template_integration(root):
         "config/template/template-package.json",
         "make package-template-engine",
         "make check-template-package",
-        "45 source files",
+        "60 source files",
         "Deliberate boundary",
     ):
         if marker not in texts["documentation"]:
@@ -301,10 +301,10 @@ def template_members(root):
                 "Typst and LuaLaTeX book adapters",
                 "shared Quarto and theme defaults",
                 "deterministic cross-format theme synchronization",
+                "reusable book-record schemas and ownership inventory",
             ],
             "deferred": [
-                "full and preview release profiles",
-                "schemas and migrations",
+                "schema and content migrations",
                 "engine installation and upgrade migrations",
             ],
         },

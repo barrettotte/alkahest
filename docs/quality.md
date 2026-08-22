@@ -16,6 +16,7 @@ the pinned rootless image.
 | Duplicate or drifting IDs | Editorial and identity checks | Rendered identity/anchor checks |
 | Dangling references | Editorial and edition checks | Final HTML/EPUB link checks |
 | Private edition leakage | Edition staging checks | Public-artifact canary search |
+| Full/preview release drift | Release registry, allowlists, UUIDs, and exact generated profiles | Isolated staging plus generated-book HTML, EPUB, and PDF smoke renders |
 | Unlicensed or private assets | `make check-asset-rights` | `make check-release-assets` across HTML, EPUB, and six PDFs |
 | Nondeterministic output | Reproducibility policy and fixed build inputs | Exact HTML-tree, EPUB, and PDF fingerprints across repeated builds |
 | Fragile PDF composition | Golden-page policy and semantic markers | Exact decoded-pixel comparison with backend-specific baselines |

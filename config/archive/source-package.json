@@ -54,7 +54,8 @@
     "canonical_manuscripts": [
       "book/_quarto.yml",
       "book/editions.json",
-      "book/index.qmd"
+      "book/index.qmd",
+      "book/releases.json"
     ],
     "metadata": [
       "book/publication.json",
@@ -113,6 +114,9 @@
       "template-engine",
       "new-book",
       "theme-defaults",
+      "release-profiles",
+      "extension-apis",
+      "book-contracts",
       "editorial-integrity",
       "identities",
       "editions",

@@ -18,6 +18,9 @@ python3 "${script_dir}/test-pdf-preflight.py"
 "${script_dir}/check-glyph-coverage.sh"
 python3 "${script_dir}/check-source.py"
 python3 "${script_dir}/sync-theme.py" --check
+python3 "${script_dir}/sync-release-profiles.py" --check
+python3 "${script_dir}/check-extension-apis.py"
+python3 "${script_dir}/check-book-contracts.py"
 "${script_dir}/check-epub-accessibility.sh" test
 python3 "${script_dir}/check-source.py" --tests
 python3 "${script_dir}/generate-rights-report.py"
