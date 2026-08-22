@@ -10,6 +10,8 @@ import re
 import tempfile
 import zipfile
 from pathlib import Path
+
+from .markup import canonicalize_markup
 from xml.etree import ElementTree as ET
 
 
@@ -446,6 +448,9 @@ def _write_members(
     try:
         with zipfile.ZipFile(temporary_path, "w") as archive:
             for info in infos:
+                # Quarto/Pandoc honors SOURCE_DATE_EPOCH. Reusing its ZipInfo
+                # records retains that stable timestamp and the required
+                # mimetype-first ordering while accessibility edits are made.
                 archive.writestr(info, members[info.filename])
         os.replace(temporary_path, epub_path)
     finally:
@@ -511,6 +516,11 @@ def finalize_epub(epub_path: Path, policy_path: Path) -> None:
         id_files,
         pages,
     ).encode("utf-8")
+    # Pandoc's Lua attribute maps do not retain iteration order. Canonicalize
+    # every XHTML member so equivalent attributes produce identical bytes.
+    for path in members:
+        if path.endswith((".xhtml", ".html", ".htm")):
+            members[path] = canonicalize_markup(_decode(members, path)).encode("utf-8")
     _write_members(epub_path, infos, members)
 
 

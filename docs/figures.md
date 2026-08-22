@@ -106,9 +106,12 @@ Graphs, charts, circuits, chemistry, computing, physics, and rich media share
 the deterministic derivative, accessibility, provenance, and review contract
 in [`media-workflows.md`](media-workflows.md).
 
-`book/figures/README.md` is the current asset registry. A production registry
-must record creator, origin, license or permission, modification history, and
-any required credit wording. Captions cannot be baked into image pixels.
+`book/assets.json` is the distribution and rights registry;
+`book/figures/README.md` retains detailed workflow provenance. The registry
+records creator/owner, origin, date, license or permission evidence,
+modification history, credit wording, public-distribution status, and exact
+derivative checksums. Captions cannot be baked into image pixels. Run `make
+check-asset-rights` after changing figure bytes or provenance.
 
 Quarto 1.10 duplicates `fig-alt` onto the generated figure wrapper as well as
 the image. HTML/EPUB permit `alt` only on the image, so the small post-render

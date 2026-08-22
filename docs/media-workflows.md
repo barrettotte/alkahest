@@ -96,3 +96,9 @@ Third-party tools retain their own licenses but are not copied into generated
 SVGs. Real externally sourced data or media must record creator, source and
 version, acquisition or calculation method, processing, date, license or
 permission, and limitations before public distribution.
+
+`book/assets.json` consolidates the release decision and imports the complete
+file/checksum inventory from `book/media.json`. `make check-asset-rights`
+rejects missing rights, unregistered bytes, private distribution decisions, and
+removable metadata; `make check-release-assets` proves that HTML and EPUB carry
+only approved derivatives and fallbacks.

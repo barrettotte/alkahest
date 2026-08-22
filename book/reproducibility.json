@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "source_date_epoch": 1787270400,
+  "source_date_utc": "2026-08-21T00:00:00Z",
+  "epub_identifier": "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8",
+  "contract": {
+    "comparison": "exact-content",
+    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v17",
+    "environment": {
+      "SOURCE_DATE_EPOCH": "1787270400",
+      "FORCE_SOURCE_DATE": "1"
+    },
+    "artifacts": [
+      {
+        "id": "html",
+        "kind": "directory",
+        "path": "book/_build/html",
+        "render_target": "html"
+      },
+      {
+        "id": "epub",
+        "kind": "epub",
+        "path": "book/_build/epub/Alkahest-Reference-Book.epub",
+        "render_target": "epub"
+      },
+      {
+        "id": "pdf-typst-7x10",
+        "kind": "pdf",
+        "path": "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf",
+        "render_target": "typst"
+      },
+      {
+        "id": "pdf-lualatex-7x10",
+        "kind": "pdf",
+        "path": "book/_build/print/7x10/latex/Alkahest-Reference-Book.pdf",
+        "render_target": "latex"
+      },
+      {
+        "id": "pdf-typst-6x9",
+        "kind": "pdf",
+        "path": "book/_build/print/6x9/typst/Alkahest-Reference-Book.pdf",
+        "render_target": "typst-6x9"
+      },
+      {
+        "id": "pdf-lualatex-6x9",
+        "kind": "pdf",
+        "path": "book/_build/print/6x9/latex/Alkahest-Reference-Book.pdf",
+        "render_target": "latex-6x9"
+      },
+      {
+        "id": "pdf-typst-review",
+        "kind": "pdf",
+        "path": "book/_build/review/letter/typst/Alkahest-Reference-Book.pdf",
+        "render_target": "typst-review"
+      },
+      {
+        "id": "pdf-lualatex-review",
+        "kind": "pdf",
+        "path": "book/_build/review/letter/latex/Alkahest-Reference-Book.pdf",
+        "render_target": "latex-review"
+      }
+    ]
+  },
+  "verification": {
+    "quick_repeat": [
+      "html",
+      "epub",
+      "pdf-typst-7x10"
+    ],
+    "full_repeat": [
+      "html",
+      "epub",
+      "pdf-typst-7x10",
+      "pdf-lualatex-7x10",
+      "pdf-typst-6x9",
+      "pdf-lualatex-6x9",
+      "pdf-typst-review",
+      "pdf-lualatex-review"
+    ]
+  },
+  "documented_variation": [
+    {
+      "output": "make build-report",
+      "fields": [
+        "captured timestamp",
+        "wall-clock duration",
+        "host CPU count",
+        "Podman version"
+      ],
+      "reason": "The report measures the local host and is diagnostic evidence, not a distributable publication artifact."
+    }
+  ]
+}

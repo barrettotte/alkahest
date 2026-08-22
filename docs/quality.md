@@ -16,6 +16,8 @@ the pinned rootless image.
 | Duplicate or drifting IDs | Editorial and identity checks | Rendered identity/anchor checks |
 | Dangling references | Editorial and edition checks | Final HTML/EPUB link checks |
 | Private edition leakage | Edition staging checks | Public-artifact canary search |
+| Unlicensed or private assets | `make check-asset-rights` | `make check-release-assets` across HTML, EPUB, and six PDFs |
+| Nondeterministic output | Reproducibility policy and fixed build inputs | Exact HTML-tree, EPUB, and PDF fingerprints across repeated builds |
 
 Use `.decorative`, `role="presentation"`, or `aria-hidden="true"` only for an
 image that carries no information. Otherwise supply useful Markdown alt text
@@ -53,6 +55,74 @@ For a language or translation change, run `make check-localization`, render the
 affected locale, and run `make check-rendered-localization`. Unsupported Arabic,
 CJK, and Indic text fails explicitly until a versioned font and layout profile
 extends the tested coverage boundary.
+
+## Reproducible artifacts
+
+`book/reproducibility.json` defines one exact-content contract for the
+distributable HTML tree, EPUB, and all six PDFs. Directory fingerprints include
+every relative path and file byte; EPUB and PDF fingerprints cover the complete
+file. No timestamp, document ID, archive-order, or backend-metadata field is
+discarded during comparison.
+
+The rootless wrapper passes a fixed `SOURCE_DATE_EPOCH` to Pandoc, Typst, and
+LuaLaTeX and enables TeX's source-date behavior. This stabilizes EPUB package
+dates and member timestamps, PDF dates and IDs, and other tool-generated time
+fields. A quote-aware postprocessor sorts serialized markup attributes because Lua
+maps have no stable iteration order; it leaves prose and script/style bodies
+unchanged and excludes checksum-locked copied media. The reference EPUB also
+has a stable specimen UUID. When adapting the
+template for a real publication, replace that identifier and deliberately set
+the reproducibility epoch to the publication's chosen build date; do not derive
+either value from the wall clock.
+
+After `make render-all`, use `make check-reproducibility` to validate all eight
+artifact fingerprints and their stable metadata. `make verify-reproducibility`
+rebuilds and byte-compares the complete set. CI performs the quicker repeated
+HTML, EPUB, and default-Typst comparison on every change; the full command is a
+pre-release gate because rebuilding three fresh-cache LuaLaTeX profiles is
+comparatively expensive. `make test-reproducibility` covers policy drift,
+unstable EPUB/PDF dates, markup ordering, missing artifacts, and changed content.
+
+`make build-report` is intentionally outside the artifact contract. Its capture
+time, wall-clock duration, host CPU count, and Podman version describe the
+measurement environment and therefore vary; the rendered books it measures do
+not receive an exception.
+
+## Asset rights and release privacy
+
+`book/assets.json` is the canonical rights and distribution contract. Its
+collections cover figures and semantic icons directly; imported media and
+companion registries retain their domain-specific file lists and inherit
+complete rights defaults. Every record identifies its creator and owner,
+origin, date, license, permission evidence, modifications, credit wording, and
+public-distribution decision. Distributed source bytes are checksum-locked,
+and coverage globs reject an asset added outside the registry. Pinned Quarto
+runtime libraries and embedded fonts are separate bundles because their
+upstream licenses are not book-art ownership claims.
+
+Use the focused gates after adding or replacing an asset:
+
+```sh
+make check-asset-rights
+make test-asset-rights
+make check-release-assets
+```
+
+The source gate verifies 39 authored files and scans publishable bytes for
+private paths, credential signatures, EXIF/XMP, editor metadata, and unwanted
+audio metadata. It rejects unknown licenses, incomplete permission records,
+checksum drift, and unregistered files; files marked private are excluded from
+the approved distribution set. Metadata-bearing inputs fail instead of being
+silently rewritten; strip and review the source deliberately, then update its
+checksum.
+
+The rendered gate proves that every copied HTML asset and every renamed EPUB
+media object matches an approved source digest. It also verifies preserved
+runtime/font license evidence, rejects temporary or private package entries,
+scans all package bytes for local paths and secret signatures, checks the title,
+author, creator, and producer metadata in all six PDFs, and forbids PDF file
+attachments. The gate runs inside `make check-publication` after a complete
+render.
 
 ## Static-only execution policy
 

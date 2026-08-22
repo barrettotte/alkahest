@@ -122,7 +122,9 @@ $if(subtitle)$
   subtitle: [#text(font: "$sansfont$", fallback: false)[$subtitle$]],
 $endif$
 $if(by-author)$
-  author: "$for(by-author)$$it.name.literal$$sep$, $endfor$\n$alkahest.edition$",
+  // Keep edition/status wording on the front-matter page; PDF Author metadata
+  // contains creator names only.
+  author: "$for(by-author)$$it.name.literal$$sep$, $endfor$",
 $endif$
 $if(date)$
   date: "$date$",

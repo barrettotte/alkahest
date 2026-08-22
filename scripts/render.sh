@@ -56,6 +56,11 @@ render_edition_profile() {
     cp -a "${repo_root}/book/theme/fonts/licenses/." \
       "${canonical_output}/theme/fonts/licenses/"
   fi
+  # Lua attribute maps are semantically unordered. Stabilize the serialized
+  # markup so repeated reflowable builds also have identical bytes.
+  case ",${profile}," in
+    *,html,*) python3 "${script_dir}/canonicalize-markup.py" "${canonical_output}" >/dev/null ;;
+  esac
 }
 
 render_profile() {

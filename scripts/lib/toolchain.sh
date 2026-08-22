@@ -4,6 +4,9 @@
 # Bump this tag whenever the Containerfile's effective toolchain changes. All
 # wrappers consume the same constant so stale local images fail consistently.
 readonly ALKAHEST_TOOLCHAIN_IMAGE="localhost/alkahest-publishing:quarto-1.10.18-v17"
+# Freeze tool-generated dates at the reference specimen's reproducibility
+# epoch. A real book updates this deliberate release input when appropriate.
+readonly ALKAHEST_SOURCE_DATE_EPOCH="1787270400"
 
 alkahest_repo_root() {
   local script_dir

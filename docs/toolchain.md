@@ -96,12 +96,12 @@ full validation implementation without removing direct access to any check.
 runs the container with networking disabled so a successful build cannot depend
 on an undeclared download.
 
-`make check-source` routes all 20 semantic source policies through
+`make check-source` routes every semantic source policy through
 `scripts/check-source.py`. Quarto pre-render hooks and CI call the same
 dispatcher, eliminating three independently maintained command lists. A render
 already runs this source gate; the standalone command is useful for faster
 feedback before building output formats. `make test-source` uses the same
-registry to run all 12 source-policy fixture suites; focused `test-*` Make
+registry to run every source-policy fixture suite; focused `test-*` Make
 targets remain available for development, while CI no longer maintains a
 second copy of the complete suite list.
 
@@ -110,6 +110,20 @@ caching, and frozen results, while `make check-execution-policy` rejects
 executable manuscript cells, engine declarations, profile overrides, and
 notebook chapters. `docs/quality.md` records the isolation, locking,
 cache-key, and output-drift requirements for a future separate opt-in verifier.
+
+The shared wrapper also exports the versioned `SOURCE_DATE_EPOCH` and
+`FORCE_SOURCE_DATE` values from `scripts/lib/toolchain.sh`. Pandoc uses the epoch
+for EPUB package dates and ZIP timestamps, Typst uses it for PDF timestamps and
+document IDs, and LuaLaTeX uses the source-date mode for PDF metadata and trailer
+identity. `book/reproducibility.json` binds those values to the locked image, a
+stable specimen EPUB UUID, and the eight exact artifact paths.
+
+Run `make check-reproducibility` after a complete render to inspect stable
+metadata and calculate exact fingerprints. `make verify-reproducibility`
+performs the intentionally expensive full rebuild-and-compare; CI repeats the
+HTML, EPUB, and default Typst artifacts as a faster continuous sentinel. Build
+duration and host diagnostics from `make build-report` are documented local
+variation rather than publication content.
 
 Run `make build-report` to perform one sequential measurement of all four
 primary formats. It reports wall-clock duration, captured Quarto warnings,
@@ -147,6 +161,14 @@ The focused preflight checks page geometry, zero-bleed boxes, embedded/subset
 fonts, raster resolution and color models, veraPDF's vector color-space
 inventory, PDF version, encryption, and JavaScript. Its policy is versioned in
 `config/pdf/preflight.json`.
+
+`make check-asset-rights` validates the central rights registry, source
+coverage, exact checksums, distribution decisions, and private/editor metadata.
+After a complete render, `make check-release-assets` checks copied HTML assets,
+renamed EPUB media, runtime/font license evidence, temporary package entries,
+secret and local-path signatures, PDF metadata, and embedded files. The latter
+runs automatically inside `make check-publication`; both use the versioned
+contract in `book/assets.json`.
 
 `make check-glyph-coverage` rejects manuscript characters outside the declared
 Libertinus Serif coverage before rendering. `make render-locale-smoke` renders

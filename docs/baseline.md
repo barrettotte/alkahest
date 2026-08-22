@@ -75,8 +75,7 @@ inside the ephemeral cache; this was informational output, not a warning.
 - Tests in actual EPUB reader applications.
 - HTML semantics, accessibility, and online availability of external URLs.
 - PDF structural accessibility and print preflight.
-- Visual comparison or regression testing.
-- Repeated build-time measurements and deterministic artifact comparison.
+- Golden-page visual comparison and regression testing.
 - Production typography, unified HTML/EPUB/PDF theming, and final font choices.
 - Final code-overflow policy, broader math/diagram fixtures, glossary,
   appendices, preview editions, and the other authoring features tracked in the

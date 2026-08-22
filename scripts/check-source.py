@@ -13,12 +13,14 @@ LOCKED_PYTHON = Path("/opt/alkahest/tools/bin/python")
 
 CHECKS = (
     ("execution-policy", "check-execution-policy.py", False),
+    ("reproducibility", "check-reproducibility.py", False),
     ("graphs", "check-graphs.py", False),
     ("circuits", "check-circuits.py", True),
     ("chemistry", "check-chemistry.py", True),
     ("computing-diagrams", "check-computing-diagrams.py", False),
     ("physics-diagrams", "check-physics-diagrams.py", False),
     ("rich-media", "check-rich-media.py", False),
+    ("asset-rights", "check-asset-rights.py", False),
     ("pdf-backend", "check-pdf-backend-decision.py", False),
     ("pdf-accessibility-policy", "check-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "check-editorial-integrity.py", False),
@@ -38,6 +40,7 @@ CHECKS = (
 
 TESTS = (
     ("execution-policy", "test-execution-policy.py", False),
+    ("reproducibility", "test-reproducibility.py", False),
     ("pdf-accessibility-policy", "test-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "test-editorial-integrity.py", False),
     ("identities", "test-identities.sh", False),
@@ -51,6 +54,7 @@ TESTS = (
     ("index", "test-index.sh", False),
     ("notes", "test-notes.sh", False),
     ("localization", "test-localization.py", False),
+    ("asset-rights", "test-asset-rights.py", False),
 )
 
 

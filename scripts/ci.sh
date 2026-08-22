@@ -20,6 +20,10 @@ python3 "${script_dir}/check-source.py"
 "${script_dir}/check-epub-accessibility.sh" test
 python3 "${script_dir}/check-source.py" --tests
 "${script_dir}/render.sh" complete
+# Rebuild the reflowable outputs and default PDF once, then require exact
+# content equality with the complete render. The full six-PDF repeat remains a
+# deliberate pre-release command because fresh LuaLaTeX caches are expensive.
+python3 "${script_dir}/check-reproducibility.py" --repeat quick
 "${script_dir}/check-accessibility.sh"
 "${script_dir}/check-epub-accessibility.sh"
 "${script_dir}/check-publication.sh"
