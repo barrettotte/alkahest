@@ -253,7 +253,7 @@ def validate_template_integration(root):
         "config/template/template-package.json",
         "make package-template-engine",
         "make check-template-package",
-        "60 source files",
+        "63 source files",
         "Deliberate boundary",
     ):
         if marker not in texts["documentation"]:

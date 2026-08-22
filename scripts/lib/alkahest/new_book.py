@@ -589,6 +589,10 @@ def _engine_destination(member):
         return "book/.alkahest/extension-apis.json"
     if member == "defaults/book-contracts.json":
         return "book/.alkahest/book-contracts.json"
+    if member == "defaults/compatibility.json":
+        return "book/.alkahest/compatibility.json"
+    if member == "defaults/template-releases.json":
+        return "book/.alkahest/template-releases.json"
     if member == "defaults/releases.json":
         return "book/.alkahest/release-defaults.json"
     if member == "defaults/theme.json":

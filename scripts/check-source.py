@@ -33,6 +33,7 @@ CHECKS = (
     ("release-profiles", "check-release-profiles.py", False),
     ("extension-apis", "check-extension-apis.py", False),
     ("book-contracts", "check-book-contracts.py", False),
+    ("compatibility", "check-compatibility.py", False),
     ("pdf-backend", "check-pdf-backend-decision.py", False),
     ("pdf-accessibility-policy", "check-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "check-editorial-integrity.py", False),
@@ -81,6 +82,7 @@ TESTS = (
     ("release-profiles", "test-release-profiles.py", False),
     ("extension-apis", "test-extension-apis.py", False),
     ("book-contracts", "test-book-contracts.py", False),
+    ("compatibility", "test-compatibility.py", False),
     ("preview-artifacts", "test-preview.py", False),
 )
 

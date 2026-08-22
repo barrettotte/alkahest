@@ -30,6 +30,7 @@ make generate-theme  # Apply book/theme.json to every output adapter.
 make generate-release-profiles  # Apply full/preview allowlists and metadata.
 make check-extension-apis # Verify the shipped author and maintainer API reference.
 make check-book-contracts # Verify schemas and book-owned metadata layers.
+make check-compatibility # Verify template versions and reversible migrations.
 make package-source-archive # Build the private recovery source ZIP.
 make ci              # Run the complete rendering and validation pipeline.
 make help-all        # Show maintainer and specialist commands.
@@ -79,5 +80,7 @@ artifacts are written below `book/_build/` and ignored by Git.
   book-local registries, engine hooks, filters, and deterministic generators.
 - [Reusable book contracts](docs/book-contracts.md) defines the schemas,
   ownership, and override boundary for book-specific facts.
+- [Compatibility and migrations](docs/compatibility.md) defines versioning,
+  deprecations, stable-ID protection, and private template release records.
 
 Named after the theoretical “universal solvent” in Renaissance alchemy.

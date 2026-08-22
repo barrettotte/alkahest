@@ -70,6 +70,16 @@
       "destination": "defaults/book-contracts.json"
     },
     {
+      "id": "compatibility-policy",
+      "source": "config/template/compatibility.json",
+      "destination": "defaults/compatibility.json"
+    },
+    {
+      "id": "template-release-registry",
+      "source": "config/template/releases.json",
+      "destination": "defaults/template-releases.json"
+    },
+    {
       "id": "extension-api-documentation",
       "source": "docs/extension-apis.md",
       "destination": "docs/extension-apis.md"
@@ -78,6 +88,11 @@
       "id": "book-contract-documentation",
       "source": "docs/book-contracts.md",
       "destination": "docs/book-contracts.md"
+    },
+    {
+      "id": "compatibility-documentation",
+      "source": "docs/compatibility.md",
+      "destination": "docs/compatibility.md"
     },
     {
       "id": "schema-identities",
@@ -161,10 +176,13 @@
     "defaults/quarto.yml",
     "defaults/extension-apis.json",
     "defaults/book-contracts.json",
+    "defaults/compatibility.json",
     "defaults/releases.json",
     "defaults/theme.json",
+    "defaults/template-releases.json",
     "docs/extension-apis.md",
     "docs/book-contracts.md",
+    "docs/compatibility.md",
     "schemas/accessibility.schema.json",
     "schemas/covers.schema.json",
     "schemas/editions.schema.json",

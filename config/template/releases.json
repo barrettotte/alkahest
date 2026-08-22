@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "package_id": "alkahest-book-template-engine",
+  "channel": "private-development",
+  "current_version": "0.1.0",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "status": "development",
+      "published_at": null,
+      "git_tag": null,
+      "artifact": "alkahest-book-template-engine-0.1.0.zip",
+      "sha256": null,
+      "compatibility": "Initial private-development contract; no earlier generated-book version exists.",
+      "migrations": [],
+      "notes": "Not a public release. The package is local validation evidence until the roadmap is nearly complete."
+    }
+  ]
+}

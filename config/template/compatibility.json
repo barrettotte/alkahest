@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "policy_version": "0.1.0",
+  "engine": {
+    "id": "alkahest-book-template-engine",
+    "current_version": "0.1.0",
+    "status": "private-development",
+    "release_registry": "config/template/releases.json",
+    "installed_release_registry": "book/.alkahest/template-releases.json"
+  },
+  "semver": {
+    "patch": ["compatible fixes", "documentation", "generated-adapter corrections"],
+    "minor": ["backward-compatible features", "new optional schema fields", "new opt-in author syntax"],
+    "major": ["required schema changes", "removed author syntax", "changed book-record meaning"],
+    "pre_1_0": "Minor versions may contain breaking engine changes, but every break still requires an explicit migration and release note."
+  },
+  "deprecation_policy": {
+    "minimum_minor_releases": 1,
+    "warning_required": true,
+    "removal_requires_major": true,
+    "entries": []
+  },
+  "domains": [
+    {"id": "stable-ids", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": ["/book_id"], "migrations": []},
+    {"id": "edition-manifests", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": [], "migrations": []},
+    {"id": "publishing-metadata", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": ["/work/id"], "migrations": []},
+    {"id": "rights-records", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": [], "migrations": []},
+    {"id": "accessibility-metadata", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": [], "migrations": []},
+    {"id": "cover-parameters", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": [], "migrations": []},
+    {"id": "localized-labels", "current_schema_version": 1, "supported_schema_versions": [1], "protected_paths": [], "migrations": []}
+  ],
+  "migration_registry": []
+}

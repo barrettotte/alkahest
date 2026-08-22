@@ -15,6 +15,9 @@ machine inventory; generated books install both without reference-manuscript
 content. It also bundles seven JSON Schemas and an ownership inventory for
 book-specific identities, editions, publication facts, rights, accessibility,
 cover parameters, and localized labels.
+The bundled compatibility policy, reversible-migration rules, and template
+release registry identify this build as private development rather than a
+published template release.
 
 `MANIFEST.json` records every source-to-package mapping and checksum.
 `SHA256SUMS` verifies all package files. The engine is licensed under the MIT

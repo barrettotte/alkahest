@@ -54,6 +54,9 @@ require an engine update. `docs/book-contracts.md`,
 `book/.alkahest/book-contracts.json`, and the schemas under
 `book/.alkahest/schemas/` define the matching book-owned metadata boundary;
 engine upgrades may replace those evidence files but never the book records.
+The adjacent compatibility policy and template-release registry identify the
+installed engine as private development and define how future schema upgrades
+must preserve stable IDs and round-trip their changes.
 The profiles expect Quarto and the PDF tools on `PATH`, or the pinned
 Alkahest publishing environment.
 
