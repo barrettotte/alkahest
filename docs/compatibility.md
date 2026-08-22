@@ -2,7 +2,7 @@
 
 `config/template/compatibility.json` defines the engine compatibility contract.
 `config/template/releases.json` records versioned template artifacts separately
-from book editions. The current 0.1.0 entry is deliberately marked
+from book editions. The current 0.2.0 entry is deliberately marked
 `private-development`: it has no publication date, Git tag, or release checksum,
 and does not imply that this private repository has published anything.
 

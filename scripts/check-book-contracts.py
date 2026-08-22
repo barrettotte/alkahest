@@ -44,9 +44,9 @@ def validate_integration():
         if marker not in texts["template"]:
             fail(f"template package is missing book-contract member {marker}")
     for marker in (
-        '"book/.alkahest/book-contracts.json"',
-        '"book/.alkahest/schemas/identities.schema.json"',
-        '"docs/book-contracts.md"',
+        '".alkahest/alkahest.py"',
+        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
+        '"scripts/author.py"',
     ):
         if marker not in texts["new_book"]:
             fail(f"new-book policy is missing book-contract path {marker}")

@@ -98,7 +98,7 @@ def validate_book_contracts(root, document=None, records=None, schemas=None):
         installed_schema = _path(
             domain["installed_schema"], f"book-contract {domain_id} installed schema"
         )
-        expected_installed = f"book/.alkahest/schemas/{Path(domain['schema']).name}"
+        expected_installed = f"schemas/{Path(domain['schema']).name}"
         if installed_schema != expected_installed:
             fail(f"book-contract {domain_id} installed schema path is inconsistent")
         adapter = domain["generated_adapter"]

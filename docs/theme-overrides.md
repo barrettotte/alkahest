@@ -4,12 +4,13 @@ Alkahest separates versioned engine defaults from intentional book design.
 `book/alkahest-defaults.yml` owns shared Quarto behavior such as inert code
 execution, numbering, contents depth, semantic filters, default font roles, and
 portable accessibility cleanup. Generated books install the same file at
-`book/.alkahest/quarto.yml`; authors include it but do not fork it.
+inside their pinned engine archive; the author compiler includes it in a
+disposable workspace, so authors never fork it.
 
 The shared palette and font-role defaults live in
-`book/alkahest-theme-defaults.json`. A generated book installs that engine file
-at `book/.alkahest/theme-defaults.json`. The small `book/theme.json` file is the
-per-book override layer and may name only the colors or font roles that differ:
+`book/alkahest-theme-defaults.json`. Minimal books set only differences beneath
+`[theme.colors]` or `[theme.typography]` in `book.toml`; the exhaustive specimen
+keeps the equivalent `book/theme.json` per-book override contract fixture:
 
 ```json
 {
@@ -43,9 +44,8 @@ five derived files: `_brand.yml` for Quarto and Typst,
 `generated/theme-metadata.yml` for shared font metadata,
 `generated/theme-overrides.css` for HTML and EPUB,
 `generated/theme-overrides.tex` for LuaLaTeX, and a checksum-bearing manifest.
-Do not edit those generated adapters. The generated-book Makefile exposes the
-shorter `make theme` and `make check-theme` commands, and every render refreshes
-them before Quarto starts.
+Do not edit those generated adapters. Minimal books regenerate them inside
+`_build/.work/` on every `make check`, `make draft`, or release build.
 
 This layer keeps manuscripts and output profiles independent of presentation
 choices while avoiding four drifting theme files. It intentionally limits the

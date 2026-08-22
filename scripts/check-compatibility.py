@@ -45,9 +45,9 @@ def validate_integration():
         if marker not in texts["template"]:
             fail(f"template package is missing compatibility member {marker}")
     for marker in (
-        '"book/.alkahest/compatibility.json"',
-        '"book/.alkahest/template-releases.json"',
-        '"docs/compatibility.md"',
+        '".alkahest/alkahest.py"',
+        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
+        '"scripts/author.py"',
     ):
         if marker not in texts["new_book"]:
             fail(f"new-book policy is missing compatibility path {marker}")
@@ -62,7 +62,7 @@ def main():
         "ok: template compatibility "
         f"({result['version']} private-development; {result['domains']} domains; "
         f"{result['migrations']} migrations; {result['deprecations']} deprecations; "
-        f"{result['releases']} release record)"
+        f"{result['releases']} release records)"
     )
 
 

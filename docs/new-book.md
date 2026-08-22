@@ -1,10 +1,12 @@
-# Creating a new book
+# Creating and writing a book
 
-The new-book command turns the tested presentation engine into a small,
-independent repository. It creates only starter chapters, publication facts,
-format profiles, engine files, and engine provenance; the reference book's
-specimen chapters, fixtures, registries, private material, and release records
-are not copied.
+The new-book command creates a small author repository backed by the tested
+Alkahest engine. It commits thirteen files: one `book.toml`, three starter
+manuscripts, a bibliography, two short directory guides, the writer Makefile
+and README, Git ignore rules, one checksum-pinned engine archive, its tiny
+bootstrap, and a scaffold identity record. It does not copy extracted engine
+trees, generated adapters, empty registries, or backend configuration into the
+author's working surface.
 
 The closed generator contract lives in `config/template/new-book.json`. Create
 a project with:
@@ -16,52 +18,80 @@ python3 scripts/new-book.py \
   --author "Author Name"
 ```
 
-The destination's parent must already exist. The command will not overwrite an
-existing file or directory. It derives a lowercase work ID from the title, uses
-`en-US` and the current date by default, and derives a stable EPUB UUID from the
-work ID. `--book-id`, `--subtitle`, `--language`, and `--created` make every
-default explicit; use a fixed `--created YYYY-MM-DD` when testing reproducible
-generation. For ordinary titles and paths, the equivalent convenience target
-is:
+The destination's parent must already exist, and the command will not overwrite
+an existing path. The equivalent convenience target is:
 
 ```sh
 make new-book DEST=../my-book TITLE="My Book" AUTHOR="Author Name"
 ```
 
-Each project gets independent publication metadata in `book/publication.json`
-and a generated Quarto adapter in `book/generated/metadata.yml`. The initial
-record is honestly marked as a private development edition with an undecided
-publication license and no publisher. Edit those decisions for the book rather
-than inheriting facts from the reference specimen.
+## The author surface
 
-Presentation files and versioned defaults are installed under `book/`, while
-the bundled theme synchronizer lives under `scripts/`. Its license, package
-README, source manifest, and checksums are retained under `.alkahest/engine/`, while
-`.alkahest/scaffold.json` records the generator version, book identity, stable
-EPUB identifier, and hashes for all installed engine files. Run `make help`
-inside the generated project for theme/release synchronization, HTML, EPUB,
-Typst PDF, LuaLaTeX PDF, preview, and clean commands. Edit only
-`book/theme.json` for book-local colors and fonts; `make theme` refreshes every
-format adapter without changing the installed defaults. Register new chapters
-and set the full/preview allowlists and metadata overrides in
-`book/releases.json`, then run `make releases`. Rendering uses an isolated
-allowlisted staging project so omitted or private manuscripts are not present
-in a public release stage. Empty book-local registries let every semantic extension initialize
-without importing specimen data; fill them only as the manuscript needs those
-features. The shipped `docs/extension-apis.md` reference identifies which
-syntax is author-stable, which registries are book-local, and which changes
-require an engine update. `docs/book-contracts.md`,
-`book/.alkahest/book-contracts.json`, and the schemas under
-`book/.alkahest/schemas/` define the matching book-owned metadata boundary;
-engine upgrades may replace those evidence files but never the book records.
-The adjacent compatibility policy and template-release registry identify the
-installed engine as private development and define how future schema upgrades
-must preserve stable IDs and round-trip their changes.
-The profiles expect Quarto and the PDF tools on `PATH`, or the pinned
-Alkahest publishing environment.
+```text
+my-book/
+├── book.toml
+├── manuscript/
+│   ├── index.qmd
+│   ├── chapters/01-first-chapter.qmd
+│   ├── appendices/README.md
+│   └── references.qmd
+├── assets/README.md
+├── references.bib
+├── Makefile
+├── README.md
+└── .alkahest/                 managed; do not edit
+```
 
-Repository validation uses `make check-new-book` for a fresh deterministic
-smoke project and `make test-new-book` for unsafe input, overwrite, drift, and
-metadata-isolation fixtures. The generator stages all files in a private
-sibling directory, validates them, and only then gives the complete directory
-its requested name.
+Write in `manuscript/`. Numbered chapter and appendix filenames determine their
+order, so there is no second table of contents to maintain. `book.toml` is the
+single author configuration source for identity, title, author, language,
+content locations, excerpt selection, and optional theme changes. TOML is used
+because Python reads it without an extra dependency or package manager.
+
+The normal workflow is:
+
+```sh
+make chapter TITLE="The First Computers"
+make draft
+make check
+make build
+make excerpt
+```
+
+`chapter` creates the next `NN-kebab-case.qmd` file automatically. `draft`
+builds full HTML. `build` creates full HTML, EPUB, Typst PDF, and LuaLaTeX PDF.
+`excerpt` creates HTML, EPUB, and Typst products containing only the one or two
+chapters selected in `book.toml`, plus front and back matter. `clean` removes
+all disposable output.
+
+## Managed compilation
+
+The committed `.alkahest` directory contains one deterministic engine ZIP and a
+small `.py` bootstrap with the expected SHA-256 embedded in it. On first use,
+the bootstrap verifies the archive and expands it beneath ignored
+`.alkahest/cache/`. The author command then compiles `book.toml` into an ignored
+workspace under `_build/.work/`; finished products use the shorter
+`_build/full/` and `_build/excerpt/` paths:
+
+- Quarto profiles and format adapters;
+- full/excerpt allowlists and product metadata;
+- theme adapters;
+- empty optional semantic registries; and
+- engine extensions, filters, and PDF templates.
+
+These files are implementation details and are recreated on every check or
+build. Authors never synchronize publication JSON, release JSON, Quarto YAML,
+or backend-specific theme files by hand. The detailed schemas, extension API,
+compatibility policy, and release registry remain available inside the engine
+archive for advanced tooling without cluttering the writing repository.
+If an advanced feature needs a glossary, index, notes, media, companion, or
+reuse registry, an author may add that named registry at the repository root;
+otherwise the compiler supplies an empty one automatically.
+
+`make check-new-book` creates two independent tiny books, proves that their
+author facts differ while their exact engine archive is shared, runs both full
+and excerpt compilation, and checks deterministic scaffold bytes.
+`make test-new-book` covers unsafe input, overwrite attempts, archive drift,
+automatic chapter creation, and filesystem failures. A real HTML smoke also
+renders from the compiled full and excerpt workspaces in the locked rootless
+toolchain.

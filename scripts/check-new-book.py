@@ -1,5 +1,7 @@
 """Validate new-book policy and smoke-test a deterministic generated project."""
 
+import json
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -16,9 +18,6 @@ from alkahest.new_book import (
     validate_new_book_integration,
     validate_scaffold,
 )
-from alkahest.release_profiles import stage_project_release
-
-
 ROOT = SCRIPT_DIR.parent
 
 
@@ -35,12 +34,13 @@ def main():
     second = scaffold_members(ROOT, options)
     if first != second:
         raise RuntimeError("error: new-book scaffold is not deterministic")
-    if b"--profile release-preview,epub" not in first["Makefile"]:
-        raise RuntimeError("error: new-book preview profile precedence is incorrect")
-    if b"alkahest-preview-placeholder" not in first["book/index.qmd"]:
+    if b"excerpt: ##" not in first["Makefile"] or b"book.toml" not in first["README.md"]:
+        raise RuntimeError("error: new-book concise author workflow is incomplete")
+    if b"alkahest-preview-placeholder" not in first["manuscript/index.qmd"]:
         raise RuntimeError("error: new-book preview notice placeholder is missing")
     with tempfile.TemporaryDirectory(prefix="alkahest-new-book-check.") as temporary:
         destination = Path(temporary) / "small-book"
+        second_destination = Path(temporary) / "second-book"
         result = create_new_book(
             ROOT,
             destination,
@@ -51,18 +51,58 @@ def main():
         facts = validate_scaffold(destination, first)
         if result["files"] != facts["files"]:
             raise RuntimeError("error: new-book result file count is inconsistent")
-        full = stage_project_release(destination, "full")
-        preview = stage_project_release(destination, "preview")
+        subprocess.run(
+            [sys.executable, ".alkahest/alkahest.py", "check"],
+            cwd=destination,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        full = json.loads(
+            (destination / "_build/.work/full/author-workspace.json").read_text()
+        )
+        excerpt = json.loads(
+            (destination / "_build/.work/excerpt/author-workspace.json").read_text()
+        )
         if (
-            full["sources"] != ["index.qmd", "chapter-01.qmd", "references.qmd"]
-            or preview["sources"] != full["sources"]
-            or not (preview["stage"] / "chapter-01.qmd").is_symlink()
+            full["sources"]
+            != [
+                "manuscript/index.qmd",
+                "manuscript/chapters/01-first-chapter.qmd",
+                "manuscript/references.qmd",
+            ]
+            or excerpt["sources"] != full["sources"]
+            or facts["chapters"] != 1
         ):
-            raise RuntimeError("error: generated-book release staging is inconsistent")
+            raise RuntimeError("error: generated-book author workspace is inconsistent")
+        second_result = create_new_book(
+            ROOT,
+            second_destination,
+            title="A Different Tiny Book",
+            author="Second Example",
+            created="2026-08-22",
+        )
+        second_facts = validate_scaffold(second_destination)
+        first_scaffold = json.loads(
+            (destination / ".alkahest/scaffold.json").read_text()
+        )
+        second_scaffold = json.loads(
+            (second_destination / ".alkahest/scaffold.json").read_text()
+        )
+        if (
+            second_result["files"] != facts["files"]
+            or second_facts["chapters"] != 1
+            or first_scaffold["engine"]["archive_sha256"]
+            != second_scaffold["engine"]["archive_sha256"]
+            or (destination / "book.toml").read_bytes()
+            == (second_destination / "book.toml").read_bytes()
+        ):
+            raise RuntimeError("error: second tiny book does not share the engine cleanly")
     print(
         "ok: new-book generator "
-        f"({facts['files']} files; {facts['engine_files']} installed engine files; "
-        f"version {policy['generator']['version']}; deterministic release smoke passed)"
+        f"({facts['files']} committed files; {facts['engine_files']} pinned engine archive; "
+        f"{facts['engine_members']} managed members; version {policy['generator']['version']}; "
+        "two-book author-workspace smoke passed)"
     )
 
 

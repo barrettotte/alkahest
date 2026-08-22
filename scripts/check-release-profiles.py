@@ -66,9 +66,9 @@ def validate_integration():
         if marker not in texts["template_policy"]:
             raise ReleaseProfileError(f"error: template package is missing {marker}")
     for marker in (
-        '"book/.alkahest/release-defaults.json"',
-        '"book/releases.json"',
-        '"book/_quarto-release-preview.yml"',
+        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
+        '"book.toml"',
+        '"scripts/author.py"',
     ):
         if marker not in texts["new_book_policy"]:
             raise ReleaseProfileError(f"error: new-book policy is missing {marker}")

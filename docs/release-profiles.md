@@ -1,7 +1,13 @@
 # Full and preview release profiles
 
 Alkahest separates reusable release behavior from book-specific editorial
-choices. The engine supplies the closed defaults in
+choices. In a minimal generated book, authors select one or two excerpt chapter
+filenames in `book.toml`; numbered full chapters are discovered automatically,
+and `make build` or `make excerpt` creates every profile and allowlist only in
+ignored workspace state. The direct JSON workflow below remains the exhaustive
+specimen and advanced engine contract.
+
+The engine supplies the closed defaults in
 `book/alkahest-release-defaults.json` (installed as
 `book/.alkahest/release-defaults.json` in generated books). Each book owns only
 `book/releases.json`: its manuscript registry, each full or preview chapter allowlist,
@@ -16,10 +22,8 @@ make check-release-profiles
 make test-release-profiles
 ```
 
-Generated books expose the shorter `make releases`, `make check-releases`,
-`make stage-full`, and `make stage-preview` commands. Their normal render
-targets stage the full release first; `make render-preview` builds the preview
-as HTML, EPUB, and Typst PDF.
+Minimal generated books expose `make build` for the full release and
+`make excerpt` for the public HTML, EPUB, and Typst excerpt.
 
 ## Book-local contract
 
@@ -66,6 +70,6 @@ supplemental, and unselected chapter roots remain absent; HTML staging also
 materializes only rich-media files referenced by selected sources. This is a
 source-isolation boundary, not merely a conditional display rule.
 
-Whenever a manuscript file is added, moved, or retired, update its source
-record and both allowlists in the same change. `make check-release-profiles`
-requires the registry to cover every canonical `.qmd` manuscript exactly.
+Within the exhaustive specimen, whenever a manuscript file is added, moved, or
+retired, update its source record and both allowlists in the same change.
+Minimal books avoid this duplicate labor through numbered-file discovery.

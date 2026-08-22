@@ -156,11 +156,11 @@ def main():
 
     result = validate_compatibility(ROOT, POLICY, RELEASES)
     if result != {
-        "version": "0.1.0",
+        "version": "0.2.0",
         "domains": 7,
         "migrations": 0,
         "deprecations": 0,
-        "releases": 1,
+        "releases": 2,
     }:
         raise RuntimeError("error: valid compatibility fixture returned wrong facts")
     print(

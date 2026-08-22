@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "policy_version": "0.1.0",
+  "policy_version": "0.2.0",
   "engine": {
     "id": "alkahest-book-template-engine",
-    "current_version": "0.1.0",
+    "current_version": "0.2.0",
     "status": "private-development",
     "release_registry": "config/template/releases.json",
-    "installed_release_registry": "book/.alkahest/template-releases.json"
+    "installed_release_registry": "defaults/template-releases.json"
   },
   "semver": {
     "patch": ["compatible fixes", "documentation", "generated-adapter corrections"],

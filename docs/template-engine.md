@@ -9,7 +9,7 @@ that could silently drift.
 `config/template/template-package.json` selects five complete reusable source
 trees—Quarto extensions, Lua filters, LuaLaTeX adapters, web/EPUB themes, and
 the Typst adapter—plus the shared brand, package README, and MIT license. It
-maps 63 source files to standalone package-relative paths. Installed fonts are
+maps 65 source files to standalone package-relative paths. Installed fonts are
 excluded because they are locked build dependencies rather than template
 source; a generated book obtains them through the existing toolchain. The
 package also carries shared Quarto, theme, and release defaults plus the small
@@ -33,7 +33,7 @@ make package-template-engine
 make check-template-package
 ```
 
-The 0.1.0 package and its outer checksum are written beneath
+The 0.2.0 package and its outer checksum are written beneath
 `book/_build/template/` and ignored by Git. The deterministic stored ZIP has a
 fixed timestamp, regular-file mode, sorted path order, a source-to-package
 `MANIFEST.json`, and internal `SHA256SUMS`. Validation requires exact source and
@@ -58,7 +58,9 @@ This package includes:
 - `docs/book-contracts.md`, seven reusable schemas, and the exact record-layer
   inventory; and
 - `docs/compatibility.md`, semantic-version policy, reversible-migration rules,
-  and the private-development template release registry.
+  and the private-development template release registry; and
+- the minimal author command that compiles `book.toml` into disposable full and
+  excerpt workspaces.
 
 It deliberately excludes reference-book chapters and fixtures, book metadata,
 identities, rights decisions, book-specific edition and release allowlists, source
@@ -70,6 +72,6 @@ schema transition exists.
 The reference specimen remains the exhaustive acceptance consumer in this
 repository. Packaging from its canonical engine files proves extraction, and
 the [new-book command](new-book.md) now installs those same verified members
-into a minimal repository without copying specimen content or metadata. A later
-multi-book phase will establish shared upgrade behavior without maintaining
-engine files between book repositories by hand.
+as one checksum-pinned archive in a thirteen-file repository without copying
+specimen content or metadata. Two independently generated smoke books share
+the exact archive while retaining different author facts.

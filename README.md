@@ -6,9 +6,10 @@ PDF, and LuaLaTeX PDF while testing math, code, citations, diagrams,
 accessibility, editions, generated back matter, and publication policy.
 
 This repository is currently the toolkit laboratory and exhaustive specimen,
-not the eventual minimal book scaffold. The reusable-template phase will keep
-the engine, reference book, and tests here while generating much smaller book
-repositories that contain primarily manuscripts, metadata, and assets.
+not the author-facing book scaffold. `make new-book` now generates a thirteen-
+file repository centered on `book.toml` and numbered manuscripts; the complete
+engine is pinned as one managed archive and expands only into ignored build
+space.
 
 ## Common commands
 

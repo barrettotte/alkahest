@@ -7,7 +7,7 @@
     {
       "id": "stable-ids",
       "schema": "config/metadata/identities.schema.json",
-      "installed_schema": "book/.alkahest/schemas/identities.schema.json",
+      "installed_schema": "schemas/identities.schema.json",
       "record": "book/identities.json",
       "validator": "scripts/check-identities.py",
       "composition": "replace",
@@ -16,7 +16,7 @@
     {
       "id": "edition-manifests",
       "schema": "config/metadata/editions.schema.json",
-      "installed_schema": "book/.alkahest/schemas/editions.schema.json",
+      "installed_schema": "schemas/editions.schema.json",
       "record": "book/editions.json",
       "validator": "scripts/check-editions.py",
       "composition": "replace",
@@ -25,7 +25,7 @@
     {
       "id": "publishing-metadata",
       "schema": "config/metadata/publication.schema.json",
-      "installed_schema": "book/.alkahest/schemas/publication.schema.json",
+      "installed_schema": "schemas/publication.schema.json",
       "record": "book/publication.json",
       "validator": "scripts/check-publication-metadata.py",
       "composition": "replace",
@@ -34,7 +34,7 @@
     {
       "id": "rights-records",
       "schema": "config/metadata/rights.schema.json",
-      "installed_schema": "book/.alkahest/schemas/rights.schema.json",
+      "installed_schema": "schemas/rights.schema.json",
       "record": "book/assets.json",
       "validator": "scripts/check-asset-rights.py",
       "composition": "replace",
@@ -43,7 +43,7 @@
     {
       "id": "accessibility-metadata",
       "schema": "config/metadata/accessibility.schema.json",
-      "installed_schema": "book/.alkahest/schemas/accessibility.schema.json",
+      "installed_schema": "schemas/accessibility.schema.json",
       "record": "book/epub-accessibility.json",
       "validator": "scripts/check-epub-accessibility-policy.py",
       "composition": "replace",
@@ -52,7 +52,7 @@
     {
       "id": "cover-parameters",
       "schema": "config/metadata/covers.schema.json",
-      "installed_schema": "book/.alkahest/schemas/covers.schema.json",
+      "installed_schema": "schemas/covers.schema.json",
       "record": "config/covers/cover-policy.json",
       "validator": "scripts/check-covers.py",
       "composition": "replace",
@@ -61,7 +61,7 @@
     {
       "id": "localized-labels",
       "schema": "config/metadata/localized-labels.schema.json",
-      "installed_schema": "book/.alkahest/schemas/localized-labels.schema.json",
+      "installed_schema": "schemas/localized-labels.schema.json",
       "record": "config/localization/locales.json",
       "validator": "scripts/check-localization.py",
       "composition": "replace",

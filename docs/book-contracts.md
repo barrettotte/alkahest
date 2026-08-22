@@ -83,9 +83,10 @@ silently add a language or claim translated content.
 
 ## Using the bundled contracts
 
-Generated books receive the inventory as `book/.alkahest/book-contracts.json`
-and the seven schemas under `book/.alkahest/schemas/`. These are engine evidence
-and may be replaced during an engine upgrade. Book records remain outside that
-directory and are never overwritten. Advanced records can be adopted one
-domain at a time; `book/publication.json` is already present in every generated
-book, and its generated adapter remains disposable.
+Generated books receive this inventory and all seven schemas inside their
+checksum-pinned engine archive. The default author workflow compiles the simple
+facts in `book.toml` into disposable records and adapters under `_build/`, so a
+writer does not edit these contracts directly. Advanced publishing records can
+still be adopted one domain at a time. Engine upgrades may replace schemas and
+generated adapters, but never manuscripts, `book.toml`, or other book-owned
+facts.

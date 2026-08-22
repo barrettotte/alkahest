@@ -18,6 +18,10 @@ cover parameters, and localized labels.
 The bundled compatibility policy, reversible-migration rules, and template
 release registry identify this build as private development rather than a
 published template release.
+The bundled author command reads one `book.toml`, discovers numbered manuscript
+files, and creates all Quarto, release, theme, registry, and backend inputs in a
+disposable workspace. New repositories pin this package as one archive instead
+of committing its extracted implementation files.
 
 `MANIFEST.json` records every source-to-package mapping and checksum.
 `SHA256SUMS` verifies all package files. The engine is licensed under the MIT

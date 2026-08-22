@@ -54,9 +54,9 @@ def validate_integration():
         if marker not in texts["template_policy"]:
             raise ThemeError(f"error: template package is missing theme member {marker}")
     for marker in (
-        '"book/.alkahest/quarto.yml"',
-        '"book/.alkahest/theme-defaults.json"',
-        '"book/theme.json"',
+        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
+        '"book.toml"',
+        '"scripts/author.py"',
     ):
         if marker not in texts["new_book_policy"]:
             raise ThemeError(f"error: new-book policy is missing theme path {marker}")

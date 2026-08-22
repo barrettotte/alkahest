@@ -54,7 +54,9 @@ that registry and the complete SVG family as one engine change, preserve the
 canonical semantic names, and validate HTML, EPUB, Typst, LuaLaTeX, grayscale,
 and narrow layouts with `make check-icons` and publication checks.
 
-Colors and fonts remain book-local through `book/theme.json`, but the current
+Colors and fonts remain book-local through `[theme.colors]` and
+`[theme.typography]` in generated books' `book.toml` (the exhaustive specimen
+retains `book/theme.json` as direct contract evidence), but the current
 SVG strokes are engine assets rather than theme tokens. A future book-local
 icon theme must gain a closed registry, rights records, deterministic PDF
 derivatives, and stale-output checks before it becomes an author API.
@@ -74,8 +76,10 @@ second glossary manuscript.
 
 ## Appendix structure and numbering {#api-appendices}
 
-An appendix is ordinary `.qmd` source registered with `role: appendix` in
-`book/releases.json` and, for the exhaustive specimen, in `book/editions.json`.
+An appendix is a numbered `.qmd` source under the generated book's configured
+appendix directory. The author compiler discovers it automatically; the
+exhaustive specimen registers the equivalent `role: appendix` record in
+`book/releases.json` and `book/editions.json`.
 The canonical Quarto shape is `book.appendices`; release staging generates that
 shape from the selected appendix allowlist. Authors provide a stable H1 ID and
 cross-references, never literal appendix letters or backend appendix commands.

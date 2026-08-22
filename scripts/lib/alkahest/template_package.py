@@ -253,7 +253,7 @@ def validate_template_integration(root):
         "config/template/template-package.json",
         "make package-template-engine",
         "make check-template-package",
-        "63 source files",
+        "65 source files",
         "Deliberate boundary",
     ):
         if marker not in texts["documentation"]:
@@ -302,6 +302,7 @@ def template_members(root):
                 "shared Quarto and theme defaults",
                 "deterministic cross-format theme synchronization",
                 "reusable book-record schemas and ownership inventory",
+                "minimal book.toml author compiler and render command",
             ],
             "deferred": [
                 "schema and content migrations",
@@ -353,6 +354,15 @@ def package_template(root, output_root=None):
         else Path(root) / context["package"]["output_root"]
     )
     output_root.mkdir(parents=True, exist_ok=True)
+    package_prefix = context["package"]["id"] + "-"
+    for path in output_root.iterdir():
+        if (
+            path.is_file()
+            and path.name.startswith(package_prefix)
+            and (path.name.endswith(".zip") or path.name.endswith(".zip.sha256"))
+            and path.name not in outputs
+        ):
+            path.unlink()
     for filename, content in outputs.items():
         (output_root / filename).write_bytes(content)
     return {

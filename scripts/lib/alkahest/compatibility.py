@@ -215,7 +215,7 @@ def validate_compatibility(root, policy=None, releases=None, migration_documents
         fail("template engine must remain private-development until release is authorized")
     if engine["release_registry"] != RELEASES_PATH:
         fail("compatibility policy must use the canonical release registry")
-    if engine["installed_release_registry"] != "book/.alkahest/template-releases.json":
+    if engine["installed_release_registry"] != "defaults/template-releases.json":
         fail("compatibility policy has an incorrect installed release registry")
     semver = _exact(policy["semver"], {"patch", "minor", "major", "pre_1_0"}, "semver policy")
     for level in ("patch", "minor", "major"):
