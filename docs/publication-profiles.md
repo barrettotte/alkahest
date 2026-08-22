@@ -12,9 +12,9 @@ different trim, margins, color space, PDF standard, or supplied cover.
 
 The print profiles use mirrored inside/outside margins and right-hand chapter
 openings. Their PDFs are exactly the trim dimensions, with no bleed area. All
-interior content must therefore remain inside the live area. A later preflight
-step will check embedded fonts, effective image resolution, color space, and
-PDF standard before any release is called print-ready.
+interior content must therefore remain inside the live area. The automated
+preflight described below verifies this generic interior contract, but it does
+not make a printer-specific or print-ready claim.
 
 The shared body rhythm, paragraph treatment, and running-page furniture are
 defined in [`typography.md`](typography.md). Both PDF backends implement that
@@ -29,9 +29,9 @@ Locale profiles, semantic language spans, and font-coverage boundaries are
 defined in [`localization.md`](localization.md).
 
 Interior artwork should remain understandable in grayscale even when a digital
-edition uses color. Do not encode meaning by color alone. We are not forcing
-the generated PDFs to grayscale yet because that would hide source-art and
-contrast problems that should instead fail a deliberate preflight check.
+edition uses color. Do not encode meaning by color alone. The generic PDF
+profiles preserve RGB/gray artwork so source-art and contrast problems remain
+visible; a future vendor profile may perform a declared press conversion.
 
 ## Commands and artifacts
 
@@ -43,12 +43,44 @@ contrast problems that should instead fail a deliberate preflight check.
 | `make render-review` | Typst and LuaLaTeX US Letter PDFs |
 | `make render-pdf-profiles` | All six PDF variants |
 | `make render-locale-smoke` | French-locale HTML fixture |
-| `make check-pdf-profiles` | Verify all six page sizes, selected faces, font packaging, and page-system markers |
+| `make check-pdf-preflight` | Check PDF boxes, font packaging, raster resolution, color spaces, and unsafe document features |
+| `make test-pdf-preflight` | Exercise valid and invalid preflight parser fixtures without rendering |
+| `make check-pdf-profiles` | Run preflight plus the specimen's layout, content, and page-system checks |
 
 Artifacts are grouped under `book/_build/print/7x10/`,
 `book/_build/print/6x9/`, and `book/_build/review/letter/` by PDF backend.
 Typst is the scored default; LuaLaTeX remains a tested compatibility and
 diagnostic backend. The decision and reversal policy follow below.
+
+## Print preflight
+
+`config/pdf/preflight.json` is the machine-readable contract for all six
+artifacts. `make check-pdf-preflight` runs it without network access in the
+locked rootless container. It checks every page's physical size and rotation,
+then checks the first, middle, and final pages' MediaBox, CropBox, BleedBox,
+TrimBox, and ArtBox. All current interiors require zero bleed and identical
+boxes.
+
+Every font must be embedded and subset. Poppler inventories raster objects and
+requires at least 300 effective pixels per inch for continuous-tone images and
+600 for one-bit art. The current specimen intentionally remains vector-only;
+the fixture suite proves rejection of low-resolution continuous-tone and
+one-bit image reports. The failing diagnostic includes the page, PDF object,
+measured horizontal and vertical resolution, and required threshold.
+
+Raster images may use one- or three-component gray/RGB/ICC color models.
+veraPDF independently inventories document-level vector color spaces; the
+generic profile permits DeviceGray, DeviceRGB, one- or three-component ICC,
+and pattern spaces. It rejects `CMYK`, spot-color families, four-component ICC,
+and undeclared output intents. PDF 1.7 is required, and encrypted PDFs,
+JavaScript, page rotation, or unexpected bleed fail preflight.
+
+These are neutral RGB/gray interior rules, not a promise that one file is ready
+for every press. A selected printer may require a specific `CMYK` ICC profile,
+output intent, PDF/X standard, total-ink limit, or bleed geometry. Add those as
+an explicit vendor profile rather than silently converting the generic files.
+Cover bleed and output intent remain part of the separate cover/vendor
+pipeline.
 
 ## PDF backend decision
 
@@ -132,5 +164,4 @@ time:
 
 Traditional publishers may request their own source or production files. The
 canonical Markdown remains independent of these profiles so a publisher's
-house trim can be added without rewriting the manuscript. A clean DOCX review
-export remains a useful later interoperability target.
+house trim can be added later without rewriting the manuscript.

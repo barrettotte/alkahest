@@ -142,7 +142,11 @@ commands produce the primary 7 x 10 inch print profile. Use
 both US Letter review PDFs, or `make render-pdf-profiles` for all six PDF
 variants. Generated artifacts go under `book/_build/` and are ignored by Git.
 After rendering all PDF variants, `make check-pdf-profiles` verifies every
-media box and rejects fonts that are not both embedded and subset.
+profile's layout and content contracts and runs `make check-pdf-preflight`.
+The focused preflight checks page geometry, zero-bleed boxes, embedded/subset
+fonts, raster resolution and color models, veraPDF's vector color-space
+inventory, PDF version, encryption, and JavaScript. Its policy is versioned in
+`config/pdf/preflight.json`.
 
 `make check-glyph-coverage` rejects manuscript characters outside the declared
 Libertinus Serif coverage before rendering. `make render-locale-smoke` renders

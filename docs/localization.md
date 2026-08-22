@@ -8,6 +8,12 @@ labels follow the document locale, while manuscript prose is never translated
 automatically. An edition profile must supply any technical label missing from
 Quarto's locale data.
 
+`config/localization/locales.json` is the versioned contract for locale
+profiles, translated source manifests, supported inline languages and scripts,
+toolchain packages, font behavior, rendered paths, and localized output
+markers. Add support there rather than relying on whatever languages or fonts
+happen to exist on an author's machine.
+
 ## Supported baseline
 
 The locked Libertinus 7.051 family covers the current Latin, Greek, Cyrillic,
@@ -28,6 +34,8 @@ coverage; lock its source and bytes; install OTF and WOFF2 roles; extend the
 glyph checker deliberately; add any required Babel language module; and test
 HTML, EPUB, Typst, and LuaLaTeX output. Full Arabic or Hebrew books also need a
 dedicated RTL profile and visual, navigational, and accessibility review.
+CJK text is rejected until such a profile also defines and tests its line-break
+rules; the baseline does not apply Western whitespace assumptions silently.
 
 ## Hyphenation and line breaking
 
@@ -76,3 +84,37 @@ Quarto profiles compose, so this command combines the HTML output profile with
 the French locale profile. The fixture proves that document language metadata
 and generated labels change without rewriting references in the manuscript;
 it does not claim that the English prose has been translated.
+
+Locale modes distinguish publication promises:
+
+| Mode | Meaning |
+|---|---|
+| `canonical` | The authoritative manuscript and default generated labels |
+| `shared-source-smoke` | The canonical prose rendered under another locale to test generated metadata and labels; not a translation |
+| `translated` | A separately rooted manuscript whose complete `translation_sources` manifest must exist |
+
+A translated locale must also declare its rendered HTML and reference paths and
+markers for localized contents, object labels, and cross-references. Missing
+translated files fail the source gate; stale language metadata or English
+generated labels fail the rendered gate.
+
+## QA commands
+
+Run the focused checks while adding a language or locale:
+
+```sh
+make check-localization
+make test-localization
+make render-locale-smoke
+make check-rendered-localization
+```
+
+The source check validates profiles, BCP 47 tags, complete translation
+manifests, language scopes, explicit RTL direction, supported script use,
+locked Babel/hyphenation packages, disabled Typst fallback, and CSS
+hyphenation. `check-localization` also runs actual font glyph coverage in the
+locked image. The rendered check verifies HTML and EPUB root languages, inline
+language/direction semantics, EPUB package language and hyphenation, and
+localized labels and cross-references. Its positive and negative fixtures run
+as part of `make test-source`; the rendered check also runs inside `make
+check-publication`.

@@ -97,8 +97,10 @@ say “above,” “below,” or name a page.
 Prefer SVG for diagrams, plots, and line art. The locked `rsvg-convert` tool
 turns SVG inputs into vector PDF assets for LuaLaTeX; Typst consumes SVG
 directly. Use raster inputs only for inherently photographic or textured
-subjects. Effective raster resolution, color space, and print preflight remain
-release-gate work rather than claims of this source-level contract.
+subjects. `make check-pdf-preflight` rejects continuous-tone raster objects
+below 300 effective pixels per inch, one-bit objects below 600, and undeclared
+color models or output intents. The current specimen's PDF artwork remains
+vector-only; invalid raster reports are covered by focused fixtures.
 
 Graphs, charts, circuits, chemistry, computing, physics, and rich media share
 the deterministic derivative, accessibility, provenance, and review contract
@@ -122,8 +124,9 @@ text, source spans, full-width semantics, and only the screen variant in HTML
 and EPUB. EPUBCheck validates the packaged SVG resources. `make
 check-pdf-profiles` requires the print variant, captions, references, source
 credit, recto chapter start, embedded fonts, and physical text containment in
-all six PDFs. `make check-circuits` also performs an offline regeneration and
-byte comparison, then checks SVG accessibility, labels, vector geometry, and
+all six PDFs, and includes the artifact preflight. `make check-circuits` also
+performs an offline regeneration and byte comparison, then checks SVG
+accessibility, labels, vector geometry, and
 self-containment. Visual review begins with the 6 x 9 panels, full-width
 figure, voltage-divider labels and symbols, and reaction structures at the
 smallest trim. `make check-chemistry` applies the equivalent deterministic,

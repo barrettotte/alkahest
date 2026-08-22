@@ -33,6 +33,7 @@ CHECKS = (
     ("icons", "check-icons.py", False),
     ("index", "check-index.py", False),
     ("notes", "check-notes.py", False),
+    ("localization", "check-localization.py", False),
 )
 
 TESTS = (
@@ -49,6 +50,7 @@ TESTS = (
     ("glossary", "test-glossary.sh", False),
     ("index", "test-index.sh", False),
     ("notes", "test-notes.sh", False),
+    ("localization", "test-localization.py", False),
 )
 
 

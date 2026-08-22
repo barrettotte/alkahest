@@ -26,6 +26,34 @@ time rather than during deterministic local builds.
 `make check-source` runs every semantic source group. `make test-source` runs
 their positive and negative fixture suites.
 
+## Publication consistency
+
+The source gates establish editorial intent; rendered gates prove that format
+conversion preserved it. The complete consistency contract is:
+
+| Concern | Source evidence | Rendered evidence |
+|---|---|---|
+| Cross-references and bibliography | Editorial integrity and citation checks | Link resolution, citation-style parity, one shared bibliography, and bidirectional chapter/appendix references |
+| Notes | Note registry, definitions, calls, repeats, and placement policy | Native footnotes, chapter/book endnotes, backlinks, and HTML/Typst sidenotes |
+| Generated lists and index | List/index registries, markers, ranges, hierarchy, and relations | Linked HTML/EPUB lists and indexes plus page-resolved Typst/LuaLaTeX numbering |
+| Glossary | Entries, aliases, forms, calls, and one generated placeholder | Stable sorted anchors, links, definitions, language scope, acronyms, and print page references |
+| Appendices and numbering | Appendix/edition manifests, IDs, inclusion rules, and references | Stable appendix letters, local numbering, contents, cross-references, and shared citations |
+| Persistent identity | Identity ledger, migrations, namespaces, variants, and retired IDs | Anchors retained across HTML, EPUB, previews, supplemental/private editions, and locales |
+| Edition variants and privacy | Whole-book manifests and staged source isolation | Inclusion/omission, grouping, numbering, links, and public/private canary checks |
+| Localization | Locale modes, translation manifests, language scopes, scripts, locked packages, glyph coverage, fallback, and hyphenation policy | HTML/EPUB document languages, inline direction, localized labels and cross-references, EPUB metadata, and hyphenation |
+
+Run `make check-source` before rendering. After `make render-all`, run `make
+check-publication` for HTML, EPUB, locale, notes, and edition artifacts, then
+`make check-pdf-profiles` for all six PDFs. `check-publication` includes EPUBCheck
+and the rendered note, identity, index, generated-list, glossary, appendix,
+citation, edition, privacy, and numbering contracts; focused `check-rendered-*`
+commands remain available for diagnosis.
+
+For a language or translation change, run `make check-localization`, render the
+affected locale, and run `make check-rendered-localization`. Unsupported Arabic,
+CJK, and Indic text fails explicitly until a versioned font and layout profile
+extends the tested coverage boundary.
+
 ## Static-only execution policy
 
 Normal renders, CI, previews, and release builds display code but never execute

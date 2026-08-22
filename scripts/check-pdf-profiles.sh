@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Validate page dimensions and embedded fonts in every PDF profile.
+# Validate layout, content, and print-preflight contracts in every PDF profile.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -40,12 +40,17 @@ if [[ "${ALKAHEST_PDF_CHECK_IN_CONTAINER:-0}" != "1" ]]; then
     "${ALKAHEST_TOOLCHAIN_IMAGE}"
 fi
 
-for required_command in pdfinfo pdffonts pdftotext; do
+for required_command in pdfinfo pdffonts pdfimages pdftotext verapdf; do
   if ! command -v "${required_command}" >/dev/null 2>&1; then
     echo "error: ${required_command} is required for PDF profile checks" >&2
     exit 1
   fi
 done
+
+# Run the reusable artifact preflight before the specimen-specific text and
+# page-system checks below. This keeps CI's existing aggregate entry point while
+# leaving `make check-pdf-preflight` available as a focused author command.
+python3 scripts/check-pdf-preflight.py
 
 check_pdf() {
   local relative_path="$1"

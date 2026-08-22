@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "canonical_locale": "en-US",
+  "font_family": "Libertinus Serif",
+  "locales": [
+    {
+      "tag": "en-US",
+      "mode": "canonical",
+      "direction": "ltr",
+      "root": "book",
+      "profile": "book/_quarto.yml",
+      "required_profile_markers": [
+        "lang: en-US",
+        "toc-title: \"Contents\""
+      ]
+    },
+    {
+      "tag": "fr-FR",
+      "mode": "shared-source-smoke",
+      "direction": "ltr",
+      "root": "book",
+      "profile": "book/_quarto-locale-fr.yml",
+      "required_profile_markers": [
+        "lang: fr-FR",
+        "toc-title: \"Table des matières\"",
+        "crossref-tbl-title: \"Tableau\"",
+        "crossref-tbl-prefix: \"Tableau\"",
+        "crossref-lst-title: \"Extrait\"",
+        "crossref-lst-prefix: \"Extrait\""
+      ],
+      "rendered_html": "book/_build/locale/fr/html/index.html",
+      "rendered_reference_html": "book/_build/locale/fr/html/reference.html",
+      "rendered_markers": [
+        "Table des matières",
+        "Tableau&nbsp;",
+        "Équation&nbsp;",
+        "Extrait&nbsp;",
+        "Annexe A"
+      ]
+    }
+  ],
+  "inline_languages": [
+    {
+      "tag": "en-US",
+      "direction": "ltr",
+      "scripts": ["Latin"],
+      "toolchain_packages": ["babel-english", "hyphen-english"]
+    },
+    {
+      "tag": "fr-FR",
+      "direction": "ltr",
+      "scripts": ["Latin"],
+      "toolchain_packages": ["babel-french", "hyphen-french"]
+    },
+    {
+      "tag": "de-DE",
+      "direction": "ltr",
+      "scripts": ["Latin"],
+      "toolchain_packages": ["babel-german", "hyphen-german"]
+    },
+    {
+      "tag": "el-GR",
+      "direction": "ltr",
+      "scripts": ["Greek"],
+      "toolchain_packages": ["babel-greek", "hyphen-greek"]
+    },
+    {
+      "tag": "ru-RU",
+      "direction": "ltr",
+      "scripts": ["Cyrillic"],
+      "toolchain_packages": ["babel-russian", "hyphen-russian", "ruhyphen"]
+    },
+    {
+      "tag": "he-IL",
+      "direction": "rtl",
+      "scripts": ["Hebrew"],
+      "toolchain_packages": ["babel-hebrew"]
+    }
+  ],
+  "unsupported_scripts": ["Arabic", "CJK", "Indic"],
+  "source_contract": {
+    "manuscript_glob": "book/**/*.qmd",
+    "typst_template": "book/typst/typst-show.typ",
+    "html_theme": "book/theme/alkahest.scss",
+    "epub_theme": "book/theme/alkahest-epub.css",
+    "containerfile": "Containerfile",
+    "toolchain_report": "scripts/toolchain-report.sh"
+  },
+  "rendered_contract": {
+    "canonical_html": "book/_build/html/index.html",
+    "language_specimen_html": "book/_build/html/appendices/language-and-script.html",
+    "epub": "book/_build/epub/Alkahest-Reference-Book.epub"
+  }
+}

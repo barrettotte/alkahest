@@ -3,7 +3,7 @@
 PUBLIC_TARGETS := bootstrap check render render-html render-epub render-pdf \
 	render-typst render-latex render-all check-source check-writing ci clean help-all
 
-.PHONY: bootstrap build-report check check-accessibility check-epub-accessibility check-epub-review check-pdf-accessibility-policy check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-epub-accessibility test-epub-review test-pdf-accessibility-policy test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
+.PHONY: bootstrap build-report check check-accessibility check-epub-accessibility check-epub-review check-pdf-accessibility-policy check-pdf-preflight check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-epub-accessibility test-epub-review test-localization test-pdf-accessibility-policy test-pdf-preflight test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-identities \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke render-pdf-accessibility-smoke toolchain-report help help-all
 
@@ -118,6 +118,13 @@ test-glossary: ## Exercise valid and invalid glossary contracts.
 check-glyph-coverage: ## Reject manuscript glyphs outside the declared font stack.
 	./scripts/check-glyph-coverage.sh
 
+check-localization: ## Validate locale profiles, scripts, glyphs, and language behavior.
+	python3 scripts/check-source.py localization
+	./scripts/check-glyph-coverage.sh
+
+test-localization: ## Exercise localization source and rendered-output contracts.
+	python3 scripts/check-source.py --tests localization
+
 check-icons: ## Validate semantic icon names, assets, aliases, and calls.
 	python3 scripts/check-source.py icons
 
@@ -154,7 +161,10 @@ check-rendered-index: ## Verify linked reflowable and page-resolved print indexe
 check-rendered-lists: ## Verify generated lists, links, numbering, and empty omission.
 	./scripts/check-rendered-lists.sh
 
-check-publication: ## Validate internal HTML links and EPUB conformance.
+check-rendered-localization: ## Verify HTML/EPUB languages, RTL, labels, and hyphenation.
+	python3 scripts/check-rendered-localization.py
+
+check-publication: ## Verify HTML/EPUB links, editions, IDs, and numbering.
 	./scripts/check-publication.sh
 
 check-accessibility: ## Gate rendered HTML against WCAG 2.2 A/AA automation.
@@ -178,8 +188,14 @@ test-epub-review: ## Exercise manual EPUB evidence and conformance-claim contrac
 prepare-epub-review: ## Bind a clean revision and rendered EPUB to manual review evidence.
 	python3 scripts/prepare-epub-review.py
 
-check-pdf-profiles: ## Verify PDF dimensions and embedded/subset fonts.
+check-pdf-profiles: ## Verify PDF layout, content, and print-preflight contracts.
 	./scripts/check-pdf-profiles.sh
+
+check-pdf-preflight: ## Check PDF boxes, fonts, resolution, and color spaces.
+	./scripts/check-pdf-preflight.sh
+
+test-pdf-preflight: ## Exercise valid and invalid PDF preflight fixtures.
+	python3 scripts/test-pdf-preflight.py
 
 check-pdf-accessibility-policy: ## Validate PDF/UA evidence and prevent premature claims.
 	python3 scripts/check-source.py pdf-accessibility-policy
@@ -243,7 +259,7 @@ clean: ## Remove generated books, intermediates, and Quarto caches.
 render: ## Render HTML, EPUB, and both primary 7 x 10 PDFs.
 	./scripts/render.sh all
 
-render-all: ## Render HTML, EPUB, and every PDF profile.
+render-all: ## Render the complete publication and smoke-profile suite.
 	./scripts/render.sh complete
 
 render-html: ## Render the HTML web book.

@@ -49,6 +49,7 @@ exec podman run --rm \
     scripts/check-rendered-identities.sh
     scripts/check-rendered-index.sh
     scripts/check-rendered-lists.sh
+    python3 scripts/check-rendered-localization.py
     java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
     python3 scripts/check-publication-contract.py
   '

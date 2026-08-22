@@ -130,11 +130,8 @@ answers. Exact visual treatment may vary by backend, but role title, order,
 metadata, and relationships remain visible. Run `make check-learning` and
 `make test-learning`; rendered publication checks cover output behavior.
 
-## Editorial and release boundary
+## Release boundary
 
-Editorial DOCX is a one-way review representation until safe round-tripping is
-proven. Review reports must retain stable IDs, registry versions and checksums,
-contexts, parameters, compatibility, and omitted/private-content decisions.
-Later release tooling may package companion bytes, redirects, previews, and
+Release tooling may package companion bytes, redirects, previews, and
 manifest metadata, but it must consume these registries rather than infer them
 from rendered prose.

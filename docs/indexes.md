@@ -113,12 +113,6 @@ to generated headwords. Page numbers are never cached in YAML. The specimen
 deliberately spans a range across two pages in both engines and requires every
 supported trim/review profile to resolve it without `??` placeholders.
 
-Editorial DOCX is a documented structural fallback: canonical headwords,
-hierarchy, relationships, and marker identity remain, while locator text uses
-`SOURCE#MARKER` instead of pretending a draft's page numbers are stable. A
-future dedicated DOCX review profile can turn those source locators into Word
-index fields without changing manuscript markers.
-
 Quarto documents a LaTeX-only `makeidx` route for PDF books, but that source
 syntax is intentionally insufficient for the shared output contract here. The
 custom filter follows Quarto's supported book/custom-format extension boundary
