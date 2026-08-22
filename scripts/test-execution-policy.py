@@ -55,6 +55,26 @@ def main():
         if result.returncode != 0:
             raise RuntimeError("valid execution fixture failed:\n" + result.stdout)
 
+        shared = parent / "valid-shared-defaults"
+        shutil.copytree(str(BASE), str(shared))
+        canonical = shared / "_quarto.yml"
+        canonical_text = canonical.read_text(encoding="utf-8")
+        execute_block = "execute:\n  enabled: false\n  cache: false\n  freeze: false\n"
+        if execute_block not in canonical_text:
+            raise RuntimeError("valid execution fixture lacks its static block")
+        canonical.write_text(
+            canonical_text.replace(
+                execute_block,
+                "metadata-files:\n  - alkahest-defaults.yml\n",
+                1,
+            ),
+            encoding="utf-8",
+        )
+        (shared / "alkahest-defaults.yml").write_text(execute_block, encoding="utf-8")
+        result = run(shared)
+        if result.returncode != 0:
+            raise RuntimeError("valid shared-default execution fixture failed:\n" + result.stdout)
+
         expect_failure(
             parent,
             "executable-fence",
@@ -101,6 +121,14 @@ def main():
         )
         expect_failure(
             parent,
+            "missing-shared-defaults",
+            "shared Alkahest defaults file is missing",
+            lambda root: (root / "_quarto.yml").write_text(
+                "metadata-files:\n  - alkahest-defaults.yml\n", encoding="utf-8"
+            ),
+        )
+        expect_failure(
+            parent,
             "notebook-source",
             "registered manuscript source uses an executable notebook format",
             lambda root: json.loads((root / "editions.json").read_text(encoding="utf-8"))
@@ -125,7 +153,11 @@ def main():
             ),
         )
 
-    print("ok: execution-policy fixtures (static source accepted; 9 execution, override, notebook, and policy violations rejected)")
+    print(
+        "ok: execution-policy fixtures "
+        "(direct and shared static defaults accepted; 10 execution, override, "
+        "notebook, defaults, and policy violations rejected)"
+    )
 
 
 if __name__ == "__main__":

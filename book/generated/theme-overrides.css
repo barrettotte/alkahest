@@ -1,0 +1,85 @@
+/* Generated from the resolved book theme; do not edit. */
+:root {
+  --alkahest-ink: #20262e;
+  --alkahest-primary: #334155;
+  --alkahest-muted: #64748b;
+  --alkahest-line: #cbd5e1;
+  --alkahest-mist: #f1f5f9;
+  --alkahest-paper: #ffffff;
+  --alkahest-accent: #9a4f12;
+}
+
+html,
+body {
+  color: #20262e;
+  color: var(--alkahest-ink);
+  background: #ffffff;
+  background: var(--alkahest-paper);
+  font-family: "Libertinus Serif", Georgia, serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #334155;
+  color: var(--alkahest-primary);
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+}
+
+h1.title,
+h1 .chapter-title,
+.quarto-title-block .title {
+  font-family: "Libertinus Serif Display", "Libertinus Serif", serif;
+}
+
+a {
+  color: #334155;
+  color: var(--alkahest-primary);
+}
+
+a:hover,
+a:focus-visible {
+  color: #9a4f12;
+  color: var(--alkahest-accent);
+}
+
+code,
+pre {
+  color: #20262e;
+  color: var(--alkahest-ink);
+  background: #f1f5f9;
+  background: var(--alkahest-mist);
+  font-family: "Source Code Pro", ui-monospace, monospace;
+}
+
+blockquote,
+.reusable-content,
+.rich-media {
+  border-color: #cbd5e1;
+  border-color: var(--alkahest-line);
+}
+
+.reusable-content {
+  background: #f1f5f9;
+  background: var(--alkahest-mist);
+  border-left-color: #334155;
+  border-left-color: var(--alkahest-primary);
+}
+
+.reuse-kind-legal,
+.alkahest-preview-notice {
+  border-left-color: #9a4f12;
+  border-left-color: var(--alkahest-accent);
+}
+
+.figure-source,
+.diagram-description,
+.book-endnote-backlink,
+.glossary-entry-forms,
+.glossary-page-reference {
+  color: #64748b;
+  color: var(--alkahest-muted);
+}

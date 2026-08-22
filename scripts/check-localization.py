@@ -220,6 +220,9 @@ def validate(policy, root):
         combined_profile_text = profile_text
         if language_profile != profile:
             combined_profile_text += "\n" + language_profile_text
+        shared_defaults = profile.parent / "alkahest-defaults.yml"
+        if shared_defaults.is_file():
+            combined_profile_text += "\n" + shared_defaults.read_text(encoding="utf-8")
         for marker in locale.get("required_profile_markers", []):
             if marker not in combined_profile_text:
                 fail(f"locale {tag} profile is missing marker: {marker}")
@@ -295,7 +298,11 @@ def validate(policy, root):
     canonical_profile = repo_path(
         root, locales[canonical]["profile"], "canonical profile"
     )
-    if "babel-otherlangs: []" not in canonical_profile.read_text(encoding="utf-8"):
+    canonical_config = canonical_profile.read_text(encoding="utf-8")
+    shared_defaults = canonical_profile.parent / "alkahest-defaults.yml"
+    if shared_defaults.is_file():
+        canonical_config += "\n" + shared_defaults.read_text(encoding="utf-8")
+    if "babel-otherlangs: []" not in canonical_config:
         fail("canonical profile must enable on-demand Babel languages")
     for theme_key in ("html_theme", "epub_theme"):
         theme = repo_path(root, contract.get(theme_key), theme_key)

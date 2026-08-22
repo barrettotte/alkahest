@@ -170,11 +170,30 @@ inventory, PDF version, encryption, and JavaScript. Its policy is versioned in
 
 `make check-asset-rights` validates the central rights registry, source
 coverage, exact checksums, distribution decisions, and private/editor metadata.
+`make generate-rights-report` turns that policy plus canonical publication
+metadata into exact Markdown and JSON credits inventories under
+`book/_build/release/`; `make check-rights-report` rejects stale bytes and keeps
+the current publication-level blockers visible. CI generates and checks these
+reports locally and never uploads them.
 After a complete render, `make check-release-assets` checks copied HTML assets,
 renamed EPUB media, runtime/font license evidence, temporary package entries,
 secret and local-path signatures, PDF metadata, and embedded files. The latter
-runs automatically inside `make check-publication`; both use the versioned
-contract in `book/assets.json`.
+runs automatically inside `make check-publication`, which also rechecks the
+rights report; both use the versioned contract in `book/assets.json`.
+
+`make package-source-archive` creates the private deterministic recovery ZIP
+defined by `config/archive/source-package.json`; `make check-source-archive`
+reproduces its bytes and validates a fresh extracted tree with non-mutating Make
+and semantic source checks. CI performs this local restoration smoke without
+uploading the archive. See `archives.md` for the inclusion boundary, dependency
+inventory, history registries, and full recovery procedure.
+
+`make package-template-engine` extracts the reusable extensions, filters,
+themes, brand, and PDF adapters directly from their canonical specimen paths;
+`make check-template-package` enforces exact deterministic bytes and standalone
+structure. The resulting local ZIP is the engine input for the later new-book
+scaffold workflow, not a copy of specimen chapters or metadata. See
+`template-engine.md` for the versioned boundary.
 
 `make check-glyph-coverage` rejects manuscript characters outside the declared
 Libertinus Serif coverage before rendering. `make render-locale-smoke` renders

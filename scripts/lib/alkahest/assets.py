@@ -262,13 +262,29 @@ def validate_runtime_policy(policy):
         for field in ("html_root", "provider"):
             if not isinstance(bundle.get(field), str) or not bundle[field]:
                 fail(f"runtime bundle {identifier} needs {field}")
+        licenses = bundle.get("licenses")
+        if (
+            not isinstance(licenses, list)
+            or not licenses
+            or any(
+                not isinstance(value, str) or value not in policy["allowed_licenses"]
+                for value in licenses
+            )
+        ):
+            fail(f"runtime bundle {identifier} needs declared SPDX licenses")
+        if len(licenses) != len(set(licenses)):
+            fail(f"runtime bundle {identifier} declares duplicate licenses")
+        if not isinstance(bundle.get("credit_text"), str) or not bundle[
+            "credit_text"
+        ].strip():
+            fail(f"runtime bundle {identifier} needs credit_text")
         if bundle["kind"] == "generated-runtime":
             if not isinstance(bundle.get("license_evidence"), str) or not bundle[
                 "license_evidence"
             ]:
                 fail(f"runtime bundle {identifier} needs license_evidence")
-        elif bundle.get("license") not in policy["allowed_licenses"]:
-            fail(f"font bundle {identifier} uses an undeclared license")
+        elif bundle.get("license") not in licenses:
+            fail(f"font bundle {identifier} license differs from its SPDX licenses")
     return len(bundles)
 
 

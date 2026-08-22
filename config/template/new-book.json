@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "generator": {
+    "id": "alkahest-new-book",
+    "version": "0.1.0",
+    "uuid_namespace": "7c9258a3-0288-5cee-81d4-e5baf719c6cb"
+  },
+  "engine_policy": "config/template/template-package.json",
+  "defaults": {
+    "subtitle": "A new technical book",
+    "description": "A new book project created from the Alkahest technical-book template.",
+    "language": "en-US"
+  },
+  "engine_evidence_members": [
+    "LICENSE",
+    "MANIFEST.json",
+    "README.md",
+    "SHA256SUMS"
+  ],
+  "required_scaffold_paths": [
+    ".alkahest/engine/LICENSE",
+    ".alkahest/engine/MANIFEST.json",
+    ".alkahest/engine/README.md",
+    ".alkahest/engine/SHA256SUMS",
+    ".alkahest/scaffold.json",
+    ".gitignore",
+    "Makefile",
+    "README.md",
+    "book/_brand.yml",
+    "book/.alkahest/quarto.yml",
+    "book/.alkahest/theme-defaults.json",
+    "book/_quarto-epub.yml",
+    "book/_quarto-html.yml",
+    "book/_quarto-latex.yml",
+    "book/_quarto-typst.yml",
+    "book/_quarto.yml",
+    "book/chapter-01.qmd",
+    "book/companion.json",
+    "book/generated/metadata.yml",
+    "book/generated/theme-manifest.json",
+    "book/generated/theme-metadata.yml",
+    "book/generated/theme-overrides.css",
+    "book/generated/theme-overrides.tex",
+    "book/generated-lists.yml",
+    "book/glossary.yml",
+    "book/index.qmd",
+    "book/index.yml",
+    "book/media.json",
+    "book/notes.yml",
+    "book/publication.json",
+    "book/references.bib",
+    "book/references.qmd",
+    "book/reproducibility.json",
+    "book/reusable-content.json",
+    "book/theme.json",
+    "scripts/lib/alkahest/__init__.py",
+    "scripts/lib/alkahest/theme.py",
+    "scripts/sync-theme.py"
+  ]
+}

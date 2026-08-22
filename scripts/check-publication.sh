@@ -56,5 +56,6 @@ exec podman run --rm \
       java -jar "${EPUBCHECK_JAR}" "${epub}"
     done
     python3 scripts/check-release-assets.py
+    python3 scripts/check-rights-report.py
     python3 scripts/check-publication-contract.py
   '

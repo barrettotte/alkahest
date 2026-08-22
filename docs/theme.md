@@ -17,15 +17,18 @@ fixed print geometry.
 | Paper | `#ffffff` | Default page background |
 | Copper | `#9a4f12` | Focus, hover, and warning accents |
 
-The source contract is `book/_brand.yml`, which makes its colors available to
-Typst. Quarto 1.10.18 duplicates color-scheme link IDs when Brand is
-auto-applied to this HTML book, does not expose all named values to its custom
-Sass layer, and does not apply Brand styling to EPUB or LuaLaTeX. The HTML
-profile therefore disables automatic Brand processing, and all three adapters
-repeat the literal values visibly. Tests require representative tokens in
-built artifacts so accidental drift is detectable. Color reinforces structure
-but never supplies the only meaning; links remain underlined and code/table
-boundaries retain shape and contrast.
+The source contract is the versioned `book/alkahest-theme-defaults.json` layer
+plus the small book-local `book/theme.json` override. `scripts/sync-theme.py`
+resolves them into `_brand.yml` and exact HTML, EPUB, Typst-metadata, and
+LuaLaTeX adapters. Quarto 1.10.18 duplicates color-scheme link IDs when Brand
+is auto-applied to this HTML book, so that profile still disables automatic
+Brand processing and consumes the generated CSS adapter instead. Typst uses
+the generated Brand directly; EPUB and LuaLaTeX use their generated bridges.
+Tests require exact adapter bytes and representative tokens so drift is
+detectable. Color reinforces structure but never supplies the only meaning;
+links remain underlined and code/table boundaries retain shape and contrast.
+See [`theme-overrides.md`](theme-overrides.md) for the author workflow and
+closed override schema.
 
 ## Typography and components
 
@@ -105,13 +108,16 @@ See [`localization.md`](localization.md) for the coverage boundary.
 ## Backend adapters
 
 - `book/theme/alkahest.scss` controls the Bootstrap web book and responsive
-  behavior; `alkahest-fonts.css` contains local `@font-face` declarations.
+  behavior; `alkahest-fonts.css` contains local `@font-face` declarations, and
+  `book/generated/theme-overrides.css` applies the resolved book tokens.
 - `book/theme/alkahest-epub.css` favors conservative EPUB CSS and references
-  fonts explicitly embedded by the EPUB profile.
+  fonts explicitly embedded by the EPUB profile; the same generated override
+  CSS follows it in the cascade.
 - `book/typst/typst-show.typ` consumes Brand colors and styles headings, links,
   captions, and code blocks around the orange-book base.
 - `book/latex/book-layout.tex` defines matching xcolor tokens, KOMA-Script
-  heading/caption roles, link colors, and the code background.
+  heading/caption roles, link colors, and the code background before
+  `book/generated/theme-overrides.tex` applies book-local tokens.
 
 Automated checks resolve HTML links, run EPUBCheck, require all web/EPUB font
 assets, verify theme markers, and retain the six PDF font and structure checks.

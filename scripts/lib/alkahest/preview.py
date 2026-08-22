@@ -34,11 +34,13 @@ def validate_preview_presentation(root: Path):
     book = root / "book"
     profile = (book / "_quarto-preview.yml").read_text(encoding="utf-8")
     config = (book / "_quarto.yml").read_text(encoding="utf-8")
+    defaults_path = book / "alkahest-defaults.yml"
+    defaults = defaults_path.read_text(encoding="utf-8") if defaults_path.is_file() else ""
     index = (book / "index.qmd").read_text(encoding="utf-8")
     preview_filter = (book / "filters/preview.lua").read_text(encoding="utf-8")
     render = (root / "scripts/render.sh").read_text(encoding="utf-8")
 
-    if config.count("  - filters/preview.lua") != 1:
+    if (config + "\n" + defaults).count("  - filters/preview.lua") != 1:
         fail("canonical Quarto config must register the preview filter exactly once")
     placeholder = (
         '::: {.content-visible when-profile="edition-preview"}\n'

@@ -1,0 +1,6 @@
+# Generated from the resolved book theme; do not edit.
+mainfont: "Libertinus Serif"
+displayfont: "Libertinus Serif Display"
+sansfont: "Libertinus Sans"
+mathfont: "Libertinus Math"
+monofont: "Source Code Pro"

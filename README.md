@@ -23,6 +23,11 @@ make render-epub     # Build only the EPUB.
 make render-pdf      # Build the default Typst PDF.
 make package-companion-bundles # Build versioned project-download ZIPs.
 make generate-covers # Build development wrap templates and thumbnails.
+make generate-rights-report # Build the release rights and credits inventory.
+make package-template-engine # Build the reusable presentation-engine ZIP.
+make new-book DEST=../my-book TITLE="My Book" AUTHOR="Author Name" # Create a book.
+make generate-theme  # Apply book/theme.json to every output adapter.
+make package-source-archive # Build the private recovery source ZIP.
 make ci              # Run the complete rendering and validation pipeline.
 make help-all        # Show maintainer and specialist commands.
 ```
@@ -57,5 +62,13 @@ artifacts are written below `book/_build/` and ignored by Git.
   manifest, and optional pinned ONIX 3.1 output.
 - [Toolchain](docs/toolchain.md) covers the rootless offline environment and
   links to its exact lock record.
+- [Private source archives](docs/archives.md) covers deterministic recovery
+  packages, dependency inventory, history continuity, and restoration tests.
+- [Reusable template engine](docs/template-engine.md) defines the extracted
+  presentation boundary and what remains book-local.
+- [Creating a new book](docs/new-book.md) covers safe scaffold generation,
+  independent metadata, engine provenance, and the starter author workflow.
+- [Shared defaults and book themes](docs/theme-overrides.md) explains the
+  versioned baseline, small per-book overrides, and generated format adapters.
 
 Named after the theoretical “universal solvent” in Renaissance alchemy.

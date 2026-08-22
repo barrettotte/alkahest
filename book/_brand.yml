@@ -1,6 +1,4 @@
-# Semantic color contract for every format. Typst consumes it directly; HTML,
-# EPUB, and LuaLaTeX repeat the same values through documented adapters for the
-# pinned Quarto version.
+# Generated from alkahest-theme-defaults.json and theme.json; do not edit.
 color:
   palette:
     ink: "#20262e"
@@ -16,6 +14,14 @@ color:
   secondary: muted
   tertiary: mist
   warning: copper
+
+typography:
+  base:
+    family: "Libertinus Serif"
+  headings:
+    family: "Libertinus Sans"
+  monospace:
+    family: "Source Code Pro"
 
 defaults:
   bootstrap:

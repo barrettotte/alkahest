@@ -26,6 +26,10 @@ CHECKS = (
     ("physics-diagrams", "check-physics-diagrams.py", False),
     ("rich-media", "check-rich-media.py", False),
     ("asset-rights", "check-asset-rights.py", False),
+    ("source-archive", "check-archive-policy.py", False),
+    ("template-engine", "check-template-engine.py", False),
+    ("new-book", "check-new-book.py", False),
+    ("theme-defaults", "check-theme-defaults.py", False),
     ("pdf-backend", "check-pdf-backend-decision.py", False),
     ("pdf-accessibility-policy", "check-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "check-editorial-integrity.py", False),
@@ -66,6 +70,11 @@ TESTS = (
     ("notes", "test-notes.sh", False),
     ("localization", "test-localization.py", False),
     ("asset-rights", "test-asset-rights.py", False),
+    ("rights-report", "test-rights-report.py", False),
+    ("source-archive", "test-source-archive.py", False),
+    ("template-engine", "test-template-engine.py", False),
+    ("new-book", "test-new-book.py", False),
+    ("theme-defaults", "test-theme-defaults.py", False),
     ("preview-artifacts", "test-preview.py", False),
 )
 

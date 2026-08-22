@@ -19,4 +19,6 @@ format:
     # Native MathML keeps the web book semantic and independent of a CDN.
     html-math-method: mathml
     theme: theme/alkahest.scss
-    css: theme/alkahest-fonts.css
+    css:
+      - theme/alkahest-fonts.css
+      - generated/theme-overrides.css

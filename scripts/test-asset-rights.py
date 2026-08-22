@@ -82,6 +82,8 @@ def fixture_policy(font_license_hash):
                 "kind": "generated-runtime",
                 "html_root": "site_libs",
                 "provider": "Pinned fixture",
+                "licenses": ["MIT"],
+                "credit_text": "Fixture runtime, MIT License.",
                 "license_evidence": "Preserved header",
                 "required_markers": {"runtime.js": "MIT License"},
             },
@@ -92,6 +94,8 @@ def fixture_policy(font_license_hash):
                 "epub_root": "EPUB/fonts",
                 "provider": "Pinned fixture font",
                 "license": "OFL-1.1",
+                "licenses": ["OFL-1.1"],
+                "credit_text": "Fixture font, SIL Open Font License 1.1.",
                 "html_license_files": {
                     "licenses/OFL.txt": font_license_hash
                 },
@@ -236,6 +240,30 @@ def source_cases():
                 save_policy(root, data),
             ),
             "created date must use ISO 8601",
+        ),
+        (
+            "runtime license missing",
+            lambda root, data: (
+                data["runtime_bundles"][0].pop("licenses"),
+                save_policy(root, data),
+            ),
+            "needs declared SPDX licenses",
+        ),
+        (
+            "runtime credit missing",
+            lambda root, data: (
+                data["runtime_bundles"][0].update(credit_text=""),
+                save_policy(root, data),
+            ),
+            "needs credit_text",
+        ),
+        (
+            "font license mismatch",
+            lambda root, data: (
+                data["runtime_bundles"][1].update(licenses=["MIT"]),
+                save_policy(root, data),
+            ),
+            "license differs from its SPDX licenses",
         ),
         (
             "checksum drift",

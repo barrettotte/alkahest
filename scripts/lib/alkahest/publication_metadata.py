@@ -388,7 +388,9 @@ def validate_repository(root, record, policies):
     root = Path(root)
     quarto = (root / "book/_quarto.yml").read_text(encoding="utf-8")
     work = record["work"]
-    if not re.search(r"^metadata-files:\s*\n\s+- generated/metadata\.yml\s*$", quarto, re.M):
+    if "metadata-files:" not in quarto or not re.search(
+        r"^\s+- generated/metadata\.yml\s*$", quarto, re.M
+    ):
         fail("Quarto does not include the generated canonical metadata adapter")
     forbidden = (
         r"^\s{2}(?:title|subtitle|author):",

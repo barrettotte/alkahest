@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "colors": {
+    "ink": "#20262e",
+    "primary": "#334155",
+    "muted": "#64748b",
+    "line": "#cbd5e1",
+    "surface": "#f1f5f9",
+    "paper": "#ffffff",
+    "accent": "#9a4f12"
+  },
+  "typography": {
+    "body": "Libertinus Serif",
+    "display": "Libertinus Serif Display",
+    "sans": "Libertinus Sans",
+    "math": "Libertinus Math",
+    "mono": "Source Code Pro"
+  }
+}

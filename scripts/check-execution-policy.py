@@ -42,6 +42,10 @@ STATIC_EXECUTE_BLOCK = re.compile(
     r"  freeze:[ \t]*false[ \t]*$",
     re.MULTILINE,
 )
+SHARED_DEFAULT = re.compile(
+    r"^[ \t]*-[ \t]*(alkahest-defaults\.yml|\.alkahest/quarto\.yml)[ \t]*$",
+    re.MULTILINE,
+)
 
 
 def fail(message):
@@ -106,12 +110,24 @@ def check_configs(root):
             )
 
     canonical_text = read_text(canonical)
-    if not STATIC_EXECUTE_BLOCK.search(canonical_text):
+    policy_text = canonical_text
+    shared = SHARED_DEFAULT.findall(canonical_text)
+    if shared:
+        if len(shared) != 1:
+            fail("_quarto.yml must include exactly one shared Alkahest defaults file")
+        shared_path = root / shared[0]
+        if not shared_path.is_file():
+            fail("_quarto.yml shared Alkahest defaults file is missing")
+        policy_text = read_text(shared_path)
+        match = FORBIDDEN_ENGINE_KEY.search(policy_text)
+        if match:
+            fail("shared Alkahest defaults declare a forbidden execution engine")
+    if not STATIC_EXECUTE_BLOCK.search(policy_text):
         fail("_quarto.yml must disable execution, cache, and freeze")
     for key in ("execute", "cache", "freeze"):
-        count = len(re.findall(r"^[ \t]*" + key + r"[ \t]*:", canonical_text, re.MULTILINE))
+        count = len(re.findall(r"^[ \t]*" + key + r"[ \t]*:", policy_text, re.MULTILINE))
         if count != 1:
-            fail("_quarto.yml must declare exactly one '" + key + "' policy key")
+            fail("effective Quarto defaults must declare exactly one '" + key + "' policy key")
 
 
 def registered_notebooks(root):

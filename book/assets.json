@@ -111,6 +111,8 @@
       "kind": "generated-runtime",
       "html_root": "site_libs",
       "provider": "Pinned Quarto 1.10.18 publishing image",
+      "licenses": ["Apache-2.0", "MIT"],
+      "credit_text": "Quarto-generated site libraries; upstream notices and licenses preserved.",
       "license_evidence": "Preserved upstream copyright/license headers and the pinned toolchain source",
       "required_markers": {
         "bootstrap/bootstrap.min.js": "Licensed under MIT",
@@ -129,6 +131,8 @@
       "epub_root": "EPUB/fonts",
       "provider": "Checksum-pinned Libertinus 7.051 and Source Code Pro 2.042",
       "license": "OFL-1.1",
+      "licenses": ["OFL-1.1"],
+      "credit_text": "Libertinus and Source Code Pro font software, SIL Open Font License 1.1.",
       "html_license_files": {
         "licenses/Libertinus-OFL.txt": "9aeecc8107c489ec1ec0068b0313e531a760edf3493705b32ab8ab8215a8794e",
         "licenses/Source-Code-Pro-OFL.md": "7c940e28a5388e9bba866cf0e408edda45fe0899ba98665b8f6ab31dc5e4b8ff"

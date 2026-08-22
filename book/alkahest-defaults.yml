@@ -1,0 +1,39 @@
+# Versioned engine defaults shared by every Alkahest book. Book metadata and
+# profiles may deliberately override these values after including this file.
+execute:
+  enabled: false
+  cache: false
+  freeze: false
+
+crossrefs-hover: true
+babel-otherlangs: []
+
+toc: true
+toc-title: "Contents"
+toc-depth: 3
+number-sections: true
+number-depth: 3
+crossref:
+  chapters: true
+
+alkahest:
+  dedication: "Dedication pending."
+  notes:
+    placement: footnotes
+
+filters:
+  - _extensions/alkahest-notes/alkahest-notes-filter.lua
+  - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
+  - _extensions/alkahest-index/alkahest-index-filter.lua
+  - _extensions/alkahest-generated-lists/alkahest-generated-lists.lua
+  - filters/preview.lua
+  - filters/pdf-metadata.lua
+  - filters/math-alt.lua
+  - at: post-render
+    path: filters/strip-invalid-alt.lua
+
+mainfont: Libertinus Serif
+displayfont: Libertinus Serif Display
+sansfont: Libertinus Sans
+mathfont: Libertinus Math
+monofont: Source Code Pro

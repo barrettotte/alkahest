@@ -139,6 +139,9 @@ Use the focused gates after adding or replacing an asset:
 ```sh
 make check-asset-rights
 make test-asset-rights
+make generate-rights-report
+make check-rights-report
+make test-rights-report
 make check-release-assets
 ```
 
@@ -150,13 +153,36 @@ the approved distribution set. Metadata-bearing inputs fail instead of being
 silently rewritten; strip and review the source deliberately, then update its
 checksum.
 
+`make generate-rights-report` writes a deterministic human report and matching
+machine inventory to `book/_build/release/rights-credits.md` and
+`rights-credits.json`. Every distributable path carries its exact checksum,
+source registry, creator, owner, origin, date, SPDX license, permission
+evidence, modification statement, credit text, and distribution decision.
+Runtime and font bundles separately record their provider, SPDX licenses,
+credit, and preserved evidence. `make check-rights-report` reproduces both
+files byte-for-byte and rejects stale or extra output; the fixture suite
+explicitly rejects an included private asset, unknown license, missing credit,
+and artifact drift.
+
+The report distinguishes an internally consistent asset inventory from release
+readiness. It currently says `BLOCKED` because the specimen is in development,
+has no publication date or copyright year, and intentionally has no selected
+publication-text license. Those are visible decisions to resolve later, not
+reasons to falsify development metadata or disable routine CI.
+
+The separate private source archive preserves all canonical and private inputs
+needed for recovery, including these rights records and their license evidence.
+`make check-source-archive` verifies exact archive bytes and runs source-policy
+checks from a fresh extraction; see `archives.md`. It is deliberately not a
+reader-facing release asset and must not be publicly uploaded.
+
 The rendered gate proves that every copied HTML asset and every renamed EPUB
 media object matches an approved source digest. It also verifies preserved
 runtime/font license evidence, rejects temporary or private package entries,
 scans all package bytes for local paths and secret signatures, checks the title,
 author, creator, and producer metadata in all six PDFs, and forbids PDF file
-attachments. The gate runs inside `make check-publication` after a complete
-render.
+attachments. It also requires the exact rights report. The gate runs inside
+`make check-publication` after a complete render and after report generation.
 
 ## Static-only execution policy
 

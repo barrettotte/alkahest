@@ -11,7 +11,9 @@ format:
       - openright
     pdf-engine: lualatex
     keep-tex: true
-    include-in-header: latex/book-layout.tex
+    include-in-header:
+      - latex/book-layout.tex
+      - generated/theme-overrides.tex
     template-partials:
       - latex/title.tex
       - latex/before-body.tex

@@ -8,7 +8,9 @@ identifier: "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8"
 
 format:
   epub:
-    css: theme/alkahest-epub.css
+    css:
+      - theme/alkahest-epub.css
+      - generated/theme-overrides.css
     epub-fonts:
       - theme/fonts/LibertinusSerif-Regular.woff2
       - theme/fonts/LibertinusSerif-Italic.woff2

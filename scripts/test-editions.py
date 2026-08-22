@@ -41,6 +41,7 @@ def expect_failure(name, expected, mutate):
 def preview_fixture(root):
     for relative in (
         "book/_quarto.yml",
+        "book/alkahest-defaults.yml",
         "book/_quarto-preview.yml",
         "book/index.qmd",
         "book/filters/preview.lua",

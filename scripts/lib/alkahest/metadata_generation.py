@@ -472,7 +472,9 @@ def validate_repository(root):
         "documentation": root / "docs/metadata-generation.md",
     }
     texts = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
-    if "metadata-files:\n  - generated/metadata.yml" not in texts["quarto"]:
+    if "metadata-files:" not in texts["quarto"] or not re.search(
+        r"^\s+- generated/metadata\.yml\s*$", texts["quarto"], re.M
+    ):
         fail("Quarto does not consume the generated metadata adapter")
     for marker in (
         "generate-publication-metadata:",
