@@ -15,13 +15,18 @@ DEFAULT_POLICY = ROOT / "book" / "epub-accessibility.json"
 def main() -> None:
     epub = Path(os.environ.get("ALKAHEST_EPUB", DEFAULT_EPUB))
     policy = Path(os.environ.get("ALKAHEST_EPUB_ACCESSIBILITY_POLICY", DEFAULT_POLICY))
-    if len(sys.argv) > 2:
-        raise EpubPolicyError("error: usage: finalize-epub.py [EPUB]")
-    if len(sys.argv) == 2:
-        epub = Path(sys.argv[1])
+    arguments = sys.argv[1:]
+    allow_missing_sections = False
+    if "--reduced" in arguments:
+        arguments.remove("--reduced")
+        allow_missing_sections = True
+    if len(arguments) > 1:
+        raise EpubPolicyError("error: usage: finalize-epub.py [--reduced] [EPUB]")
+    if arguments:
+        epub = Path(arguments[0])
     if not epub.is_file():
         raise EpubPolicyError(f"error: missing rendered EPUB: {epub}")
-    finalize_epub(epub, policy)
+    finalize_epub(epub, policy, allow_missing_sections=allow_missing_sections)
     print(f"ok: finalized EPUB accessibility semantics ({epub})")
 
 

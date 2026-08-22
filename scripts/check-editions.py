@@ -10,6 +10,7 @@ sys.path.insert(0, str(SCRIPT_DIR / "lib"))
 
 from alkahest.common import ContractError, fail, qmd_sources
 from alkahest.editions import edition_source_ids, load_editions, render_book_structure
+from alkahest.preview import validate_preview_presentation
 
 
 def visible_content(content, edition_name):
@@ -22,6 +23,7 @@ def main():
     if not root.is_dir():
         fail("edition book root does not exist")
     registry = load_editions(root / "editions.json")
+    preview = validate_preview_presentation(root.parent)
     config = (root / "_quarto.yml").read_text(encoding="utf-8")
     structure_match = re.search(r"(^  chapters:\n.*?)(?=^\S)", config, re.M | re.S)
     if not structure_match:
@@ -87,7 +89,7 @@ def main():
             for source_id in source_ids:
                 if registry["sources"][source_id]["availability"] == "private":
                     fail(f"public edition '{edition_name}' includes private source '{source_id}'")
-    print(f"ok: whole-book editions ({len(registry['editions'])} editions; {len(registry['structures'])} reusable structures; {len(registry['sources'])} registered sources; preview, abridged, format, public/private, and reference-integrity policy)")
+    print(f"ok: whole-book editions ({len(registry['editions'])} editions; {len(registry['structures'])} reusable structures; {len(registry['sources'])} registered sources; preview metadata, {preview['links']} assigned links, {preview['watermark']} watermark, abridged, format, public/private, and reference-integrity policy)")
 
 
 if __name__ == "__main__":

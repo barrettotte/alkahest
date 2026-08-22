@@ -41,6 +41,40 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+// Preview labeling is injected from profile metadata into the shared preface.
+// The decorative watermark is ignored by assistive technology; the adjacent
+// notice carries the same information as ordinary text.
+.alkahest-preview-notice {
+  position: relative;
+  z-index: 1;
+  margin-block: 1.25rem 2rem;
+  padding: 1rem 1.15rem;
+  background: rgba($alkahest-mist, 0.94);
+  border: 1px solid $alkahest-line;
+  border-inline-start: 0.28rem solid $alkahest-copper;
+  border-radius: 0.2rem;
+}
+
+.alkahest-preview-notice > :last-child {
+  margin-bottom: 0;
+}
+
+.alkahest-preview-watermark {
+  position: fixed;
+  z-index: 0;
+  inset-block-start: 48%;
+  inset-inline-start: 50%;
+  color: rgba($alkahest-slate, 0.075);
+  font-family: "Libertinus Sans", system-ui, sans-serif;
+  font-size: clamp(3.5rem, 12vw, 8rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-32deg);
+  user-select: none;
+  white-space: nowrap;
+}
+
 p {
   orphans: 2;
   widows: 2;

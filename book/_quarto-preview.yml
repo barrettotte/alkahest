@@ -1,0 +1,23 @@
+# Product-specific presentation is composed with the generated work metadata;
+# it never changes or copies the preview edition's manuscript allowlist.
+book:
+  subtitle: "Two-chapter preview edition"
+  description: "A two-chapter preview of Alkahest Reference Book for evaluating the book before the full edition is published."
+subtitle: "Two-chapter preview edition"
+description: "A two-chapter preview of Alkahest Reference Book for evaluating the book before the full edition is published."
+identifier: "urn:uuid:551be2aa-8be0-4078-b9dc-3f29e1088092"
+
+alkahest:
+  edition: "Two-chapter preview edition; not for publication."
+  preview:
+    enabled: true
+    label: "Preview edition"
+    message: "This preview contains two selected chapters and supporting back matter, not the complete book."
+    full-edition-label: "Read the full edition"
+    full-edition-url: ""
+    purchase-label: "Purchase the full edition"
+    purchase-url: ""
+    links-pending: "Full-edition and purchase links will appear here when publication URLs are assigned."
+    watermark:
+      enabled: true
+      text: "PREVIEW"

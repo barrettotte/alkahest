@@ -38,10 +38,27 @@ named structures and output editions without copying chapters.
 |---|---|---|---|
 | `full` | `full` | public | Canonical book |
 | `abridged` | `abridged` | public | Deliberately reduced book |
-| `preview` | `preview` | public | Front matter plus one or two sample chapters |
+| `preview` | `preview` | public | HTML, EPUB, and default-PDF front matter plus one or two sample chapters |
 | `print`, `epub`, `web` | format-specific | public | Medium-specific selection |
 | `private` | `private` | private | Internal working material |
 | `supplemental` | `supplemental` | public | Core book plus companion appendix |
+
+The `preview` output also composes `_quarto-preview.yml`. That profile supplies
+a product subtitle, description, edition statement, stable EPUB UUID, notice
+text, optional full-edition and purchase URLs, and watermark settings. One
+conditional placeholder in the shared preface is expanded by
+`filters/preview.lua`; no preview-only manuscript copy exists. Empty URL values
+emit an honest pending-links message, while assigned values must be absolute
+HTTPS URLs. Set `alkahest.preview.watermark.enabled` to `false` to retain the
+notice and product labeling without the decorative mark.
+
+HTML uses a low-contrast fixed watermark, EPUB uses a conservative in-flow
+mark for reader compatibility, and Typst places the mark in the page
+background. All formats retain ordinary semantic notice text. The current
+cover treatment is deliberately title-based—the preview subtitle and notice
+distinguish it without inventing a retail cover. A later cover-pipeline item
+will generate actual cover files once dimensions and publication identity are
+known.
 
 `scripts/stage-edition.py` builds a disposable project containing only selected
 sources. A public tree never links a private or omitted source. Prefer whole-

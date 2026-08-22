@@ -172,6 +172,35 @@ body {
   font-kerning: normal;
 }
 
+/* Reflowable readers receive a conservative preview mark rather than a fixed
+   overlay, followed by the same semantic notice used by the web edition. */
+.alkahest-preview-watermark {
+  margin: 1.5em 0 0.8em;
+  color: #5f6b7c;
+  font-family: "Libertinus Sans", sans-serif;
+  font-size: 1.25em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.alkahest-preview-notice {
+  margin: 0 0 1.5em;
+  padding: 0.8em 0.9em;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-left: 0.25em solid #9a4f12;
+}
+
+.alkahest-preview-notice p {
+  margin: 0 0 0.65em;
+  text-indent: 0;
+}
+
+.alkahest-preview-notice p:last-child {
+  margin-bottom: 0;
+}
+
 :lang(en),
 :lang(fr),
 :lang(de),

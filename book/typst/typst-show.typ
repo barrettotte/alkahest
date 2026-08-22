@@ -301,3 +301,25 @@ $endif$
 }
 
 #show: alkahest-body-style
+
+$if(alkahest.preview.watermark.enabled)$
+// Preview watermarking is profile-controlled and decorative. The preface
+// notice remains the semantic statement exposed to assistive technology.
+#let alkahest-preview-watermark(body) = {
+  set page(background: context {
+    place(center + horizon, rotate(
+      -32deg,
+      text(
+        font: "$sansfont$",
+        fallback: false,
+        size: 54pt,
+        weight: "bold",
+        fill: rgb("#33415518"),
+      )[$alkahest.preview.watermark.text$],
+    ))
+  })
+  body
+}
+
+#show: alkahest-preview-watermark
+$endif$

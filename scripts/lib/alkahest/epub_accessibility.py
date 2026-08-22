@@ -457,7 +457,9 @@ def _write_members(
         temporary_path.unlink(missing_ok=True)
 
 
-def finalize_epub(epub_path: Path, policy_path: Path) -> None:
+def finalize_epub(
+    epub_path: Path, policy_path: Path, allow_missing_sections: bool = False
+) -> None:
     policy = load_policy(policy_path)
     infos, members = _read_members(epub_path)
     opf_path, package, nav_path, manifest, spine = _package_inventory(members)
@@ -482,6 +484,8 @@ def finalize_epub(epub_path: Path, policy_path: Path) -> None:
         target = section["id"]
         path = id_files.get(target)
         if not path:
+            if allow_missing_sections:
+                continue
             fail(f"cannot resolve EPUB semantic section {target}")
         updated = _set_section_semantics(
             _decode(members, path),

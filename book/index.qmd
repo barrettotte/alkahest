@@ -1,5 +1,10 @@
 # Preface {.unnumbered #sec-preface}
 
+::: {.content-visible when-profile="edition-preview"}
+::: {.alkahest-preview-placeholder}
+:::
+:::
+
 This deliberately small book is an executable specification for Alkahest. Each
 example exists to expose formatting or conversion problems before a real
 manuscript depends on the template.

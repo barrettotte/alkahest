@@ -50,7 +50,11 @@ exec podman run --rm \
     scripts/check-rendered-index.sh
     scripts/check-rendered-lists.sh
     python3 scripts/check-rendered-localization.py
-    java -jar "${EPUBCHECK_JAR}" book/_build/epub/Alkahest-Reference-Book.epub
+    for epub in \
+      book/_build/epub/Alkahest-Reference-Book.epub \
+      book/_build/smoke/editions/preview/epub/Alkahest-Reference-Book.epub; do
+      java -jar "${EPUBCHECK_JAR}" "${epub}"
+    done
     python3 scripts/check-release-assets.py
     python3 scripts/check-publication-contract.py
   '

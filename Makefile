@@ -342,7 +342,7 @@ render-locale-smoke: ## Render the French-locale HTML smoke edition.
 render-citation-smoke: ## Render numeric-citation HTML and Typst smoke editions.
 	./scripts/render.sh citation-smoke
 
-render-edition-smoke: ## Render abridged, preview, public, private, and supplemental editions.
+render-edition-smoke: ## Render reduced HTML editions plus HTML, EPUB, and PDF previews.
 	./scripts/render.sh edition-smoke
 
 render-notes-smoke: ## Render chapter, book, and sidenote placement editions.

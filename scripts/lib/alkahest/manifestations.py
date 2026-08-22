@@ -423,8 +423,13 @@ def validate_record(root, data):
         if relation["type"] == "translation-of":
             if target["language"] == manifestation["language"] or target["format"] != manifestation["format"]:
                 fail(f"{label} translation must change language within one format")
-        if relation["type"] == "preview-of" and target["variant"] != "full":
-            fail(f"{label} preview must point to a full manifestation")
+        if relation["type"] == "preview-of":
+            if target["variant"] != "full":
+                fail(f"{label} preview must point to a full manifestation")
+            if target["format"] != manifestation["format"]:
+                fail(f"{label} preview must retain its full manifestation format")
+            if manifestation["format"] == "pdf" and dimensions[identifier] != dimensions[target_id]:
+                fail(f"{label} PDF preview must retain its full manifestation dimensions")
         if relation["type"] == "print-interior-from":
             if target["format"] != "pdf" or dimensions[identifier] != dimensions[target_id]:
                 fail(f"{label} print interior relation needs a dimension-matched PDF")
@@ -469,7 +474,6 @@ def validate_repository(root, registry, records):
 
     formats = set()
     variants = set()
-    epub_uuid = None
     for identifier, manifestation in records.items():
         label = f"manifestation {identifier}"
         formats.add(manifestation["format"])
@@ -492,7 +496,7 @@ def validate_repository(root, registry, records):
         if manifestation["format"] in {"web", "epub", "pdf"} and manifestation["variant"] in {"full", "review"}:
             if artifact not in reproducible_artifacts:
                 fail(f"{label} primary artifact is absent from the reproducibility policy")
-        if manifestation["format"] == "pdf":
+        if manifestation["format"] == "pdf" and manifestation["variant"] in {"full", "review"}:
             profile = pdf_profiles.get(artifact)
             if not profile:
                 fail(f"{label} PDF artifact is absent from preflight policy")
@@ -502,12 +506,31 @@ def validate_repository(root, registry, records):
             if expected["unit"] != "in" or Decimal(str(expected["width"])) != width or Decimal(str(expected["height"])) != height:
                 fail(f"{label} dimensions drifted from PDF preflight")
         for item in manifestation["identifiers"]:
-            if item["scheme"] == "uuid-urn":
-                if epub_uuid is not None or manifestation["format"] != "epub":
-                    fail("the current UUID URN must uniquely identify the EPUB manifestation")
-                epub_uuid = item["value"]
-    if epub_uuid != reproducibility.get("epub_identifier"):
-        fail("EPUB manifestation UUID drifted from reproducibility policy")
+            if item["scheme"] == "uuid-urn" and manifestation["format"] != "epub":
+                fail(f"{label} UUID URN is reserved for EPUB manifestations")
+    full_epub_uuid = next(
+        (
+            item["value"]
+            for item in records["epub-full-en"]["identifiers"]
+            if item["scheme"] == "uuid-urn"
+        ),
+        None,
+    )
+    if full_epub_uuid != reproducibility.get("epub_identifier"):
+        fail("full EPUB manifestation UUID drifted from reproducibility policy")
+    preview_epub_uuid = next(
+        (
+            item["value"]
+            for item in records["epub-preview-en"]["identifiers"]
+            if item["scheme"] == "uuid-urn"
+        ),
+        None,
+    )
+    preview_profile = (root / "book/_quarto-preview.yml").read_text(encoding="utf-8")
+    if f'identifier: "{preview_epub_uuid}"' not in preview_profile:
+        fail("preview EPUB manifestation UUID drifted from its Quarto profile")
+    if preview_epub_uuid == full_epub_uuid:
+        fail("full and preview EPUB manifestations need distinct UUIDs")
     if not {"web", "epub", "pdf", "print"}.issubset(formats):
         fail("reference manifestations must cover web, EPUB, PDF, and print")
     if not {"full", "preview", "review", "translation", "supplemental"}.issubset(variants):
@@ -516,6 +539,8 @@ def validate_repository(root, registry, records):
     render = (root / "scripts/render.sh").read_text(encoding="utf-8")
     for marker in (
         "_build/smoke/editions/preview/html",
+        "_build/smoke/editions/preview/epub",
+        "_build/smoke/editions/preview/typst",
         "_build/locale/fr/html",
         "_build/smoke/editions/supplemental/html",
     ):

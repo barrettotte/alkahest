@@ -56,6 +56,18 @@
       "publisher name is unassigned",
       "manifestation publication date is unassigned"
     ],
+    "epub-preview-en": [
+      "lifecycle is not ONIX-exportable",
+      "ISBN-13 or DOI is unassigned",
+      "publisher name is unassigned",
+      "manifestation publication date is unassigned"
+    ],
+    "pdf-preview-7x10-en": [
+      "lifecycle is not ONIX-exportable",
+      "ISBN-13 or DOI is unassigned",
+      "publisher name is unassigned",
+      "manifestation publication date is unassigned"
+    ],
     "web-translation-fr": [
       "format is not an ONIX retail product",
       "lifecycle is not ONIX-exportable",

@@ -2,6 +2,7 @@
 
 import copy
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -12,6 +13,7 @@ sys.path.insert(0, str(SCRIPT_DIR / "lib"))
 
 from alkahest.common import ContractError
 from alkahest.editions import load_editions
+from alkahest.preview import validate_preview_presentation
 
 
 BASE = json.loads((SCRIPT_DIR.parent / "book" / "editions.json").read_text(encoding="utf-8"))
@@ -36,6 +38,41 @@ def expect_failure(name, expected, mutate):
         raise RuntimeError(f"error: edition fixture {name} unexpectedly passed")
 
 
+def preview_fixture(root):
+    for relative in (
+        "book/_quarto.yml",
+        "book/_quarto-preview.yml",
+        "book/index.qmd",
+        "book/filters/preview.lua",
+        "scripts/render.sh",
+    ):
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(SCRIPT_DIR.parent / relative, target)
+
+
+def replace(path, old, new):
+    text = path.read_text(encoding="utf-8")
+    if old not in text:
+        raise RuntimeError(f"error: preview fixture cannot find {old!r}")
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+def expect_preview_failure(parent, name, expected, mutate):
+    root = parent / name
+    preview_fixture(root)
+    mutate(root)
+    try:
+        validate_preview_presentation(root)
+    except ContractError as error:
+        if expected not in str(error):
+            raise RuntimeError(
+                f"error: preview fixture {name} missed diagnostic '{expected}': {error}"
+            ) from error
+    else:
+        raise RuntimeError(f"error: preview fixture {name} unexpectedly passed")
+
+
 def main():
     validate(copy.deepcopy(BASE))
     expect_failure("missing-edition", "editions must be exactly", lambda r: r["editions"].pop("abridged"))
@@ -50,6 +87,57 @@ def main():
     expect_failure("supplemental-in-web", "structure 'web' does not select exactly", lambda r: r["structures"]["web"]["appendices"][2]["sources"].__setitem__(0, "supplemental-workbook"))
     expect_failure("long-preview", "preview structure must contain one or two", lambda r: r["structures"]["preview"]["chapters"][1]["sources"].append("math"))
     expect_failure("complete-abridged", "structure 'abridged' must be a nonempty proper subset", lambda r: r["structures"].__setitem__("abridged", copy.deepcopy(r["structures"]["full"])))
+    with tempfile.TemporaryDirectory(prefix="alkahest-preview-presentation.") as directory:
+        parent = Path(directory)
+        valid = parent / "valid"
+        preview_fixture(valid)
+        presentation = validate_preview_presentation(valid)
+        if presentation != {
+            "identifier": "urn:uuid:551be2aa-8be0-4078-b9dc-3f29e1088092",
+            "links": 0,
+            "watermark": "PREVIEW",
+        }:
+            raise RuntimeError("error: preview presentation fixture returned wrong facts")
+        expect_preview_failure(
+            parent,
+            "missing-placeholder",
+            "one edition-preview presentation placeholder",
+            lambda root: replace(
+                root / "book/index.qmd",
+                "alkahest-preview-placeholder",
+                "missing-preview-placeholder",
+            ),
+        )
+        expect_preview_failure(
+            parent,
+            "unsafe-url",
+            "must be empty or an absolute HTTPS URL",
+            lambda root: replace(
+                root / "book/_quarto-preview.yml",
+                'full-edition-url: ""',
+                'full-edition-url: "http://example.com/book"',
+            ),
+        )
+        expect_preview_failure(
+            parent,
+            "disabled-presentation",
+            "preview presentation must be enabled",
+            lambda root: replace(
+                root / "book/_quarto-preview.yml",
+                "    enabled: true",
+                "    enabled: false",
+            ),
+        )
+        expect_preview_failure(
+            parent,
+            "unsafe-watermark",
+            "short uppercase display text",
+            lambda root: replace(
+                root / "book/_quarto-preview.yml",
+                '      text: "PREVIEW"',
+                '      text: "Preview #unsafe"',
+            ),
+        )
     for edition in ("public", "private", "preview", "abridged"):
         subprocess.run(
             [sys.executable, str(SCRIPT_DIR / "stage-edition.py"), edition],
@@ -65,7 +153,7 @@ def main():
         raise RuntimeError("error: preview stage contains omitted main chapter")
     if (stage_parent / "abridged" / "layout-stress.qmd").exists():
         raise RuntimeError("error: abridged stage contains omitted main chapter")
-    print("ok: edition fixtures (valid registry; 9 invalid contracts rejected; staged public/private and reduced-book isolation)")
+    print("ok: edition fixtures (valid registries and preview presentation; 13 invalid contracts rejected; staged public/private and reduced-book isolation)")
 
 
 if __name__ == "__main__":

@@ -190,10 +190,14 @@ HTML, EPUB, edition, and locale anchors after rendering.
 
 `make check-editions` validates the whole-book source manifest, reduced-book
 reference integrity, format compatibility, and public/private isolation.
-`make render-edition-smoke` builds the abridged, preview, public, private, and
-supplemental HTML variants used by the rendered acceptance suite. The primary
-HTML command uses the `web` structure; EPUB and PDF commands use the core
-`full` structure through their format-specific editions.
+`make render-edition-smoke` builds the abridged, public, private, and
+supplemental HTML variants plus isolated HTML, EPUB, and default-Typst preview
+products used by the rendered acceptance suite. The preview formats share the
+same explicit two-chapter allowlist and receive a stable EPUB UUID distinct
+from the full product. They also compose the preview presentation profile, which
+adds product metadata, a semantic notice, optional HTTPS links, and a
+format-appropriate opt-in watermark. Primary EPUB and PDF commands continue to
+use the core `full` structure through their format-specific editions.
 
 `make check-learning` validates learning-role metadata and stable pairings,
 including private answer-key isolation. `make test-learning` exercises its

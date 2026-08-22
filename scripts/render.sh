@@ -117,7 +117,14 @@ render_citation_smoke() {
 
 render_edition_smoke() {
   render_edition_profile abridged html _build/smoke/editions/abridged/html
-  render_edition_profile preview html _build/smoke/editions/preview/html
+  render_edition_profile preview preview,html \
+    _build/smoke/editions/preview/html
+  render_edition_profile preview preview,epub \
+    _build/smoke/editions/preview/epub
+  python3 "${script_dir}/finalize-epub.py" --reduced \
+    "${repo_root}/book/_build/smoke/editions/preview/epub/Alkahest-Reference-Book.epub"
+  render_edition_profile preview preview,typst \
+    _build/smoke/editions/preview/typst
   render_edition_profile public html _build/smoke/editions/public/html
   render_edition_profile private html _build/smoke/editions/private/html
   render_edition_profile supplemental html \

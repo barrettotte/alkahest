@@ -452,7 +452,80 @@ def check_editions(html_text, epub_text, edition_text):
 
     preview_root = BUILD / "smoke/editions/preview/html"
     preview = edition_text["preview"]
+    preview_index = load(preview_root / "index.html")
     require(load(preview_root / "index.html"), ("Preview chapters", "Preview reference"), "preview edition")
+    require(
+        preview_index,
+        (
+            'class="alkahest-preview-watermark"',
+            'class="alkahest-preview-notice"',
+            'data-full-edition-link="unassigned"',
+            'data-purchase-link="unassigned"',
+            'data-watermark="enabled"',
+            "Preview edition",
+            "This preview contains two selected chapters",
+            "Full-edition and purchase links will appear here",
+        ),
+        "preview HTML presentation",
+    )
+    reject(preview_index, ("example.invalid", "Purchase the full edition</a>"), "unassigned preview HTML links")
+
+    preview_epub_path = BUILD / "smoke/editions/preview/epub/Alkahest-Reference-Book.epub"
+    if not preview_epub_path.is_file():
+        fail(f"preview EPUB is missing: {preview_epub_path.relative_to(ROOT)}")
+    with zipfile.ZipFile(preview_epub_path) as archive:
+        preview_epub_names = archive.namelist()
+        preview_epub_raw = "".join(
+            archive.read(name).decode("utf-8")
+            for name in preview_epub_names
+            if name.endswith(".xhtml")
+        )
+        preview_epub_opf = archive.read("EPUB/content.opf").decode("utf-8")
+    require(
+        preview_epub_raw,
+        (
+            "alkahest-preview-watermark",
+            "alkahest-preview-notice",
+            "Preview edition",
+            "This preview contains two selected chapters",
+            "Full-edition and purchase links will appear here",
+        ),
+        "preview EPUB presentation",
+    )
+    require(
+        preview_epub_opf,
+        (
+            "urn:uuid:551be2aa-8be0-4078-b9dc-3f29e1088092",
+            "A two-chapter preview of Alkahest Reference Book",
+        ),
+        "preview EPUB metadata",
+    )
+    reject(preview_epub_raw, ("example.invalid", "Purchase the full edition</a>"), "unassigned preview EPUB links")
+
+    preview_pdf_path = BUILD / "smoke/editions/preview/typst/Alkahest-Reference-Book.pdf"
+    if not preview_pdf_path.is_file():
+        fail(f"preview PDF is missing: {preview_pdf_path.relative_to(ROOT)}")
+    preview_pdf = normalize_pdf(
+        run_checked(("pdftotext", "-layout", str(preview_pdf_path), "-"))
+    )
+    preview_typ = load(
+        BUILD / "smoke/editions/preview/typst/Alkahest-Reference-Book.typ"
+    )
+    require(
+        preview_typ,
+        ('fill: rgb("#33415518")', ")[PREVIEW]"),
+        "preview PDF watermark source",
+    )
+    require(
+        preview_pdf,
+        (
+            "Two-chapter preview edition",
+            "Preview edition",
+            "This preview contains two selected chapters",
+            "Full-edition and purchase links will appear here",
+        ),
+        "preview PDF presentation",
+    )
     require(
         preview,
         ("Appendix A", "A.2 Numbered appendix elements", "Figure A.1", "A chapter-to-appendix route reaches"),

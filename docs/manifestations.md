@@ -6,10 +6,10 @@ in the canonical work record. Its closed version 1 contract is
 
 A manifestation is one separately identifiable product or distribution form.
 The current registry includes full web and EPUB outputs, two PDF sizes, an
-internal review PDF, two planned print products, and private preview,
-translation, and supplemental web specimens. Planned records may reserve an
-intent and dimensions, but cannot claim an artifact, publication date, price,
-or availability.
+internal review PDF, two planned print products, isolated HTML/EPUB/PDF preview
+specimens, and private translation and supplemental web specimens. Planned
+records may reserve an intent and dimensions, but cannot claim an artifact,
+publication date, price, or availability.
 
 Typst and LuaLaTeX outputs are renditions of the same manifestation when their
 product metadata is identical. They remain independently tested PDF backends,
@@ -35,12 +35,13 @@ Every manifestation declares:
 - a typed relationship for previews, translations, review derivatives,
   supplemental products, and print interiors.
 
-Relations must resolve without self-reference or cycles. A translation changes language
-without changing format, a preview points to a full manifestation, and a print
-product points to a dimension-matched PDF interior. Artifacts cannot be reused
-across records. The validator also reconciles editions, locales, reproducible
-artifacts, PDF preflight dimensions, and the EPUB UUID with their existing
-policies.
+Relations must resolve without self-reference or cycles. A translation changes
+language without changing format, a preview retains the full manifestation's
+format, a PDF preview also retains its trim, and a print product points to a
+dimension-matched PDF interior. Artifacts cannot be reused across records. The
+validator also reconciles editions, locales, reproducible artifacts, primary
+PDF preflight dimensions, and the distinct full/preview EPUB UUIDs with their
+existing policies.
 
 ## Typed identifiers
 
@@ -53,9 +54,18 @@ identifier cannot be reused by two manifestations. ISBNs are limited to EPUB,
 PDF, and print products.
 
 The development specimen intentionally has no ISBN, DOI, public URL, price, or
-publication date. Its existing EPUB UUID is the only assigned publication
-identifier. Add real values only when a specific product has been selected;
-never copy one ISBN between print, EPUB, and PDF records.
+publication date. Stable, distinct UUID URNs identify its full and preview EPUB
+packages for reproducible development builds. Add retail identifiers only when
+a specific product has been selected; never copy one ISBN between print, EPUB,
+PDF, or preview products.
+
+Preview product presentation is separate from work-level metadata. The preview
+profile overrides the product subtitle, description, and edition statement;
+configures optional full-edition and purchase links; and controls a decorative
+watermark. The current development manifestation leaves both URLs empty rather
+than publishing placeholder destinations. Its cover field also remains null:
+the profile supplies a clear title/notice treatment, while physical or
+storefront cover files belong to the later dimension-aware cover pipeline.
 
 The schema checks currency and territory code shape but does not claim that a
 code is current. The later release/ONIX contract will pin external code-list

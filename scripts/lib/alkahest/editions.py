@@ -170,7 +170,7 @@ def load_editions(path):
     expected = {
         "full": ("full", "public", ["html", "epub", "typst", "latex"]),
         "abridged": ("abridged", "public", ["html", "epub", "typst", "latex"]),
-        "preview": ("preview", "public", ["html"]),
+        "preview": ("preview", "public", ["html", "epub", "typst"]),
         "print": ("full", "public", ["typst", "latex"]),
         "epub": ("full", "public", ["epub"]),
         "web": ("web", "public", ["html"]),
@@ -220,4 +220,3 @@ def load_editions(path):
     if not chapter_count["preview"] < chapter_count["abridged"] < chapter_count["full"]:
         fail("abridged structure must contain more chapters than preview and fewer than full")
     return registry
-

@@ -186,6 +186,20 @@ def main():
             ),
         ),
         (
+            "preview-format-drift",
+            "must retain its full manifestation format",
+            lambda registry: manifestation(registry, "web-preview-en")["relation"].update(
+                {"target": "epub-full-en"}
+            ),
+        ),
+        (
+            "preview-dimension-drift",
+            "must retain its full manifestation dimensions",
+            lambda registry: manifestation(registry, "pdf-preview-7x10-en").update(
+                {"dimensions": {"width": 6, "height": 9, "unit": "in"}}
+            ),
+        ),
+        (
             "translation-without-language-change",
             "translation must change language",
             lambda registry: manifestation(registry, "web-translation-fr").update(

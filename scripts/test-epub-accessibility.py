@@ -212,6 +212,32 @@ def main():
         finalize_epub(epub, policy_path)
         validate_epub(epub, policy_path)
 
+        reduced_policy = copy.deepcopy(policy)
+        reduced_policy["sections"].append(
+            {
+                "id": "omitted-section",
+                "epub_type": "appendix",
+                "role": "doc-appendix",
+                "body_type": "backmatter",
+            }
+        )
+        reduced_policy_path = root / "reduced-policy.json"
+        write_policy(reduced_policy_path, reduced_policy)
+        strict_reduced_epub = root / "strict-reduced.epub"
+        write_epub(strict_reduced_epub, fixture_members())
+        try:
+            finalize_epub(strict_reduced_epub, reduced_policy_path)
+        except EpubPolicyError as error:
+            if "cannot resolve EPUB semantic section omitted-section" not in str(error):
+                raise
+        else:
+            raise RuntimeError("strict reduced EPUB fixture passed unexpectedly")
+        reduced_epub = root / "reduced.epub"
+        write_epub(reduced_epub, fixture_members())
+        finalize_epub(
+            reduced_epub, reduced_policy_path, allow_missing_sections=True
+        )
+
         cases = [
             (
                 "metadata",
@@ -320,7 +346,7 @@ def main():
 
     print(
         "ok: EPUB accessibility fixtures "
-        "(valid reflowable and print-equivalent packages; "
+        "(valid reflowable, reduced, and print-equivalent packages; "
         "11 semantic/page failures and 2 Ace report failures rejected)"
     )
 

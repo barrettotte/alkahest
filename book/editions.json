@@ -378,7 +378,7 @@
     "preview": {
       "structure": "preview",
       "access": "public",
-      "formats": ["html"]
+      "formats": ["html", "epub", "typst"]
     },
     "print": {
       "structure": "full",

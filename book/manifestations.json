@@ -210,13 +210,74 @@
         "channels": []
       },
       "production": {
-        "profile": "edition-preview,html",
+        "profile": "edition-preview,preview,html",
         "artifact": "book/_build/smoke/editions/preview/html",
         "media_type": "text/html"
       },
       "relation": {
         "type": "preview-of",
         "target": "web-full-en"
+      }
+    },
+    {
+      "id": "epub-preview-en",
+      "label": "English two-chapter EPUB preview specimen",
+      "format": "epub",
+      "variant": "preview",
+      "edition": "preview",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [
+        {
+          "scheme": "uuid-urn",
+          "value": "urn:uuid:551be2aa-8be0-4078-b9dc-3f29e1088092"
+        }
+      ],
+      "dimensions": null,
+      "cover": null,
+      "dates": {"announcement": null, "publication": null, "withdrawal": null},
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": ["WORLD"],
+        "channels": []
+      },
+      "production": {
+        "profile": "edition-preview,preview,epub",
+        "artifact": "book/_build/smoke/editions/preview/epub/Alkahest-Reference-Book.epub",
+        "media_type": "application/epub+zip"
+      },
+      "relation": {
+        "type": "preview-of",
+        "target": "epub-full-en"
+      }
+    },
+    {
+      "id": "pdf-preview-7x10-en",
+      "label": "English two-chapter 7 x 10 PDF preview specimen",
+      "format": "pdf",
+      "variant": "preview",
+      "edition": "preview",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": {"width": 7, "height": 10, "unit": "in"},
+      "cover": null,
+      "dates": {"announcement": null, "publication": null, "withdrawal": null},
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": ["WORLD"],
+        "channels": []
+      },
+      "production": {
+        "profile": "edition-preview,preview,typst",
+        "artifact": "book/_build/smoke/editions/preview/typst/Alkahest-Reference-Book.pdf",
+        "media_type": "application/pdf"
+      },
+      "relation": {
+        "type": "preview-of",
+        "target": "pdf-full-7x10-en"
       }
     },
     {

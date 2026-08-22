@@ -90,6 +90,7 @@ filters:
   - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
   - _extensions/alkahest-index/alkahest-index-filter.lua
   - _extensions/alkahest-generated-lists/alkahest-generated-lists.lua
+  - filters/preview.lua
   - filters/pdf-metadata.lua
   - filters/math-alt.lua
   - at: post-render
