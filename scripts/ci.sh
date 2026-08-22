@@ -19,7 +19,12 @@ python3 "${script_dir}/test-pdf-preflight.py"
 python3 "${script_dir}/check-source.py"
 "${script_dir}/check-epub-accessibility.sh" test
 python3 "${script_dir}/check-source.py" --tests
+python3 "${script_dir}/package-companion-bundles.py"
+python3 "${script_dir}/check-companion-bundles.py"
 "${script_dir}/render.sh" complete
+"${script_dir}/check-preview.sh"
+"${script_dir}/python-tools.sh" scripts/generate-covers.py
+"${script_dir}/python-tools.sh" scripts/check-cover-artifacts.py
 # Rebuild the reflowable outputs and default PDF once, then require exact
 # content equality with the complete render. The full six-PDF repeat remains a
 # deliberate pre-release command because fresh LuaLaTeX caches are expensive.

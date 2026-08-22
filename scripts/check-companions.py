@@ -17,7 +17,7 @@ def main():
         raise ContractError("error: companion book root does not exist")
     result = validate_companions(root)
     kinds = ", ".join(f"{result['kinds'][kind]} {kind}" for kind in KINDS)
-    print(f"ok: companion materials ({result['items']} items; {kinds}; version, checksum, compatibility, description, delivery, and references)")
+    print(f"ok: companion materials ({result['items']} items in {result['bundles']} versioned bundle; {kinds}; version, checksum, license, compatibility, description, delivery, and references)")
 
 
 if __name__ == "__main__":

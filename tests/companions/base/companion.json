@@ -56,5 +56,26 @@
       "description": "Small download manifest for companion validation.",
       "release_path": "companion/pack.md"
     }
+  },
+  "bundles": {
+    "bundle-fixture-project": {
+      "title": "Fixture companion bundle",
+      "version": "1.0.0",
+      "filename": "fixture-companion-1.0.0.zip",
+      "release_path": "companion/fixture-companion-1.0.0.zip",
+      "items": [
+        "asset-fixture-code",
+        "asset-fixture-data",
+        "asset-fixture-schematic",
+        "asset-fixture-bom",
+        "asset-fixture-download"
+      ],
+      "entrypoint": "asset-fixture-download",
+      "license": "CC0-1.0",
+      "license_path": "licenses/CC0-1.0.txt",
+      "license_sha256": "7552672d7bfc29dc985d99c4e2af06e86fc15d857369355391913829dd051da6",
+      "credit": "Companion validation fixture, CC0 1.0.",
+      "compatibility": ["Companion contract fixture"]
+    }
   }
 }

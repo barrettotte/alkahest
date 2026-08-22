@@ -42,6 +42,10 @@ visible; a future vendor profile may perform a declared press conversion.
 | `make render-print-6x9` | Typst and LuaLaTeX 6 x 9 PDFs |
 | `make render-review` | Typst and LuaLaTeX US Letter PDFs |
 | `make render-pdf-profiles` | All six PDF variants |
+| `make render-preview` | Curated preview HTML, EPUB, and 7 x 10 Typst PDF |
+| `make check-preview` | Preview allowlist, privacy, links, EPUB, metadata, and PDF checks |
+| `make generate-covers` | Development wrap SVGs, front thumbnails, and geometry manifests |
+| `make check-cover-artifacts` | Recalculate cover geometry from selected interior PDFs and reject drift |
 | `make render-locale-smoke` | French-locale HTML fixture |
 | `make check-pdf-preflight` | Check PDF boxes, font packaging, raster resolution, color spaces, and unsafe document features |
 | `make test-pdf-preflight` | Exercise valid and invalid preflight parser fixtures without rendering |
@@ -168,16 +172,45 @@ Phase 3 resolved that blocker with continuation-safe LuaLaTeX wrapping and a
 hard-token fallback in Typst; the PDF validator now rejects text outside the
 physical page. The trim did not need to grow to accommodate source code.
 
-## Publishing boundary
+## Cover pipeline and publishing boundary
 
-The interior and cover are separate products. Cover width, spine width, bleed,
-barcode safe area, and finish depend on the chosen printer, binding, paper, and
-final page count, so the template must not guess them. Generate the cover only
-after those values are fixed for a specific edition.
+The interior and cover are separate products. `config/covers/cover-policy.json`
+connects the two planned print manifestations to their selected Typst interior
+artifacts and declares every geometric input explicitly: printer-template ID
+and revision, binding, paper and sheet caliper, page-count policy, bleed, safe
+inset, minimum spine width for text, barcode reserve, finish, and color space.
+The current template is deliberately generic, sRGB, and marked not press ready.
+It validates the workflow without pretending to satisfy an unselected vendor.
 
-The primary profile is compatible in principle with current KDP and
-IngramSpark trim menus, but vendor requirements must be rechecked at release
-time:
+Run `make generate-covers` only after rendering the 7 x 10 and 6 x 9 Typst
+interiors. The generator reads each PDF's actual trim and page count, hashes the
+selected interior, and rounds an odd page count up by one physical production
+page. Spine width is production pages multiplied by half the declared sheet
+caliper. It emits, for each print manifestation:
+
+- an exact-dimension full-wrap SVG showing back, spine, front, bleed, safe
+  areas, and the barcode reserve;
+- a clean front-cover SVG thumbnail; and
+- a machine-readable manifest recording metadata, inputs, geometry, output
+  checksums, and every remaining press-readiness blocker.
+
+`make check-cover-artifacts` recalculates all outputs from the current PDFs and
+requires exact bytes, exact file/profile coverage, valid SVG, matching trim,
+and no local/private markers. A changed interior page count or byte changes the
+manifest and geometry, making stale covers fail. The present 73-page 7 x 10
+interior becomes 74 production pages and a 0.1665-inch spine; the 81-page 6 x 9
+interior becomes 82 production pages and a 0.1845-inch spine. Both fall below
+the configured 0.25-inch spine-text threshold, so lettering is disabled rather
+than made illegible.
+
+These generated concepts leave the manifestation `cover` fields null. Final
+artwork should populate those checksum-locked fields only after the printer,
+binding, paper, page count, template, bleed, barcode, finish, identifier, and
+press color profile are fixed for a specific edition.
+
+The primary profile may fit common print-on-demand trim menus, but vendor
+requirements must be rechecked at release time. The links below are research
+starting points, not pinned inputs to the generic development policy:
 
 - [KDP paperback and hardcover trim, bleed, and margin guidance](https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6/)
 - [KDP print options and trim-size tables](https://kdp.amazon.com/en_US/help/topic/G201834180)

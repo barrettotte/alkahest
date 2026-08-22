@@ -915,6 +915,16 @@ def check_companions_and_reuse(epub_text, epub_language, html_css, epub_css):
         "HTML companion metadata",
     )
     require(epub_language, 'data-companion-version="1.0.0"', "EPUB companion version")
+    bundle_markers = (
+        'data-companion-bundle="bundle-half-adder-project"',
+        'data-companion-bundle-version="1.0.0"',
+        'data-companion-bundle-path="companion/alkahest-half-adder-companion-1.0.0.zip"',
+        "Versioned bundle: Half-adder project companion bundle, version 1.0.0.",
+        "Bundle license: CC0-1.0.",
+        "Release package: companion/alkahest-half-adder-companion-1.0.0.zip",
+    )
+    require(companions, bundle_markers, "HTML companion bundle")
+    require(epub_language, bundle_markers, "EPUB companion bundle")
     require(epub_text, "Release package: companion/half-adder.v", "EPUB companion fallback")
     require_files(
         BUILD / "html/companion",

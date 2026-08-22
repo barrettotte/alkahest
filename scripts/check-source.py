@@ -17,6 +17,7 @@ CHECKS = (
     ("golden-pages", "check-golden-pages.py", False),
     ("publication-metadata", "check-publication-metadata.py", False),
     ("manifestations", "check-manifestations.py", False),
+    ("covers", "check-covers.py", False),
     ("metadata-generation", "check-metadata-generation.py", False),
     ("graphs", "check-graphs.py", False),
     ("circuits", "check-circuits.py", True),
@@ -48,6 +49,7 @@ TESTS = (
     ("golden-pages", "test-golden-pages.py", False),
     ("publication-metadata", "test-publication-metadata.py", False),
     ("manifestations", "test-manifestations.py", False),
+    ("covers", "test-covers.py", False),
     ("metadata-generation", "test-metadata-generation.py", False),
     ("pdf-accessibility-policy", "test-pdf-accessibility-policy.py", False),
     ("editorial-integrity", "test-editorial-integrity.py", False),
@@ -55,6 +57,7 @@ TESTS = (
     ("editions", "test-editions.py", False),
     ("learning", "test-learning.py", False),
     ("companions", "test-companions.py", False),
+    ("companion-bundles", "test-companion-bundles.py", False),
     ("reuse", "test-reuse.py", False),
     ("citations", "test-citations.sh", False),
     ("generated-lists", "test-generated-lists.sh", False),
@@ -63,6 +66,7 @@ TESTS = (
     ("notes", "test-notes.sh", False),
     ("localization", "test-localization.py", False),
     ("asset-rights", "test-asset-rights.py", False),
+    ("preview-artifacts", "test-preview.py", False),
 )
 
 

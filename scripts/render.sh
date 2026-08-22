@@ -115,8 +115,7 @@ render_citation_smoke() {
     _build/smoke/citations/numeric/typst
 }
 
-render_edition_smoke() {
-  render_edition_profile abridged html _build/smoke/editions/abridged/html
+render_preview() {
   render_edition_profile preview preview,html \
     _build/smoke/editions/preview/html
   render_edition_profile preview preview,epub \
@@ -125,6 +124,11 @@ render_edition_smoke() {
     "${repo_root}/book/_build/smoke/editions/preview/epub/Alkahest-Reference-Book.epub"
   render_edition_profile preview preview,typst \
     _build/smoke/editions/preview/typst
+}
+
+render_edition_smoke() {
+  render_edition_profile abridged html _build/smoke/editions/abridged/html
+  render_preview
   render_edition_profile public html _build/smoke/editions/public/html
   render_edition_profile private html _build/smoke/editions/private/html
   render_edition_profile supplemental html \
@@ -176,6 +180,9 @@ case "${target}" in
   citation-smoke)
     render_citation_smoke
     ;;
+  preview)
+    render_preview
+    ;;
   edition-smoke)
     render_edition_smoke
     ;;
@@ -210,7 +217,7 @@ case "${target}" in
     render_notes_smoke
     ;;
   *)
-    echo "usage: $0 [all|complete|html|epub|pdf|typst|latex|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke|pdf-accessibility-smoke|pdf-ua-typst|pdf-ua-latex]" >&2
+    echo "usage: $0 [all|complete|html|epub|pdf|typst|latex|preview|print-6x9|review|pdf-profiles|locale-smoke|citation-smoke|edition-smoke|notes-smoke|pdf-accessibility-smoke|pdf-ua-typst|pdf-ua-latex]" >&2
     exit 2
     ;;
 esac

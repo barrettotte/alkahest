@@ -67,6 +67,14 @@ than publishing placeholder destinations. Its cover field also remains null:
 the profile supplies a clear title/notice treatment, while physical or
 storefront cover files belong to the later dimension-aware cover pipeline.
 
+Print-cover production is separate from assigning a final manifestation cover.
+`config/covers/cover-policy.json` binds each planned print record to its
+dimension-matched selected PDF interior. Generated development templates remain
+below `book/_build/covers/` and therefore do not populate a manifestation's
+checksum-locked `cover` field or imply retail readiness. Assign that field only
+after final artwork, printer geometry, identifiers, and press requirements are
+approved.
+
 The schema checks currency and territory code shape but does not claim that a
 code is current. The later release/ONIX contract will pin external code-list
 versions and map these internal values for distributors.

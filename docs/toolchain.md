@@ -190,6 +190,15 @@ HTML, EPUB, edition, and locale anchors after rendering.
 
 `make check-editions` validates the whole-book source manifest, reduced-book
 reference integrity, format compatibility, and public/private isolation.
+`make render-preview` builds only the isolated preview HTML, EPUB, and
+default-Typst PDF. Follow it with `make check-preview` for a focused gate that
+does not require full-book artifacts: it link-checks the HTML, runs EPUBCheck,
+matches rendered pages and chapters to the manifest allowlist, rejects private
+or omitted content, and verifies preview metadata, navigation, citations,
+cross-references, PDF geometry, embedded fonts, and watermark treatment.
+`make test-preview` runs the validator's failure fixtures and is part of the
+source test dispatcher.
+
 `make render-edition-smoke` builds the abridged, public, private, and
 supplemental HTML variants plus isolated HTML, EPUB, and default-Typst preview
 products used by the rendered acceptance suite. The preview formats share the
@@ -208,6 +217,21 @@ chapter in all four formats and the answer key only in the private edition.
 compatibility, delivery locations, and manuscript references.
 `make test-companions` exercises invalid registry, file, and packaging
 contracts; rendered checks verify web downloads and offline fallbacks.
+`make package-companion-bundles` builds deterministic versioned ZIPs containing
+only each bundle's explicit item allowlist plus its complete license, README,
+machine manifest, and internal checksums. `make check-companion-bundles`
+reproduces and byte-compares each ZIP and outer checksum; the corresponding
+fixture target rejects missing or changed products. Outputs stay below
+`book/_build/companion/`; packaging performs no upload or release operation.
+
+`make check-covers` validates the generic cover policy and its relationships to
+the planned print and selected PDF manifestations. After rendering both Typst
+print interiors, `make generate-covers` uses locked Poppler inspection to build
+exact-dimension wrap SVGs, front thumbnails, and geometry/readiness manifests;
+`make check-cover-artifacts` reproduces them and rejects page-count, interior
+hash, trim, geometry, profile, or file drift. CI runs generation and checking
+after the complete render. Outputs stay under `book/_build/covers/` and make no
+vendor or press-readiness claim.
 
 `make check-reuse` validates registered shared prose, exact checksums,
 provenance, allowed contexts, declared parameters, persistent use-site IDs, and

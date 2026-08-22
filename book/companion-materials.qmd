@@ -25,7 +25,10 @@ registry and keeps the same stable identity across those presentations.
 
 {{< alk-companion asset-half-adder-project-pack >}}
 
-For a public release, copy each registered file to its declared release-package
-location without renaming it, or add a durable HTTPS URL while retaining the
-fallback path. A changed byte requires a new checksum; a compatibility or
-content change requires a deliberate semantic version update.
+The download entry identifies the matching versioned bundle. Build it locally
+with `make package-companion-bundles`, then verify its license, manifest,
+internal and outer checksums, deterministic bytes, and source parity with
+`make check-companion-bundles`. Public hosting remains optional: when a release
+is authorized, add the final durable HTTPS URL while retaining the stable
+versioned fallback path. A changed byte requires a new checksum; a compatibility
+or content change requires a deliberate semantic version update.

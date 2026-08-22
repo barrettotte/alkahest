@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "output_root": "book/_build/covers",
+  "template": {
+    "printer_template": {
+      "id": "generic-perfect-bound-development",
+      "revision": 1,
+      "vendor": "generic"
+    },
+    "binding": "perfect-bound",
+    "paper": {
+      "id": "uncoated-white-development",
+      "sheet_caliper_in": "0.004500"
+    },
+    "page_count_policy": "round-up-even",
+    "bleed_in": "0.125",
+    "safe_inset_in": "0.250",
+    "spine_text_minimum_in": "0.250",
+    "barcode_safe_area": {
+      "width_in": "2.000",
+      "height_in": "1.200",
+      "edge_clearance_in": "0.250"
+    },
+    "finish": "matte",
+    "color_space": "sRGB-development",
+    "press_ready": false
+  },
+  "profiles": [
+    {
+      "id": "cover-print-7x10",
+      "manifestation": "print-full-7x10-en",
+      "interior_manifestation": "pdf-full-7x10-en"
+    },
+    {
+      "id": "cover-print-6x9",
+      "manifestation": "print-full-6x9-en",
+      "interior_manifestation": "pdf-full-6x9-en"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 """Generate a disposable Quarto project containing exactly one book edition."""
 
+import json
 import os
 import re
 import shutil
@@ -13,18 +14,51 @@ from alkahest.common import ContractError, fail
 from alkahest.editions import edition_paths, load_editions, render_book_structure
 
 
-def stage_resource_tree(source_root, destination_root):
-    """Copy a resource tree so Quarto can traverse and package every file."""
-    destination_root.mkdir(parents=True)
-    for source in sorted(source_root.rglob("*")):
-        destination = destination_root / source.relative_to(source_root)
-        if source.is_dir():
-            destination.mkdir()
-        elif source.is_file():
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
-        else:
-            fail(f"unsupported resource entry: {source}")
+def selected_media_files(book_root, source_paths):
+    """Return rich-media files referenced by selected manuscript sources."""
+    calls = set()
+    for relative in source_paths:
+        content = (book_root / relative).read_text(encoding="utf-8")
+        calls.update(
+            re.findall(
+                r"\{\{<\s+alk-media\s+(media-[a-z0-9-]+)\s*>\}\}", content
+            )
+        )
+    try:
+        registry = json.loads((book_root / "media.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        fail(f"cannot load rich-media registry: {error}")
+    items = registry.get("items", {})
+    files = set()
+    for identifier in calls:
+        item = items.get(identifier)
+        if not isinstance(item, dict):
+            fail(f"selected source references unknown rich-media item '{identifier}'")
+        for field in ("asset", "fallback", "transcript", "captions"):
+            value = item.get(field)
+            if value is not None:
+                resource = Path(value) if isinstance(value, str) else None
+                if (
+                    resource is None
+                    or resource.is_absolute()
+                    or not resource.parts
+                    or resource.parts[0] != "media"
+                    or ".." in resource.parts
+                ):
+                    fail(f"rich-media item '{identifier}' has unsafe {field}")
+                files.add(value)
+    return sorted(files)
+
+
+def stage_resource_files(book_root, stage_root, relative_paths):
+    """Copy selected resources so Quarto can traverse its project glob."""
+    for relative in relative_paths:
+        source = book_root / relative
+        if not source.is_file():
+            fail(f"selected resource does not exist: {relative}")
+        destination = stage_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
 
 
 def main():
@@ -40,6 +74,12 @@ def main():
     registry = load_editions(book_root / "editions.json")
     if edition_name not in registry["editions"]:
         fail(f"unknown edition '{edition_name}'")
+    source_paths = edition_paths(registry, edition_name)
+    html_resources = (
+        selected_media_files(book_root, source_paths)
+        if materialize_html_resources
+        else []
+    )
     staging_parent = book_root / "_build" / "staging" / "editions"
     stage_root = staging_parent / edition_name
     if stage_root.parent != staging_parent:
@@ -54,13 +94,13 @@ def main():
         if entry.name in skip or entry.name in registered_top or entry.name.endswith("_files") or generated.fullmatch(entry.name):
             continue
         # Quarto follows explicitly referenced files but does not expand a
-        # resource glob through a symlinked directory. A real resource tree
-        # keeps web-only captions and posters discoverable without collisions.
+        # resource glob through a symlinked directory. Selected real files keep
+        # web media discoverable without copying assets from omitted chapters.
         if materialize_html_resources and entry.name == "media" and entry.is_dir():
-            stage_resource_tree(entry, stage_root / entry.name)
+            stage_resource_files(book_root, stage_root, html_resources)
             continue
         (stage_root / entry.name).symlink_to(Path("../../../../") / entry.name)
-    for relative in edition_paths(registry, edition_name):
+    for relative in source_paths:
         source = book_root / relative
         if not source.is_file():
             fail(f"edition source does not exist: {relative}")

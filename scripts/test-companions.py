@@ -82,9 +82,28 @@ def main():
     cases.append(("missing-reference", "item 'asset-fixture-code' is never referenced", lambda root: replace(root, "chapter.qmd", "{{< alk-companion asset-fixture-code >}}\n", "")))
     cases.append(("duplicate-reference", "item 'asset-fixture-code' is referenced more than once", lambda root: (root / "chapter.qmd").write_text((root / "chapter.qmd").read_text(encoding="utf-8") + "\n{{< alk-companion asset-fixture-code >}}\n", encoding="utf-8")))
     cases.append(("raw-link", "use alk-companion rather than a raw companion link", lambda root: (root / "chapter.qmd").write_text((root / "chapter.qmd").read_text(encoding="utf-8") + "\n[raw](companion/sample.v)\n", encoding="utf-8")))
+    cases.append(("missing-bundles", "bundles must be a nonempty object", registry_edit(lambda r: r.pop("bundles"))))
+    def invalid_bundle_id(registry):
+        registry["bundles"]["bad-bundle"] = registry["bundles"].pop("bundle-fixture-project")
+    cases.append(("bundle-id", "invalid companion bundle ID", registry_edit(invalid_bundle_id)))
+    cases.append(("bundle-filename", "invalid versioned filename", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"].update(filename="fixture-latest.zip"))))
+    cases.append(("bundle-release-path", "release_path must match its filename", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"].update(release_path="companion/other.zip"))))
+    cases.append(("bundle-unknown-item", "references unknown item 'asset-missing'", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"]["items"].append("asset-missing"))))
+    cases.append(("bundle-duplicate-item", "repeats item 'asset-fixture-code'", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"]["items"].append("asset-fixture-code"))))
+    cases.append(("bundle-entrypoint", "entrypoint must be a download item", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"].update(entrypoint="asset-fixture-code"))))
+    def mismatched_bundle_version(registry):
+        bundle = registry["bundles"]["bundle-fixture-project"]
+        bundle.update(
+            version="2.0.0",
+            filename="fixture-companion-2.0.0.zip",
+            release_path="companion/fixture-companion-2.0.0.zip",
+        )
+    cases.append(("bundle-version", "version must match its entrypoint", registry_edit(mismatched_bundle_version)))
+    cases.append(("bundle-license", "license checksum drift", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"].update(license_sha256="0" * 64))))
+    cases.append(("bundle-orphan", "must belong to exactly one bundle", registry_edit(lambda r: r["bundles"]["bundle-fixture-project"]["items"].remove("asset-fixture-data"))))
     for name, expected, mutate in cases:
         expect_failure(name, expected, mutate)
-    print("ok: companion fixtures (valid contract; 19 invalid registry, file, delivery, checksum, and reference contracts rejected)")
+    print("ok: companion fixtures (valid contract; 29 invalid item, bundle, file, delivery, checksum, license, and reference contracts rejected)")
 
 
 if __name__ == "__main__":

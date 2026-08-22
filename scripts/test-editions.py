@@ -153,7 +153,22 @@ def main():
         raise RuntimeError("error: preview stage contains omitted main chapter")
     if (stage_parent / "abridged" / "layout-stress.qmd").exists():
         raise RuntimeError("error: abridged stage contains omitted main chapter")
-    print("ok: edition fixtures (valid registries and preview presentation; 13 invalid contracts rejected; staged public/private and reduced-book isolation)")
+    for edition in ("preview", "public"):
+        subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT_DIR / "stage-edition.py"),
+                edition,
+                "--html-resources",
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+    if (stage_parent / "preview" / "media").exists():
+        raise RuntimeError("error: preview stage contains unselected rich media")
+    if not (stage_parent / "public" / "media" / "orbit-animation.html").is_file():
+        raise RuntimeError("error: public stage omits selected rich media")
+    print("ok: edition fixtures (valid registries and preview presentation; 13 invalid contracts rejected; staged source and selected-media isolation)")
 
 
 if __name__ == "__main__":

@@ -34,6 +34,22 @@ return {
     if item == nil then
       error("alk-companion: unknown companion ID: " .. id)
     end
+    local bundle_id = nil
+    local bundle = nil
+    for candidate_id, candidate in pairs(registry.bundles or {}) do
+      for _, member_id in ipairs(candidate.items or {}) do
+        if member_id == id then
+          if bundle ~= nil then
+            error("alk-companion: item belongs to more than one bundle: " .. id)
+          end
+          bundle_id = candidate_id
+          bundle = candidate
+        end
+      end
+    end
+    if bundle == nil then
+      error("alk-companion: item has no versioned bundle: " .. id)
+    end
 
     local title = item.title
     local title_inlines = { pandoc.Str(title) }
@@ -41,7 +57,7 @@ return {
       title_inlines = {
         pandoc.Link(
           { pandoc.Str("Download " .. title) },
-          item.url or item.path,
+          item.url or bundle.url or item.path,
           item.description,
           pandoc.Attr("", { "companion-download" }, {
             download = "",
@@ -57,7 +73,15 @@ return {
     append_text(inlines, item.description)
     append_text(inlines, "Compatibility: " .. table.concat(item.compatibility, "; ") .. ".")
     append_text(inlines, "SHA-256: " .. item.sha256:sub(1, 12) .. "….")
-    if item.release_path ~= nil then
+    if bundle.entrypoint == id then
+      append_text(
+        inlines,
+        "Versioned bundle: " .. bundle.title .. ", version " .. bundle.version .. "."
+      )
+      append_text(inlines, "Bundle compatibility: " .. table.concat(bundle.compatibility, "; ") .. ".")
+      append_text(inlines, "Bundle license: " .. bundle.license .. ".")
+      append_text(inlines, "Release package: " .. bundle.release_path .. ".")
+    elseif item.release_path ~= nil then
       append_text(inlines, "Release package: " .. item.release_path .. ".")
     else
       append_text(inlines, "Durable URL: " .. item.url .. ".")
@@ -75,6 +99,9 @@ return {
         ["data-companion-path"] = item.path,
         ["data-release-path"] = item.release_path or "",
         ["data-companion-url"] = item.url or "",
+        ["data-companion-bundle"] = bundle_id,
+        ["data-companion-bundle-version"] = bundle.version,
+        ["data-companion-bundle-path"] = bundle.release_path,
       })
     )
   end,

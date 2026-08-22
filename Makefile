@@ -1,9 +1,11 @@
 .DEFAULT_GOAL := help
 
 PUBLIC_TARGETS := bootstrap check render render-html render-epub render-pdf \
-	render-typst render-latex render-all check-source check-writing ci clean help-all
+	render-typst render-latex render-preview render-all check-source check-preview \
+	package-companion-bundles check-companion-bundles generate-covers \
+	check-cover-artifacts check-writing ci clean help-all
 
-.PHONY: bootstrap build-report check check-accessibility check-asset-rights check-epub-accessibility check-epub-review check-golden-pages check-manifestations check-metadata-generation check-publication-metadata check-pdf-accessibility-policy check-pdf-preflight check-release-assets check-reproducibility check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-metadata generate-physics-diagrams generate-publication-metadata generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-asset-rights test-epub-accessibility test-epub-review test-golden-pages test-manifestations test-metadata-generation test-publication-metadata test-localization test-pdf-accessibility-policy test-pdf-preflight test-reproducibility test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-golden-pages update-identities verify-reproducibility \
+.PHONY: bootstrap build-report check check-accessibility check-asset-rights check-companion-bundles check-cover-artifacts check-covers check-epub-accessibility check-epub-review check-golden-pages check-manifestations check-metadata-generation check-publication-metadata check-pdf-accessibility-policy check-pdf-preflight check-preview check-release-assets check-reproducibility check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-covers generate-metadata generate-physics-diagrams generate-publication-metadata generate-rich-media-fixtures generate-graphs generate-writing-terminology package-companion-bundles prepare-epub-review render render-all render-preview test-accessibility test-asset-rights test-companion-bundles test-covers test-epub-accessibility test-epub-review test-golden-pages test-manifestations test-metadata-generation test-preview test-publication-metadata test-localization test-pdf-accessibility-policy test-pdf-preflight test-reproducibility test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-golden-pages update-identities verify-reproducibility \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke render-pdf-accessibility-smoke toolchain-report help help-all
 
@@ -57,6 +59,18 @@ check-manifestations: ## Validate product variants, relations, and typed identif
 
 test-manifestations: ## Exercise ISBN, product metadata, and adapter drift fixtures.
 	python3 scripts/check-source.py --tests manifestations
+
+check-covers: ## Validate cover geometry inputs and manifestation relationships.
+	python3 scripts/check-source.py covers
+
+test-covers: ## Exercise invalid cover policies, geometry, and stale artifacts.
+	python3 scripts/check-source.py --tests covers
+
+generate-covers: ## Generate wrap templates, thumbnails, and geometry manifests.
+	./scripts/python-tools.sh scripts/generate-covers.py
+
+check-cover-artifacts: ## Verify cover geometry against selected interior PDFs.
+	./scripts/python-tools.sh scripts/check-cover-artifacts.py
 
 generate-publication-metadata: ## Regenerate shared output and release metadata adapters.
 	python3 scripts/generate-publication-metadata.py
@@ -138,6 +152,15 @@ check-companions: ## Validate companion metadata, checksums, delivery, and refer
 test-companions: ## Exercise invalid companion registry, file, and reference contracts.
 	python3 scripts/check-source.py --tests companions
 
+package-companion-bundles: ## Build deterministic versioned companion ZIP packages.
+	python3 scripts/package-companion-bundles.py
+
+check-companion-bundles: ## Verify companion ZIP contents, licenses, and checksums.
+	python3 scripts/check-companion-bundles.py
+
+test-companion-bundles: ## Exercise deterministic and stale companion package fixtures.
+	python3 scripts/test-companion-bundles.py
+
 check-reuse: ## Validate reusable fragments, parameters, contexts, and use sites.
 	python3 scripts/check-source.py reuse
 
@@ -216,6 +239,12 @@ check-release-assets: ## Verify release rights coverage and reject private metad
 
 check-publication: ## Verify links, editions, IDs, assets, privacy, and numbering.
 	./scripts/check-publication.sh
+
+check-preview: ## Validate preview privacy, metadata, navigation, and formats.
+	./scripts/check-preview.sh
+
+test-preview: ## Exercise preview artifact and privacy validation failures.
+	python3 scripts/test-preview.py
 
 check-accessibility: ## Gate rendered HTML against WCAG 2.2 A/AA automation.
 	./scripts/check-accessibility.sh
@@ -332,6 +361,9 @@ render-print-6x9: ## Render both 6 x 9 economy-print PDFs.
 
 render-review: ## Render both US Letter review PDFs.
 	./scripts/render.sh review
+
+render-preview: ## Render the curated HTML, EPUB, and PDF preview products.
+	./scripts/render.sh preview
 
 render-pdf-profiles: ## Render every Typst and LuaLaTeX PDF profile.
 	./scripts/render.sh pdf-profiles

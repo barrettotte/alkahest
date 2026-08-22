@@ -61,15 +61,22 @@ will generate actual cover files once dimensions and publication identity are
 known.
 
 `scripts/stage-edition.py` builds a disposable project containing only selected
-sources. A public tree never links a private or omitted source. Prefer whole-
-source selection; use `content-visible` only for a small statement whose
-meaning exists solely in one edition. Every retained reference must resolve,
-and required definitions, warnings, prerequisites, and accessibility context
-must never exist only in omitted content.
+sources. For HTML it also materializes only rich-media files called by those
+sources, so an omitted chapter cannot contribute an unused interactive page,
+poster, transcript, caption, audio file, or video file. A public tree never
+links a private or omitted source. Prefer whole-source selection; use
+`content-visible` only for a small statement whose meaning exists solely in one
+edition. Every retained reference must resolve, and required definitions,
+warnings, prerequisites, and accessibility context must never exist only in
+omitted content.
 
-Run `make check-editions`, `make test-editions`, and
-`make render-edition-smoke`. Rendered checks also search public artifacts for a
-private canary.
+Use `make render-preview` for the standalone HTML, EPUB, and Typst-PDF product,
+then `make check-preview` to enforce its exact page/chapter allowlist, private
+content and path exclusions, metadata, notice and watermark, contents,
+navigation, citations, cross-references, EPUB validity, PDF trim, and embedded
+fonts. `make test-preview` exercises negative fixtures. The broader edition
+suite remains available through `make check-editions`, `make test-editions`,
+and `make render-edition-smoke`.
 
 ## Controlled reuse
 
@@ -90,11 +97,14 @@ checksum and reviewed version increment. `make check-reuse` and
 
 ## Companion materials
 
-`book/companion.json` registers every file below `book/companion/`. Each
-`asset-...` item records kind, title, unique safe path, media type, semantic
-version, SHA-256, concrete compatibility, accessible description, stable
-release path, and optional HTTPS URL. A URL never replaces the offline package
-location.
+`book/companion.json` registers every file below `book/companion/` and groups
+each item into exactly one versioned bundle. Each `asset-...` item records kind,
+title, unique safe path, media type, semantic version, SHA-256, concrete
+compatibility, accessible description, stable release path, and optional HTTPS
+URL. Each `bundle-...` record adds its versioned ZIP name, entrypoint, complete
+item allowlist, compatibility notes, SPDX license and checked license file,
+credit text, stable release path, and optional durable URL. A URL never replaces
+the offline package location.
 
 ```markdown
 {{< alk-companion asset-half-adder-verilog >}}
@@ -102,9 +112,19 @@ location.
 
 HTML may enhance the title into a direct download. EPUB and PDF keep the
 version, description, compatibility, checksum prefix, and package location as
-visible text. Any byte change requires a new digest; compatibility promises
-drive semantic versioning. Run `make check-companions` and
-`make test-companions`.
+visible text. The bundle entrypoint also exposes the matching bundle ID,
+version, license, and release path.
+
+`make package-companion-bundles` creates a byte-reproducible ZIP below
+`book/_build/companion/`. Its single top-level directory contains the registered
+files, complete license, human README, machine-readable manifest, and internal
+`SHA256SUMS`; a sidecar records the ZIP's outer checksum. Run
+`make check-companion-bundles` to reproduce and byte-compare the package, or
+`make test-companion-bundles` for stale/missing artifact fixtures. Any byte
+change requires a new digest; compatibility promises drive semantic versioning.
+ZIP members are stored without Deflate so host zlib versions cannot change the
+archive bytes. The current bundle has no public URL and nothing in this workflow
+uploads it.
 
 ## Generated lists and notation
 

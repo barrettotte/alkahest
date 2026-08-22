@@ -129,6 +129,11 @@ and coverage globs reject an asset added outside the registry. Pinned Quarto
 runtime libraries and embedded fonts are separate bundles because their
 upstream licenses are not book-art ownership claims.
 
+Companion-download ZIPs include their checked license text, credit, human
+README, machine manifest, and both internal and outer SHA-256 inventories.
+Their file allowlist and release path come from `book/companion.json`; package
+generation never infers content from a directory walk.
+
 Use the focused gates after adding or replacing an asset:
 
 ```sh

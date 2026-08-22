@@ -51,10 +51,37 @@
       "path": "companion/half-adder-project-pack.md",
       "media_type": "text/markdown",
       "version": "1.0.0",
-      "sha256": "c42344c95616988420c694b46090f7f2cda2af83e662ce279f071cc1389cddb7",
+      "sha256": "7f43725cf363c53a7f8757addad5f029cba9a3967f4856a54355eeef3742fe87",
       "compatibility": ["Alkahest companion contract 1"],
       "description": "Download manifest grouping the code, dataset, schematic, and bill of materials for one project.",
       "release_path": "companion/half-adder-project-pack.md"
+    }
+  },
+  "bundles": {
+    "bundle-half-adder-project": {
+      "title": "Half-adder project companion bundle",
+      "version": "1.0.0",
+      "filename": "alkahest-half-adder-companion-1.0.0.zip",
+      "release_path": "companion/alkahest-half-adder-companion-1.0.0.zip",
+      "items": [
+        "asset-half-adder-verilog",
+        "asset-half-adder-data",
+        "asset-half-adder-schematic",
+        "asset-half-adder-bom",
+        "asset-half-adder-project-pack"
+      ],
+      "entrypoint": "asset-half-adder-project-pack",
+      "license": "CC0-1.0",
+      "license_path": "licenses/CC0-1.0.txt",
+      "license_sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "credit": "Alkahest half-adder companion fixture, CC0 1.0.",
+      "compatibility": [
+        "Alkahest companion contract 1",
+        "IEEE 1364-2005 Verilog",
+        "RFC 4180 CSV",
+        "SVG 1.1",
+        "74HC logic"
+      ]
     }
   }
 }

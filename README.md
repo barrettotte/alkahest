@@ -21,6 +21,8 @@ make render          # Build HTML, EPUB, and both primary PDFs.
 make render-html     # Build only the web book.
 make render-epub     # Build only the EPUB.
 make render-pdf      # Build the default Typst PDF.
+make package-companion-bundles # Build versioned project-download ZIPs.
+make generate-covers # Build development wrap templates and thumbnails.
 make ci              # Run the complete rendering and validation pipeline.
 make help-all        # Show maintainer and specialist commands.
 ```
