@@ -104,6 +104,8 @@ def fixture_policy(font_license_hash):
             "pdf_policy": "config/pdf/preflight.json",
             "expected_pdf_title": "Fixture Book",
             "expected_pdf_author": "Fixture Author",
+            "expected_pdf_subject": "Fixture description",
+            "expected_pdf_keywords": "fixture, metadata",
             "allowed_pdf_creator_patterns": ["^Typst 1\\.0$"],
             "allowed_pdf_producer_patterns": ["^$"],
             "forbidden_entry_patterns": [
@@ -349,8 +351,8 @@ def rendered_cases():
             "Author: Fixture Author",
             "Creator: Typst 1.0",
             "Producer:",
-            "Subject:",
-            "Keywords:",
+            "Subject: Fixture description",
+            "Keywords: fixture, metadata",
         )
     )
     validate_pdf_metadata("fixture", valid_info, "<xmp/>", contract)
@@ -360,6 +362,20 @@ def rendered_cases():
             "fixture", valid_info.replace("Fixture Author", "Other Author"), "", contract
         ),
         "Author metadata must be",
+    )
+    expect_asset_error(
+        "PDF subject drift",
+        lambda: validate_pdf_metadata(
+            "fixture", valid_info.replace("Fixture description", "Other description"), "", contract
+        ),
+        "Subject metadata must be",
+    )
+    expect_asset_error(
+        "PDF keyword drift",
+        lambda: validate_pdf_metadata(
+            "fixture", valid_info.replace("fixture, metadata", "other"), "", contract
+        ),
+        "Keywords metadata must be",
     )
     expect_asset_error(
         "PDF path leakage",

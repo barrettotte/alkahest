@@ -44,6 +44,9 @@ conversion preserved it. The complete consistency contract is:
 | Persistent identity | Identity ledger, migrations, namespaces, variants, and retired IDs | Anchors retained across HTML, EPUB, previews, supplemental/private editions, and locales |
 | Edition variants and privacy | Whole-book manifests and staged source isolation | Inclusion/omission, grouping, numbering, links, and public/private canary checks |
 | Localization | Locale modes, translation manifests, language scopes, scripts, locked packages, glyph coverage, fallback, and hyphenation policy | HTML/EPUB document languages, inline direction, localized labels and cross-references, EPUB metadata, and hyphenation |
+| Publication metadata | Closed canonical work record, roles, dates, rights, accessibility, and provenance | Current Quarto, EPUB discovery, and PDF expectation parity |
+| Product identity | Closed manifestation records, typed identifiers, lifecycle, prices, covers, dimensions, and relations | Edition, locale, reproducibility, EPUB UUID, and PDF preflight parity |
+| Metadata adapters | Canonical work/products plus pinned ONIX 3.1 code mappings | Exact generated Quarto metadata, release manifest, ONIX readiness, and eligible-product XML |
 
 Run `make check-source` before rendering. After `make render-all`, run `make
 check-publication` for HTML, EPUB, locale, notes, and edition artifacts, then

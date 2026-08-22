@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "work": {
+    "id": "alkahest-reference-book",
+    "status": "development",
+    "title": "Alkahest Reference Book",
+    "subtitle": "A feature specimen for a universal technical-book template",
+    "descriptions": {
+      "short": "A working specimen for testing a reusable, multi-format technical-book publishing system.",
+      "long": "Alkahest Reference Book exercises the structure, typography, technical content, accessibility, rights, and reproducibility contracts needed by a reusable template for print, web, and EPUB publication. It is development evidence rather than a released book."
+    },
+    "series": null,
+    "edition": {
+      "name": "Reference specimen",
+      "number": null,
+      "statement": "Development specimen; not for publication."
+    },
+    "dates": {
+      "created": "2026-08-16",
+      "modified": "2026-08-21",
+      "publication": null
+    },
+    "language": {
+      "primary": "en-US",
+      "original": "en-US"
+    },
+    "territories": ["WORLD"],
+    "subjects": [
+      {
+        "scheme": "local",
+        "code": "technical-publishing",
+        "label": "Technical book publishing"
+      },
+      {
+        "scheme": "local",
+        "code": "document-engineering",
+        "label": "Document engineering"
+      }
+    ],
+    "keywords": [
+      "book template",
+      "technical writing",
+      "self-publishing",
+      "Quarto",
+      "Typst",
+      "LuaLaTeX"
+    ],
+    "audiences": [
+      {
+        "code": "technical-authors",
+        "label": "Authors of technical books"
+      },
+      {
+        "code": "self-publishers",
+        "label": "Independent and self-publishing authors"
+      }
+    ]
+  },
+  "contributors": [
+    {
+      "id": "barrett-otte",
+      "display_name": "Barrett Otte",
+      "sort_name": "Otte, Barrett",
+      "roles": ["author"],
+      "affiliation": null,
+      "orcid": null
+    }
+  ],
+  "publication": {
+    "publisher": {
+      "name": null,
+      "place": null,
+      "website": null
+    },
+    "imprint": {
+      "name": null,
+      "place": null,
+      "website": null
+    }
+  },
+  "rights": {
+    "copyright": {
+      "year": null,
+      "holders": ["Barrett Otte"]
+    },
+    "statement": "Rights and publication licenses remain intentionally undecided while this reference specimen is in development.",
+    "licenses": [
+      {
+        "scope": "Publication text",
+        "status": "undecided",
+        "expression": null,
+        "url": null,
+        "policy": null
+      },
+      {
+        "scope": "Included assets",
+        "status": "governed-separately",
+        "expression": null,
+        "url": null,
+        "policy": "book/assets.json"
+      }
+    ]
+  },
+  "accessibility": {
+    "features": [
+      "MathML",
+      "alternativeText",
+      "readingOrder",
+      "structuralNavigation",
+      "tableOfContents"
+    ],
+    "hazards": ["none"],
+    "summary": "Automated EPUBCheck and Ace by DAISY checks are part of this publication workflow. Manual EPUB Accessibility 1.1 review is pending, so this reference specimen makes no accessibility conformance claim.",
+    "review": {
+      "standard": "EPUB Accessibility 1.1",
+      "status": "pending-manual-review"
+    }
+  },
+  "provenance": {
+    "source_statement": "Canonical manuscripts are maintained as neutral Quarto Markdown with backend-specific layout code kept in template adapters.",
+    "reproducibility_statement": "The locked rootless toolchain, fixed build inputs, and exact artifact fingerprints define the reproducible-build contract.",
+    "repository": {
+      "visibility": "private",
+      "url": null
+    },
+    "policies": {
+      "reproducibility": "book/reproducibility.json",
+      "rights": "book/assets.json",
+      "accessibility": "book/epub-accessibility.json"
+    }
+  }
+}

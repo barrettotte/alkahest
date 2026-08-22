@@ -9,6 +9,7 @@
       "direction": "ltr",
       "root": "book",
       "profile": "book/_quarto.yml",
+      "language_profile": "book/generated/metadata.yml",
       "required_profile_markers": [
         "lang: en-US",
         "toc-title: \"Contents\""

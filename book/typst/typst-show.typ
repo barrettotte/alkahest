@@ -112,8 +112,24 @@ $if(alkahest-pdf-ua)$
   body
 }
 
+$if(subject)$
+// Orange-book owns title/author but inherits these canonical document fields.
+#set document(description: "$subject$")
+$endif$
+$if(keywords)$
+#set document(keywords: ($for(keywords)$"$keywords$",$endfor$))
+$endif$
+
 #show: alkahest-accessible-book
 $else$
+$if(subject)$
+// Orange-book owns title/author but inherits these canonical document fields.
+#set document(description: "$subject$")
+$endif$
+$if(keywords)$
+#set document(keywords: ($for(keywords)$"$keywords$",$endfor$))
+$endif$
+
 #show: orange-book.book.with(
 $if(title)$
   title: [#text(font: "$displayfont$", fallback: false)[$title$]],

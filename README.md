@@ -48,6 +48,11 @@ artifacts are written below `book/_build/` and ignored by Git.
   static-only execution boundary, spelling, terminology, and overrides.
 - [Publication profiles](docs/publication-profiles.md) covers page geometry and
   the reversible Typst/LuaLaTeX backend decision.
+- [Publication metadata](docs/publication-metadata.md) defines canonical
+  work-level facts; [manifestations](docs/manifestations.md) define product
+  variants, relations, availability, and typed identifiers; [metadata
+  generation](docs/metadata-generation.md) feeds all formats, the release
+  manifest, and optional pinned ONIX 3.1 output.
 - [Toolchain](docs/toolchain.md) covers the rootless offline environment and
   links to its exact lock record.
 

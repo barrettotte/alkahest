@@ -497,6 +497,8 @@ def validate_pdf_metadata(label, info, metadata, contract):
     expected = {
         "Title": contract["expected_pdf_title"],
         "Author": contract["expected_pdf_author"],
+        "Subject": contract["expected_pdf_subject"],
+        "Keywords": contract["expected_pdf_keywords"],
     }
     for field, value in expected.items():
         if fields.get(field) != value:
@@ -505,9 +507,6 @@ def validate_pdf_metadata(label, info, metadata, contract):
         fail(f"{label} has unexpected PDF Creator metadata: {fields.get('Creator')!r}")
     if not matches_one(fields.get("Producer", ""), contract["allowed_pdf_producer_patterns"]):
         fail(f"{label} has unexpected PDF Producer metadata: {fields.get('Producer')!r}")
-    for field in ("Subject", "Keywords"):
-        if fields.get(field, ""):
-            fail(f"{label} has unintended PDF {field} metadata")
     privacy = forbidden_patterns(contract)
     check_privacy(f"{label} PDF info", info.encode(), privacy)
     check_privacy(f"{label} PDF metadata", metadata.encode(), privacy)

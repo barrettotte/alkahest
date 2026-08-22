@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:alkahest:schema:manifestations:1",
+  "title": "Alkahest publication manifestations",
+  "description": "Product-level records for separately identifiable formats, editions, languages, and distribution states.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "work_id", "manifestations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "work_id": {"$ref": "#/$defs/id"},
+    "manifestations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/manifestation"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "nullableString": {
+      "type": ["string", "null"]
+    },
+    "dateOrNull": {
+      "oneOf": [
+        {"type": "string", "format": "date"},
+        {"type": "null"}
+      ]
+    },
+    "territories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^(WORLD|[A-Z]{2})$"}
+    },
+    "manifestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "format",
+        "variant",
+        "edition",
+        "language",
+        "status",
+        "identifiers",
+        "dimensions",
+        "cover",
+        "dates",
+        "prices",
+        "availability",
+        "production",
+        "relation"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "label": {"type": "string", "minLength": 1},
+        "format": {"enum": ["web", "epub", "pdf", "print", "bundle", "other"]},
+        "variant": {"enum": ["full", "preview", "review", "translation", "supplemental"]},
+        "edition": {"$ref": "#/$defs/id"},
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2,3}(?:-[A-Z][A-Za-z0-9]{1,7})*$"
+        },
+        "status": {"enum": ["planned", "development", "forthcoming", "published", "withdrawn"]},
+        "identifiers": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/identifier"}
+        },
+        "dimensions": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/dimensions"}
+          ]
+        },
+        "cover": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/cover"}
+          ]
+        },
+        "dates": {"$ref": "#/$defs/dates"},
+        "prices": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/price"}
+        },
+        "availability": {"$ref": "#/$defs/availability"},
+        "production": {"$ref": "#/$defs/production"},
+        "relation": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/relation"}
+          ]
+        }
+      }
+    },
+    "identifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "value"],
+      "properties": {
+        "scheme": {"enum": ["isbn-10", "isbn-13", "uuid-urn", "doi", "url"]},
+        "value": {"type": "string", "minLength": 1}
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "unit"],
+      "properties": {
+        "width": {"type": "number", "exclusiveMinimum": 0},
+        "height": {"type": "number", "exclusiveMinimum": 0},
+        "unit": {"enum": ["in", "mm"]}
+      }
+    },
+    "cover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "role"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "role": {"enum": ["front", "wrap", "digital"]}
+      }
+    },
+    "dates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["announcement", "publication", "withdrawal"],
+      "properties": {
+        "announcement": {"$ref": "#/$defs/dateOrNull"},
+        "publication": {"$ref": "#/$defs/dateOrNull"},
+        "withdrawal": {"$ref": "#/$defs/dateOrNull"}
+      }
+    },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency", "amount", "territories", "tax_included"],
+      "properties": {
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "amount": {"type": "string", "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{2})$"},
+        "territories": {"$ref": "#/$defs/territories"},
+        "tax_included": {"type": "boolean"}
+      }
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "territories", "channels"],
+      "properties": {
+        "status": {"enum": ["unavailable", "private", "preorder", "available", "withdrawn"]},
+        "territories": {"$ref": "#/$defs/territories"},
+        "channels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "production": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "artifact", "media_type"],
+      "properties": {
+        "profile": {"type": "string", "minLength": 1},
+        "artifact": {"$ref": "#/$defs/nullableString"},
+        "media_type": {"$ref": "#/$defs/nullableString"}
+      }
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "target"],
+      "properties": {
+        "type": {"enum": ["preview-of", "translation-of", "derived-from", "print-interior-from"]},
+        "target": {"$ref": "#/$defs/id"}
+      }
+    }
+  }
+}

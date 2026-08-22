@@ -3,7 +3,7 @@
 PUBLIC_TARGETS := bootstrap check render render-html render-epub render-pdf \
 	render-typst render-latex render-all check-source check-writing ci clean help-all
 
-.PHONY: bootstrap build-report check check-accessibility check-asset-rights check-epub-accessibility check-epub-review check-golden-pages check-pdf-accessibility-policy check-pdf-preflight check-release-assets check-reproducibility check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-physics-diagrams generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-asset-rights test-epub-accessibility test-epub-review test-golden-pages test-localization test-pdf-accessibility-policy test-pdf-preflight test-reproducibility test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-golden-pages update-identities verify-reproducibility \
+.PHONY: bootstrap build-report check check-accessibility check-asset-rights check-epub-accessibility check-epub-review check-golden-pages check-manifestations check-metadata-generation check-publication-metadata check-pdf-accessibility-policy check-pdf-preflight check-release-assets check-reproducibility check-source check-chemistry check-circuits check-computing-diagrams check-physics-diagrams check-rich-media check-pdf-backend-decision check-execution-policy check-graphs check-editions check-editorial-integrity check-learning check-companions check-reuse check-citations check-generated-lists check-glossary check-glyph-coverage check-icons check-identities check-index check-localization check-notes check-rendered-identities check-rendered-index check-rendered-lists check-rendered-localization check-rendered-notes check-publication check-pdf-profiles check-prose check-spelling check-writing check-writing-overrides check-writing-terminology check-writing-toolchain ci clean generate-chemistry generate-circuits generate-computing-diagrams generate-metadata generate-physics-diagrams generate-publication-metadata generate-rich-media-fixtures generate-graphs generate-writing-terminology prepare-epub-review render render-all test-accessibility test-asset-rights test-epub-accessibility test-epub-review test-golden-pages test-manifestations test-metadata-generation test-publication-metadata test-localization test-pdf-accessibility-policy test-pdf-preflight test-reproducibility test-source test-execution-policy test-editions test-editorial-integrity test-learning test-companions test-reuse test-citations test-generated-lists test-glossary test-identities test-index test-notes test-writing-overrides test-writing-quality update-golden-pages update-identities verify-reproducibility \
 	render-html render-epub render-pdf render-typst render-latex render-print-6x9 render-review \
 	render-pdf-profiles render-locale-smoke render-citation-smoke render-edition-smoke render-notes-smoke render-pdf-accessibility-smoke toolchain-report help help-all
 
@@ -45,6 +45,29 @@ test-golden-pages: ## Exercise golden policy, PNG, pixel, and coverage contracts
 
 update-golden-pages: ## Deliberately replace golden pages from current primary PDFs.
 	./scripts/check-golden-pages.sh --update
+
+check-publication-metadata: ## Validate canonical work metadata and current adapter parity.
+	python3 scripts/check-source.py publication-metadata
+
+test-publication-metadata: ## Exercise metadata schema, semantics, and adapter drift fixtures.
+	python3 scripts/check-source.py --tests publication-metadata
+
+check-manifestations: ## Validate product variants, relations, and typed identifiers.
+	python3 scripts/check-source.py manifestations
+
+test-manifestations: ## Exercise ISBN, product metadata, and adapter drift fixtures.
+	python3 scripts/check-source.py --tests manifestations
+
+generate-publication-metadata: ## Regenerate shared output and release metadata adapters.
+	python3 scripts/generate-publication-metadata.py
+
+generate-metadata: generate-publication-metadata ## Regenerate publication metadata (short alias).
+
+check-metadata-generation: ## Reject stale adapters and drifting pinned ONIX mappings.
+	python3 scripts/check-source.py metadata-generation
+
+test-metadata-generation: ## Exercise deterministic output and ONIX mapping fixtures.
+	python3 scripts/check-source.py --tests metadata-generation
 
 generate-graphs: ## Regenerate committed graph/chart derivatives from source data.
 	python3 scripts/generate-graphs.py

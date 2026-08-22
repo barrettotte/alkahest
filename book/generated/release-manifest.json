@@ -1,0 +1,513 @@
+{
+  "schema_version": 1,
+  "generated_from": {
+    "publication": "book/publication.json",
+    "manifestations": "book/manifestations.json",
+    "reproducibility": "book/reproducibility.json"
+  },
+  "source_date_utc": "2026-08-21T00:00:00Z",
+  "onix": {
+    "release": "3.1",
+    "code_list_issue": 74
+  },
+  "release_ready": false,
+  "release_blockers": [
+    "work lifecycle is not forthcoming or published",
+    "publisher name is unassigned",
+    "publication date is unassigned",
+    "publication-text license is not selected",
+    "no manifestation is forthcoming or published"
+  ],
+  "work": {
+    "id": "alkahest-reference-book",
+    "status": "development",
+    "title": "Alkahest Reference Book",
+    "subtitle": "A feature specimen for a universal technical-book template",
+    "descriptions": {
+      "short": "A working specimen for testing a reusable, multi-format technical-book publishing system.",
+      "long": "Alkahest Reference Book exercises the structure, typography, technical content, accessibility, rights, and reproducibility contracts needed by a reusable template for print, web, and EPUB publication. It is development evidence rather than a released book."
+    },
+    "series": null,
+    "edition": {
+      "name": "Reference specimen",
+      "number": null,
+      "statement": "Development specimen; not for publication."
+    },
+    "dates": {
+      "created": "2026-08-16",
+      "modified": "2026-08-21",
+      "publication": null
+    },
+    "language": {
+      "primary": "en-US",
+      "original": "en-US"
+    },
+    "territories": [
+      "WORLD"
+    ],
+    "subjects": [
+      {
+        "scheme": "local",
+        "code": "technical-publishing",
+        "label": "Technical book publishing"
+      },
+      {
+        "scheme": "local",
+        "code": "document-engineering",
+        "label": "Document engineering"
+      }
+    ],
+    "keywords": [
+      "book template",
+      "technical writing",
+      "self-publishing",
+      "Quarto",
+      "Typst",
+      "LuaLaTeX"
+    ],
+    "audiences": [
+      {
+        "code": "technical-authors",
+        "label": "Authors of technical books"
+      },
+      {
+        "code": "self-publishers",
+        "label": "Independent and self-publishing authors"
+      }
+    ]
+  },
+  "contributors": [
+    {
+      "id": "barrett-otte",
+      "display_name": "Barrett Otte",
+      "sort_name": "Otte, Barrett",
+      "roles": [
+        "author"
+      ],
+      "affiliation": null,
+      "orcid": null
+    }
+  ],
+  "publication": {
+    "publisher": {
+      "name": null,
+      "place": null,
+      "website": null
+    },
+    "imprint": {
+      "name": null,
+      "place": null,
+      "website": null
+    }
+  },
+  "rights": {
+    "copyright": {
+      "year": null,
+      "holders": [
+        "Barrett Otte"
+      ]
+    },
+    "statement": "Rights and publication licenses remain intentionally undecided while this reference specimen is in development.",
+    "licenses": [
+      {
+        "scope": "Publication text",
+        "status": "undecided",
+        "expression": null,
+        "url": null,
+        "policy": null
+      },
+      {
+        "scope": "Included assets",
+        "status": "governed-separately",
+        "expression": null,
+        "url": null,
+        "policy": "book/assets.json"
+      }
+    ]
+  },
+  "accessibility": {
+    "features": [
+      "MathML",
+      "alternativeText",
+      "readingOrder",
+      "structuralNavigation",
+      "tableOfContents"
+    ],
+    "hazards": [
+      "none"
+    ],
+    "summary": "Automated EPUBCheck and Ace by DAISY checks are part of this publication workflow. Manual EPUB Accessibility 1.1 review is pending, so this reference specimen makes no accessibility conformance claim.",
+    "review": {
+      "standard": "EPUB Accessibility 1.1",
+      "status": "pending-manual-review"
+    }
+  },
+  "provenance": {
+    "source_statement": "Canonical manuscripts are maintained as neutral Quarto Markdown with backend-specific layout code kept in template adapters.",
+    "reproducibility_statement": "The locked rootless toolchain, fixed build inputs, and exact artifact fingerprints define the reproducible-build contract.",
+    "repository": {
+      "visibility": "private",
+      "url": null
+    },
+    "policies": {
+      "reproducibility": "book/reproducibility.json",
+      "rights": "book/assets.json",
+      "accessibility": "book/epub-accessibility.json"
+    }
+  },
+  "manifestations": [
+    {
+      "id": "web-full-en",
+      "label": "Full English web book",
+      "format": "web",
+      "variant": "full",
+      "edition": "web",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": null,
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "html",
+        "artifact": "book/_build/html",
+        "media_type": "text/html"
+      },
+      "relation": null
+    },
+    {
+      "id": "epub-full-en",
+      "label": "Full English EPUB",
+      "format": "epub",
+      "variant": "full",
+      "edition": "epub",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [
+        {
+          "scheme": "uuid-urn",
+          "value": "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8"
+        }
+      ],
+      "dimensions": null,
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "epub",
+        "artifact": "book/_build/epub/Alkahest-Reference-Book.epub",
+        "media_type": "application/epub+zip"
+      },
+      "relation": null
+    },
+    {
+      "id": "pdf-full-7x10-en",
+      "label": "Full English 7 x 10 PDF",
+      "format": "pdf",
+      "variant": "full",
+      "edition": "print",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": {
+        "width": 7,
+        "height": 10,
+        "unit": "in"
+      },
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "typst",
+        "artifact": "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf",
+        "media_type": "application/pdf"
+      },
+      "relation": null
+    },
+    {
+      "id": "pdf-full-6x9-en",
+      "label": "Full English 6 x 9 PDF",
+      "format": "pdf",
+      "variant": "full",
+      "edition": "print",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": {
+        "width": 6,
+        "height": 9,
+        "unit": "in"
+      },
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "typst-6x9",
+        "artifact": "book/_build/print/6x9/typst/Alkahest-Reference-Book.pdf",
+        "media_type": "application/pdf"
+      },
+      "relation": null
+    },
+    {
+      "id": "pdf-review-letter-en",
+      "label": "English Letter review PDF",
+      "format": "pdf",
+      "variant": "review",
+      "edition": "print",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": {
+        "width": 8.5,
+        "height": 11,
+        "unit": "in"
+      },
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "typst-review",
+        "artifact": "book/_build/review/letter/typst/Alkahest-Reference-Book.pdf",
+        "media_type": "application/pdf"
+      },
+      "relation": {
+        "type": "derived-from",
+        "target": "pdf-full-7x10-en"
+      }
+    },
+    {
+      "id": "print-full-7x10-en",
+      "label": "English 7 x 10 print edition",
+      "format": "print",
+      "variant": "full",
+      "edition": "print",
+      "language": "en-US",
+      "status": "planned",
+      "identifiers": [],
+      "dimensions": {
+        "width": 7,
+        "height": 10,
+        "unit": "in"
+      },
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "unavailable",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "typst",
+        "artifact": null,
+        "media_type": null
+      },
+      "relation": {
+        "type": "print-interior-from",
+        "target": "pdf-full-7x10-en"
+      }
+    },
+    {
+      "id": "print-full-6x9-en",
+      "label": "English 6 x 9 print edition",
+      "format": "print",
+      "variant": "full",
+      "edition": "print",
+      "language": "en-US",
+      "status": "planned",
+      "identifiers": [],
+      "dimensions": {
+        "width": 6,
+        "height": 9,
+        "unit": "in"
+      },
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "unavailable",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "typst-6x9",
+        "artifact": null,
+        "media_type": null
+      },
+      "relation": {
+        "type": "print-interior-from",
+        "target": "pdf-full-6x9-en"
+      }
+    },
+    {
+      "id": "web-preview-en",
+      "label": "English web preview specimen",
+      "format": "web",
+      "variant": "preview",
+      "edition": "preview",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": null,
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "edition-preview,html",
+        "artifact": "book/_build/smoke/editions/preview/html",
+        "media_type": "text/html"
+      },
+      "relation": {
+        "type": "preview-of",
+        "target": "web-full-en"
+      }
+    },
+    {
+      "id": "web-translation-fr",
+      "label": "French web localization specimen",
+      "format": "web",
+      "variant": "translation",
+      "edition": "web",
+      "language": "fr-FR",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": null,
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "locale-fr,html",
+        "artifact": "book/_build/locale/fr/html",
+        "media_type": "text/html"
+      },
+      "relation": {
+        "type": "translation-of",
+        "target": "web-full-en"
+      }
+    },
+    {
+      "id": "web-supplemental-en",
+      "label": "English supplemental web specimen",
+      "format": "web",
+      "variant": "supplemental",
+      "edition": "supplemental",
+      "language": "en-US",
+      "status": "development",
+      "identifiers": [],
+      "dimensions": null,
+      "cover": null,
+      "dates": {
+        "announcement": null,
+        "publication": null,
+        "withdrawal": null
+      },
+      "prices": [],
+      "availability": {
+        "status": "private",
+        "territories": [
+          "WORLD"
+        ],
+        "channels": []
+      },
+      "production": {
+        "profile": "edition-supplemental,html",
+        "artifact": "book/_build/smoke/editions/supplemental/html",
+        "media_type": "text/html"
+      },
+      "relation": {
+        "type": "derived-from",
+        "target": "web-full-en"
+      }
+    }
+  ]
+}

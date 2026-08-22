@@ -62,6 +62,7 @@ def policy():
                 "direction": "ltr",
                 "root": "book",
                 "profile": "book/_quarto.yml",
+                "language_profile": "book/generated/metadata.yml",
                 "required_profile_markers": [
                     "lang: en-US",
                     'toc-title: "Contents"',
@@ -158,8 +159,9 @@ def create_fixture(root):
     write(root / "config/localization/locales.json", json.dumps(data, indent=2))
     write(
         root / "book/_quarto.yml",
-        'lang: en-US\ntoc-title: "Contents"\nbabel-otherlangs: []\n',
+        'toc-title: "Contents"\nbabel-otherlangs: []\n',
     )
+    write(root / "book/generated/metadata.yml", "lang: en-US\n")
     write(
         root / "book/_quarto-locale-fr.yml",
         'lang: fr-FR\ntoc-title: "Table des matières"\n',
@@ -214,6 +216,13 @@ def mutate_file(root, path, old, new):
 
 def source_cases():
     return (
+        (
+            "incorrect canonical language profile",
+            lambda root, _: mutate_file(
+                root, "book/generated/metadata.yml", "lang: en-US", "lang: en-GB"
+            ),
+            "profile is missing marker: lang: en-US",
+        ),
         (
             "missing locale label",
             lambda root, _: mutate_file(

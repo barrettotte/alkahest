@@ -33,6 +33,7 @@ exec podman run --rm \
   --userns=keep-id \
   --user "${invoking_uid}:${invoking_gid}" \
   --security-opt label=disable \
+  --env ALKAHEST_RELEASE_ASSETS_IN_CONTAINER=1 \
   --volume "${repo_root}:/workspace:ro" \
   --workdir /workspace \
   --entrypoint /workspace/scripts/check-release-assets.sh \

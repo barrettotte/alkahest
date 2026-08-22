@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "publication": "book/publication.json",
+    "manifestations": "book/manifestations.json",
+    "reproducibility": "book/reproducibility.json"
+  },
+  "outputs": {
+    "quarto": "book/generated/metadata.yml",
+    "release_manifest": "book/generated/release-manifest.json",
+    "onix_status": "book/generated/onix-status.json",
+    "onix": "book/generated/onix.xml"
+  },
+  "onix": {
+    "release": "3.1",
+    "code_list_issue": 74,
+    "reviewed": "2026-08-21",
+    "namespace": "http://ns.editeur.org/onix/3.0/reference",
+    "reference": "https://ns.editeur.org/onix/en",
+    "eligible_formats": ["epub", "pdf", "print"],
+    "eligible_statuses": ["forthcoming", "published", "withdrawn"],
+    "identifier_schemes": {
+      "isbn-10": {"list": 5, "code": "02", "label": "ISBN-10", "deprecated": true},
+      "isbn-13": {"list": 5, "code": "15", "label": "ISBN-13", "deprecated": false},
+      "doi": {"list": 5, "code": "06", "label": "DOI", "deprecated": false}
+    },
+    "contributor_roles": {
+      "author": {"list": 17, "code": "A01", "label": "By (author)"},
+      "editor": {"list": 17, "code": "B01", "label": "Edited by"},
+      "translator": {"list": 17, "code": "B06", "label": "Translated by"},
+      "illustrator": {"list": 17, "code": "A12", "label": "Illustrated by"},
+      "photographer": {"list": 17, "code": "A13", "label": "Photographs by"},
+      "technical-reviewer": {"list": 17, "code": "B26", "label": "Technical editor"},
+      "foreword-author": {"list": 17, "code": "A23", "label": "Foreword by"},
+      "introduction-author": {"list": 17, "code": "A24", "label": "Introduction by"},
+      "compiler": {"list": 17, "code": "C01", "label": "Compiled by"},
+      "designer": {"list": 17, "code": "A11", "label": "Designed by"}
+    },
+    "languages": {
+      "en-US": {"list": 74, "code": "eng", "label": "English"},
+      "fr-FR": {"list": 74, "code": "fre", "label": "French"}
+    },
+    "product_forms": {
+      "epub": {"form": {"list": 150, "code": "EA", "label": "Digital"}, "detail": {"list": 175, "code": "E101", "label": "EPUB"}},
+      "pdf": {"form": {"list": 150, "code": "EA", "label": "Digital"}, "detail": {"list": 175, "code": "E107", "label": "PDF"}},
+      "print": {"form": {"list": 150, "code": "BA", "label": "Book"}, "detail": null}
+    },
+    "publishing_statuses": {
+      "forthcoming": {"list": 64, "code": "02", "label": "Forthcoming"},
+      "published": {"list": 64, "code": "04", "label": "Active"},
+      "withdrawn": {"list": 64, "code": "08", "label": "Inactive"}
+    },
+    "audiences": {
+      "technical-authors": {"list": 28, "code": "06", "label": "Professional and scholarly"},
+      "self-publishers": {"list": 28, "code": "06", "label": "Professional and scholarly"}
+    },
+    "fixed_codes": {
+      "notification_forthcoming": {"list": 1, "code": "02", "label": "Advance notification"},
+      "notification_confirmed": {"list": 1, "code": "03", "label": "Notification confirmed on publication"},
+      "product_composition": {"list": 2, "code": "00", "label": "Single-component retail product"},
+      "title_type": {"list": 15, "code": "01", "label": "Distinctive title"},
+      "title_element_level": {"list": 149, "code": "01", "label": "Product"},
+      "language_role": {"list": 22, "code": "01", "label": "Language of text"},
+      "keywords_scheme": {"list": 27, "code": "20", "label": "Keywords"},
+      "audience_code_type": {"list": 28, "code": "01", "label": "ONIX audience codes"},
+      "content_audience": {"list": 154, "code": "00", "label": "Unrestricted"},
+      "publisher_role": {"list": 45, "code": "01", "label": "Publisher"},
+      "short_description": {"list": 153, "code": "02", "label": "Short description/annotation"},
+      "long_description": {"list": 153, "code": "03", "label": "Description"},
+      "publication_date": {"list": 163, "code": "01", "label": "Publication date"}
+    }
+  }
+}

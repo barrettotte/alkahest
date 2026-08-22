@@ -207,10 +207,23 @@ def validate(policy, root):
         if not profile.is_file():
             fail(f"locale {tag} profile does not exist: {locale.get('profile')}")
         profile_text = profile.read_text(encoding="utf-8")
+        language_profile_value = locale.get("language_profile", locale.get("profile"))
+        language_profile = repo_path(
+            root, language_profile_value, f"locale {tag} language profile"
+        )
+        if not language_profile.is_file():
+            fail(
+                f"locale {tag} language profile does not exist: "
+                f"{language_profile_value}"
+            )
+        language_profile_text = language_profile.read_text(encoding="utf-8")
+        combined_profile_text = profile_text
+        if language_profile != profile:
+            combined_profile_text += "\n" + language_profile_text
         for marker in locale.get("required_profile_markers", []):
-            if marker not in profile_text:
+            if marker not in combined_profile_text:
                 fail(f"locale {tag} profile is missing marker: {marker}")
-        declared = re.findall(r"^lang:\s*([^\s#]+)", profile_text, re.M)
+        declared = re.findall(r"^lang:\s*([^\s#]+)", combined_profile_text, re.M)
         if declared != [tag]:
             fail(f"locale {tag} profile must declare lang: {tag} exactly once")
         locale_root = repo_path(root, locale.get("root"), f"locale {tag} root")

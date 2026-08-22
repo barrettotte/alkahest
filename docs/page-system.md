@@ -1,23 +1,26 @@
 # Book page system
 
-Alkahest uses one metadata record and ordinary Quarto book structure to drive
+Alkahest uses one canonical metadata record and ordinary Quarto book structure to drive
 title, publication-data, dedication, part, chapter, and appendix treatments.
 Manuscripts do not contain Typst or LaTeX page commands.
 
 ## Shared metadata
 
-The `alkahest` map in `book/_quarto.yml` contains edition, publisher, rights,
-identifier, and dedication fields. The reference book intentionally uses
-conspicuous placeholders and labels itself not for publication. A real book or
-edition profile must replace every placeholder with verified data before a
-release check can pass; the specimen values are not legal or publication
-claims.
+Work-level facts live in `book/publication.json` under the closed contract
+documented in [`publication-metadata.md`](publication-metadata.md). The
+`alkahest` map in `book/_quarto.yml` remains a presentation adapter for edition,
+publisher, rights, identifier, and dedication fields while metadata generation
+is developed. The reference book intentionally uses conspicuous front-matter
+placeholders and labels itself not for publication; canonical nullable fields
+do not invent publisher or legal claims.
 
 LuaLaTeX consumes the fields through the small `latex/title.tex` and
 `latex/before-body.tex` template partials. Typst consumes the same fields in
 `typst/typst-show.typ`. HTML and EPUB show them semantically on the required
-`index.qmd` landing page through Quarto metadata shortcodes. This keeps wording
-single-sourced while allowing medium-appropriate presentation.
+`index.qmd` landing page through Quarto metadata shortcodes. The source gate
+checks canonical title, author, language, accessibility, and PDF expectations
+for drift; a later generator will replace the remaining manually maintained
+adapter values while preserving medium-appropriate presentation.
 
 ## Print sequence
 

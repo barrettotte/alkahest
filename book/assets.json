@@ -146,6 +146,8 @@
     "pdf_policy": "config/pdf/preflight.json",
     "expected_pdf_title": "Alkahest Reference Book",
     "expected_pdf_author": "Barrett Otte",
+    "expected_pdf_subject": "Alkahest Reference Book exercises the structure, typography, technical content, accessibility, rights, and reproducibility contracts needed by a reusable template for print, web, and EPUB publication. It is development evidence rather than a released book.",
+    "expected_pdf_keywords": "book template, technical writing, self-publishing, Quarto, Typst, LuaLaTeX",
     "allowed_pdf_creator_patterns": ["^Typst 0\\.15\\.1$", "^LaTeX via pandoc$"],
     "allowed_pdf_producer_patterns": ["^$", "^LuaTeX-1\\.24\\.0$"],
     "forbidden_entry_patterns": [
