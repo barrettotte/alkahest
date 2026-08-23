@@ -18,27 +18,9 @@ from .tasks import (
     ROOT,
     SCRIPTS,
     SOURCE_CHECKS,
-    SOURCE_TESTS,
-    TESTS,
     ScriptTask,
     by_name,
     run_task,
-)
-
-QUALITY_PATHS = (
-    "src/alkahest/__main__.py",
-    "src/alkahest/ci.py",
-    "src/alkahest/cli.py",
-    "src/alkahest/operations.py",
-    "src/alkahest/project_checks.py",
-    "src/alkahest/reporting.py",
-    "src/alkahest/staging.py",
-    "src/alkahest/tasks.py",
-    "src/alkahest/checks/pdf_profiles.py",
-    "src/alkahest/checks/suites.py",
-    "src/alkahest/checks/writing.py",
-    "src/alkahest/rendering/pipeline.py",
-    "tests/unit",
 )
 
 
@@ -67,7 +49,6 @@ def _run_many(tasks: Sequence[ScriptTask], label: str) -> int:
 def _list_tasks() -> int:
     groups: tuple[tuple[str, Sequence[ScriptTask]], ...] = (
         ("source checks", SOURCE_CHECKS),
-        ("fixture tests", (*SOURCE_TESTS, *TESTS.values())),
         ("artifact checks", tuple(CHECKS.values())),
         ("generators", tuple(GENERATORS.values())),
         ("packagers", tuple(PACKAGERS.values())),
@@ -77,18 +58,72 @@ def _list_tasks() -> int:
         for task in tasks:
             print(f"  {task.name:<28} {task.description}")
         print()
+    print("fixture tests:")
+    print("  pytest discovery             tests/integration")
+    print("  focused                      make test-NAME")
+    print()
     print("render profiles:")
     for profile in RENDER_PROFILES:
         print(f"  {profile}")
     return 0
 
 
+def _run_tests(names: Sequence[str]) -> int:
+    root = ROOT / "tests/integration"
+    if not names:
+        return subprocess.run(  # noqa: S603 - current interpreter and repository test path
+            [sys.executable, "-m", "pytest", root, "-m", "not locked"],
+            cwd=ROOT,
+            check=False,
+        ).returncode
+
+    expanded = tuple(
+        selected
+        for name in names
+        for selected in (
+            ("accessibility-policy", "accessibility-browser")
+            if name == "accessibility"
+            else (name,)
+        )
+    )
+    for name in expanded:
+        normalized = name.replace("-", "_")
+        python_test = root / f"test_{normalized}.py"
+        shell_test = root / f"test-{name}.sh"
+        if python_test.is_file():
+            command = [sys.executable, "-m", "pytest", str(python_test)]
+        elif name == "accessibility-browser":
+            command = [
+                str(SCRIPTS / "python-tools.sh"),
+                "--read-only",
+                "-m",
+                "alkahest.checks.suites",
+                "browser-fixture",
+            ]
+        elif shell_test.is_file():
+            command = [
+                sys.executable,
+                "-m",
+                "pytest",
+                str(root / "test_process_contracts.py"),
+                "-k",
+                normalized,
+            ]
+        else:
+            raise ValueError(f"unknown test: {name}; run make test for the complete suite")
+        if subprocess.run(  # noqa: S603 - command is built from fixed pytest arguments
+            command, cwd=ROOT, check=False
+        ).returncode:
+            return 1
+    return 0
+
+
 def _quality() -> int:
     commands = (
-        ["ruff", "check", *QUALITY_PATHS],
-        ["ruff", "format", "--check", *QUALITY_PATHS],
+        ["ruff", "check", "--select", "E9,F63,F7,F82", "src", "tests"],
+        ["ruff", "format", "--check", "src", "tests"],
         ["mypy"],
-        ["pytest"],
+        ["pytest", "-m", "not locked"],
     )
     for command in commands:
         try:
@@ -195,10 +230,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
             available = source_checks if values.source else {**source_checks, **CHECKS}
             return _run_many(_selection(values.names, available, "check"), "check")
         if values.command == "test":
-            source_tests = by_name(SOURCE_TESTS)
-            available = {**source_tests, **TESTS}
-            requested = values.names or list(source_tests)
-            return _run_many(_selection(requested, available, "test"), "test")
+            return _run_tests(values.names)
         if values.command == "render":
             from .rendering.pipeline import main as render_main
 

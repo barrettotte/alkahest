@@ -20,7 +20,7 @@ make bootstrap       # Build the pinned rootless publishing image.
 make doctor          # Diagnose the publishing toolchain.
 make check           # Validate all semantic source policies.
 make test            # Run all semantic fixture suites.
-make quality         # Run Ruff, formatting, mypy, and unit tests.
+make quality         # Run Ruff, formatting, mypy, and non-container tests.
 make security        # Scan Python source and dependencies.
 make render          # Build HTML, EPUB, and both primary PDFs.
 make preview         # Build the curated public preview.
@@ -30,9 +30,8 @@ make ci              # Run the complete rendering and validation pipeline.
 
 Specialist commands use regular patterns. For example, `make check-icons`,
 `make test-citations`, `make render-epub`, `make generate-theme`, and
-`make package-template-engine` remain available. Recovery and release work uses
-`make package-source-archive` and `make generate-release-profiles`. Run `make list`
-for the complete index.
+`make package-template-engine` remain available. Release work uses
+`make generate-release-profiles`. Run `make list` for the complete index.
 
 Normal rendering and validation are offline after `make bootstrap`. Generated
 artifacts are written below `book/_build/` and ignored by Git.
@@ -71,8 +70,6 @@ artifacts are written below `book/_build/` and ignored by Git.
   manifest, and optional pinned ONIX 3.1 output.
 - [Toolchain](docs/toolchain.md) covers the rootless offline environment and
   links to its exact lock record.
-- [Private source archives](docs/archives.md) covers deterministic recovery
-  packages, dependency inventory, history continuity, and restoration tests.
 - [Reusable template engine](docs/template-engine.md) defines the extracted
   presentation boundary and what remains book-local.
 - [Creating a new book](docs/new-book.md) covers safe scaffold generation,
@@ -83,6 +80,6 @@ artifacts are written below `book/_build/` and ignored by Git.
   allowlists, product metadata overrides, and isolated public staging.
 - [Extension APIs](docs/extension-apis.md) defines stable author syntax,
   book-local registries, engine hooks, filters, and deterministic generators.
-- [Reusable book contracts](docs/book-contracts.md) defines the schemas,
-  ownership, and override boundary for book-specific facts.
+- [Book-owned records](docs/book-contracts.md) explains which publishing facts
+  remain local to each book.
 Named after the theoretical “universal solvent” in Renaissance alchemy.

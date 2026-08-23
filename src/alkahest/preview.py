@@ -95,9 +95,7 @@ def validate_preview_presentation(root: Path):
         fail("preview book and document descriptions must match")
     if "preview" not in description.casefold() or "preview" not in edition.casefold():
         fail("preview description and edition statement must identify the product")
-    if not re.fullmatch(
-        r"urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", identifier
-    ):
+    if not re.fullmatch(r"urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", identifier):
         fail("preview identifier must be a lowercase UUID URN")
     for url, name in ((full_url, "full-edition-url"), (purchase_url, "purchase-url")):
         if url and not re.fullmatch(r"https://\S+", url):

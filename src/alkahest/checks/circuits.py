@@ -81,7 +81,12 @@ def check_candidates():
         if marker not in circuitikz:
             fail("CircuitikZ candidate is missing contract marker: " + marker)
     zap = ZAP_PATH.read_text(encoding="utf-8")
-    for marker in ('#import "@preview/zap:0.6.0"', 'vsource("source"', 'resistor("r1"', 'resistor("r2"'):
+    for marker in (
+        '#import "@preview/zap:0.6.0"',
+        'vsource("source"',
+        'resistor("r1"',
+        'resistor("r2"',
+    ):
         if marker not in zap:
             fail("Zap candidate is missing contract marker: " + marker)
 
@@ -115,5 +120,8 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError, ValueError) as error:
-        print(str(error) if isinstance(error, RuntimeError) else "error: " + str(error), file=sys.stderr)
+        print(
+            str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
+            file=sys.stderr,
+        )
         sys.exit(1)

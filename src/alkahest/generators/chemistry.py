@@ -33,8 +33,7 @@ def add_accessibility(svg):
     root = re.sub(r"\s+(?:role|aria-labelledby)=(['\"]).*?\1", "", match.group(0))
     root = root[:-1] + ' role="img" aria-labelledby="title desc">'
     metadata = (
-        '\n<title id="title">' + TITLE + "</title>"
-        '\n<desc id="desc">' + DESCRIPTION + "</desc>"
+        '\n<title id="title">' + TITLE + '</title>\n<desc id="desc">' + DESCRIPTION + "</desc>"
     )
     return svg[: match.start()] + root + metadata + svg[match.end() :]
 

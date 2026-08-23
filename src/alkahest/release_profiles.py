@@ -15,9 +15,7 @@ FORMATS = ("html", "epub", "typst", "latex")
 ROLES = ("front", "chapter", "back", "appendix")
 AVAILABILITIES = ("release", "supplemental", "private")
 SOURCE_ID = re.compile(r"[a-z][a-z0-9-]*")
-SOURCE_PATH = re.compile(
-    r"(?:[a-z0-9][a-z0-9-]*/)*[a-z0-9][a-z0-9-]*\.qmd"
-)
+SOURCE_PATH = re.compile(r"(?:[a-z0-9][a-z0-9-]*/)*[a-z0-9][a-z0-9-]*\.qmd")
 OUTPUT_PATHS = (
     "_quarto-release-full.yml",
     "_quarto-release-preview.yml",
@@ -99,13 +97,9 @@ def validate_documents(defaults, local):
     _exact(defaults, {"schema_version", "profiles"}, "release defaults")
     if defaults["schema_version"] != 1:
         _fail("release defaults schema_version must be 1")
-    default_profiles = _exact(
-        defaults["profiles"], PROFILE_NAMES, "release default profiles"
-    )
+    default_profiles = _exact(defaults["profiles"], PROFILE_NAMES, "release default profiles")
     for name in PROFILE_NAMES:
-        profile = _exact(
-            default_profiles[name], {"formats", "preview"}, f"{name} defaults"
-        )
+        profile = _exact(default_profiles[name], {"formats", "preview"}, f"{name} defaults")
         expected_formats = list(FORMATS if name == "full" else FORMATS[:-1])
         if profile["formats"] != expected_formats:
             _fail(f"{name} default formats must be {', '.join(expected_formats)}")
@@ -124,9 +118,7 @@ def validate_documents(defaults, local):
             )
         for field in ("full_edition_url", "purchase_url"):
             _validate_url(preview[field], f"{name} preview {field}")
-        watermark = _exact(
-            preview["watermark"], {"enabled", "text"}, f"{name} watermark"
-        )
+        watermark = _exact(preview["watermark"], {"enabled", "text"}, f"{name} watermark")
         if not isinstance(watermark["enabled"], bool):
             _fail(f"{name} watermark enabled must be boolean")
         _plain(watermark["text"], f"{name} watermark text")
@@ -142,9 +134,7 @@ def validate_documents(defaults, local):
         if SOURCE_ID.fullmatch(source_id) is None:
             _fail(f"invalid release source ID '{source_id}'")
         _exact(source, {"path", "role", "availability"}, f"source {source_id}")
-        if not isinstance(source["path"], str) or SOURCE_PATH.fullmatch(
-            source["path"]
-        ) is None:
+        if not isinstance(source["path"], str) or SOURCE_PATH.fullmatch(source["path"]) is None:
             _fail(f"source {source_id} has an invalid path")
         if source["path"] in paths:
             _fail(f"release source path is registered twice: {source['path']}")
@@ -176,9 +166,7 @@ def validate_documents(defaults, local):
             _fail("full and preview releases need distinct identifiers")
         identifiers.add(metadata["identifier"])
         presentation = profile["presentation"]
-        if not isinstance(presentation, dict) or not set(presentation) <= set(
-            PRESENTATION_FIELDS
-        ):
+        if not isinstance(presentation, dict) or not set(presentation) <= set(PRESENTATION_FIELDS):
             _fail(f"book {name} presentation contains an unknown field")
         for field, value in presentation.items():
             if field == "watermark":
@@ -230,9 +218,7 @@ def validate_documents(defaults, local):
         }
 
     release_sources = {
-        source_id
-        for source_id, source in sources.items()
-        if source["availability"] == "release"
+        source_id for source_id, source in sources.items() if source["availability"] == "release"
     }
     if set(selected["full"]) != release_sources:
         _fail("full release must select every source with release availability")
@@ -253,30 +239,30 @@ def _profile_yaml(name, profile):
     watermark = preview["watermark"]
     return f"""# Generated from shared release defaults and book/releases.json; do not edit.
 book:
-  subtitle: {quote(metadata['subtitle'])}
-  description: {quote(metadata['description'])}
-subtitle: {quote(metadata['subtitle'])}
-description: {quote(metadata['description'])}
-identifier: {quote(metadata['identifier'])}
+  subtitle: {quote(metadata["subtitle"])}
+  description: {quote(metadata["description"])}
+subtitle: {quote(metadata["subtitle"])}
+description: {quote(metadata["description"])}
+identifier: {quote(metadata["identifier"])}
 
 alkahest:
-  edition: {quote(metadata['edition'])}
-  identifier: {quote(metadata['identifier'])}
+  edition: {quote(metadata["edition"])}
+  identifier: {quote(metadata["identifier"])}
   release:
     profile: {name}
-    formats: {json.dumps(profile['formats'])}
+    formats: {json.dumps(profile["formats"])}
   preview:
-    enabled: {str(preview['enabled']).lower()}
-    label: {quote(preview['label'])}
-    message: {quote(preview['message'])}
-    full-edition-label: {quote(preview['full_edition_label'])}
-    full-edition-url: {quote(preview['full_edition_url'])}
-    purchase-label: {quote(preview['purchase_label'])}
-    purchase-url: {quote(preview['purchase_url'])}
-    links-pending: {quote(preview['links_pending'])}
+    enabled: {str(preview["enabled"]).lower()}
+    label: {quote(preview["label"])}
+    message: {quote(preview["message"])}
+    full-edition-label: {quote(preview["full_edition_label"])}
+    full-edition-url: {quote(preview["full_edition_url"])}
+    purchase-label: {quote(preview["purchase_label"])}
+    purchase-url: {quote(preview["purchase_url"])}
+    links-pending: {quote(preview["links_pending"])}
     watermark:
-      enabled: {str(watermark['enabled']).lower()}
-      text: {quote(watermark['text'])}
+      enabled: {str(watermark["enabled"]).lower()}
+      text: {quote(watermark["text"])}
 """.encode("utf-8")
 
 
@@ -343,9 +329,7 @@ def _selected_media_files(book, source_paths):
     calls = set()
     for relative in source_paths:
         content = (book / relative).read_text(encoding="utf-8")
-        calls.update(
-            re.findall(r"\{\{<\s+alk-media\s+(media-[a-z0-9-]+)\s*>\}\}", content)
-        )
+        calls.update(re.findall(r"\{\{<\s+alk-media\s+(media-[a-z0-9-]+)\s*>\}\}", content))
     registry_path = book / "media.json"
     if not registry_path.is_file():
         return []
@@ -391,10 +375,7 @@ def stage_project_release(root, name, html_resources=False):
     result = sync_project_releases(root, check=True)
     resolved = result["resolved"]
     book = root / "book"
-    selected_ids = (
-        resolved["profiles"][name]["chapters"]
-        + resolved["profiles"][name]["appendices"]
-    )
+    selected_ids = resolved["profiles"][name]["chapters"] + resolved["profiles"][name]["appendices"]
     source_paths = [resolved["sources"][item]["path"] for item in selected_ids]
     staging_parent = book / "_build" / "staging" / "releases"
     stage = staging_parent / name
@@ -404,8 +385,7 @@ def stage_project_release(root, name, html_resources=False):
         shutil.rmtree(stage)
     stage.mkdir(parents=True)
     registered_top = {
-        PurePosixPath(source["path"]).parts[0]
-        for source in resolved["sources"].values()
+        PurePosixPath(source["path"]).parts[0] for source in resolved["sources"].values()
     }
     media_files = _selected_media_files(book, source_paths) if html_resources else []
     skip = {".quarto", "_build", "_quarto.yml", "site_libs"}

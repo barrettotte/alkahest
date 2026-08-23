@@ -56,8 +56,10 @@ def validate_policy(policy):
         positive_number(settings.get(name), name)
     for name in ("allowed_pdf_versions", "allowed_vector_color_families"):
         values = settings.get(name)
-        if not isinstance(values, list) or not values or not all(
-            isinstance(value, str) and value for value in values
+        if (
+            not isinstance(values, list)
+            or not values
+            or not all(isinstance(value, str) and value for value in values)
         ):
             raise PreflightError(f"{name} must be a nonempty string array")
     components = settings.get("allowed_icc_components")

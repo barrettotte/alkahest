@@ -14,7 +14,11 @@ def main():
     root = Path(root_arg).resolve()
     if not root.is_dir():
         raise RuntimeError(f"error: missing HTML output directory: {root_arg}")
-    documents = sorted(path for path in root.rglob("*") if path.is_file() and path.suffix.lower() in {".html", ".htm"})
+    documents = sorted(
+        path
+        for path in root.rglob("*")
+        if path.is_file() and path.suffix.lower() in {".html", ".htm"}
+    )
     if not documents:
         raise RuntimeError(f"error: no HTML documents found below {root_arg}")
     tag_pattern = re.compile(r"<([A-Za-z][A-Za-z0-9:-]*)\b([^>]*)>", re.S)
@@ -23,7 +27,9 @@ def main():
         values = set()
         contents = document.read_text(encoding="utf-8", errors="replace")
         for tag in tag_pattern.finditer(contents):
-            for match in re.finditer(r'''(?:\A|\s)(?:id|name)\s*=\s*(["'])(.*?)\1''', tag.group(2), re.I | re.S):
+            for match in re.finditer(
+                r"""(?:\A|\s)(?:id|name)\s*=\s*(["'])(.*?)\1""", tag.group(2), re.I | re.S
+            ):
                 anchor = html.unescape(match.group(2))
                 if anchor in values:
                     errors.append(f"{document.relative_to(root)} has duplicate anchor #{anchor}")
@@ -36,7 +42,9 @@ def main():
         for tag in tag_pattern.finditer(contents):
             if tag.group(1).lower() not in eligible:
                 continue
-            for match in re.finditer(r'''(?:\A|\s)(href|poster|src)\s*=\s*(["'])(.*?)\2''', tag.group(2), re.I | re.S):
+            for match in re.finditer(
+                r"""(?:\A|\s)(href|poster|src)\s*=\s*(["'])(.*?)\2""", tag.group(2), re.I | re.S
+            ):
                 raw = match.group(3)
                 target = html.unescape(raw).strip()
                 if not target:
@@ -63,16 +71,24 @@ def main():
                 try:
                     resolved.relative_to(root)
                 except ValueError:
-                    errors.append(f"{document.relative_to(root)} -> {raw} (target escapes publication root)")
+                    errors.append(
+                        f"{document.relative_to(root)} -> {raw} (target escapes publication root)"
+                    )
                     continue
-                if fragment and resolved.suffix.lower() in {".html", ".htm"} and fragment not in anchors.get(resolved, set()):
+                if (
+                    fragment
+                    and resolved.suffix.lower() in {".html", ".htm"}
+                    and fragment not in anchors.get(resolved, set())
+                ):
                     errors.append(f"{document.relative_to(root)} -> {raw} (missing fragment)")
     if errors:
         print("error: HTML publication validation failed", file=sys.stderr)
         for error in errors:
             print(f"  {error}", file=sys.stderr)
         raise SystemExit(1)
-    print(f"ok: HTML links ({len(documents)} documents; {local_targets} local targets; {external_targets} external targets skipped offline)")
+    print(
+        f"ok: HTML links ({len(documents)} documents; {local_targets} local targets; {external_targets} external targets skipped offline)"
+    )
 
 
 if __name__ == "__main__":

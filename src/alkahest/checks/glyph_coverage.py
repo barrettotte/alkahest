@@ -44,9 +44,7 @@ def families_for(codepoint):
         text=True,
     )
     if result.returncode:
-        raise RuntimeError(
-            f"fontconfig failed for U+{codepoint:04X}: {result.stderr.strip()}"
-        )
+        raise RuntimeError(f"fontconfig failed for U+{codepoint:04X}: {result.stderr.strip()}")
     return set(result.stdout.splitlines())
 
 
@@ -60,18 +58,12 @@ def main():
         if not isinstance(family, str) or not family.strip():
             raise RuntimeError("localization policy needs a font_family")
         codepoints = manuscript_codepoints()
-        missing = [
-            codepoint
-            for codepoint in codepoints
-            if family not in families_for(codepoint)
-        ]
+        missing = [codepoint for codepoint in codepoints if family not in families_for(codepoint)]
     except (OSError, json.JSONDecodeError, RuntimeError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     for codepoint in missing:
-        print(
-            f"error: U+{codepoint:04X} is not covered by {family}", file=sys.stderr
-        )
+        print(f"error: U+{codepoint:04X} is not covered by {family}", file=sys.stderr)
     if missing:
         print(
             "add a locked, licensed locale font before publishing this manuscript",

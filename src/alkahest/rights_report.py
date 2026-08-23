@@ -44,9 +44,7 @@ def _asset_records(root, policy):
                     "path": path,
                     "sha256": digest,
                     "distribution": (
-                        "included"
-                        if rights["public_distribution"]
-                        else "excluded-private"
+                        "included" if rights["public_distribution"] else "excluded-private"
                     ),
                     "rights": rights,
                 }
@@ -69,9 +67,7 @@ def _asset_records(root, policy):
                         "path": item[path_field],
                         "sha256": item[hash_field],
                         "distribution": (
-                            "included"
-                            if rights["public_distribution"]
-                            else "excluded-private"
+                            "included" if rights["public_distribution"] else "excluded-private"
                         ),
                         "rights": rights,
                     }
@@ -98,11 +94,7 @@ def _runtime_records(policy):
 
 def _publication_rights(publication):
     text_license = next(
-        (
-            item
-            for item in publication["rights"]["licenses"]
-            if item["scope"] == "Publication text"
-        ),
+        (item for item in publication["rights"]["licenses"] if item["scope"] == "Publication text"),
         None,
     )
     if text_license is None:
@@ -160,7 +152,6 @@ def validate_integration(root):
     for marker in (
         '"rights-report", ":generate-rights-report"',
         '"rights-report", ":check-rights-report"',
-        '"rights-report", "test-rights-report.py"',
     ):
         if marker not in texts["tasks"]:
             fail(f"task registry is missing rights-report entry {marker}")

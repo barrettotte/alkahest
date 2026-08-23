@@ -92,8 +92,8 @@ workspace under `_build/.work/`; finished products use the shorter
 
 These files are implementation details and are recreated on every check or
 build. Authors never synchronize publication JSON, release JSON, Quarto YAML,
-or backend-specific theme files by hand. The detailed schemas and extension
-API remain available inside the engine archive for advanced tooling without
+or backend-specific theme files by hand. The publication schema and extension
+guide remain available inside the engine archive for advanced work without
 cluttering the writing repository.
 If an advanced feature needs a glossary, index, notes, media, companion, or
 reuse registry, an author may add that named registry at the repository root;

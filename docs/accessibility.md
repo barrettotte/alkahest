@@ -11,11 +11,11 @@ interaction are useful to a reader.
 | Medium | Render | Automated gate | Human evidence |
 |---|---|---|---|
 | HTML | `make render-html` | `make check-accessibility` | `book/accessibility-review.json` |
-| EPUB | `make render-epub` | `make check-epub-accessibility` | `book/epub-reading-system-review.json` |
+| EPUB | `make render-epub` | `make check-epub-accessibility` | Reader checklist below |
 | PDF | `make render-pdf-accessibility-smoke` | veraPDF during render plus `make check-pdf-accessibility-policy` | `book/pdf-accessibility.json` |
 
-Fixture commands (`make test-accessibility`, `make test-epub-accessibility`,
-`make test-epub-review`, and `make test-pdf-accessibility-policy`) prove that
+Fixture commands (`make test-accessibility`, `make test-epub-accessibility`, and
+`make test-pdf-accessibility-policy`) prove that
 invalid policy, metadata, semantics, evidence, and premature claims fail.
 
 ## Web
@@ -39,13 +39,12 @@ tested revision, pages, environments, and concrete evidence.
 
 ## EPUB
 
-The EPUB gate combines four layers:
+The EPUB gate combines three automated layers:
 
 1. EPUBCheck 5.3.0 for EPUB packaging and specification rules;
 2. Ace by DAISY 1.4.6 for automated accessibility rules;
 3. Alkahest checks for intended language, landmarks, spine/TOC order,
-   headings, tables, alternatives, MathML, links, and generated semantics; and
-4. the versioned manual reader matrix and claim-state checker.
+   headings, tables, alternatives, MathML, links, and generated semantics.
 
 Finalization supplies explicit front/body/back-matter semantics and matching
 roles, useful landmarks, language on every content document, navigable
@@ -62,21 +61,20 @@ frozen and every page marker, page-list link, label, order, and
 
 ### Reader review
 
-The planned matrix uses Thorium Reader, Calibre E-book viewer, and Foliate to
-exercise Chromium/Readium, Qt WebEngine, and WebKitGTK rather than three shells
-around one engine. Versions in the JSON ledger must be updated to the actual
-tested releases.
+When reader testing begins, use current releases of Thorium Reader, Calibre
+E-book viewer, and Foliate to cover Readium/Chromium, Qt WebEngine, and
+WebKitGTK. For every reader, record the exact application and engine version,
+OS, screen reader, evaluator, date, tested Git revision and EPUB checksum, all
+ten semantic/interaction criteria, and text-size checks at default, at least
+150%, and at least 200%.
 
-After a clean commit and successful automation, run
-`make prepare-epub-review`. It binds the exact Git revision and a canonical
-EPUB digest; any meaningful content change invalidates incomplete observations.
-For every reader, record application/engine, OS, screen reader, evaluator, date,
-all ten semantic/interaction criteria, and text-size checks at default, at
-least 150%, and at least 200%.
-
-The ledger supports `pending-manual-review`, `reviewed-no-claim`, and
-`conformant`. The last state requires every result to pass plus the exact
-standard string and complete evaluator information.
+The ten criteria are navigation and landmarks, reading order, headings and
+lists, table semantics, image alternatives, mathematics, links and notes,
+language changes, keyboard operation, and text resizing/reflow. Keep results in
+review notes until testing actually starts. Add a structured evidence record
+and validator only when there are observations to preserve. Conformance still
+requires every result to pass plus the exact standard string and complete
+evaluator information.
 
 ## PDF and PDF/UA
 

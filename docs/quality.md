@@ -33,12 +33,13 @@ their positive and negative fixture suites.
 ## Toolkit development gates
 
 The repository is one uv project pinned to Python 3.13.15. `make quality` runs
-Ruff linting and formatting, mypy, and pytest from the committed `uv.lock`;
-fast unit tests live under `tests/unit/`, while comprehensive integration
-fixtures remain available through `make test` and focused `make test-NAME`
-commands. Ruff formatting/linting and mypy initially gate the new CLI/task
-orchestration layer; publishing modules remain protected by their integration
-functional suites and can be brought into the static baseline incrementally.
+Ruff correctness linting and formatting across the complete Python tree, mypy
+over the typed orchestration boundary, and every test that does not require the
+container or browser toolchain. Pytest discovers unit and integration tests
+directly; `make test` runs the integration fixtures, and focused `make
+test-NAME` commands select one contract. The container-heavy writing fixture
+carries the `locked` marker, while the Chromium fixture runs through the
+existing read-only toolchain suite; both run explicitly in CI.
 `make security` applies Ruff's security rules across the reusable
 library and audits the locked Python environment for known vulnerabilities.
 Add reusable orchestration to `src/alkahest/` and register tasks once in
@@ -202,12 +203,6 @@ readiness. It currently says `BLOCKED` because the specimen is in development,
 has no publication date or copyright year, and intentionally has no selected
 publication-text license. Those are visible decisions to resolve later, not
 reasons to falsify development metadata or disable routine CI.
-
-The separate private source archive preserves all canonical and private inputs
-needed for recovery, including these rights records and their license evidence.
-`make check-source-archive` verifies exact archive bytes and runs source-policy
-checks from a fresh extraction; see `archives.md`. It is deliberately not a
-reader-facing release asset and must not be publicly uploaded.
 
 The rendered gate proves that every copied HTML asset and every renamed EPUB
 media object matches an approved source digest. It also verifies preserved

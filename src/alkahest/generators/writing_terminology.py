@@ -100,7 +100,10 @@ def validate(data):
             fail(f"accepted dictionary must be a .txt word list: {name}")
         if not isinstance(dictionary["add_words"], bool):
             fail(f"accepted dictionary add_words must be boolean: {name}")
-        if not isinstance(dictionary["description"], str) or len(dictionary["description"].split()) < 4:
+        if (
+            not isinstance(dictionary["description"], str)
+            or len(dictionary["description"].split()) < 4
+        ):
             fail(f"accepted dictionary needs a substantive description: {name}")
         words = read_dictionary(relative.as_posix())
         for word in words:
@@ -133,7 +136,11 @@ def validate(data):
         if item["category"] not in VALID_CATEGORIES:
             fail(f"rejected term uses an unknown category: {term}")
         checks = item["checks"]
-        if not isinstance(checks, list) or checks != sorted(set(checks)) or not set(checks) <= VALID_CHECKS:
+        if (
+            not isinstance(checks, list)
+            or checks != sorted(set(checks))
+            or not set(checks) <= VALID_CHECKS
+        ):
             fail(f"rejected term has invalid or unsorted checks: {term}")
         if not checks:
             fail(f"rejected term must name at least one checker: {term}")
@@ -217,7 +224,9 @@ def generate_vale(scope_id, rejected):
         "swap:",
     ]
     for item in items:
-        lines.append(f"  {json.dumps(item['term'], ensure_ascii=False)}: {json.dumps(item['preferred'], ensure_ascii=False)}")
+        lines.append(
+            f"  {json.dumps(item['term'], ensure_ascii=False)}: {json.dumps(item['preferred'], ensure_ascii=False)}"
+        )
     if not items:
         lines.append("  {}")
     return "\n".join(lines) + "\n"
@@ -232,8 +241,12 @@ def derivatives(scopes, dictionaries, rejected):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate or check writing-terminology derivatives.")
-    parser.add_argument("--check", action="store_true", help="fail if generated derivatives are stale")
+    parser = argparse.ArgumentParser(
+        description="Generate or check writing-terminology derivatives."
+    )
+    parser.add_argument(
+        "--check", action="store_true", help="fail if generated derivatives are stale"
+    )
     args = parser.parse_args()
     data = load_registry()
     scopes, dictionaries, rejected = validate(data)

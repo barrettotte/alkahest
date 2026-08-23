@@ -50,12 +50,12 @@ def validate_policy(policy: dict) -> None:
     epoch = policy["source_date_epoch"]
     if not isinstance(epoch, int) or epoch < 315532800 or epoch % 2:
         fail("source_date_epoch must be an even, ZIP-safe Unix timestamp")
-    expected_date = datetime.fromtimestamp(epoch, timezone.utc).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
-    )
+    expected_date = datetime.fromtimestamp(epoch, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if policy["source_date_utc"] != expected_date:
         fail("source_date_utc does not match source_date_epoch")
-    if not re.fullmatch(r"urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", policy["epub_identifier"]):
+    if not re.fullmatch(
+        r"urn:uuid:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", policy["epub_identifier"]
+    ):
         fail("epub_identifier must be a lowercase UUID URN")
 
     contract = policy["contract"]
@@ -201,9 +201,11 @@ def validate_pdf(path: Path, policy: dict) -> None:
         fail(f"cannot read PDF {path}: {error}")
     if not data.startswith(b"%PDF-"):
         fail(f"artifact is not a PDF: {path}")
-    stamp = datetime.fromtimestamp(policy["source_date_epoch"], timezone.utc).strftime(
-        "D:%Y%m%d%H%M%SZ"
-    ).encode("ascii")
+    stamp = (
+        datetime.fromtimestamp(policy["source_date_epoch"], timezone.utc)
+        .strftime("D:%Y%m%d%H%M%SZ")
+        .encode("ascii")
+    )
     if stamp not in data:
         fail(f"PDF does not retain the reproducible creation timestamp: {path}")
 

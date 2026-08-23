@@ -22,9 +22,7 @@ def _source_date(book_root):
     source_date = policy.get("source_date_utc")
     if not isinstance(epoch, int) or epoch < 315532800:
         fail("companion bundles need a ZIP-compatible source_date_epoch")
-    expected = datetime.fromtimestamp(epoch, timezone.utc).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
-    )
+    expected = datetime.fromtimestamp(epoch, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     if source_date != expected:
         fail("companion bundle source date does not match source_date_epoch")
     return epoch, source_date
@@ -47,8 +45,7 @@ def _readme(bundle_id, bundle, registry):
     for item_id in bundle["items"]:
         item = registry["items"][item_id]
         lines.append(
-            f"- `{item['path']}` — {item['title']} ({item['kind']}, "
-            f"version {item['version']})"
+            f"- `{item['path']}` — {item['title']} ({item['kind']}, version {item['version']})"
         )
     lines.extend(
         (
@@ -108,13 +105,9 @@ def _bundle_members(book_root, bundle_id, bundle, registry, source_date):
         item = registry["items"][item_id]
         members[item["path"]] = (book_root / item["path"]).read_bytes()
     members["LICENSE.txt"] = (book_root / bundle["license_path"]).read_bytes()
-    members["MANIFEST.json"] = _manifest(
-        bundle_id, bundle, registry, source_date
-    )
+    members["MANIFEST.json"] = _manifest(bundle_id, bundle, registry, source_date)
     members["README.md"] = _readme(bundle_id, bundle, registry)
-    checksum_lines = [
-        f"{_sha256(content)}  {name}" for name, content in sorted(members.items())
-    ]
+    checksum_lines = [f"{_sha256(content)}  {name}" for name, content in sorted(members.items())]
     members["SHA256SUMS"] = ("\n".join(checksum_lines) + "\n").encode("utf-8")
     return members
 
@@ -142,15 +135,11 @@ def bundle_outputs(book_root):
     epoch, source_date = _source_date(book_root)
     outputs = {}
     for bundle_id, bundle in sorted(registry["bundles"].items()):
-        members = _bundle_members(
-            book_root, bundle_id, bundle, registry, source_date
-        )
+        members = _bundle_members(book_root, bundle_id, bundle, registry, source_date)
         archive = _archive_bytes(bundle["filename"][:-4], members, epoch)
         outputs[bundle["filename"]] = archive
         sidecar_name = bundle["filename"] + ".sha256"
-        outputs[sidecar_name] = (
-            f"{_sha256(archive)}  {bundle['filename']}\n"
-        ).encode("utf-8")
+        outputs[sidecar_name] = (f"{_sha256(archive)}  {bundle['filename']}\n").encode("utf-8")
     return outputs, result
 
 
@@ -203,14 +192,11 @@ def _check_archive(filename, content, forbidden_patterns):
             }
             if set(checksums) != expected or len(checksums) != len(expected):
                 fail(f"companion bundle '{filename}' has invalid internal checksums")
-            combined = b"\n".join(relative.values()).decode(
-                "latin-1", errors="ignore"
-            )
+            combined = b"\n".join(relative.values()).decode("latin-1", errors="ignore")
             for label, pattern in forbidden_patterns:
                 if pattern.search(combined):
                     fail(
-                        f"companion bundle '{filename}' matches forbidden "
-                        f"content pattern '{label}'"
+                        f"companion bundle '{filename}' matches forbidden content pattern '{label}'"
                     )
             for canary in (
                 "internal editorial canary and must never appear in a public artifact",
@@ -231,9 +217,7 @@ def check_companion_bundles(book_root, output_root):
     assets_path = book_root / "assets.json"
     if assets_path.is_file():
         assets = load_json(assets_path, "asset registry")
-        for entry in assets.get("artifact_contract", {}).get(
-            "forbidden_content_patterns", []
-        ):
+        for entry in assets.get("artifact_contract", {}).get("forbidden_content_patterns", []):
             try:
                 forbidden.append((entry["label"], re.compile(entry["pattern"], re.I)))
             except (KeyError, re.error) as error:

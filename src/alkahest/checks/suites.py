@@ -50,38 +50,22 @@ def operation(name: str) -> None:
     module("alkahest.operations", name)
 
 
-def accessibility(fixtures: bool) -> None:
+def accessibility() -> None:
     """Run deterministic policy and browser accessibility checks."""
-    if fixtures:
-        run([sys.executable, str(INTEGRATION_FIXTURES / "test-accessibility-policy.py")])
-        browser = INTEGRATION_FIXTURES / "test-accessibility-browser.mjs"
-    else:
-        module("alkahest.checks.accessibility_policy")
-        if not (ROOT / "book" / "_build" / "html").is_dir():
-            raise SuiteError("missing rendered HTML; run make render-html first")
-        browser = ROOT / "scripts" / "check-accessibility-browser.mjs"
-    run([executable("node"), str(browser)])
+    module("alkahest.checks.accessibility_policy")
+    if not (ROOT / "book" / "_build" / "html").is_dir():
+        raise SuiteError("missing rendered HTML; run make render-html first")
+    run([executable("node"), str(ROOT / "scripts" / "check-accessibility-browser.mjs")])
 
 
-def epub_accessibility(fixtures: bool) -> None:
+def browser_fixture() -> None:
+    """Run the pinned browser against the small accessibility fixture set."""
+    run([executable("node"), str(INTEGRATION_FIXTURES / "test-accessibility-browser.mjs")])
+
+
+def epub_accessibility() -> None:
     """Run EPUB policy, EPUBCheck, and Ace by DAISY checks."""
-    if fixtures:
-        run([sys.executable, str(INTEGRATION_FIXTURES / "test-epub-accessibility.py")])
-        run([sys.executable, str(INTEGRATION_FIXTURES / "test-epub-reading-system-review.py")])
-        expected = os.environ.get("ALKAHEST_ACE_VERSION")
-        result = subprocess.run(  # noqa: S603 - resolved locked Ace executable
-            [executable("ace-cli"), "--version"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode or result.stdout.strip() != expected:
-            raise SuiteError(f"Ace version is {result.stdout.strip()!r}; expected {expected!r}")
-        return
-
     operation("check-epub-accessibility-policy")
-    operation("check-epub-review")
     run([executable("java"), "-jar", os.environ["EPUBCHECK_JAR"], str(EPUB)])
     with tempfile.TemporaryDirectory(prefix="alkahest-ace-") as directory:
         report_root = Path(directory) / "report"
@@ -149,20 +133,23 @@ def main(arguments: list[str] | None = None) -> int:
     """Dispatch one locked artifact suite."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "suite", choices=("accessibility", "epub-accessibility", "preview", "publication")
+        "suite",
+        choices=(
+            "accessibility",
+            "browser-fixture",
+            "epub-accessibility",
+            "preview",
+            "publication",
+        ),
     )
-    parser.add_argument("--fixtures", action="store_true")
     options = parser.parse_args(arguments)
     try:
-        if options.fixtures and options.suite not in {
-            "accessibility",
-            "epub-accessibility",
-        }:
-            raise SuiteError(f"{options.suite} does not have a fixture mode")
         if options.suite == "accessibility":
-            accessibility(options.fixtures)
+            accessibility()
+        elif options.suite == "browser-fixture":
+            browser_fixture()
         elif options.suite == "epub-accessibility":
-            epub_accessibility(options.fixtures)
+            epub_accessibility()
         elif options.suite == "preview":
             preview()
         else:

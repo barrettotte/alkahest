@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import os
-import subprocess
 import sys
 from collections import Counter
 from collections.abc import Callable, Sequence
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final
 
@@ -18,20 +16,6 @@ Operation = Callable[[tuple[str, ...]], None]
 def _require_no_arguments(arguments: Sequence[str]) -> None:
     if arguments:
         raise ValueError(f"operation does not accept arguments: {' '.join(arguments)}")
-
-
-def check_source_archive_policy(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .source_archive import load_archive_policy
-
-    context = load_archive_policy(ROOT)
-    print(
-        "ok: source archive policy "
-        f"({len(context['selected'])} source files; "
-        f"{len(context['redirects'])} redirects; "
-        f"{len(context['prior_editions'])} prior editions; "
-        f"{context['package']['confidentiality']})"
-    )
 
 
 def check_manifestations(arguments: tuple[str, ...]) -> None:
@@ -219,20 +203,6 @@ def check_template_engine(arguments: tuple[str, ...]) -> None:
     )
 
 
-def check_book_contracts(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .project_checks import check_book_contracts as validate
-
-    validate()
-
-
-def check_extension_apis(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .project_checks import check_extension_apis as validate
-
-    validate()
-
-
 def check_release_profiles(arguments: tuple[str, ...]) -> None:
     _require_no_arguments(arguments)
     from .project_checks import check_release_profiles as validate
@@ -256,19 +226,6 @@ def check_companion_bundles_operation(arguments: tuple[str, ...]) -> None:
         "ok: companion bundles "
         f"({result['bundles']} deterministic bundle; {result['items']} items; "
         f"license, manifest, internal/outer checksums; {result['bytes']} bytes)"
-    )
-
-
-def check_source_archive(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .source_archive import check_source_archive as validate
-
-    result = validate(ROOT)
-    print(
-        "ok: private source archive "
-        f"({result['source_files']} exact repository files; "
-        f"{result['archive_members']} verified members; "
-        f"restoration smoke: {'yes' if result['restored'] else 'skipped'})"
     )
 
 
@@ -393,71 +350,6 @@ def update_identities_operation(arguments: tuple[str, ...]) -> None:
     print(f"updated {result['path']} ({result['identities']} retained active/retired identities)")
 
 
-def prepare_epub_review_operation(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .epub_review import bind_review_artifact
-
-    def git(*values: str) -> str:
-        try:
-            return subprocess.run(  # noqa: S603 - fixed Git lifecycle queries
-                ["git", *values],  # noqa: S607 - fixed Git executable
-                cwd=ROOT,
-                check=True,
-                text=True,
-                capture_output=True,
-            ).stdout.strip()
-        except subprocess.CalledProcessError as error:
-            raise RuntimeError(f"error: Git review preparation failed: {error}") from error
-
-    if git("status", "--porcelain", "--untracked-files=normal"):
-        raise RuntimeError(
-            "error: commit or remove worktree changes before preparing review evidence"
-        )
-    review_path = ROOT / "book/epub-reading-system-review.json"
-    artifact = bind_review_artifact(
-        ROOT,
-        review_path,
-        git("rev-parse", "HEAD"),
-        datetime.now(UTC).isoformat().replace("+00:00", "Z"),
-    )
-    print(
-        "prepared: EPUB manual review artifact "
-        f"({artifact['source_revision'][:12]}; {artifact['content_sha256'][:12]}...)"
-    )
-
-
-def check_epub_review(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .epub_review import load_json, validate_review
-
-    review_path = Path(
-        os.environ.get(
-            "ALKAHEST_EPUB_REVIEW",
-            ROOT / "book/epub-reading-system-review.json",
-        )
-    )
-    policy_path = Path(
-        os.environ.get(
-            "ALKAHEST_EPUB_ACCESSIBILITY_POLICY",
-            ROOT / "book/epub-accessibility.json",
-        )
-    )
-    artifact_override = os.environ.get("ALKAHEST_EPUB_REVIEW_ARTIFACT")
-    result = validate_review(
-        load_json(review_path, "EPUB reading-system review"),
-        load_json(policy_path, "EPUB accessibility policy"),
-        ROOT,
-        artifact_override,
-    )
-    print(
-        "ok: EPUB manual review contract "
-        f"({result['systems']} reading systems/{result['engines']} engines; "
-        f"{result['scales']} text scales; {result['locations']} locations; "
-        f"{result['criteria']} criteria per system; {result['pending']} results "
-        f"pending; conformance claim: {'yes' if result['claim'] else 'no'})"
-    )
-
-
 def generate_publication_metadata(arguments: tuple[str, ...]) -> None:
     if arguments not in ((), ("--require-onix",)):
         raise ValueError("usage: alkahest generate publication-metadata [--require-onix]")
@@ -514,18 +406,6 @@ def package_companion_bundles_operation(arguments: tuple[str, ...]) -> None:
     )
 
 
-def package_source_archive(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .source_archive import package_source_archive as package
-
-    result = package(ROOT)
-    print(
-        "ok: packaged private source archive "
-        f"({result['source_files']} repository files; "
-        f"{result['archive_members']} archive members; {result['bytes']} bytes)"
-    )
-
-
 def package_template_engine(arguments: tuple[str, ...]) -> None:
     _require_no_arguments(arguments)
     from .template_package import package_template
@@ -540,15 +420,12 @@ def package_template_engine(arguments: tuple[str, ...]) -> None:
 
 OPERATIONS: Final[dict[str, Operation]] = {
     "check-asset-rights": check_asset_rights,
-    "check-book-contracts": check_book_contracts,
     "check-companion-bundles": check_companion_bundles_operation,
     "check-companions": check_companions,
     "check-cover-artifacts": check_cover_artifacts,
     "check-covers": check_covers,
     "check-editions": check_editions,
     "check-epub-accessibility-policy": check_epub_accessibility_policy,
-    "check-epub-review": check_epub_review,
-    "check-extension-apis": check_extension_apis,
     "check-identities": check_identities,
     "check-learning": check_learning,
     "check-manifestations": check_manifestations,
@@ -559,8 +436,6 @@ OPERATIONS: Final[dict[str, Operation]] = {
     "check-release-assets": check_release_assets,
     "check-release-profiles": check_release_profiles,
     "check-rights-report": check_rights_report,
-    "check-source-archive": check_source_archive,
-    "check-source-archive-policy": check_source_archive_policy,
     "check-template-engine": check_template_engine,
     "check-template-package": check_template_package,
     "check-theme-defaults": check_theme_defaults,
@@ -569,9 +444,7 @@ OPERATIONS: Final[dict[str, Operation]] = {
     "generate-publication-metadata": generate_publication_metadata,
     "generate-rights-report": generate_rights_report,
     "package-companion-bundles": package_companion_bundles_operation,
-    "package-source-archive": package_source_archive,
     "package-template-engine": package_template_engine,
-    "prepare-epub-review": prepare_epub_review_operation,
     "stage-edition": stage_edition_operation,
     "update-identities": update_identities_operation,
 }

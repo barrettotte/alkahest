@@ -10,11 +10,9 @@ tests, and release artifacts. A new-book command builds the minimal repository
 around this package, while shared defaults and the bundled theme and release
 synchronizers support small book-local overrides. The release engine generates
 full/preview profiles and stages only each book's explicit source allowlist.
-The package also includes a consolidated extension API reference and exact
-machine inventory; generated books install both without reference-manuscript
-content. It also bundles seven JSON Schemas and an ownership inventory for
-book-specific identities, editions, publication facts, rights, accessibility,
-cover parameters, and localized labels.
+The package also includes concise extension and book-record references plus the
+publication metadata schema, without duplicating those guides in machine
+inventories.
 The bundled author command merges a short `book.toml` with managed project
 identity and layout defaults, discovers numbered manuscript files, diagnoses
 the rendering environment, and creates all Quarto, release, theme, registry,

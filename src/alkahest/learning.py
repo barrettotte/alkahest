@@ -15,7 +15,17 @@ CLASS_TYPE = {
     "question-hint": ("hint", "hint-"),
     "answer-key": ("answer-key", "ans-"),
 }
-TYPES = ("objectives", "prerequisites", "plan", "summary", "review-question", "hint", "exercise", "solution", "answer-key")
+TYPES = (
+    "objectives",
+    "prerequisites",
+    "plan",
+    "summary",
+    "review-question",
+    "hint",
+    "exercise",
+    "solution",
+    "answer-key",
+)
 
 
 def _registered_selection(registry, edition_name):
@@ -65,13 +75,23 @@ def _parse_source(path, source, records):
             record = None
             if block_type:
                 if identity is None or not identity.startswith(prefix):
-                    fail(f"{source}:{line_number}: {block_type} block needs a stable '{prefix}...' ID")
+                    fail(
+                        f"{source}:{line_number}: {block_type} block needs a stable '{prefix}...' ID"
+                    )
                 if identity in records:
-                    fail(f"duplicate learning identity '{identity}' in {source} and {records[identity]['source']}")
+                    fail(
+                        f"duplicate learning identity '{identity}' in {source} and {records[identity]['source']}"
+                    )
                 record = {
-                    "id": identity, "type": block_type, "source": source,
-                    "line": line_number, "classes": classes, "attributes": values,
-                    "headings": 0, "content": "", "direct_callout": native_callout,
+                    "id": identity,
+                    "type": block_type,
+                    "source": source,
+                    "line": line_number,
+                    "classes": classes,
+                    "attributes": values,
+                    "headings": 0,
+                    "content": "",
+                    "direct_callout": native_callout,
                     "nested_callouts": 0,
                 }
                 records[identity] = record
@@ -116,7 +136,9 @@ def validate_learning(book_root, registry):
             fail(f"{location}: {record['type']} block has no content")
         if record["type"] not in {"exercise", "solution"}:
             if record["direct_callout"]:
-                fail(f"{location}: {record['type']} identity must use a neutral wrapper around its native callout")
+                fail(
+                    f"{location}: {record['type']} identity must use a neutral wrapper around its native callout"
+                )
             if record["nested_callouts"] != 1:
                 fail(f"{location}: {record['type']} block must contain exactly one native callout")
     for plan in (item for item in records.values() if item["type"] == "plan"):
@@ -177,7 +199,10 @@ def validate_learning(book_root, registry):
         if registry["sources"][source_id].get("availability", "") != "private":
             fail(f"answer-key source '{answer['source']}' must have private availability")
         for edition_name, edition in registry.get("editions", {}).items():
-            if edition.get("access", "") == "public" and source_id in _registered_selection(registry, edition_name):
-                fail(f"public edition '{edition_name}' selects answer-key source '{answer['source']}'")
+            if edition.get("access", "") == "public" and source_id in _registered_selection(
+                registry, edition_name
+            ):
+                fail(
+                    f"public edition '{edition_name}' selects answer-key source '{answer['source']}'"
+                )
     return counts
-

@@ -5,9 +5,7 @@ import json
 from pathlib import Path
 from typing import Final
 
-from .book_contracts import validate_book_contracts
 from .common import fail
-from .extension_apis import validate_extension_apis
 from .release_profiles import ReleaseProfileError, release_outputs, validate_project_releases
 from .theme import ThemeError, sync_project_theme, theme_outputs
 
@@ -16,100 +14,6 @@ ROOT: Final = Path(__file__).resolve().parents[2]
 
 def _texts(files: dict[str, Path]) -> dict[str, str]:
     return {name: path.read_text(encoding="utf-8") for name, path in files.items()}
-
-
-def check_book_contracts() -> None:
-    """Check schemas plus their Make, CI, documentation, and package boundary."""
-    texts = _texts(
-        {
-            "makefile": ROOT / "Makefile",
-            "tasks": ROOT / "src/alkahest/tasks.py",
-            "ci": ROOT / "src/alkahest/ci.py",
-            "readme": ROOT / "README.md",
-            "template": ROOT / "config/template/template-package.json",
-            "new_book": ROOT / "config/template/new-book.json",
-        }
-    )
-    for marker in ("check-%:", "test-%:"):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing book-contract target {marker}")
-    for marker in (
-        '"book-contracts", ":check-book-contracts"',
-        '"book-contracts", "test-book-contracts.py"',
-    ):
-        if marker not in texts["tasks"]:
-            fail(f"task registry is missing book-contract entry {marker}")
-    if "alkahest check" not in texts["ci"]:
-        fail("CI is missing book-contract validation")
-    if "docs/book-contracts.md" not in texts["readme"]:
-        fail("README documentation map is missing the book-contract reference")
-    for marker in (
-        '"destination": "defaults/book-contracts.json"',
-        '"destination": "docs/book-contracts.md"',
-        '"destination": "schemas/identities.schema.json"',
-    ):
-        if marker not in texts["template"]:
-            fail(f"template package is missing book-contract member {marker}")
-    for marker in (
-        '".alkahest/alkahest.py"',
-        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
-        '"scripts/author.py"',
-    ):
-        if marker not in texts["new_book"]:
-            fail(f"new-book policy is missing book-contract path {marker}")
-    result = validate_book_contracts(ROOT)
-    print(
-        "ok: reusable book contracts "
-        f"({result['domains']} domains; {result['schemas']} schemas; "
-        f"{result['adapters']} generated adapters; {result['version']})"
-    )
-
-
-def check_extension_apis() -> None:
-    """Check the extension API inventory and its repository integration."""
-    texts = _texts(
-        {
-            "makefile": ROOT / "Makefile",
-            "tasks": ROOT / "src/alkahest/tasks.py",
-            "ci": ROOT / "src/alkahest/ci.py",
-            "readme": ROOT / "README.md",
-            "template": ROOT / "config/template/template-package.json",
-            "new_book": ROOT / "config/template/new-book.json",
-        }
-    )
-    for marker in ("check-%:", "test-%:"):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing extension API target {marker}")
-    for marker in (
-        '"extension-apis", ":check-extension-apis"',
-        '"extension-apis", "test-extension-apis.py"',
-    ):
-        if marker not in texts["tasks"]:
-            fail(f"task registry is missing extension API entry {marker}")
-    if "alkahest check" not in texts["ci"]:
-        fail("CI is missing extension API validation")
-    if "docs/extension-apis.md" not in texts["readme"]:
-        fail("README documentation map is missing the extension API reference")
-    for marker in (
-        '"destination": "defaults/extension-apis.json"',
-        '"destination": "docs/extension-apis.md"',
-    ):
-        if marker not in texts["template"]:
-            fail(f"template package is missing extension API member {marker}")
-    for marker in (
-        '".alkahest/alkahest.py"',
-        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
-    ):
-        if marker not in texts["new_book"]:
-            fail(f"new-book policy is missing extension API path {marker}")
-    result = validate_extension_apis(ROOT)
-    print(
-        "ok: extension API reference "
-        f"({result['entries']} surfaces; {result['levels']} authority levels; "
-        f"{result['manifests']} extensions; {result['filters']} filters; "
-        f"{result['generators']} generators; {result['stability']} "
-        f"{result['api_version']})"
-    )
 
 
 def check_release_profiles() -> None:
@@ -130,7 +34,6 @@ def check_release_profiles() -> None:
             raise ReleaseProfileError(f"error: Makefile is missing target {marker}")
     for marker in (
         '"release-profiles", ":check-release-profiles"',
-        '"release-profiles", "test-release-profiles.py"',
         '"release-profiles", "sync-release-profiles.py"',
     ):
         if marker not in texts["tasks"]:
@@ -217,7 +120,6 @@ def check_theme_defaults() -> None:
             raise ThemeError(f"error: Makefile is missing theme target {marker}")
     for marker in (
         '"theme-defaults", ":check-theme-defaults"',
-        '"theme-defaults", "test-theme-defaults.py"',
         '"theme", "sync-theme.py"',
     ):
         if marker not in texts["tasks"]:
@@ -286,8 +188,6 @@ def check_theme_defaults() -> None:
 
 
 __all__ = [
-    "check_book_contracts",
-    "check_extension_apis",
     "check_release_profiles",
     "check_theme_defaults",
 ]

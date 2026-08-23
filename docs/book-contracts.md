@@ -1,92 +1,42 @@
-# Reusable book contracts
+# Book-owned records
 
-`config/template/book-contracts.json` is the closed inventory of book-specific
-facts that must survive engine upgrades. The engine owns each JSON Schema; a
-book owns its matching record; generated adapters, when present, are disposable
-outputs rebuilt from that record. This fixed order prevents reference-specimen
-authors, identifiers, rights, or claims from leaking into a new book.
+The presentation engine supplies format behavior and defaults. Each book owns
+its manuscripts and factual publishing records. Generated adapters are
+disposable outputs rebuilt from those sources; they are never another place an
+author must keep synchronized.
 
-All schemas use JSON Schema draft 2020-12 and are bundled into the template
-engine. `make check-book-contracts` performs dependency-free structural
-validation, while the stable `alkahest check` task named below enforces deeper file,
-render, and cross-record rules. Records use replacement composition: copy or
-create the whole record for a book, rather than merging factual metadata with
-the laboratory book.
+The normal generated-book workflow compiles the common facts in `book.toml`
+into ignored workspace records. Authors only add an advanced registry when a
+book actually needs the corresponding feature.
 
-## Stable IDs {#contract-stable-ids}
+## Stable identities and editions
 
-- Schema: `config/metadata/identities.schema.json`
-- Book record: `book/identities.json`
-- Deep validator: `alkahest check identities`
+`book/identities.json` owns persistent content IDs and language variants.
+`book/editions.json` owns source availability, structures, formats, and privacy
+rules. Validate them with `alkahest check identities` and `alkahest check
+editions`.
 
-Stable IDs, languages, registry paths, and explicit migrations belong to the
-book. They must never be regenerated just because the engine is upgraded.
+## Publication and rights facts
 
-## Edition manifests {#contract-edition-manifests}
+`book/publication.json` is the canonical source for work identity,
+contributors, rights summaries, accessibility discovery data, and provenance.
+Its directly used JSON Schema is `config/metadata/publication.schema.json`.
+`book/assets.json` owns permissions, licenses, credits, provenance, and public
+distribution decisions. Validate them with `alkahest check
+publication-metadata` and `alkahest check asset-rights`.
 
-- Schema: `config/metadata/editions.schema.json`
-- Book record: `book/editions.json`
-- Deep validator: `alkahest check editions`
+## Accessibility, covers, and localization
 
-Source availability, structures, formats, and access rules form a book-owned
-allowlist. Engine profiles consume the manifest but do not add chapters to it.
+`book/epub-accessibility.json` records accessibility policy without claiming
+conformance before review. `config/covers/cover-policy.json` owns trim,
+binding, paper, bleed, safe-area, and vendor decisions.
+`config/localization/locales.json` owns supported locales, translated labels,
+scripts, and toolchain requirements. Their focused checks remain authoritative.
 
-## Publishing metadata {#contract-publishing-metadata}
+## Ownership rule
 
-- Schema: `config/metadata/publication.schema.json`
-- Book record: `book/publication.json`
-- Deep validator: `alkahest check publication-metadata`
-
-Work identity, contributors, publication facts, rights summaries, accessibility
-discovery data, and provenance remain canonical here. The replaceable
-`book/generated/metadata.yml` adapter is derived from those facts.
-
-## Rights records {#contract-rights-records}
-
-- Schema: `config/metadata/rights.schema.json`
-- Book record: `book/assets.json`
-- Deep validator: `alkahest check asset-rights`
-
-The book owns every permission, license, credit, provenance statement, and
-distribution decision. `book/_build/release/rights-credits.json` is evidence,
-not an override input.
-
-## Accessibility metadata {#contract-accessibility-metadata}
-
-- Schema: `config/metadata/accessibility.schema.json`
-- Book record: `book/epub-accessibility.json`
-- Deep validator: `alkahest check epub-accessibility`
-
-Discovery metadata and conformance status are explicit book facts. Engine
-capability never creates a conformance claim; manual review evidence remains
-necessary where the selected standard requires it.
-
-## Cover parameters {#contract-cover-parameters}
-
-- Schema: `config/metadata/covers.schema.json`
-- Book record: `config/covers/cover-policy.json`
-- Deep validator: `alkahest check covers`
-
-Trim relationships, binding, paper, bleed, safe areas, finish, and vendor
-status belong to the product. Generic development values cannot become
-press-ready merely through inheritance.
-
-## Localized labels {#contract-localized-labels}
-
-- Schema: `config/metadata/localized-labels.schema.json`
-- Book record: `config/localization/locales.json`
-- Deep validator: `alkahest check localization`
-
-Locale tags, directions, translated labels, scripts, and toolchain requirements
-are selected by the book. An engine upgrade may add support, but it cannot
-silently add a language or claim translated content.
-
-## Using the bundled contracts
-
-Generated books receive this inventory and all seven schemas inside their
-checksum-pinned engine archive. The default author workflow compiles the simple
-facts in `book.toml` into disposable records and adapters under `_build/`, so a
-writer does not edit these contracts directly. Advanced publishing records can
-still be adopted one domain at a time. Engine upgrades may replace schemas and
-generated adapters, but never manuscripts, `book.toml`, or other book-owned
-facts.
+Template updates may replace engine defaults and generated adapters. They must
+not overwrite manuscripts, `book.toml`, stable identities, publication facts,
+rights decisions, edition choices, or other book-owned records. This human
+guidance is intentionally the single ownership reference until a public
+template release creates a need for a formal external contract.

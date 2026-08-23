@@ -134,13 +134,24 @@ def check_web_asset(name, path, item):
     if '<html lang="en-us">' not in lowered or "<title>" not in lowered:
         fail(f"{name} must declare language and title")
     if item["kind"] == "animation":
-        for marker in ("@keyframes", "pause animation", "prefers-reduced-motion", "animation-play-state"):
+        for marker in (
+            "@keyframes",
+            "pause animation",
+            "prefers-reduced-motion",
+            "animation-play-state",
+        ):
             if marker not in lowered:
                 fail(f"{name} animation is missing control marker {marker!r}")
         if item.get("pause_control") is not True or item.get("reduced_motion") is not True:
             fail(f"{name} animation must declare pause and reduced-motion support")
     else:
-        for marker in ('type="range"', "<label", 'aria-live="polite"', "addEventListener", "arrow keys"):
+        for marker in (
+            'type="range"',
+            "<label",
+            'aria-live="polite"',
+            "addEventListener",
+            "arrow keys",
+        ):
             if marker.lower() not in lowered:
                 fail(f"{name} interactive is missing accessibility marker {marker!r}")
         if item.get("keyboard_operable") is not True or item.get("live_status") != "polite":
@@ -176,7 +187,9 @@ def check_registry(registry):
             fail(f"{media_id} needs an accessible description")
         if not isinstance(item["fallback_alt"], str) or len(item["fallback_alt"]) < 50:
             fail(f"{media_id} needs a substantive fallback alternative")
-        if not all(isinstance(item[field], str) and item[field].strip() for field in ("creator", "origin")):
+        if not all(
+            isinstance(item[field], str) and item[field].strip() for field in ("creator", "origin")
+        ):
             fail(f"{media_id} needs creator and origin provenance")
         try:
             date.fromisoformat(item["created"])
@@ -200,7 +213,11 @@ def check_registry(registry):
             if relative in registered_paths:
                 fail(f"media path {relative!r} is registered more than once")
             registered_paths.add(relative)
-            check_hash(f"{media_id} {field}", path, item[field + "_sha256"] if field != "asset" else item["sha256"])
+            check_hash(
+                f"{media_id} {field}",
+                path,
+                item[field + "_sha256"] if field != "asset" else item["sha256"],
+            )
         check_svg(media_id, fallback)
         transcript_text = transcript.read_text(encoding="utf-8")
         if len(transcript_text.strip()) < 80 or "<script" in transcript_text.lower():
@@ -224,9 +241,7 @@ def check_registry(registry):
         if count != 1:
             fail(f"acceptance registry must contain exactly one {kind} specimen")
     actual_paths = {
-        path.relative_to(BOOK_ROOT).as_posix()
-        for path in MEDIA_ROOT.iterdir()
-        if path.is_file()
+        path.relative_to(BOOK_ROOT).as_posix() for path in MEDIA_ROOT.iterdir() if path.is_file()
     }
     if registered_paths != actual_paths:
         fail(
@@ -264,7 +279,15 @@ def check_extension_and_manuscript(registry):
         if not (extension / relative).is_file():
             fail("missing rich-media extension file: " + relative)
     lua = (extension / "alkahest-media.lua").read_text(encoding="utf-8")
-    for marker in ("alk-media", "<audio", "<video", "<iframe", "<track", "sandbox", "rich-media-transcript"):
+    for marker in (
+        "alk-media",
+        "<audio",
+        "<video",
+        "<iframe",
+        "<track",
+        "sandbox",
+        "rich-media-transcript",
+    ):
         if marker not in lua:
             fail("rich-media shortcode is missing renderer marker: " + marker)
 
@@ -277,11 +300,15 @@ def check_extension_and_manuscript(registry):
         for match in pattern.finditer(text):
             media_id = match.group(1)
             if media_id not in references:
-                fail(f"{source.relative_to(BOOK_ROOT)} references unknown rich-media ID {media_id!r}")
+                fail(
+                    f"{source.relative_to(BOOK_ROOT)} references unknown rich-media ID {media_id!r}"
+                )
             if match.group(2).strip():
                 fail(f"{source.relative_to(BOOK_ROOT)} uses unexpected alk-media arguments")
             references[media_id] += 1
-        if re.search(r"!?\[[^\]]*\]\(media/", text) or re.search(r"\b(?:src|poster)=['\"]media/", text):
+        if re.search(r"!?\[[^\]]*\]\(media/", text) or re.search(
+            r"\b(?:src|poster)=['\"]media/", text
+        ):
             fail(f"{source.relative_to(BOOK_ROOT)} uses a raw media path instead of alk-media")
     for media_id, count in references.items():
         if count != 1:
@@ -307,5 +334,8 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError, TypeError, ValueError, wave.Error) as error:
-        print(str(error) if isinstance(error, RuntimeError) else "error: " + str(error), file=sys.stderr)
+        print(
+            str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
+            file=sys.stderr,
+        )
         raise SystemExit(1)

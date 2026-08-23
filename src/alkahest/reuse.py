@@ -19,7 +19,7 @@ def _parse_call(source, line_number, arguments):
     kwargs = {}
     while remainder.strip():
         remainder = remainder.lstrip()
-        argument = re.match(r'''^([a-z][a-z0-9_]*)=(?:"([^"]*)"|'([^']*)'|(\S+))(.*)$''', remainder)
+        argument = re.match(r"""^([a-z][a-z0-9_]*)=(?:"([^"]*)"|'([^']*)'|(\S+))(.*)$""", remainder)
         if not argument:
             fail(f"{source}:{line_number}: malformed alk-reuse arguments '{remainder}'")
         name, double, single, bare, remainder = argument.groups()
@@ -40,7 +40,17 @@ def validate_reuse(book_root):
     items = registry.get("items")
     if not isinstance(items, dict) or not items:
         fail("reusable-content registry items must be a nonempty object")
-    allowed_fields = {"kind", "title", "path", "version", "sha256", "origin", "scope", "allowed_contexts", "parameters"}
+    allowed_fields = {
+        "kind",
+        "title",
+        "path",
+        "version",
+        "sha256",
+        "origin",
+        "scope",
+        "allowed_contexts",
+        "parameters",
+    }
     path_values = [item.get("path", "") for item in items.values() if isinstance(item, dict)]
     for path in path_values:
         if path and path_values.count(path) > 1:
@@ -61,24 +71,34 @@ def validate_reuse(book_root):
             fail(f"reusable-content item '{item_id}' has unsupported kind '{kind}'")
         kind_count[kind] = kind_count.get(kind, 0) + 1
         title = item.get("title", "")
-        if not isinstance(title, str) or not re.fullmatch(r"\S(?:.*\S)?", title) or len(title) > 100:
+        if (
+            not isinstance(title, str)
+            or not re.fullmatch(r"\S(?:.*\S)?", title)
+            or len(title) > 100
+        ):
             fail(f"reusable-content item '{item_id}' needs a concise title")
         path = item.get("path", "")
-        if not isinstance(path, str) or not re.fullmatch(r"reuse/[A-Za-z0-9][A-Za-z0-9_.-]*(?:/[A-Za-z0-9][A-Za-z0-9_.-]*)*\.md", path):
+        if not isinstance(path, str) or not re.fullmatch(
+            r"reuse/[A-Za-z0-9][A-Za-z0-9_.-]*(?:/[A-Za-z0-9][A-Za-z0-9_.-]*)*\.md", path
+        ):
             fail(f"reusable-content item '{item_id}' has unsafe path '{path}'")
         paths.add(path)
         fragment_path = root / path
         if not fragment_path.is_file():
             fail(f"reusable-content item '{item_id}' references missing fragment '{path}'")
         version = item.get("version", "")
-        if not isinstance(version, str) or not re.fullmatch(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?", version):
+        if not isinstance(version, str) or not re.fullmatch(
+            r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?", version
+        ):
             fail(f"reusable-content item '{item_id}' has invalid semantic version")
         digest = item.get("sha256", "")
         if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
             fail(f"reusable-content item '{item_id}' has invalid SHA-256")
         actual = hashlib.sha256(fragment_path.read_bytes()).hexdigest()
         if actual != digest:
-            fail(f"reusable-content item '{item_id}' checksum drift: expected {digest}, found {actual}")
+            fail(
+                f"reusable-content item '{item_id}' checksum drift: expected {digest}, found {actual}"
+            )
         origin = item.get("origin", "")
         if not isinstance(origin, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", origin):
             fail(f"reusable-content item '{item_id}' has invalid origin")
@@ -111,13 +131,17 @@ def validate_reuse(book_root):
             fail(f"reusable fragment '{path}' must contain visible prose")
         if re.search(r"^\s*#", fragment, re.M):
             fail(f"reusable fragment '{path}' must not contain headings")
-        if re.search(r'''\{#[A-Za-z]|\bid=["']''', fragment):
+        if re.search(r"""\{#[A-Za-z]|\bid=["']""", fragment):
             fail(f"reusable fragment '{path}' must not define persistent IDs")
         if re.search(r"\{\{[<%]\s*alk-reuse\b", fragment):
             fail(f"reusable fragment '{path}' must not contain nested reuse calls")
         if re.search(r"\{\{[<%]\s*include\b", fragment):
             fail(f"reusable fragment '{path}' must not contain include directives")
-        if re.search(r"\{=(?:html|latex|typst)\}|^\s*\\(?:begin|input|include)\b|</?[A-Za-z][^>]*>", fragment, re.M):
+        if re.search(
+            r"\{=(?:html|latex|typst)\}|^\s*\\(?:begin|input|include)\b|</?[A-Za-z][^>]*>",
+            fragment,
+            re.M,
+        ):
             fail(f"reusable fragment '{path}' must remain backend-neutral Markdown")
         placeholders = re.findall(r"\{\{([a-z][a-z0-9_]*)\}\}", fragment)
         placeholder_check = re.sub(r"\{\{[a-z][a-z0-9_]*\}\}", "", fragment)
@@ -151,30 +175,41 @@ def validate_reuse(book_root):
             if fence:
                 disabled_fence = fence.group(1)
                 continue
-            if re.search(r'''(?:\]\(|include\s+)["']?reuse/''', line):
-                fail(f"{source_path}:{line_number}: use alk-reuse rather than a raw reusable-fragment path")
+            if re.search(r"""(?:\]\(|include\s+)["']?reuse/""", line):
+                fail(
+                    f"{source_path}:{line_number}: use alk-reuse rather than a raw reusable-fragment path"
+                )
             for match in pattern.finditer(line):
                 item_id, kwargs = _parse_call(source_path, line_number, match.group(1))
                 if item_id not in items:
                     fail(f"{source_path}:{line_number}: unknown reusable-content ID '{item_id}'")
                 instance = kwargs.pop("id", "")
                 if not re.fullmatch(r"reuse-use-[a-z][a-z0-9-]*", instance):
-                    fail(f'{source_path}:{line_number}: reusable-content call \'{item_id}\' needs id="reuse-use-..."')
+                    fail(
+                        f"{source_path}:{line_number}: reusable-content call '{item_id}' needs id=\"reuse-use-...\""
+                    )
                 if instance in instances:
-                    fail(f"{source_path}:{line_number}: duplicate reusable-content instance '{instance}'")
+                    fail(
+                        f"{source_path}:{line_number}: duplicate reusable-content instance '{instance}'"
+                    )
                 instances.add(instance)
                 context = kwargs.pop("context", "")
                 if context not in contexts_by_id[item_id]:
-                    fail(f"{source_path}:{line_number}: reusable-content '{item_id}' is not allowed in context '{context}'")
+                    fail(
+                        f"{source_path}:{line_number}: reusable-content '{item_id}' is not allowed in context '{context}'"
+                    )
                 for parameter in sorted(parameters_by_id[item_id]):
                     if parameter not in kwargs:
-                        fail(f"{source_path}:{line_number}: reusable-content '{item_id}' needs parameter '{parameter}'")
+                        fail(
+                            f"{source_path}:{line_number}: reusable-content '{item_id}' needs parameter '{parameter}'"
+                        )
                     del kwargs[parameter]
                 if kwargs:
-                    fail(f"{source_path}:{line_number}: reusable-content '{item_id}' has unexpected argument '{sorted(kwargs)[0]}'")
+                    fail(
+                        f"{source_path}:{line_number}: reusable-content '{item_id}' has unexpected argument '{sorted(kwargs)[0]}'"
+                    )
                 calls[item_id] = calls.get(item_id, 0) + 1
     for item_id in sorted(items):
         if not calls.get(item_id):
             fail(f"reusable-content item '{item_id}' is never referenced")
     return {"items": len(items), "calls": len(instances), "kinds": kind_count}
-

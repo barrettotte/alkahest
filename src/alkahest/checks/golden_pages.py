@@ -64,8 +64,6 @@ def validate_integration(root, policy):
         fail("CI does not run the golden-page artifact gate")
     if texts["tasks"].count('"@alkahest.checks.golden_pages"') != 2:
         fail("task registry must include source and artifact golden-page modules")
-    if '"golden-pages", "test-golden-pages.py"' not in texts["tasks"]:
-        fail("task registry does not include golden-page fixtures")
     if '"rendered golden pages",\n        True,' not in texts["tasks"]:
         fail("golden-page artifact checks do not require the locked Python runner")
     if "--read-only" not in texts["runner"]:

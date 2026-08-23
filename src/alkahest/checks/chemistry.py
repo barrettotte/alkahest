@@ -12,9 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 BOOK_ROOT = REPO_ROOT / "book"
 SVG_PATH = BOOK_ROOT / "figures" / "generated" / "fischer-esterification.svg"
 CHEMFIG_PATH = BOOK_ROOT / "figures" / "candidates" / "fischer-esterification-chemfig.tex"
-TYPED_SMILES_PATH = (
-    BOOK_ROOT / "figures" / "candidates" / "fischer-esterification-typed-smiles.typ"
-)
+TYPED_SMILES_PATH = BOOK_ROOT / "figures" / "candidates" / "fischer-esterification-typed-smiles.typ"
 
 
 def fail(message):
@@ -67,7 +65,11 @@ def check_svg():
     namespace = "{http://www.w3.org/2000/svg}"
     title = root.find(namespace + "title")
     description = root.find(namespace + "desc")
-    if title is None or title.get("id") != "title" or title.text != "Fischer esterification reaction":
+    if (
+        title is None
+        or title.get("id") != "title"
+        or title.text != "Fischer esterification reaction"
+    ):
         fail("generated chemistry diagram has an unexpected accessibility title")
     if description is None or description.get("id") != "desc" or not description.text:
         fail("generated chemistry diagram must contain an accessibility description")
@@ -127,5 +129,8 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError, ValueError) as error:
-        print(str(error) if isinstance(error, RuntimeError) else "error: " + str(error), file=sys.stderr)
+        print(
+            str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
+            file=sys.stderr,
+        )
         sys.exit(1)

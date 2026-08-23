@@ -15,7 +15,10 @@ SEMANTIC_VERSION = re.compile(
 
 
 def _safe_path(value):
-    return re.fullmatch(r"companion/[A-Za-z0-9][A-Za-z0-9_.-]*(?:/[A-Za-z0-9][A-Za-z0-9_.-]*)*", value) is not None
+    return (
+        re.fullmatch(r"companion/[A-Za-z0-9][A-Za-z0-9_.-]*(?:/[A-Za-z0-9][A-Za-z0-9_.-]*)*", value)
+        is not None
+    )
 
 
 def _validate_text_list(values, label):
@@ -131,9 +134,7 @@ def _validate_bundles(root, registry, items):
         if not license_file.is_file():
             fail(f"companion bundle '{bundle_id}' license file is missing")
         license_digest = bundle.get("license_sha256", "")
-        if not isinstance(license_digest, str) or not re.fullmatch(
-            r"[0-9a-f]{64}", license_digest
-        ):
+        if not isinstance(license_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", license_digest):
             fail(f"companion bundle '{bundle_id}' has invalid license SHA-256")
         actual_license = hashlib.sha256(license_file.read_bytes()).hexdigest()
         if actual_license != license_digest:
@@ -180,8 +181,16 @@ def validate_companions(book_root):
     if not isinstance(items, dict) or not items:
         fail("companion registry items must be a nonempty object")
     allowed_fields = {
-        "kind", "title", "path", "media_type", "version", "sha256",
-        "compatibility", "description", "release_path", "url",
+        "kind",
+        "title",
+        "path",
+        "media_type",
+        "version",
+        "sha256",
+        "compatibility",
+        "description",
+        "release_path",
+        "url",
     }
     paths, release_paths, kind_count = set(), set(), {}
     for item_id in sorted(items):
@@ -198,7 +207,11 @@ def validate_companions(book_root):
             fail(f"companion item '{item_id}' has unsupported kind '{kind}'")
         kind_count[kind] = kind_count.get(kind, 0) + 1
         title = item.get("title", "")
-        if not isinstance(title, str) or not re.fullmatch(r"\S(?:.*\S)?", title) or len(title) > 100:
+        if (
+            not isinstance(title, str)
+            or not re.fullmatch(r"\S(?:.*\S)?", title)
+            or len(title) > 100
+        ):
             fail(f"companion item '{item_id}' needs a concise title")
         path = item.get("path", "")
         if not isinstance(path, str) or not _safe_path(path):
@@ -210,7 +223,9 @@ def validate_companions(book_root):
         if not file_path.is_file():
             fail(f"companion item '{item_id}' references missing file '{path}'")
         media_type = item.get("media_type", "")
-        if not isinstance(media_type, str) or not re.fullmatch(r"[a-z0-9.+-]+/[a-z0-9.+-]+", media_type, re.I):
+        if not isinstance(media_type, str) or not re.fullmatch(
+            r"[a-z0-9.+-]+/[a-z0-9.+-]+", media_type, re.I
+        ):
             fail(f"companion item '{item_id}' has invalid media_type")
         version = item.get("version", "")
         if not isinstance(version, str) or not SEMANTIC_VERSION.fullmatch(version):
@@ -226,7 +241,11 @@ def validate_companions(book_root):
             f"companion item '{item_id}' compatibility",
         )
         description = item.get("description", "")
-        if not isinstance(description, str) or not re.fullmatch(r"\S(?:.*\S)?", description) or len(description) < 20:
+        if (
+            not isinstance(description, str)
+            or not re.fullmatch(r"\S(?:.*\S)?", description)
+            or len(description) < 20
+        ):
             fail(f"companion item '{item_id}' needs an accessible description")
         release_path, url = item.get("release_path", ""), item.get("url", "")
         if not url and not release_path:
@@ -237,7 +256,12 @@ def validate_companions(book_root):
             fail(f"release path '{release_path}' is registered more than once")
         if release_path:
             release_paths.add(release_path)
-        if url and (not isinstance(url, str) or not re.fullmatch(r"https://[A-Za-z0-9.-]+(?::[0-9]+)?/[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+", url)):
+        if url and (
+            not isinstance(url, str)
+            or not re.fullmatch(
+                r"https://[A-Za-z0-9.-]+(?::[0-9]+)?/[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+", url
+            )
+        ):
             fail(f"companion item '{item_id}' has invalid durable URL")
     for kind in KINDS:
         if not kind_count.get(kind):
@@ -263,7 +287,9 @@ def validate_companions(book_root):
                 disabled_fence = fence.group(1)
                 continue
             if "](companion/" in line:
-                fail(f"{source_path}:{line_number}: use alk-companion rather than a raw companion link")
+                fail(
+                    f"{source_path}:{line_number}: use alk-companion rather than a raw companion link"
+                )
             for match in call_pattern.finditer(line):
                 parsed = re.fullmatch(r"(asset-[a-z][a-z0-9-]*)(.*)", match.group(1))
                 if not parsed:
@@ -273,7 +299,9 @@ def validate_companions(book_root):
                     fail(f"{source_path}:{line_number}: unknown companion ID '{item_id}'")
                 remainder = re.sub(r"\s+", "", remainder)
                 if remainder:
-                    fail(f"{source_path}:{line_number}: unexpected alk-companion arguments '{remainder}'")
+                    fail(
+                        f"{source_path}:{line_number}: unexpected alk-companion arguments '{remainder}'"
+                    )
                 calls[item_id] = calls.get(item_id, 0) + 1
     for item_id in sorted(items):
         if not calls.get(item_id):

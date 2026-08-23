@@ -25,7 +25,9 @@ def add_accessibility(svg):
         raise RuntimeError("Schemdraw output has no SVG root")
     root = match.group(0)
     root = root[:-1] + ' role="img" aria-labelledby="title desc">'
-    metadata = "\n<title id=\"title\">" + TITLE + "</title>\n<desc id=\"desc\">" + DESCRIPTION + "</desc>"
+    metadata = (
+        '\n<title id="title">' + TITLE + '</title>\n<desc id="desc">' + DESCRIPTION + "</desc>"
+    )
     return svg[: match.start()] + root + metadata + svg[match.end() :]
 
 

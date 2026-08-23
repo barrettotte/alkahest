@@ -36,18 +36,14 @@ def load_json(path, label):
 def relative_luminance(color):
     channels = [int(color[index : index + 2], 16) / 255 for index in (1, 3, 5)]
     linear = [
-        value / 12.92
-        if value <= 0.04045
-        else ((value + 0.055) / 1.055) ** 2.4
+        value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
         for value in channels
     ]
     return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
 
 
 def contrast_ratio(first, second):
-    lighter, darker = sorted(
-        (relative_luminance(first), relative_luminance(second)), reverse=True
-    )
+    lighter, darker = sorted((relative_luminance(first), relative_luminance(second)), reverse=True)
     return (lighter + 0.05) / (darker + 0.05)
 
 
@@ -117,8 +113,10 @@ def validate_evidence(policy, evidence):
                 fail(f"completed accessibility category '{category}' needs {field}")
         for field in ("pages", "environments"):
             value = review.get(field)
-            if not isinstance(value, list) or not value or not all(
-                isinstance(item, str) and item.strip() for item in value
+            if (
+                not isinstance(value, list)
+                or not value
+                or not all(isinstance(item, str) and item.strip() for item in value)
             ):
                 fail(f"completed accessibility category '{category}' needs {field}")
 
@@ -136,9 +134,7 @@ def validate_evidence(policy, evidence):
 
 def validate_theme(policy, theme_path, html_config, include_path, media_paths):
     theme = theme_path.read_text(encoding="utf-8")
-    colors = dict(
-        re.findall(r"^\$alkahest-([a-z]+):\s*(#[0-9a-fA-F]{6});\s*$", theme, re.M)
-    )
+    colors = dict(re.findall(r"^\$alkahest-([a-z]+):\s*(#[0-9a-fA-F]{6});\s*$", theme, re.M))
     for pair in policy.get("contrast_pairs", []):
         foreground = pair.get("foreground", "")
         background = pair.get("background", "")
@@ -212,21 +208,15 @@ def main():
     policy = load_json(policy_path, "accessibility policy")
     validate_policy(policy)
     evidence_path = Path(
-        os.environ.get(
-            "ALKAHEST_ACCESSIBILITY_EVIDENCE", ROOT / policy["manual_evidence"]
-        )
+        os.environ.get("ALKAHEST_ACCESSIBILITY_EVIDENCE", ROOT / policy["manual_evidence"])
     )
     evidence = load_json(evidence_path, "accessibility review")
     pending, claim = validate_evidence(policy, evidence)
     theme_path = Path(
-        os.environ.get(
-            "ALKAHEST_ACCESSIBILITY_THEME", ROOT / "book" / "theme" / "alkahest.scss"
-        )
+        os.environ.get("ALKAHEST_ACCESSIBILITY_THEME", ROOT / "book" / "theme" / "alkahest.scss")
     )
     html_config = Path(
-        os.environ.get(
-            "ALKAHEST_ACCESSIBILITY_HTML_CONFIG", ROOT / "book" / "_quarto-html.yml"
-        )
+        os.environ.get("ALKAHEST_ACCESSIBILITY_HTML_CONFIG", ROOT / "book" / "_quarto-html.yml")
     )
     include_path = Path(
         os.environ.get(
@@ -234,11 +224,7 @@ def main():
             ROOT / "book" / "theme" / "accessibility-before-body.html",
         )
     )
-    media_root = Path(
-        os.environ.get(
-            "ALKAHEST_ACCESSIBILITY_MEDIA_ROOT", ROOT / "book" / "media"
-        )
-    )
+    media_root = Path(os.environ.get("ALKAHEST_ACCESSIBILITY_MEDIA_ROOT", ROOT / "book" / "media"))
     media_paths = [
         media_root / "orbit-animation.html",
         media_root / "vector-interactive.html",

@@ -110,9 +110,7 @@ def baseline_name(profile: dict, page: dict) -> str:
 
 def expected_baselines(policy: dict) -> set[str]:
     return {
-        baseline_name(profile, page)
-        for profile in policy["profiles"]
-        for page in policy["pages"]
+        baseline_name(profile, page) for profile in policy["profiles"] for page in policy["pages"]
     }
 
 
@@ -135,10 +133,7 @@ def resolve_marker_page(text: str, marker: str) -> int:
         pages.pop()
     matches = [index for index, page in enumerate(pages, start=1) if marker in page]
     if len(matches) != 1:
-        fail(
-            f"golden marker must resolve to exactly one page: {marker!r} "
-            f"(found {len(matches)})"
-        )
+        fail(f"golden marker must resolve to exactly one page: {marker!r} (found {len(matches)})")
     return matches[0]
 
 
@@ -284,8 +279,7 @@ def write_rgb_png(path: Path, width: int, height: int, pixels: bytes) -> None:
     if len(pixels) != width * height * 3:
         fail("RGB diff pixel stream has the wrong size")
     rows = b"".join(
-        b"\x00" + pixels[row * width * 3 : (row + 1) * width * 3]
-        for row in range(height)
+        b"\x00" + pixels[row * width * 3 : (row + 1) * width * 3] for row in range(height)
     )
     header = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
     path.parent.mkdir(parents=True, exist_ok=True)

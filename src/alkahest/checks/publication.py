@@ -452,7 +452,11 @@ def check_editions(html_text, epub_text, edition_text):
     preview_root = BUILD / "smoke/editions/preview/html"
     preview = edition_text["preview"]
     preview_index = load(preview_root / "index.html")
-    require(load(preview_root / "index.html"), ("Preview chapters", "Preview reference"), "preview edition")
+    require(
+        load(preview_root / "index.html"),
+        ("Preview chapters", "Preview reference"),
+        "preview edition",
+    )
     require(
         preview_index,
         (
@@ -467,7 +471,11 @@ def check_editions(html_text, epub_text, edition_text):
         ),
         "preview HTML presentation",
     )
-    reject(preview_index, ("example.invalid", "Purchase the full edition</a>"), "unassigned preview HTML links")
+    reject(
+        preview_index,
+        ("example.invalid", "Purchase the full edition</a>"),
+        "unassigned preview HTML links",
+    )
 
     preview_epub_path = BUILD / "smoke/editions/preview/epub/Alkahest-Reference-Book.epub"
     if not preview_epub_path.is_file():
@@ -499,17 +507,17 @@ def check_editions(html_text, epub_text, edition_text):
         ),
         "preview EPUB metadata",
     )
-    reject(preview_epub_raw, ("example.invalid", "Purchase the full edition</a>"), "unassigned preview EPUB links")
+    reject(
+        preview_epub_raw,
+        ("example.invalid", "Purchase the full edition</a>"),
+        "unassigned preview EPUB links",
+    )
 
     preview_pdf_path = BUILD / "smoke/editions/preview/typst/Alkahest-Reference-Book.pdf"
     if not preview_pdf_path.is_file():
         fail(f"preview PDF is missing: {preview_pdf_path.relative_to(ROOT)}")
-    preview_pdf = normalize_pdf(
-        run_checked(("pdftotext", "-layout", str(preview_pdf_path), "-"))
-    )
-    preview_typ = load(
-        BUILD / "smoke/editions/preview/typst/Alkahest-Reference-Book.typ"
-    )
+    preview_pdf = normalize_pdf(run_checked(("pdftotext", "-layout", str(preview_pdf_path), "-")))
+    preview_typ = load(BUILD / "smoke/editions/preview/typst/Alkahest-Reference-Book.typ")
     require(
         preview_typ,
         ('fill: rgb("#33415518")', ")[PREVIEW]"),
@@ -527,7 +535,12 @@ def check_editions(html_text, epub_text, edition_text):
     )
     require(
         preview,
-        ("Appendix A", "A.2 Numbered appendix elements", "Figure A.1", "A chapter-to-appendix route reaches"),
+        (
+            "Appendix A",
+            "A.2 Numbered appendix elements",
+            "Figure A.1",
+            "A chapter-to-appendix route reaches",
+        ),
         "preview edition",
     )
     preview_reference = load(preview_root / "reference.html")
@@ -559,7 +572,9 @@ def check_editions(html_text, epub_text, edition_text):
         ),
         "preview edition",
     )
-    reject(preview_reference, ("sec-format-behavior", "sec-language-and-script"), "preview references")
+    reject(
+        preview_reference, ("sec-format-behavior", "sec-language-and-script"), "preview references"
+    )
 
     public = edition_text["public"]
     private = edition_text["private"]
@@ -579,14 +594,25 @@ def check_editions(html_text, epub_text, edition_text):
         ('id="ans-threshold-reasoning"', 'data-for="rev-threshold-reasoning"'),
         "private answer-key contract",
     )
-    public_artifacts = (html_text, epub_text, edition_text["abridged"], preview, public, supplemental)
+    public_artifacts = (
+        html_text,
+        epub_text,
+        edition_text["abridged"],
+        preview,
+        public,
+        supplemental,
+    )
     for artifact in public_artifacts:
         reject(artifact, (private_canary, private_answer), "public artifact")
     reject(public, "Extended laboratory observations", "public/full edition")
     reject(private, "Supplemental workbook", "private edition")
 
     supplemental_root = BUILD / "smoke/editions/supplemental/html"
-    require(load(supplemental_root / "index.html"), "Supplemental reference", "supplemental appendix group")
+    require(
+        load(supplemental_root / "index.html"),
+        "Supplemental reference",
+        "supplemental appendix group",
+    )
     require(
         supplemental,
         ("Appendix A", "Appendix B", "Appendix C", "Appendix D", "Supplemental workbook"),
@@ -631,7 +657,13 @@ def check_code_and_math(bootstrap_css, epub_css, epub_language):
     )
     require(
         epub_language,
-        ('class="code-with-filename"', 'class="code-with-filename-file"', "number-lines", 'data-code-annotation="1"', "code-output"),
+        (
+            'class="code-with-filename"',
+            'class="code-with-filename-file"',
+            "number-lines",
+            'data-code-annotation="1"',
+            "code-output",
+        ),
         "EPUB code specimen",
     )
 
@@ -721,7 +753,11 @@ def check_figures(epub_language, epub_svg, epub_names):
     )
     require(figures, alternatives, "HTML figure alternative")
     require(epub_language, alternatives, "EPUB figure alternative")
-    require(load(BUILD / "html/reference.html"), "Diagram description: Inputs A and B", "HTML Mermaid description")
+    require(
+        load(BUILD / "html/reference.html"),
+        "Diagram description: Inputs A and B",
+        "HTML Mermaid description",
+    )
     require(epub_language, "Diagram description: Inputs A and B", "EPUB Mermaid description")
     require(figures, "figures/system-map-screen.svg", "HTML figure variant")
     require(epub_svg, "screen edition", "EPUB figure variant")
@@ -856,7 +892,11 @@ def check_components(epub_language, html_css, epub_css):
     require(epub_language, ("<table", "<th"), "EPUB table semantics")
     require(
         components,
-        ("Table&nbsp;<span>8.1</span>", "Note&nbsp;<span>8.1</span>", "Warning&nbsp;<span>8.1</span>"),
+        (
+            "Table&nbsp;<span>8.1</span>",
+            "Note&nbsp;<span>8.1</span>",
+            "Warning&nbsp;<span>8.1</span>",
+        ),
         "HTML component reference",
     )
 
@@ -900,8 +940,12 @@ def check_companions_and_reuse(epub_text, epub_language, html_css, epub_css):
         "asset-half-adder-bom",
         "asset-half-adder-project-pack",
     )
-    require(companions, tuple(f'id="{value}"' for value in companion_ids), "HTML companion identity")
-    require(epub_language, tuple(f'id="{value}"' for value in companion_ids), "EPUB companion identity")
+    require(
+        companions, tuple(f'id="{value}"' for value in companion_ids), "HTML companion identity"
+    )
+    require(
+        epub_language, tuple(f'id="{value}"' for value in companion_ids), "EPUB companion identity"
+    )
     kinds = ("code", "dataset", "schematic", "bill-of-materials", "download")
     require(companions, tuple(f"companion-kind-{kind}" for kind in kinds), "HTML companion kind")
     require(epub_language, tuple(f"companion-kind-{kind}" for kind in kinds), "EPUB companion kind")
@@ -946,10 +990,20 @@ def check_companions_and_reuse(epub_text, epub_language, html_css, epub_css):
         "reuse-use-project-prerequisites",
     )
     require(reuse, tuple(f'id="{value}"' for value in use_sites), "HTML reusable-content use site")
-    require(epub_language, tuple(f'id="{value}"' for value in use_sites), "EPUB reusable-content use site")
+    require(
+        epub_language,
+        tuple(f'id="{value}"' for value in use_sites),
+        "EPUB reusable-content use site",
+    )
     reuse_kinds = ("notice", "definition", "legal", "example", "project-prerequisite")
-    require(reuse, tuple(f"reuse-kind-{kind}" for kind in reuse_kinds), "HTML reusable-content kind")
-    require(epub_language, tuple(f"reuse-kind-{kind}" for kind in reuse_kinds), "EPUB reusable-content kind")
+    require(
+        reuse, tuple(f"reuse-kind-{kind}" for kind in reuse_kinds), "HTML reusable-content kind"
+    )
+    require(
+        epub_language,
+        tuple(f"reuse-kind-{kind}" for kind in reuse_kinds),
+        "EPUB reusable-content kind",
+    )
     require(
         reuse,
         (
@@ -989,7 +1043,9 @@ def check_icons(epub_language, epub_svg, html_css, epub_css, temp_epub):
         "Stop; danger remains",
     )
     require(icons, tuple(f'alt="{label}"' for label in alternatives), "HTML icon alternative")
-    require(epub_language, tuple(f'alt="{label}"' for label in alternatives), "EPUB icon alternative")
+    require(
+        epub_language, tuple(f'alt="{label}"' for label in alternatives), "EPUB icon alternative"
+    )
     require(
         epub_svg,
         (
@@ -1007,7 +1063,16 @@ def check_icons(epub_language, epub_svg, html_css, epub_css, temp_epub):
         ('class="semantic-icon semantic-icon-danger"', 'data-icon-label="Stop; danger remains"'),
         "HTML icon alias and label override",
     )
-    run_checked((sys.executable, "-m", "alkahest.checks.rendered_icons", str(BUILD / "html/icons.html"), str(components), temp_epub))
+    run_checked(
+        (
+            sys.executable,
+            "-m",
+            "alkahest.checks.rendered_icons",
+            str(BUILD / "html/icons.html"),
+            str(components),
+            temp_epub,
+        )
+    )
     require(
         html_css,
         (".icon-accessibility-specimen{", "@media(max-width: 480px)", "overflow-wrap:anywhere"),
@@ -1015,7 +1080,12 @@ def check_icons(epub_language, epub_svg, html_css, epub_css, temp_epub):
     )
     require(
         epub_css,
-        (".icon-accessibility-specimen", "max-width: 18rem", "overflow-wrap: anywhere", "vertical-align: -0.14em"),
+        (
+            ".icon-accessibility-specimen",
+            "max-width: 18rem",
+            "overflow-wrap: anywhere",
+            "vertical-align: -0.14em",
+        ),
         "EPUB narrow icon theme",
     )
 
@@ -1071,7 +1141,12 @@ def check_glossary(epub_language, html_css, epub_css):
         ('id="glossary-unlinked-fallback"', 'data-glossary-link="false"', ">matrix</span></span>"),
         "EPUB unlinked glossary fallback",
     )
-    glossary_ids = ("central-processing-unit", "instruction-set-architecture", "matrix", "quantum-bit")
+    glossary_ids = (
+        "central-processing-unit",
+        "instruction-set-architecture",
+        "matrix",
+        "quantum-bit",
+    )
     positions = []
     for glossary_id in glossary_ids:
         require(glossary, f'data-glossary-id="{glossary_id}"', "HTML glossary reference")
@@ -1122,7 +1197,15 @@ def check_locale(epub_language, temp_epub):
         "French HTML",
     )
     require(language, ("25&nbsp;MHz", "Figure&nbsp;1"), "HTML language specimen")
-    run_checked((sys.executable, "-m", "alkahest.rendering.unicode_spaces", "html", str(BUILD / "html/appendices/language-and-script.html")))
+    run_checked(
+        (
+            sys.executable,
+            "-m",
+            "alkahest.rendering.unicode_spaces",
+            "html",
+            str(BUILD / "html/appendices/language-and-script.html"),
+        )
+    )
     run_checked((sys.executable, "-m", "alkahest.rendering.unicode_spaces", "epub", temp_epub))
 
 
@@ -1150,8 +1233,12 @@ def main():
         names = archive.namelist()
         epub_names = "\n".join(names)
         epub_css = archive.read("EPUB/styles/stylesheet1.css").decode("utf-8")
-        text_names = sorted(name for name in names if name.startswith("EPUB/text/") and name.endswith(".xhtml"))
-        svg_names = sorted(name for name in names if name.startswith("EPUB/media/") and name.endswith(".svg"))
+        text_names = sorted(
+            name for name in names if name.startswith("EPUB/text/") and name.endswith(".xhtml")
+        )
+        svg_names = sorted(
+            name for name in names if name.startswith("EPUB/media/") and name.endswith(".svg")
+        )
         epub_language = "".join(archive.read(name).decode("utf-8") for name in text_names)
         epub_nav = archive.read("EPUB/nav.xhtml").decode("utf-8")
         epub_svg = "".join(archive.read(name).decode("utf-8") for name in svg_names)

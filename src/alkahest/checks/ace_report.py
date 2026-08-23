@@ -17,11 +17,7 @@ def validate_report(path):
         report = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         fail(f"cannot read Ace report {path}: {error}")
-    release = (
-        report.get("earl:assertedBy", {})
-        .get("doap:release", {})
-        .get("doap:revision")
-    )
+    release = report.get("earl:assertedBy", {}).get("doap:release", {}).get("doap:revision")
     if release != EXPECTED_ACE_VERSION:
         fail(f"Ace report must come from version {EXPECTED_ACE_VERSION}, found {release}")
     failures = []

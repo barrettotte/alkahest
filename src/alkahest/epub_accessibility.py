@@ -306,9 +306,7 @@ def _slug_page_label(label: str) -> str:
 
 
 def _insert_page_marker(text: str, anchor: str, marker: str, label: str) -> str:
-    tag_pattern = re.compile(
-        rf"<[A-Za-z][\w:.-]*[^<>]*\bid=(['\"]){re.escape(anchor)}\1[^<>]*>"
-    )
+    tag_pattern = re.compile(rf"<[A-Za-z][\w:.-]*[^<>]*\bid=(['\"]){re.escape(anchor)}\1[^<>]*>")
     match = tag_pattern.search(text)
     if match is None:
         fail(f"cannot find rendered EPUB page anchor {anchor}")
@@ -321,9 +319,7 @@ def _insert_page_marker(text: str, anchor: str, marker: str, label: str) -> str:
 
 
 def _normalize_code_anchors(text: str) -> str:
-    pattern = re.compile(
-        r"<a\b(?P<attrs>[^<>]*\bhref=(['\"])#[^'\"]+\2[^<>]*)></a>"
-    )
+    pattern = re.compile(r"<a\b(?P<attrs>[^<>]*\bhref=(['\"])#[^'\"]+\2[^<>]*)></a>")
 
     def replace(match: re.Match) -> str:
         tag = f"<a{match.group('attrs')}>"
@@ -346,9 +342,7 @@ def _replace_discovery_metadata(opf: str, policy: dict) -> str:
     for key, property_name in PROPERTY_NAMES.items():
         values = discovery[key] if isinstance(discovery[key], list) else [discovery[key]]
         for value in values:
-            lines.append(
-                f'    <meta property="{property_name}">{html.escape(value)}</meta>'
-            )
+            lines.append(f'    <meta property="{property_name}">{html.escape(value)}</meta>')
     if policy["pagination"]["mode"] == "print-equivalent":
         source = html.escape(policy["pagination"]["page_break_source"])
         lines.append(f'    <meta property="pageBreakSource">{source}</meta>')
@@ -394,18 +388,14 @@ def _replace_navigation(
             "      <li>"
             f'<a href="{html.escape(href, quote=True)}" '
             f'epub:type="{html.escape(landmark["type"], quote=True)}">'
-            f'{html.escape(landmark["label"])}</a></li>'
+            f"{html.escape(landmark['label'])}</a></li>"
         )
     landmarks = (
         '<nav epub:type="landmarks" id="landmarks" hidden="hidden">\n'
         "  <h1>Guide</h1>\n"
-        "  <ol>\n"
-        + "\n".join(items)
-        + "\n  </ol>\n</nav>"
+        "  <ol>\n" + "\n".join(items) + "\n  </ol>\n</nav>"
     )
-    existing = re.compile(
-        r"<nav\b[^>]*\bepub:type=(['\"])landmarks\1[^>]*>.*?</nav>", re.DOTALL
-    )
+    existing = re.compile(r"<nav\b[^>]*\bepub:type=(['\"])landmarks\1[^>]*>.*?</nav>", re.DOTALL)
     if existing.search(nav):
         nav = existing.sub(landmarks, nav, count=1)
     elif "</body>" in nav:
@@ -423,15 +413,12 @@ def _replace_navigation(
         for label, path, marker in pages:
             href = posixpath.relpath(path, nav_base or ".") + f"#{marker}"
             page_items.append(
-                f'      <li><a href="{html.escape(href, quote=True)}">'
-                f"{html.escape(label)}</a></li>"
+                f'      <li><a href="{html.escape(href, quote=True)}">{html.escape(label)}</a></li>'
             )
         page_list = (
             '<nav epub:type="page-list" id="page-list">\n'
             "  <h1>Page list</h1>\n"
-            "  <ol>\n"
-            + "\n".join(page_items)
-            + "\n  </ol>\n</nav>"
+            "  <ol>\n" + "\n".join(page_items) + "\n  </ol>\n</nav>"
         )
         nav = nav.replace("</body>", page_list + "\n</body>", 1)
     return nav
@@ -458,9 +445,7 @@ def _write_members(
         temporary_path.unlink(missing_ok=True)
 
 
-def finalize_epub(
-    epub_path: Path, policy_path: Path, allow_missing_sections: bool = False
-) -> None:
+def finalize_epub(epub_path: Path, policy_path: Path, allow_missing_sections: bool = False) -> None:
     policy = load_policy(policy_path)
     infos, members = _read_members(epub_path)
     opf_path, package, nav_path, manifest, spine = _package_inventory(members)
@@ -510,9 +495,9 @@ def finalize_epub(
             ).encode("utf-8")
             pages.append((page["label"], path, marker))
 
-    members[opf_path] = _replace_discovery_metadata(
-        _decode(members, opf_path), policy
-    ).encode("utf-8")
+    members[opf_path] = _replace_discovery_metadata(_decode(members, opf_path), policy).encode(
+        "utf-8"
+    )
     members[nav_path] = _replace_navigation(
         _decode(members, nav_path),
         policy,
@@ -576,9 +561,7 @@ def _validate_metadata(package: ET.Element, policy: dict) -> None:
         fail("EPUB must not emit a conformance claim before manual review passes")
     pagination = policy["pagination"]
     expected_sources = (
-        [pagination["page_break_source"]]
-        if pagination["mode"] == "print-equivalent"
-        else []
+        [pagination["page_break_source"]] if pagination["mode"] == "print-equivalent" else []
     )
     if page_sources != expected_sources:
         fail("EPUB pageBreakSource does not match pagination policy")
@@ -608,9 +591,7 @@ def _parse_documents(
     return documents, ids
 
 
-def _locate_id(
-    ids: dict[str, dict[str, ET.Element]], target: str
-) -> tuple[str, ET.Element]:
+def _locate_id(ids: dict[str, dict[str, ET.Element]], target: str) -> tuple[str, ET.Element]:
     matches = [(path, values[target]) for path, values in ids.items() if target in values]
     if len(matches) != 1:
         fail(f"EPUB semantic target {target} must occur exactly once")
@@ -665,8 +646,10 @@ def _validate_navigation(
         path, fragment = _resolve_href(nav_path, href)
         if path not in members:
             fail(f"EPUB landmark {kind} references missing document {path}")
-        if fragment and fragment not in ids.get(path, {}) and not (
-            path == nav_path and fragment == "toc"
+        if (
+            fragment
+            and fragment not in ids.get(path, {})
+            and not (path == nav_path and fragment == "toc")
         ):
             fail(f"EPUB landmark {kind} references missing fragment {fragment}")
     if observed_landmarks != expected_landmarks:
@@ -716,9 +699,7 @@ def _validate_navigation(
         if marker.get("role") != "doc-pagebreak" or not marker.get("aria-label"):
             fail(f"EPUB page marker {fragment} lacks accessible semantics")
         observed.append((label, fragment))
-    expected_pairs = [
-        (page["label"], _slug_page_label(page["label"])) for page in expected
-    ]
+    expected_pairs = [(page["label"], _slug_page_label(page["label"])) for page in expected]
     if observed != expected_pairs:
         fail("EPUB page-list order or labels do not match pagination policy")
 
@@ -764,15 +745,10 @@ def _validate_tables(documents: dict[str, ET.Element]) -> int:
                     break
                 if node.tag == f"{{{XHTML_NS}}}section":
                     titled_section = any(
-                        re.fullmatch(r"h[1-6]", child.tag.rsplit("}", 1)[-1])
-                        and _text(child)
+                        re.fullmatch(r"h[1-6]", child.tag.rsplit("}", 1)[-1]) and _text(child)
                         for child in node
                     )
-            if (
-                (caption is None or not _text(caption))
-                and not described
-                and not titled_section
-            ):
+            if (caption is None or not _text(caption)) and not described and not titled_section:
                 fail(f"EPUB data table in {path} needs an associated caption")
     return count
 
@@ -798,7 +774,9 @@ def _validate_images(documents: dict[str, ET.Element]) -> int:
                     described = True
                     break
             if not described:
-                fail(f"EPUB non-text content in {path} has an empty alternative without an adjacent description")
+                fail(
+                    f"EPUB non-text content in {path} has an empty alternative without an adjacent description"
+                )
     return count
 
 
@@ -860,16 +838,10 @@ def validate_epub(epub_path: Path, policy_path: Path) -> dict[str, int]:
     opf_path, package, nav_path, manifest, spine = _package_inventory(members)
     del opf_path
     _validate_metadata(package, policy)
-    xhtml_paths = [
-        path
-        for path in manifest.values()
-        if path.endswith((".xhtml", ".html", ".htm"))
-    ]
+    xhtml_paths = [path for path in manifest.values() if path.endswith((".xhtml", ".html", ".htm"))]
     documents, ids = _parse_documents(members, xhtml_paths, policy["language"])
     _validate_sections(documents, ids, policy)
-    _validate_navigation(
-        nav_path, documents[nav_path], ids, members, spine, policy
-    )
+    _validate_navigation(nav_path, documents[nav_path], ids, members, spine, policy)
     counts = {
         "documents": len(documents),
         "headings": _validate_headings(documents),

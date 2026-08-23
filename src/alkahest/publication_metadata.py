@@ -481,10 +481,7 @@ def validate_repository(root, record, policies):
     for marker in ("check-%:", "test-%:"):
         if marker not in texts["makefile"]:
             fail(f"Makefile is missing publication metadata target {marker}")
-    for marker in (
-        '"publication-metadata", ":check-publication-metadata"',
-        '"publication-metadata", "test-publication-metadata.py"',
-    ):
+    for marker in ('"publication-metadata", ":check-publication-metadata"',):
         if marker not in texts["tasks"]:
             fail(f"task registry does not include publication metadata entry {marker}")
     for marker in (

@@ -128,9 +128,22 @@ def render_vector(data):
 
     velocity_unit = unit_symbol(data, components["x"])
     angle_unit = data["units"][derived["angle"]["unit"]]["symbol"]
-    svg.text((origin_x + tip_x) / 2, tip_y - 19, f"v_x = {components['x']['display']} {velocity_unit}", size=24)
-    svg.text(tip_x + 18, (origin_y + tip_y) / 2, f"v_y = {components['y']['display']} {velocity_unit}", size=24, anchor="start")
-    svg.text(385, 170, f"|v| = {derived['magnitude']['display']} {velocity_unit}", size=26, weight="bold")
+    svg.text(
+        (origin_x + tip_x) / 2,
+        tip_y - 19,
+        f"v_x = {components['x']['display']} {velocity_unit}",
+        size=24,
+    )
+    svg.text(
+        tip_x + 18,
+        (origin_y + tip_y) / 2,
+        f"v_y = {components['y']['display']} {velocity_unit}",
+        size=24,
+        anchor="start",
+    )
+    svg.text(
+        385, 170, f"|v| = {derived['magnitude']['display']} {velocity_unit}", size=26, weight="bold"
+    )
 
     angle = math.atan2(y_value, x_value)
     radius = 78
@@ -142,8 +155,16 @@ def render_vector(data):
         f"{number(arc_end_x)} {number(arc_end_y)}",
         width=2,
     )
-    svg.text(origin_x + 120, origin_y - 48, f"theta = {derived['angle']['display']}{angle_unit}", size=22)
-    svg.text(500, 510, "Displayed precision is preserved explicitly in the versioned source.", size=20, fill=MUTED)
+    svg.text(
+        origin_x + 120, origin_y - 48, f"theta = {derived['angle']['display']}{angle_unit}", size=22
+    )
+    svg.text(
+        500,
+        510,
+        "Displayed precision is preserved explicitly in the versioned source.",
+        size=20,
+        fill=MUTED,
+    )
     return svg.finish()
 
 
@@ -229,7 +250,9 @@ def render_field(data):
     svg.text(800, 357, "stronger", size=21, anchor="start")
     svg.line(730, 390, 756, 390, width=1.7, arrow="small-arrow")
     svg.text(800, 397, "weaker", size=21, anchor="start")
-    svg.text(500, 580, "Arrow direction and geometry carry meaning; color does not.", size=20, fill=MUTED)
+    svg.text(
+        500, 580, "Arrow direction and geometry carry meaning; color does not.", size=20, fill=MUTED
+    )
     return svg.finish()
 
 

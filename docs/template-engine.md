@@ -9,17 +9,14 @@ that could silently drift.
 `config/template/template-package.json` selects five complete reusable source
 trees—Quarto extensions, Lua filters, LuaLaTeX adapters, web/EPUB themes, and
 the Typst adapter—plus the shared brand, package README, and MIT license. It
-maps 62 source files to standalone package-relative paths. Installed fonts are
+maps 54 source files to standalone package-relative paths. Installed fonts are
 excluded because they are locked build dependencies rather than template
 source; a generated book obtains them through the existing toolchain. The
 package also carries shared Quarto, theme, and release defaults plus the small
 deterministic theme/release synchronizers and isolated release stager used by
-generated repositories. It also ships the consolidated extension API reference
-and its machine-readable inventory, so a generated repository retains the same
-author, book-configuration, engine, filter, and generator boundaries. Seven
-JSON Schemas and their ownership inventory define stable IDs, editions,
-publication facts, rights, accessibility, covers, and localized labels without
-copying laboratory metadata.
+generated repositories. It also ships concise extension and book-record guides
+plus the publication metadata schema, so advanced behavior remains discoverable
+without introducing parallel machine inventories.
 
 Run:
 
@@ -51,9 +48,8 @@ This package includes:
 - versioned Quarto/theme defaults and the cross-format theme synchronizer; and
 - reusable full/preview behavior, deterministic profile generation, and
   allowlist-based staging; and
-- `docs/extension-apis.md` plus its exact provisional API inventory; and
-- `docs/book-contracts.md`, seven reusable schemas, and the exact record-layer
-  inventory; and
+- `docs/extension-apis.md` and `docs/book-contracts.md` as maintainer and
+  advanced-author guidance; and
 - the minimal author command that compiles `book.toml` into disposable full and
   excerpt workspaces.
 

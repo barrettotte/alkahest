@@ -157,8 +157,7 @@ def render_timing(specification):
 def render_logic(specification):
     title = specification["title"]
     description = (
-        "Inputs A and B each branch to an XOR gate producing SUM and an AND gate "
-        "producing CARRY."
+        "Inputs A and B each branch to an XOR gate producing SUM and an AND gate producing CARRY."
     )
     svg = Svg(1000, 390, title, description)
     svg.text(500, 40, title, size=25, weight="bold")
@@ -173,8 +172,12 @@ def render_logic(specification):
     for name, source_y in input_positions.items():
         target_sum = gate_inputs["sum"][0 if name == "A" else 1]
         target_carry = gate_inputs["carry"][0 if name == "A" else 1]
-        svg.polyline([(250, source_y), (330, source_y), (330, target_sum), (415, target_sum)], width=2)
-        svg.polyline([(250, source_y), (295, source_y), (295, target_carry), (420, target_carry)], width=2)
+        svg.polyline(
+            [(250, source_y), (330, source_y), (330, target_sum), (415, target_sum)], width=2
+        )
+        svg.polyline(
+            [(250, source_y), (295, source_y), (295, target_carry), (420, target_carry)], width=2
+        )
 
     svg.path("M 430 88 Q 505 88 560 140 Q 505 192 430 192 Q 458 140 430 88 Z", fill=PALE, width=3)
     svg.path("M 418 88 Q 446 140 418 192", width=3)
@@ -245,7 +248,13 @@ def render_layout(specification):
         left += field_width
         bit_cursor = low_bit - 1
     svg.text(720, 310, "field width follows bit count", size=15, fill=MUTED)
-    svg.text(500, 505, "Addresses and bit positions are explicit; area carries no semantic meaning alone.", size=16, fill=MUTED)
+    svg.text(
+        500,
+        505,
+        "Addresses and bit positions are explicit; area carries no semantic meaning alone.",
+        size=16,
+        fill=MUTED,
+    )
     return svg.finish()
 
 
@@ -309,7 +318,9 @@ def render_architecture(specification):
         svg.text(edge["label_x"], edge["label_y"], edge["label"], size=18, fill=MUTED)
 
     for node in specification["nodes"]:
-        svg.rect(node["x"], node["y"], node["width"], node["height"], fill=PALE, radius=8, line_width=2)
+        svg.rect(
+            node["x"], node["y"], node["width"], node["height"], fill=PALE, radius=8, line_width=2
+        )
         line_count = len(node["label"].split("\n"))
         baseline = node["y"] + node["height"] / 2 - (9 if line_count > 1 else -6)
         svg.text(node["x"] + node["width"] / 2, baseline, node["label"], size=20, weight="bold")

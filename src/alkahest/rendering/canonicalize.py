@@ -16,10 +16,9 @@ def candidates(paths):
             yield from (
                 candidate
                 for candidate in sorted(path.rglob("*"))
-                if candidate.is_file() and candidate.suffix.lower() in SUFFIXES
-                and not COPY_ONLY_DIRECTORIES.intersection(
-                    candidate.relative_to(path).parts
-                )
+                if candidate.is_file()
+                and candidate.suffix.lower() in SUFFIXES
+                and not COPY_ONLY_DIRECTORIES.intersection(candidate.relative_to(path).parts)
             )
         elif path.is_file() and path.suffix.lower() in SUFFIXES:
             yield path

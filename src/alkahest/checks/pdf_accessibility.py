@@ -74,10 +74,7 @@ def validate_candidate(backend_id, candidate, criteria):
         "rendered-unbound",
         "pass",
     }:
-        fail(
-            f"backend '{backend_id}' render status must be blocked, "
-            "rendered-unbound, or pass"
-        )
+        fail(f"backend '{backend_id}' render status must be blocked, rendered-unbound, or pass")
     if render["status"] == "blocked":
         if not substantive(render.get("blocker"), 40):
             fail(f"blocked backend '{backend_id}' needs a substantive blocker")

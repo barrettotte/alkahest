@@ -108,18 +108,12 @@ def validate_page_boxes(
     for line in output.splitlines():
         box_match = PAGE_BOX.match(line.strip())
         if box_match:
-            values = tuple(
-                float(box_match.group(key)) for key in ("x0", "y0", "x1", "y1")
-            )
-            boxes.setdefault(int(box_match.group("page")), {})[
-                box_match.group("box")
-            ] = values
+            values = tuple(float(box_match.group(key)) for key in ("x0", "y0", "x1", "y1"))
+            boxes.setdefault(int(box_match.group("page")), {})[box_match.group("box")] = values
             continue
         rotation_match = PAGE_ROTATION.match(line.strip())
         if rotation_match:
-            rotations[int(rotation_match.group("page"))] = int(
-                rotation_match.group("rotation")
-            )
+            rotations[int(rotation_match.group("page"))] = int(rotation_match.group("rotation"))
             continue
         size_match = PAGE_SIZE.match(line.strip())
         if size_match:
@@ -256,14 +250,9 @@ def validate_raster_images(
 ) -> int:
     """Validate color models and effective resolution of primary raster images."""
 
-    images = [
-        image for image in parse_raster_images(output) if image.image_type == "image"
-    ]
+    images = [image for image in parse_raster_images(output) if image.image_type == "image"]
     for image in images:
-        identity = (
-            f"page {image.page}, object "
-            f"{image.object_number} {image.object_generation}"
-        )
+        identity = f"page {image.page}, object {image.object_number} {image.object_generation}"
         color_model = (image.color, image.components)
         if color_model not in allowed_color_models:
             fail(
@@ -352,9 +341,7 @@ def run_tool(command: list[str], allowed_stderr: set[str] | None = None) -> str:
     return result.stdout
 
 
-def inspect_pdf(
-    path: Path, profile: dict, policy: dict
-) -> tuple[int, int, int, set[str]]:
+def inspect_pdf(path: Path, profile: dict, policy: dict) -> tuple[int, int, int, set[str]]:
     """Run Poppler inspection for one configured artifact."""
 
     if not path.is_file():
@@ -365,9 +352,7 @@ def inspect_pdf(
 
     info = run_tool(["pdfinfo", str(path)], allowed_stderr)
     page_count = validate_document_metadata(info, set(policy["allowed_pdf_versions"]))
-    page_info = run_tool(
-        ["pdfinfo", "-f", "1", "-l", str(page_count), str(path)], allowed_stderr
-    )
+    page_info = run_tool(["pdfinfo", "-f", "1", "-l", str(page_count), str(path)], allowed_stderr)
     sampled_pages = {1, (page_count + 1) // 2, page_count}
     box_info = "\n".join(
         run_tool(
@@ -387,8 +372,7 @@ def inspect_pdf(
     )
     font_count = validate_fonts(run_tool(["pdffonts", str(path)]))
     allowed_colors = {
-        (entry["name"], int(entry["components"]))
-        for entry in policy["allowed_raster_color_models"]
+        (entry["name"], int(entry["components"])) for entry in policy["allowed_raster_color_models"]
     }
     image_count = validate_raster_images(
         run_tool(["pdfimages", "-list", str(path)]),

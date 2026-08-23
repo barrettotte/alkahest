@@ -15,9 +15,7 @@ from .common import fail, load_json
 
 POLICY_PATH = "config/template/template-package.json"
 ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
-SEMVER = re.compile(
-    r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"
-)
+SEMVER = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
 PACKAGE_FILES = {"MANIFEST.json", "SHA256SUMS"}
 
 
@@ -206,8 +204,10 @@ def load_template_policy(root):
         if value not in destinations:
             fail(f"template required path is not packaged: {value}")
     forbidden = policy["forbidden_content"]
-    if not isinstance(forbidden, list) or not forbidden or any(
-        not isinstance(value, str) or not value for value in forbidden
+    if (
+        not isinstance(forbidden, list)
+        or not forbidden
+        or any(not isinstance(value, str) or not value for value in forbidden)
     ):
         fail("template forbidden_content must be a nonempty string array")
     return {
@@ -239,7 +239,6 @@ def validate_template_integration(root):
             fail(f"Makefile is missing template-engine target {marker}")
     for marker in (
         '"template-engine", ":check-template-engine"',
-        '"template-engine", "test-template-engine.py"',
         '"template-engine", ":package-template-engine"',
         '"template-package", ":check-template-package"',
     ):
@@ -254,7 +253,7 @@ def validate_template_integration(root):
         "config/template/template-package.json",
         "make package-template-engine",
         "make check-template-package",
-        "62 source files",
+        "54 source files",
         "Deliberate boundary",
     ):
         if marker not in texts["documentation"]:
@@ -302,17 +301,15 @@ def template_members(root):
                 "Typst and LuaLaTeX book adapters",
                 "shared Quarto and theme defaults",
                 "deterministic cross-format theme synchronization",
-                "reusable book-record schemas and ownership inventory",
+                "publication metadata schema and book-record guidance",
                 "minimal book.toml author compiler and render command",
             ],
         },
     }
-    members["MANIFEST.json"] = (
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n"
-    ).encode("utf-8")
-    checksums = [
-        f"{_sha256(content)}  {path}" for path, content in sorted(members.items())
-    ]
+    members["MANIFEST.json"] = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode(
+        "utf-8"
+    )
+    checksums = [f"{_sha256(content)}  {path}" for path, content in sorted(members.items())]
     members["SHA256SUMS"] = ("\n".join(checksums) + "\n").encode("utf-8")
     return context, members
 
@@ -443,9 +440,7 @@ def _extracted_smoke(relative, context):
                 fail(f"extracted template extension manifest is incomplete: {path.name}")
         if "#show" not in (root / "typst/typst-show.typ").read_text(encoding="utf-8"):
             fail("extracted template Typst adapter lacks its show rule")
-        if "\\usepackage" not in (root / "latex/book-layout.tex").read_text(
-            encoding="utf-8"
-        ):
+        if "\\usepackage" not in (root / "latex/book-layout.tex").read_text(encoding="utf-8"):
             fail("extracted template LuaLaTeX adapter lacks package configuration")
 
 
@@ -453,9 +448,7 @@ def check_template_package(root, output_root=None, extract=True):
     root = Path(root)
     context, members, outputs = expected_template_outputs(root)
     output_root = (
-        Path(output_root)
-        if output_root is not None
-        else root / context["package"]["output_root"]
+        Path(output_root) if output_root is not None else root / context["package"]["output_root"]
     )
     if not output_root.is_dir():
         fail("template package output directory is missing")

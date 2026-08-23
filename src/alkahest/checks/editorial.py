@@ -49,9 +49,7 @@ LINK_PATTERN = re.compile(
     r"(?<!!)\[([^]\n]+)\]\(\s*(<[^>\n]+>|(?:\\.|[^)\s])+)"
     r"(?:\s+(?:\"[^\"\n]*\"|'[^'\n]*'))?\s*\)"
 )
-INLINE_MATH_PATTERN = re.compile(
-    r"(?<![$\\])\$(?!\$)(?:\\.|[^$\\\n])+(?<!\\)\$(?!\$)"
-)
+INLINE_MATH_PATTERN = re.compile(r"(?<![$\\])\$(?!\$)(?:\\.|[^$\\\n])+(?<!\\)\$(?!\$)")
 
 
 def fail(errors):
@@ -84,8 +82,7 @@ def add_id(identities, errors, identity, source, line_number, root):
     location = f"{source.relative_to(root)}:{line_number}"
     if identity in identities:
         errors.append(
-            f"{location}: duplicate ID '{identity}'; first declared at "
-            f"{identities[identity][1]}"
+            f"{location}: duplicate ID '{identity}'; first declared at {identities[identity][1]}"
         )
         return
     identities[identity] = (source, location)
@@ -94,13 +91,13 @@ def add_id(identities, errors, identity, source, line_number, root):
 def image_has_alternative(alt, attributes):
     if alt.strip():
         return True
-    fig_alt = re.search(r'''\bfig-alt\s*=\s*(["'])(.*?)\1''', attributes)
+    fig_alt = re.search(r"""\bfig-alt\s*=\s*(["'])(.*?)\1""", attributes)
     if fig_alt and fig_alt.group(2).strip():
         return True
     return bool(
         re.search(r"(?:^|[\s{])\.decorative(?:[\s}]|$)", attributes)
-        or re.search(r'''\brole\s*=\s*(["'])presentation\1''', attributes)
-        or re.search(r'''\baria-hidden\s*=\s*(["'])true\1''', attributes)
+        or re.search(r"""\brole\s*=\s*(["'])presentation\1""", attributes)
+        or re.search(r"""\baria-hidden\s*=\s*(["'])true\1""", attributes)
     )
 
 
@@ -119,13 +116,9 @@ def scan_sources(root, sources):
         diagram_alt = False
         diagram_line = 0
         display_math_line = None
-        for line_number, line in enumerate(
-            source.read_text(encoding="utf-8").splitlines(), 1
-        ):
+        for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
             if fence_char:
-                if re.fullmatch(
-                    rf"\s*{re.escape(fence_char)}{{{fence_length},}}\s*", line
-                ):
+                if re.fullmatch(rf"\s*{re.escape(fence_char)}{{{fence_length},}}\s*", line):
                     if diagram and not diagram_alt:
                         errors.append(
                             f"{source.relative_to(root)}:{diagram_line}: {diagram} "
@@ -135,9 +128,7 @@ def scan_sources(root, sources):
                     diagram = None
                     continue
                 if diagram:
-                    option = re.match(
-                        r"\s*(?:#|//|%%)\|\s*(label|fig-alt):\s*(.*?)\s*$", line
-                    )
+                    option = re.match(r"\s*(?:#|//|%%)\|\s*(label|fig-alt):\s*(.*?)\s*$", line)
                     if option and option.group(1) == "label":
                         identity = option_value(option.group(2))
                         if re.fullmatch(ID_PATTERN, identity):
@@ -168,7 +159,7 @@ def scan_sources(root, sources):
                             root,
                         )
                         per_source_ids[source].add(identity)
-                    alt = re.search(r'''\balt\s*=\s*(["'])(.*?)\1''', attributes)
+                    alt = re.search(r"""\balt\s*=\s*(["'])(.*?)\1""", attributes)
                     if not alt or not alt.group(2).strip():
                         errors.append(
                             f"{source.relative_to(root)}:{display_math_line}: "
@@ -192,17 +183,13 @@ def scan_sources(root, sources):
                     if engine and engine.group(1).lower() in DIAGRAM_ENGINES
                     else None
                 )
-                inline_alt = re.search(
-                    r'''\bfig-alt\s*=\s*(["'])(.*?)\1''', info
-                )
+                inline_alt = re.search(r"""\bfig-alt\s*=\s*(["'])(.*?)\1""", info)
                 diagram_alt = bool(inline_alt and inline_alt.group(2).strip())
                 diagram_line = line_number
                 if diagram:
                     diagram_count += 1
                 for identity in re.findall(rf"#({ID_PATTERN})", info):
-                    add_id(
-                        identities, errors, identity, source, line_number, root
-                    )
+                    add_id(identities, errors, identity, source, line_number, root)
                     per_source_ids[source].add(identity)
                 continue
 
@@ -210,9 +197,9 @@ def scan_sources(root, sources):
             for math in INLINE_MATH_PATTERN.finditer(visible):
                 annotation = None
                 if math.start() > 0 and visible[math.start() - 1] == "[":
-                    annotation = re.match(r"\]\{([^}\n]*)\}", visible[math.end():])
+                    annotation = re.match(r"\]\{([^}\n]*)\}", visible[math.end() :])
                 attributes = annotation.group(1) if annotation else ""
-                alt = re.search(r'''\balt\s*=\s*(["'])(.*?)\1''', attributes)
+                alt = re.search(r"""\balt\s*=\s*(["'])(.*?)\1""", attributes)
                 if (
                     not re.search(r"(?:^|\s)\.alkahest-math-alt(?:\s|$)", attributes)
                     or not alt
@@ -225,13 +212,9 @@ def scan_sources(root, sources):
                 math_count += 1
             for attributes in re.findall(r"\{([^}\n]*)\}", visible):
                 for identity in re.findall(rf"#({ID_PATTERN})", attributes):
-                    add_id(
-                        identities, errors, identity, source, line_number, root
-                    )
+                    add_id(identities, errors, identity, source, line_number, root)
                     per_source_ids[source].add(identity)
-            for identity in re.findall(
-                rf'''\bid\s*=\s*["']({ID_PATTERN})["']''', visible
-            ):
+            for identity in re.findall(rf"""\bid\s*=\s*["']({ID_PATTERN})["']""", visible):
                 add_id(identities, errors, identity, source, line_number, root)
                 per_source_ids[source].add(identity)
 
@@ -250,20 +233,14 @@ def scan_sources(root, sources):
                 links.append((source, line_number, link.group(2), "link"))
 
             reference_line = re.sub(r"https?://\S+", "", visible)
-            reference_line = re.sub(
-                r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+", "", reference_line
-            )
-            for match in re.finditer(
-                rf"(?<![A-Za-z0-9_])@({ID_PATTERN})", reference_line
-            ):
+            reference_line = re.sub(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+", "", reference_line)
+            for match in re.finditer(rf"(?<![A-Za-z0-9_])@({ID_PATTERN})", reference_line):
                 references.append((source, line_number, match.group(1)))
 
         if fence_char:
             errors.append(f"{source.relative_to(root)}: unclosed fenced block")
         if display_math_line is not None:
-            errors.append(
-                f"{source.relative_to(root)}:{display_math_line}: unclosed display math"
-            )
+            errors.append(f"{source.relative_to(root)}:{display_math_line}: unclosed display math")
 
     source_set = set(sources)
     for source, line_number, raw_target, kind in links:
@@ -312,8 +289,7 @@ def scan_sources(root, sources):
         prefix = reference.split("-", 1)[0]
         if prefix in CROSSREF_PREFIXES and reference not in identities:
             errors.append(
-                f"{source.relative_to(root)}:{line_number}: dangling "
-                f"cross-reference '@{reference}'"
+                f"{source.relative_to(root)}:{line_number}: dangling cross-reference '@{reference}'"
             )
 
     return (
@@ -328,19 +304,13 @@ def scan_sources(root, sources):
 
 
 def main():
-    root = Path(
-        os.environ.get(
-            "ALKAHEST_EDITORIAL_BOOK_ROOT", ROOT / "book"
-        )
-    ).resolve()
+    root = Path(os.environ.get("ALKAHEST_EDITORIAL_BOOK_ROOT", ROOT / "book")).resolve()
     if not root.is_dir():
         raise RuntimeError("error: editorial book root does not exist")
     sources = sources_below(root)
     if not sources:
         raise RuntimeError("error: editorial book root contains no .qmd sources")
-    errors, identities, links, images, diagrams, math, external = scan_sources(
-        root, sources
-    )
+    errors, identities, links, images, diagrams, math, external = scan_sources(root, sources)
     if errors:
         fail(errors)
     print(

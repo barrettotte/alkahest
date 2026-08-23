@@ -4,7 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../.." && pwd)"
-edit="${repo_root}/tests/integration/replace-text.py"
+edit="${repo_root}/tests/integration/replace_text.py"
 base_fixture="${repo_root}/tests/notes/base"
 test_root="$(mktemp -d /tmp/alkahest-note-tests.XXXXXX)"
 

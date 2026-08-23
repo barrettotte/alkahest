@@ -46,7 +46,8 @@ diagrams = { requires-python = "==3.13.*" }
 
 [tool.pytest.ini_options]
 addopts = ["-ra", "--strict-config", "--strict-markers"]
-testpaths = ["tests/unit"]
+testpaths = ["tests"]
+markers = ["locked: requires the pinned container or browser toolchain"]
 
 [tool.coverage.run]
 branch = true

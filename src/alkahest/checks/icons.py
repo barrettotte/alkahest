@@ -59,7 +59,11 @@ def main():
             lookup[key] = name
     calls = 0
     call_pattern = re.compile(r"\{\{<\s*alk-icon\s+(.+?)\s*>\}\}")
-    for source in sorted(path for path in root.rglob("*.qmd") if ".quarto" not in path.parts and "_build" not in path.parts):
+    for source in sorted(
+        path
+        for path in root.rglob("*.qmd")
+        if ".quarto" not in path.parts and "_build" not in path.parts
+    ):
         disabled, pending = "", None
         for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
             if disabled:
@@ -77,7 +81,9 @@ def main():
                 continue
             if pending is not None and line.strip():
                 if not re.match(r"^#{1,6}\s+.*\{\{<\s*alk-icon\s+", line):
-                    fail(f"{source}:{pending}: .icon-notice must be followed by a title containing alk-icon")
+                    fail(
+                        f"{source}:{pending}: .icon-notice must be followed by a title containing alk-icon"
+                    )
                 pending = None
             if re.search(r"\{\{<\s*alk-icon\s*>\}\}", line):
                 fail(f"{source}:{line_number}: alk-icon is missing a registry name")
@@ -89,23 +95,27 @@ def main():
                 name, remainder = parsed.groups()
                 if name not in lookup:
                     fail(f"{source}:{line_number}: unknown alk-icon name or alias: {name}")
-                if re.search(r'''\blabel\s*=\s*(["'])\1''', remainder):
+                if re.search(r"""\blabel\s*=\s*(["'])\1""", remainder):
                     fail(f"{source}:{line_number}: alk-icon label must not be empty")
-                remainder = re.sub(r'''\blabel\s*=\s*(?:"[^"]+"|'[^']+'|[^\s]+)''', "", remainder)
+                remainder = re.sub(r"""\blabel\s*=\s*(?:"[^"]+"|'[^']+'|[^\s]+)""", "", remainder)
                 remainder = re.sub(r"\s+", "", remainder)
                 if remainder:
                     fail(f"{source}:{line_number}: unexpected alk-icon arguments: {remainder}")
-                visible = line[match.end():]
+                visible = line[match.end() :]
                 visible = re.sub(r"\{\{<.*?>\}\}|<!--.*?-->|\{[^{}]*\}|<[^>]*>", "", visible)
                 visible = html.unescape(visible)
                 if not any(character.isalnum() for character in visible):
-                    fail(f"{source}:{line_number}: alk-icon must be followed on the same line by visible text")
+                    fail(
+                        f"{source}:{line_number}: alk-icon must be followed on the same line by visible text"
+                    )
                 calls += 1
         if pending is not None:
             fail(f"{source}:{pending}: .icon-notice has no title")
     if not calls:
         fail("no semantic icon shortcode calls were found")
-    print(f"ok: semantic icon registry ({len(entries)} canonical names; {len(lookup)} names and aliases; {calls} manuscript calls)")
+    print(
+        f"ok: semantic icon registry ({len(entries)} canonical names; {len(lookup)} names and aliases; {calls} manuscript calls)"
+    )
 
 
 if __name__ == "__main__":

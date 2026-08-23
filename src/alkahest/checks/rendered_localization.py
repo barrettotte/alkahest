@@ -88,10 +88,7 @@ def check_scopes(scopes, languages, label):
         if tag not in allowed:
             fail(f"{label} contains undeclared language tag '{tag}'")
         if direction != allowed[tag]:
-            fail(
-                f"{label} language {tag} needs dir={allowed[tag]}; "
-                f"found {direction}"
-            )
+            fail(f"{label} language {tag} needs dir={allowed[tag]}; found {direction}")
     missing = sorted(set(allowed) - {tag for tag, _ in scopes})
     if missing:
         fail(f"{label} is missing language semantics: {', '.join(missing)}")
@@ -117,9 +114,7 @@ def check_html(root, contract, policy):
     for locale in policy["locales"]:
         if locale["mode"] == "canonical":
             continue
-        locale_path = repo_path(
-            root, locale.get("rendered_html"), f"locale {locale['tag']} HTML"
-        )
+        locale_path = repo_path(root, locale.get("rendered_html"), f"locale {locale['tag']} HTML")
         reference_path = repo_path(
             root,
             locale.get("rendered_reference_html"),
@@ -171,9 +166,7 @@ def check_epub(root, contract, policy):
             check_scopes(scopes, policy["inline_languages"], "EPUB content")
 
             stylesheets = [name for name in names if name.endswith(".css")]
-            styles = "\n".join(
-                archive.read(name).decode("utf-8") for name in stylesheets
-            )
+            styles = "\n".join(archive.read(name).decode("utf-8") for name in stylesheets)
             if not re.search(r"(?:^|[;{])\s*hyphens\s*:\s*auto\s*;", styles):
                 fail("EPUB styles must preserve language-aware hyphens: auto")
     except (BadZipFile, KeyError, UnicodeDecodeError) as error:

@@ -105,7 +105,9 @@ def check_data(data):
 
     vector = data.get("vector", {})
     for axis in ("x", "y"):
-        check_measurement(f"vector component {axis}", vector.get("components", {}).get(axis, {}), units)
+        check_measurement(
+            f"vector component {axis}", vector.get("components", {}).get(axis, {}), units
+        )
     for name in ("magnitude", "angle"):
         check_measurement(f"derived {name}", vector.get("derived", {}).get(name, {}), units)
     x_value = vector["components"]["x"]["value"]
@@ -196,8 +198,7 @@ def check_svgs():
             if marker not in escaped_text:
                 fail(f"{name} is missing visible marker: {marker}")
         geometry_count = sum(
-            len(root.findall(".//" + namespace + element))
-            for element in ("line", "path", "circle")
+            len(root.findall(".//" + namespace + element)) for element in ("line", "path", "circle")
         )
         if geometry_count < contract["minimum_geometry"]:
             fail(f"{name} is missing expected vector geometry")
@@ -238,5 +239,8 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError, TypeError, ValueError) as error:
-        print(str(error) if isinstance(error, RuntimeError) else "error: " + str(error), file=sys.stderr)
+        print(
+            str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
+            file=sys.stderr,
+        )
         sys.exit(1)

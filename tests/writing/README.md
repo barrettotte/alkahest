@@ -10,7 +10,7 @@ inside reader-facing front-matter values, and in visible semantic-icon wording.
 Separate cases prove book dictionary scope, shared and per-book rejected terms,
 and the nonblocking severity of subjective repetition findings.
 
-`tests/integration/test-writing-quality.py` stages these files under canonical `book/`
+`tests/integration/test_writing_quality.py` stages these files under canonical `book/`
 and `docs/` paths in temporary repositories, runs the override validator, and
 then invokes the pinned CSpell and Vale tools in rootless offline containers.
 Cases are batched into five container runs and each checker has a 20-second

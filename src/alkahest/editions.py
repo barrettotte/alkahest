@@ -9,8 +9,15 @@ from pathlib import Path
 from .common import fail, load_json, qmd_sources
 
 REQUIRED_EDITIONS = (
-    "abridged", "epub", "full", "preview", "print", "private", "public",
-    "supplemental", "web",
+    "abridged",
+    "epub",
+    "full",
+    "preview",
+    "print",
+    "private",
+    "public",
+    "supplemental",
+    "web",
 )
 REQUIRED_STRUCTURES = ("abridged", "full", "preview", "private", "supplemental", "web")
 
@@ -39,7 +46,9 @@ def edition_source_ids(registry, edition_name):
 
 
 def edition_paths(registry, edition_name):
-    return [registry["sources"][item]["path"] for item in edition_source_ids(registry, edition_name)]
+    return [
+        registry["sources"][item]["path"] for item in edition_source_ids(registry, edition_name)
+    ]
 
 
 def _render_items(registry, items, indent):
@@ -74,9 +83,7 @@ def _selected_media_files(book_root, source_paths):
     calls = set()
     for relative in source_paths:
         content = (book_root / relative).read_text(encoding="utf-8")
-        calls.update(
-            re.findall(r"\{\{<\s+alk-media\s+(media-[a-z0-9-]+)\s*>\}\}", content)
-        )
+        calls.update(re.findall(r"\{\{<\s+alk-media\s+(media-[a-z0-9-]+)\s*>\}\}", content))
     try:
         registry = json.loads((book_root / "media.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
@@ -224,7 +231,8 @@ def load_editions(path):
             seen.add(output_format)
         if source["availability"] != "core" and not (
             source["role"] == "appendix"
-            or source["availability"] == "private" and source["role"] == "chapter"
+            or source["availability"] == "private"
+            and source["role"] == "chapter"
         ):
             fail(f"non-core source '{source_id}' must be an appendix or private chapter")
     if not sources:
@@ -297,31 +305,43 @@ def load_editions(path):
             fail(f"edition '{name}' must use structure '{structure}'")
         if edition.get("access", "") != access:
             fail(f"edition '{name}' must have access '{access}'")
-        if not isinstance(edition.get("formats"), list) or not _same_set(edition["formats"], output_formats):
+        if not isinstance(edition.get("formats"), list) or not _same_set(
+            edition["formats"], output_formats
+        ):
             fail(f"edition '{name}' has invalid formats")
         for source_id in structure_sets[structure]:
             for output_format in edition["formats"]:
                 if output_format not in sources[source_id]["formats"]:
-                    fail(f"edition '{name}' selects '{source_id}', which does not support {output_format}")
+                    fail(
+                        f"edition '{name}' selects '{source_id}', which does not support {output_format}"
+                    )
             if access == "public" and sources[source_id]["availability"] == "private":
                 fail(f"public edition '{name}' includes private source '{source_id}'")
 
     availability_sets = {
-        availability: {key for key, value in sources.items() if value["availability"] == availability}
+        availability: {
+            key for key, value in sources.items() if value["availability"] == availability
+        }
         for availability in availabilities
     }
     for structure, classes in (
-        ("full", ("core",)), ("web", ("core", "online-only")),
-        ("supplemental", ("core", "supplemental")), ("private", ("core", "private")),
+        ("full", ("core",)),
+        ("web", ("core", "online-only")),
+        ("supplemental", ("core", "supplemental")),
+        ("private", ("core", "private")),
     ):
         wanted = set().union(*(availability_sets[item] for item in classes))
         if structure_sets[structure] != wanted:
-            fail(f"structure '{structure}' does not select exactly its allowed availability classes")
+            fail(
+                f"structure '{structure}' does not select exactly its allowed availability classes"
+            )
     for structure in ("abridged", "preview"):
         for source_id in structure_sets[structure]:
             if sources[source_id]["availability"] != "core":
                 fail(f"structure '{structure}' includes exceptional source '{source_id}'")
-        if not structure_sets[structure] or len(structure_sets[structure]) >= len(structure_sets["full"]):
+        if not structure_sets[structure] or len(structure_sets[structure]) >= len(
+            structure_sets["full"]
+        ):
             fail(f"structure '{structure}' must be a nonempty proper subset of full")
     chapter_count = {
         name: sum(sources[item]["role"] == "chapter" for item in structure_sets[name])
@@ -344,22 +364,27 @@ def validate_edition_book(book_root):
     from .preview import validate_preview_presentation
 
     book_root = Path(book_root).resolve()
-    if not book_root.is_dir(): fail("edition book root does not exist")
+    if not book_root.is_dir():
+        fail("edition book root does not exist")
     registry = load_editions(book_root / "editions.json")
     preview = validate_preview_presentation(book_root.parent)
     config = (book_root / "_quarto.yml").read_text(encoding="utf-8")
     structure_match = re.search(r"(^  chapters:\n.*?)(?=^\S)", config, re.M | re.S)
-    if not structure_match: fail("canonical Quarto config has no book structure")
+    if not structure_match:
+        fail("canonical Quarto config has no book structure")
     if structure_match.group(1) != render_book_structure(registry, "full"):
         fail("canonical Quarto structure must match the full edition exactly")
 
     registered = {value["path"]: key for key, value in registry["sources"].items()}
     disk_sources = [path.relative_to(book_root).as_posix() for path in qmd_sources(book_root)]
     for source in sorted(disk_sources):
-        if source not in registered: fail(f"manuscript source '{source}' is absent from editions.json")
+        if source not in registered:
+            fail(f"manuscript source '{source}' is absent from editions.json")
     for source in sorted(registered):
-        if not (book_root / source).is_file(): fail(f"edition manifest references missing source '{source}'")
-    if len(disk_sources) != len(registered): fail("edition manifest and manuscript tree contain different source counts")
+        if not (book_root / source).is_file():
+            fail(f"edition manifest references missing source '{source}'")
+    if len(disk_sources) != len(registered):
+        fail("edition manifest and manuscript tree contain different source counts")
 
     owners = {}
     for source in sorted(registered):
@@ -369,24 +394,35 @@ def validate_edition_book(book_root):
         front_match = re.match(r"\A---\s*\n(.*?)^---\s*$", content, re.M | re.S)
         front_matter = front_match.group(1) if front_match else None
         if front_matter and re.search(r"^bibliography\s*:", front_matter, re.M):
-            fail(f"source '{source}' declares a local bibliography; use the shared book bibliography")
+            fail(
+                f"source '{source}' declares a local bibliography; use the shared book bibliography"
+            )
         headings = re.findall(r"^(# (?!#).*?)$", content, re.M)
         if len(headings) != 1 or not re.search(r"\{[^}]*#[A-Za-z][A-Za-z0-9_.:-]*", headings[0]):
             fail(f"source '{source}' must have exactly one H1 with a persistent ID")
         if metadata["availability"] == "private":
-            if front_matter is None or not re.search(r"^alkahest-edition:\s*\n\s+access:\s*private\s*$", front_matter, re.M):
+            if front_matter is None or not re.search(
+                r"^alkahest-edition:\s*\n\s+access:\s*private\s*$", front_matter, re.M
+            ):
                 fail(f"private source '{source}' must declare alkahest-edition access: private")
         elif front_matter and re.search(r"^alkahest-edition:", front_matter, re.M):
             fail(f"public source '{source}' must not declare private edition metadata")
         if metadata["role"] == "appendix":
-            declared_match = re.search(r"^alkahest-appendix:\s*\n\s+availability:\s*([a-z-]+)\s*$", front_matter or "", re.M)
+            declared_match = re.search(
+                r"^alkahest-appendix:\s*\n\s+availability:\s*([a-z-]+)\s*$",
+                front_matter or "",
+                re.M,
+            )
             declared = declared_match.group(1) if declared_match else None
             if metadata["availability"] == "core" and declared is not None:
                 fail(f"core appendix '{source}' must not declare exceptional availability")
             if metadata["availability"] != "core" and declared != metadata["availability"]:
                 fail(f"appendix '{source}' must declare availability '{metadata['availability']}'")
         for identity in re.findall(r"\{[^}\n]*#([A-Za-z][A-Za-z0-9_.:-]*)", content):
-            if identity in owners: fail(f"content identity '{identity}' is declared in both '{source}' and '{owners[identity]}'")
+            if identity in owners:
+                fail(
+                    f"content identity '{identity}' is declared in both '{source}' and '{owners[identity]}'"
+                )
             owners[identity] = source
 
     for edition_name, edition in sorted(registry["editions"].items()):
@@ -394,15 +430,21 @@ def validate_edition_book(book_root):
         selected = {registry["sources"][item]["path"] for item in source_ids}
         for source_id in source_ids:
             source = registry["sources"][source_id]["path"]
-            content = _visible_content((book_root / source).read_text(encoding="utf-8"), edition_name)
+            content = _visible_content(
+                (book_root / source).read_text(encoding="utf-8"), edition_name
+            )
             for target in re.findall(r"@([A-Za-z][A-Za-z0-9_.:-]*)", content):
                 if target in owners and owners[target] not in selected:
-                    fail(f"edition '{edition_name}' leaves dangling reference '@{target}' in '{source}'")
+                    fail(
+                        f"edition '{edition_name}' leaves dangling reference '@{target}' in '{source}'"
+                    )
         if "index-backmatter.qmd" in selected:
             for line in (book_root / "index.yml").read_text(encoding="utf-8").splitlines():
                 locator = re.fullmatch(r"\s+-\s+([A-Za-z0-9_/-]+\.qmd)#[A-Za-z0-9_.:-]+\s*", line)
                 if locator and locator.group(1) not in selected:
-                    fail(f"edition '{edition_name}' retains index locator into omitted '{locator.group(1)}'")
+                    fail(
+                        f"edition '{edition_name}' retains index locator into omitted '{locator.group(1)}'"
+                    )
         if edition["access"] == "public":
             for source_id in source_ids:
                 if registry["sources"][source_id]["availability"] == "private":

@@ -315,17 +315,14 @@ def main():
     paths = source_paths(root)
     rejected = rejected_terms(root)
     masked_sources = {
-        path: mask_comments(mask_code(path.read_text(encoding="utf-8")))
-        for path in paths
+        path: mask_comments(mask_code(path.read_text(encoding="utf-8"))) for path in paths
     }
     check_cspell_config(root)
     check_vale_config(root)
     overrides = 0
     broad = 0
     for path in paths:
-        local_overrides, broad_overrides = check_source(
-            path, root, masked_sources, rejected
-        )
+        local_overrides, broad_overrides = check_source(path, root, masked_sources, rejected)
         overrides += local_overrides
         broad += broad_overrides
     print(

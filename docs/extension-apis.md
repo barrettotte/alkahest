@@ -3,9 +3,7 @@
 This is the internal reference for extending an Alkahest book.
 It documents source syntax and configuration that books may depend on, and it
 separates those contracts from internal implementation files that may move.
-`config/template/extension-apis.json` is the machine-readable inventory behind
-this document. The current API version is `0.1.0` and remains provisional
-before the first public release.
+This guide remains provisional before the first public release.
 
 ## Authority levels
 
@@ -215,10 +213,9 @@ packages remain ignored products rather than generator source.
 
 1. Choose the lowest authority level that can safely own the change.
 2. Add neutral source syntax or a closed book registry before backend code.
-3. Update `config/template/extension-apis.json` and this reference together.
+3. Update this reference and the relevant implementation together.
 4. Add positive and negative source fixtures plus relevant rendered evidence.
-5. Run `make check-extension-apis`, the feature-specific check, all source
-   tests, and the affected formats.
+5. Run the feature-specific check, source tests, and affected formats.
 6. Preserve semantic IDs where they identify authored content; before the first
    public release, update the provisional API and its tests directly.
 

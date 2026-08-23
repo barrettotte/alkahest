@@ -88,7 +88,13 @@ def validate_safe_path(value, label):
 
 
 def code_pair(value, label):
-    if not isinstance(value, dict) or set(value) - {"list", "code", "label", "deprecated", "notification"}:
+    if not isinstance(value, dict) or set(value) - {
+        "list",
+        "code",
+        "label",
+        "deprecated",
+        "notification",
+    }:
         fail(f"ONIX {label} mapping has unsupported fields")
     if not isinstance(value.get("list"), int) or not isinstance(value.get("code"), str):
         fail(f"ONIX {label} mapping needs a code-list number and code")
@@ -98,7 +104,12 @@ def code_pair(value, label):
 
 
 def validate_policy(policy):
-    if not isinstance(policy, dict) or set(policy) != {"schema_version", "sources", "outputs", "onix"}:
+    if not isinstance(policy, dict) or set(policy) != {
+        "schema_version",
+        "sources",
+        "outputs",
+        "onix",
+    }:
         fail("metadata generation policy fields do not match version 1")
     if policy["schema_version"] != 1:
         fail("metadata generation policy must use schema_version 1")
@@ -111,10 +122,20 @@ def validate_policy(policy):
 
     onix = policy["onix"]
     expected_fields = {
-        "release", "code_list_issue", "reviewed", "namespace", "reference",
-        "eligible_formats", "eligible_statuses", "identifier_schemes",
-        "contributor_roles", "languages", "product_forms",
-        "publishing_statuses", "audiences", "fixed_codes",
+        "release",
+        "code_list_issue",
+        "reviewed",
+        "namespace",
+        "reference",
+        "eligible_formats",
+        "eligible_statuses",
+        "identifier_schemes",
+        "contributor_roles",
+        "languages",
+        "product_forms",
+        "publishing_statuses",
+        "audiences",
+        "fixed_codes",
     }
     if not isinstance(onix, dict) or set(onix) != expected_fields:
         fail("ONIX policy fields drifted")
@@ -232,7 +253,9 @@ def release_blockers(publication, manifestations):
     )
     if text_license is None or text_license["status"] != "selected":
         blockers.append("publication-text license is not selected")
-    if not any(item["status"] in {"forthcoming", "published"} for item in manifestations["manifestations"]):
+    if not any(
+        item["status"] in {"forthcoming", "published"} for item in manifestations["manifestations"]
+    ):
         blockers.append("no manifestation is forthcoming or published")
     return blockers
 
@@ -412,10 +435,14 @@ def output_bundle(publication, manifestations, reproducibility, policy):
 
 def load_inputs(root):
     root = Path(root)
-    policy = validate_policy(load_json(root / "config/metadata/generation.json", "metadata generation policy"))
+    policy = validate_policy(
+        load_json(root / "config/metadata/generation.json", "metadata generation policy")
+    )
     publication = load_json(root / policy["sources"]["publication"], "publication metadata")
     manifestations = load_json(root / policy["sources"]["manifestations"], "manifestation metadata")
-    reproducibility = load_json(root / policy["sources"]["reproducibility"], "reproducibility metadata")
+    reproducibility = load_json(
+        root / policy["sources"]["reproducibility"], "reproducibility metadata"
+    )
     from .manifestations import validate_record as validate_manifestations
     from .publication_metadata import validate_record as validate_publication
 
@@ -485,7 +512,6 @@ def validate_repository(root):
             fail(f"Makefile is missing metadata generation target {marker}")
     for marker in (
         '"metadata-generation", ":check-metadata-generation"',
-        '"metadata-generation", "test-metadata-generation.py"',
         '"publication-metadata",',
         '":generate-publication-metadata"',
     ):
@@ -503,7 +529,15 @@ def validate_repository(root):
 
 
 __all__ = [
-    "ContractError", "check_generated", "eligible_manifestations", "generate",
-    "load_inputs", "onix_xml", "output_bundle", "quarto_metadata",
-    "release_manifest", "validate_policy", "validate_repository",
+    "ContractError",
+    "check_generated",
+    "eligible_manifestations",
+    "generate",
+    "load_inputs",
+    "onix_xml",
+    "output_bundle",
+    "quarto_metadata",
+    "release_manifest",
+    "validate_policy",
+    "validate_repository",
 ]

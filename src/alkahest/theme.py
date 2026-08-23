@@ -70,9 +70,7 @@ def validate_documents(defaults, overrides):
     if defaults["schema_version"] != 1:
         _fail("theme defaults schema_version must be 1")
     colors = _exact(defaults["colors"], COLOR_FIELDS, "theme default colors")
-    typography = _exact(
-        defaults["typography"], FONT_FIELDS, "theme default typography"
-    )
+    typography = _exact(defaults["typography"], FONT_FIELDS, "theme default typography")
     _exact(overrides, {"schema_version", "colors", "typography"}, "theme overrides")
     if overrides["schema_version"] != 1:
         _fail("theme overrides schema_version must be 1")
@@ -80,9 +78,9 @@ def validate_documents(defaults, overrides):
         COLOR_FIELDS
     ):
         _fail("theme override colors contain an unknown field")
-    if not isinstance(overrides["typography"], dict) or not set(
-        overrides["typography"]
-    ) <= set(FONT_FIELDS):
+    if not isinstance(overrides["typography"], dict) or not set(overrides["typography"]) <= set(
+        FONT_FIELDS
+    ):
         _fail("theme override typography contains an unknown field")
     for field, value in {**colors, **overrides["colors"]}.items():
         if not isinstance(value, str) or HEX_COLOR.fullmatch(value) is None:
@@ -103,13 +101,13 @@ def _brand(theme):
     return f"""# Generated from alkahest-theme-defaults.json and theme.json; do not edit.
 color:
   palette:
-    ink: {quote(colors['ink'])}
-    slate: {quote(colors['primary'])}
-    muted: {quote(colors['muted'])}
-    line: {quote(colors['line'])}
-    mist: {quote(colors['surface'])}
-    paper: {quote(colors['paper'])}
-    copper: {quote(colors['accent'])}
+    ink: {quote(colors["ink"])}
+    slate: {quote(colors["primary"])}
+    muted: {quote(colors["muted"])}
+    line: {quote(colors["line"])}
+    mist: {quote(colors["surface"])}
+    paper: {quote(colors["paper"])}
+    copper: {quote(colors["accent"])}
   foreground: ink
   background: paper
   primary: slate
@@ -119,11 +117,11 @@ color:
 
 typography:
   base:
-    family: {quote(fonts['body'])}
+    family: {quote(fonts["body"])}
   headings:
-    family: {quote(fonts['sans'])}
+    family: {quote(fonts["sans"])}
   monospace:
-    family: {quote(fonts['mono'])}
+    family: {quote(fonts["mono"])}
 
 defaults:
   bootstrap:
@@ -136,11 +134,11 @@ def _metadata(theme):
     fonts = theme["typography"]
     quote = _yaml_string
     return f"""# Generated from the resolved book theme; do not edit.
-mainfont: {quote(fonts['body'])}
-displayfont: {quote(fonts['display'])}
-sansfont: {quote(fonts['sans'])}
-mathfont: {quote(fonts['math'])}
-monofont: {quote(fonts['mono'])}
+mainfont: {quote(fonts["body"])}
+displayfont: {quote(fonts["display"])}
+sansfont: {quote(fonts["sans"])}
+mathfont: {quote(fonts["math"])}
+monofont: {quote(fonts["mono"])}
 """.encode("utf-8")
 
 
@@ -149,22 +147,22 @@ def _css(theme):
     fonts = theme["typography"]
     return f"""/* Generated from the resolved book theme; do not edit. */
 :root {{
-  --alkahest-ink: {colors['ink']};
-  --alkahest-primary: {colors['primary']};
-  --alkahest-muted: {colors['muted']};
-  --alkahest-line: {colors['line']};
-  --alkahest-mist: {colors['surface']};
-  --alkahest-paper: {colors['paper']};
-  --alkahest-accent: {colors['accent']};
+  --alkahest-ink: {colors["ink"]};
+  --alkahest-primary: {colors["primary"]};
+  --alkahest-muted: {colors["muted"]};
+  --alkahest-line: {colors["line"]};
+  --alkahest-mist: {colors["surface"]};
+  --alkahest-paper: {colors["paper"]};
+  --alkahest-accent: {colors["accent"]};
 }}
 
 html,
 body {{
-  color: {colors['ink']};
+  color: {colors["ink"]};
   color: var(--alkahest-ink);
-  background: {colors['paper']};
+  background: {colors["paper"]};
   background: var(--alkahest-paper);
-  font-family: {json.dumps(fonts['body'])}, Georgia, serif;
+  font-family: {json.dumps(fonts["body"])}, Georgia, serif;
 }}
 
 h1,
@@ -173,54 +171,54 @@ h3,
 h4,
 h5,
 h6 {{
-  color: {colors['primary']};
+  color: {colors["primary"]};
   color: var(--alkahest-primary);
-  font-family: {json.dumps(fonts['sans'])}, system-ui, sans-serif;
+  font-family: {json.dumps(fonts["sans"])}, system-ui, sans-serif;
 }}
 
 h1.title,
 h1 .chapter-title,
 .quarto-title-block .title {{
-  font-family: {json.dumps(fonts['display'])}, {json.dumps(fonts['body'])}, serif;
+  font-family: {json.dumps(fonts["display"])}, {json.dumps(fonts["body"])}, serif;
 }}
 
 a {{
-  color: {colors['primary']};
+  color: {colors["primary"]};
   color: var(--alkahest-primary);
 }}
 
 a:hover,
 a:focus-visible {{
-  color: {colors['accent']};
+  color: {colors["accent"]};
   color: var(--alkahest-accent);
 }}
 
 code,
 pre {{
-  color: {colors['ink']};
+  color: {colors["ink"]};
   color: var(--alkahest-ink);
-  background: {colors['surface']};
+  background: {colors["surface"]};
   background: var(--alkahest-mist);
-  font-family: {json.dumps(fonts['mono'])}, ui-monospace, monospace;
+  font-family: {json.dumps(fonts["mono"])}, ui-monospace, monospace;
 }}
 
 blockquote,
 .reusable-content,
 .rich-media {{
-  border-color: {colors['line']};
+  border-color: {colors["line"]};
   border-color: var(--alkahest-line);
 }}
 
 .reusable-content {{
-  background: {colors['surface']};
+  background: {colors["surface"]};
   background: var(--alkahest-mist);
-  border-left-color: {colors['primary']};
+  border-left-color: {colors["primary"]};
   border-left-color: var(--alkahest-primary);
 }}
 
 .reuse-kind-legal,
 .alkahest-preview-notice {{
-  border-left-color: {colors['accent']};
+  border-left-color: {colors["accent"]};
   border-left-color: var(--alkahest-accent);
 }}
 
@@ -229,7 +227,7 @@ blockquote,
 .book-endnote-backlink,
 .glossary-entry-forms,
 .glossary-page-reference {{
-  color: {colors['muted']};
+  color: {colors["muted"]};
   color: var(--alkahest-muted);
 }}
 """.encode("utf-8")
@@ -248,9 +246,7 @@ def _tex(theme):
     lines = ["% Generated from the resolved book theme; do not edit."]
     for field, latex_name in names.items():
         lines.append(f"\\definecolor{{{latex_name}}}{{HTML}}{{{colors[field][1:].upper()}}}")
-    lines.append(
-        f"\\renewfontfamily\\alkahestdisplayfont{{{theme['typography']['display']}}}"
-    )
+    lines.append(f"\\renewfontfamily\\alkahestdisplayfont{{{theme['typography']['display']}}}")
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 

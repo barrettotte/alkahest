@@ -177,14 +177,9 @@ def validate(policy, root):
         fail("localization policy needs unsupported_scripts")
     unknown_unsupported = set(unsupported_scripts) - set(SCRIPT_RANGES)
     if unknown_unsupported:
-        fail(
-            "unsupported_scripts contains unknown scripts: "
-            f"{sorted(unknown_unsupported)}"
-        )
+        fail(f"unsupported_scripts contains unknown scripts: {sorted(unknown_unsupported)}")
 
-    canonical_root = repo_path(
-        root, locales[canonical].get("root"), "canonical locale root"
-    )
+    canonical_root = repo_path(root, locales[canonical].get("root"), "canonical locale root")
     canonical_sources = {
         str(path.relative_to(canonical_root).as_posix())
         for path in canonical_root.rglob("*.qmd")
@@ -207,14 +202,9 @@ def validate(policy, root):
             fail(f"locale {tag} profile does not exist: {locale.get('profile')}")
         profile_text = profile.read_text(encoding="utf-8")
         language_profile_value = locale.get("language_profile", locale.get("profile"))
-        language_profile = repo_path(
-            root, language_profile_value, f"locale {tag} language profile"
-        )
+        language_profile = repo_path(root, language_profile_value, f"locale {tag} language profile")
         if not language_profile.is_file():
-            fail(
-                f"locale {tag} language profile does not exist: "
-                f"{language_profile_value}"
-            )
+            fail(f"locale {tag} language profile does not exist: {language_profile_value}")
         language_profile_text = language_profile.read_text(encoding="utf-8")
         combined_profile_text = profile_text
         if language_profile != profile:
@@ -239,9 +229,7 @@ def validate(policy, root):
             except ValueError:
                 pass
             else:
-                fail(
-                    f"translated locale {tag} root must be outside the canonical root"
-                )
+                fail(f"translated locale {tag} root must be outside the canonical root")
             manifest = locale.get("translation_sources")
             if not isinstance(manifest, list) or not manifest:
                 fail(f"translated locale {tag} needs a translation_sources manifest")
@@ -283,9 +271,7 @@ def validate(policy, root):
         fail("localization policy needs source_contract")
     containerfile = repo_path(root, contract.get("containerfile"), "containerfile")
     report = repo_path(root, contract.get("toolchain_report"), "toolchain report")
-    toolchain_text = containerfile.read_text(encoding="utf-8") + report.read_text(
-        encoding="utf-8"
-    )
+    toolchain_text = containerfile.read_text(encoding="utf-8") + report.read_text(encoding="utf-8")
     for package in sorted(packages):
         if package not in toolchain_text:
             fail(f"localization toolchain does not lock package {package}")
@@ -294,9 +280,7 @@ def validate(policy, root):
     typst_text = typst.read_text(encoding="utf-8")
     if "fallback: false" not in typst_text:
         fail("Typst localization policy must disable automatic font fallback")
-    canonical_profile = repo_path(
-        root, locales[canonical]["profile"], "canonical profile"
-    )
+    canonical_profile = repo_path(root, locales[canonical]["profile"], "canonical profile")
     canonical_config = canonical_profile.read_text(encoding="utf-8")
     shared_defaults = canonical_profile.parent / "alkahest-defaults.yml"
     if shared_defaults.is_file():
@@ -327,9 +311,7 @@ def main():
     except (OSError, json.JSONDecodeError, LocalizationError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
-    script_summary = ", ".join(
-        f"{name}={count}" for name, count in sorted(scripts.items())
-    )
+    script_summary = ", ".join(f"{name}={count}" for name, count in sorted(scripts.items()))
     print(
         f"ok: localization source policy ({len(locales)} locales; {len(languages)} "
         f"inline languages; {paths} manuscript sources; {len(packages)} locked "

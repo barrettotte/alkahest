@@ -29,4 +29,3 @@ def qmd_sources(root):
         for path in root.rglob("*.qmd")
         if "_build" not in path.parts and ".quarto" not in path.parts
     )
-

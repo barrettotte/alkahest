@@ -6,7 +6,7 @@ ALK := $(UV) run --locked alkahest
 .PHONY: help list bootstrap doctor check check-source test test-source quality security \
 	render render-all preview generate package new-book ci clean \
 	build-report toolchain-report verify-reproducibility update-golden-pages \
-	update-identities prepare-epub-review generate-metadata
+	update-identities generate-metadata
 
 help: ## Show the concise toolkit workflow.
 	@printf 'Alkahest toolkit commands:\n'
@@ -115,9 +115,6 @@ update-golden-pages:
 
 update-identities:
 	$(UV) run --locked python -m alkahest.operations update-identities
-
-prepare-epub-review:
-	$(UV) run --locked python -m alkahest.operations prepare-epub-review
 
 generate-metadata:
 	$(ALK) generate publication-metadata

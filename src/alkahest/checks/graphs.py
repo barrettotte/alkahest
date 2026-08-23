@@ -13,9 +13,7 @@ BOOK_ROOT = REPO_ROOT / "book"
 DATA_PATH = BOOK_ROOT / "figures" / "data" / "response-time.csv"
 VEGA_PATH = BOOK_ROOT / "figures" / "data" / "response-time.vl.json"
 SVG_PATH = BOOK_ROOT / "figures" / "generated" / "response-time.svg"
-DEPENDENCY_SVG_PATH = (
-    BOOK_ROOT / "figures" / "generated" / "build-dependency-graph.svg"
-)
+DEPENDENCY_SVG_PATH = BOOK_ROOT / "figures" / "generated" / "build-dependency-graph.svg"
 MERMAID_SOURCE_PATH = BOOK_ROOT / "figures" / "source" / "half-adder.mmd"
 DOT_SOURCE_PATH = BOOK_ROOT / "figures" / "source" / "build-dependency.dot"
 
@@ -70,7 +68,10 @@ def check_svg():
     namespace = "{http://www.w3.org/2000/svg}"
     if root.find(namespace + "title") is None or root.find(namespace + "desc") is None:
         fail("generated chart must contain title and description elements")
-    if not root.findall(".//" + namespace + "text") or len(root.findall(".//" + namespace + "circle")) != 5:
+    if (
+        not root.findall(".//" + namespace + "text")
+        or len(root.findall(".//" + namespace + "circle")) != 5
+    ):
         fail("generated chart must preserve labels and five measured points")
 
     dependency_text = DEPENDENCY_SVG_PATH.read_text(encoding="utf-8")
@@ -99,7 +100,10 @@ def check_vega_candidate():
     if not isinstance(values, list) or len(values) != 5:
         fail("Vega-Lite candidate must embed the five offline measurements")
     encoding = spec.get("encoding", {})
-    if encoding.get("x", {}).get("field") != "load_percent" or encoding.get("y", {}).get("field") != "response_ms":
+    if (
+        encoding.get("x", {}).get("field") != "load_percent"
+        or encoding.get("y", {}).get("field") != "response_ms"
+    ):
         fail("Vega-Lite candidate must encode the shared load and response fields")
 
 
@@ -144,12 +148,17 @@ def main():
     check_svg()
     check_vega_candidate()
     check_manuscript()
-    print("ok: graph/chart specimens (Mermaid flow, Graphviz dependency graph, Vega-Lite candidate, deterministic Python SVG; offline source and derivative contracts)")
+    print(
+        "ok: graph/chart specimens (Mermaid flow, Graphviz dependency graph, Vega-Lite candidate, deterministic Python SVG; offline source and derivative contracts)"
+    )
 
 
 if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError) as error:
-        print(str(error) if isinstance(error, RuntimeError) else "error: " + str(error), file=sys.stderr)
+        print(
+            str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
+            file=sys.stderr,
+        )
         sys.exit(1)

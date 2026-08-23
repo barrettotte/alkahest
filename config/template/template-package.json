@@ -60,16 +60,6 @@
       "destination": "defaults/releases.json"
     },
     {
-      "id": "extension-api-inventory",
-      "source": "config/template/extension-apis.json",
-      "destination": "defaults/extension-apis.json"
-    },
-    {
-      "id": "book-contract-inventory",
-      "source": "config/template/book-contracts.json",
-      "destination": "defaults/book-contracts.json"
-    },
-    {
       "id": "extension-api-documentation",
       "source": "docs/extension-apis.md",
       "destination": "docs/extension-apis.md"
@@ -80,39 +70,9 @@
       "destination": "docs/book-contracts.md"
     },
     {
-      "id": "schema-identities",
-      "source": "config/metadata/identities.schema.json",
-      "destination": "schemas/identities.schema.json"
-    },
-    {
-      "id": "schema-editions",
-      "source": "config/metadata/editions.schema.json",
-      "destination": "schemas/editions.schema.json"
-    },
-    {
       "id": "schema-publication",
       "source": "config/metadata/publication.schema.json",
       "destination": "schemas/publication.schema.json"
-    },
-    {
-      "id": "schema-rights",
-      "source": "config/metadata/rights.schema.json",
-      "destination": "schemas/rights.schema.json"
-    },
-    {
-      "id": "schema-accessibility",
-      "source": "config/metadata/accessibility.schema.json",
-      "destination": "schemas/accessibility.schema.json"
-    },
-    {
-      "id": "schema-covers",
-      "source": "config/metadata/covers.schema.json",
-      "destination": "schemas/covers.schema.json"
-    },
-    {
-      "id": "schema-localized-labels",
-      "source": "config/metadata/localized-labels.schema.json",
-      "destination": "schemas/localized-labels.schema.json"
     },
     {
       "id": "theme-sync",
@@ -169,19 +129,11 @@
     "LICENSE",
     "README.md",
     "defaults/quarto.yml",
-    "defaults/extension-apis.json",
-    "defaults/book-contracts.json",
     "defaults/releases.json",
     "defaults/theme.json",
     "docs/extension-apis.md",
     "docs/book-contracts.md",
-    "schemas/accessibility.schema.json",
-    "schemas/covers.schema.json",
-    "schemas/editions.schema.json",
-    "schemas/identities.schema.json",
-    "schemas/localized-labels.schema.json",
     "schemas/publication.schema.json",
-    "schemas/rights.schema.json",
     "_extensions/alkahest-companions/_extension.yml",
     "_extensions/alkahest-generated-lists/_extension.yml",
     "_extensions/alkahest-glossary/_extension.yml",

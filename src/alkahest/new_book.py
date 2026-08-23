@@ -483,10 +483,7 @@ def validate_new_book_integration(root):
     for marker in ("new-book:", "check-%:", "test-%:"):
         if marker not in texts["makefile"]:
             fail(f"Makefile is missing new-book target {marker}")
-    for marker in (
-        '"new-book", "@alkahest.checks.new_book"',
-        '"new-book", "test-new-book.py"',
-    ):
+    for marker in ('"new-book", "@alkahest.checks.new_book"',):
         if marker not in texts["tasks"]:
             fail(f"task registry is missing new-book entry {marker}")
     if "alkahest check" not in texts["ci"]:

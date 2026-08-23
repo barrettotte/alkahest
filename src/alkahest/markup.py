@@ -60,10 +60,7 @@ def _attributes(text):
                     index += 1
                 value = "=" + text[value_start:index]
         lowered = name.lower()
-        unordered = (
-            lowered.startswith(("aria-", "data-"))
-            or lowered in UNORDERED_ATTRIBUTES
-        )
+        unordered = lowered.startswith(("aria-", "data-")) or lowered in UNORDERED_ATTRIBUTES
         attributes.append(
             (
                 1 if unordered else 0,

@@ -215,7 +215,6 @@ def load_cover_policy(root):
             fail(f"Makefile is missing cover target {marker}")
     for marker in (
         '"covers", ":check-covers"',
-        '"covers", "test-covers.py"',
         '"covers", ":generate-covers"',
         '"cover-artifacts", ":check-cover-artifacts"',
     ):

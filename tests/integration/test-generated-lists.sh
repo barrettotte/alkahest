@@ -4,7 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../.." && pwd)"
-edit="${repo_root}/tests/integration/replace-text.py"
+edit="${repo_root}/tests/integration/replace_text.py"
 fixture_root="${repo_root}/tests/generated-lists/base"
 
 run_valid() {

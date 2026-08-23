@@ -15,8 +15,7 @@ PREVIEW_DESCRIPTION = (
 )
 PREVIEW_UUID = "urn:uuid:551be2aa-8be0-4078-b9dc-3f29e1088092"
 LINKS_PENDING = (
-    "Full-edition and purchase links will appear here when publication URLs "
-    "are assigned."
+    "Full-edition and purchase links will appear here when publication URLs are assigned."
 )
 PRIVATE_CANARIES = (
     "internal editorial canary and must never appear in a public artifact",
@@ -51,9 +50,7 @@ def preview_inventory(root):
         record = _source_record(book_root, source_id, source)
         (selected if source_id in selected_ids else omitted).append(record)
     assets = load_json(book_root / "assets.json", "asset registry")
-    patterns = assets.get("artifact_contract", {}).get(
-        "forbidden_content_patterns", []
-    )
+    patterns = assets.get("artifact_contract", {}).get("forbidden_content_patterns", [])
     return {
         "selected": selected,
         "omitted": omitted,
@@ -100,9 +97,7 @@ def collect_preview_artifacts(root):
             fail(f"preview {label} is missing: {path.relative_to(root)}")
 
     html_entries = {
-        path.relative_to(html_root).as_posix()
-        for path in html_root.rglob("*")
-        if path.is_file()
+        path.relative_to(html_root).as_posix() for path in html_root.rglob("*") if path.is_file()
     }
     html_pages = {name for name in html_entries if name.endswith(".html")}
 
@@ -166,9 +161,7 @@ def validate_preview_artifacts(snapshot):
         fail(f"preview HTML page allowlist differs (missing={missing}, extra={extra})")
 
     chapter_entries = {
-        name
-        for name in snapshot["epub_entries"]
-        if re.fullmatch(r"EPUB/text/ch\d+\.xhtml", name)
+        name for name in snapshot["epub_entries"] if re.fullmatch(r"EPUB/text/ch\d+\.xhtml", name)
     }
     if len(chapter_entries) != len(selected):
         fail(
@@ -192,7 +185,11 @@ def validate_preview_artifacts(snapshot):
         )
     )
     for item in omitted:
-        _reject(combined, item["identifier"], f"artifact content from omitted source {item['source_id']}")
+        _reject(
+            combined,
+            item["identifier"],
+            f"artifact content from omitted source {item['source_id']}",
+        )
     for canary in PRIVATE_CANARIES:
         _reject(combined, canary, "private content")
 
@@ -246,7 +243,7 @@ def validate_preview_artifacts(snapshot):
         'href="ch002.xhtml#eq-ohms-law"',
     ):
         _require(epub, marker, "EPUB contract")
-    for marker in ("<dc:language>en-US</dc:language>", "<h1 id=\"toc-title\">Contents</h1>"):
+    for marker in ("<dc:language>en-US</dc:language>", '<h1 id="toc-title">Contents</h1>'):
         _require(snapshot["epub_opf"] + snapshot["epub_nav"], marker, "EPUB metadata/navigation")
 
     pdf = " ".join(snapshot["pdf_text"].split())

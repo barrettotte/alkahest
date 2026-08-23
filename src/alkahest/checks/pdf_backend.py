@@ -139,10 +139,7 @@ def check_scores(data):
     calculated = {backend: round(totals[backend] / 100, 2) for backend in BACKENDS}
     if data["weighted_scores"] != calculated:
         fail(f"weighted backend scores do not match the scorecard: {calculated}")
-    if (
-        calculated[data["decision"]["default"]]
-        < calculated[data["decision"]["secondary_backend"]]
-    ):
+    if calculated[data["decision"]["default"]] < calculated[data["decision"]["secondary_backend"]]:
         fail("default backend scores below the secondary backend")
 
 

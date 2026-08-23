@@ -147,8 +147,8 @@ bootstraps the locked image, runs Quarto and toolchain diagnostics, renders HTML
 EPUB, and every PDF profile, then runs the publication and PDF checks. Only its
 bootstrap stage has network access; all rendering and validation stages remain
 offline. EPUBCheck, Java, and Poppler all run inside that image; the CI host only
-provides Podman. CI also validates the manual EPUB reading-system ledger while
-accepting explicitly pending human results and forbidding a premature claim.
+provides Podman. The EPUB policy forbids a premature conformance claim while
+the documented reader review remains pending.
 
 The private-repository workflow runs on pushes, pull requests, and manual
 dispatch. It has read-only source permission, does not retain checkout
@@ -186,13 +186,6 @@ renamed EPUB media, runtime/font license evidence, temporary package entries,
 secret and local-path signatures, PDF metadata, and embedded files. The latter
 runs automatically inside `make check-publication`, which also rechecks the
 rights report; both use the versioned contract in `book/assets.json`.
-
-`make package-source-archive` creates the private deterministic recovery ZIP
-defined by `config/archive/source-package.json`; `make check-source-archive`
-reproduces its bytes and validates a fresh extracted tree with non-mutating Make
-and semantic source checks. CI performs this local restoration smoke without
-uploading the archive. See `archives.md` for the inclusion boundary, dependency
-inventory, history registries, and full recovery procedure.
 
 `make package-template-engine` extracts the reusable extensions, filters,
 themes, brand, and PDF adapters directly from their canonical specimen paths;

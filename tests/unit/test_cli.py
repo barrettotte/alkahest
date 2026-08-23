@@ -13,7 +13,6 @@ from alkahest.tasks import (
     GENERATORS,
     PACKAGERS,
     SOURCE_CHECKS,
-    SOURCE_TESTS,
     ScriptTask,
     by_name,
     script_path,
@@ -22,7 +21,6 @@ from alkahest.tasks import (
 
 def test_registered_names_are_unique() -> None:
     assert len(by_name(SOURCE_CHECKS)) == len(SOURCE_CHECKS)
-    assert len(by_name(SOURCE_TESTS)) == len(SOURCE_TESTS)
     assert len(CHECKS) == len(set(CHECKS))
     assert len(GENERATORS) == len(set(GENERATORS))
     assert len(PACKAGERS) == len(set(PACKAGERS))
@@ -32,7 +30,6 @@ def test_registered_names_are_unique() -> None:
     "tasks",
     (
         SOURCE_CHECKS,
-        SOURCE_TESTS,
         tuple(CHECKS.values()),
         tuple(GENERATORS.values()),
         tuple(PACKAGERS.values()),
@@ -84,6 +81,19 @@ def test_bare_check_uses_source_registry(monkeypatch) -> None:
     monkeypatch.setattr(cli, "_run_many", record)
     assert main(["check"]) == 0
     assert observed == list(SOURCE_CHECKS)
+
+
+def test_accessibility_test_adds_the_locked_browser_fixture(monkeypatch) -> None:
+    commands = []
+
+    def run(command, **_options):
+        commands.append(command)
+        return type("Result", (), {"returncode": 0})()
+
+    monkeypatch.setattr(cli.subprocess, "run", run)
+    assert cli._run_tests(["accessibility"]) == 0
+    assert str(commands[0][-1]).endswith("test_accessibility_policy.py")
+    assert commands[1][-2:] == ["alkahest.checks.suites", "browser-fixture"]
 
 
 def test_require_onix_is_forwarded_only_to_metadata(monkeypatch, capsys) -> None:

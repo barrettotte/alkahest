@@ -34,9 +34,21 @@ MEDIA_TYPES = {
     "pdf": "application/pdf",
 }
 MANIFESTATION_FIELDS = {
-    "id", "label", "format", "variant", "edition", "language", "status",
-    "identifiers", "dimensions", "cover", "dates", "prices", "availability",
-    "production", "relation",
+    "id",
+    "label",
+    "format",
+    "variant",
+    "edition",
+    "language",
+    "status",
+    "identifiers",
+    "dimensions",
+    "cover",
+    "dates",
+    "prices",
+    "availability",
+    "production",
+    "relation",
 }
 
 
@@ -86,11 +98,14 @@ def is_isbn10(value):
 
 
 def is_isbn13(value):
-    if not isinstance(value, str) or not ISBN13.fullmatch(value) or not value.startswith(("978", "979")):
+    if (
+        not isinstance(value, str)
+        or not ISBN13.fullmatch(value)
+        or not value.startswith(("978", "979"))
+    ):
         return False
     total = sum(
-        int(character) * (1 if index % 2 == 0 else 3)
-        for index, character in enumerate(value[:12])
+        int(character) * (1 if index % 2 == 0 else 3) for index, character in enumerate(value[:12])
     )
     return int(value[-1]) == (10 - total % 10) % 10
 
@@ -98,8 +113,7 @@ def is_isbn13(value):
 def isbn13_from_isbn10(value):
     stem = "978" + value[:9]
     total = sum(
-        int(character) * (1 if index % 2 == 0 else 3)
-        for index, character in enumerate(stem)
+        int(character) * (1 if index % 2 == 0 else 3) for index, character in enumerate(stem)
     )
     return stem + str((10 - total % 10) % 10)
 
@@ -143,7 +157,17 @@ def validate_identifier(identifier, label):
 
 
 def validate_schema(schema):
-    fields = {"$schema", "$id", "title", "description", "type", "additionalProperties", "required", "properties", "$defs"}
+    fields = {
+        "$schema",
+        "$id",
+        "title",
+        "description",
+        "type",
+        "additionalProperties",
+        "required",
+        "properties",
+        "$defs",
+    }
     exact_object(schema, fields, "manifestation schema")
     if schema["$schema"] != "https://json-schema.org/draft/2020-12/schema":
         fail("manifestation schema must use JSON Schema 2020-12")
@@ -153,21 +177,42 @@ def validate_schema(schema):
         fail("manifestation schema top-level fields drifted")
     definitions = schema.get("$defs", {})
     expected = {
-        "id", "nullableString", "dateOrNull", "territories", "manifestation",
-        "identifier", "dimensions", "cover", "dates", "price", "availability",
-        "production", "relation",
+        "id",
+        "nullableString",
+        "dateOrNull",
+        "territories",
+        "manifestation",
+        "identifier",
+        "dimensions",
+        "cover",
+        "dates",
+        "price",
+        "availability",
+        "production",
+        "relation",
     }
     if set(definitions) != expected:
         fail("manifestation schema definitions drifted")
     properties = definitions["manifestation"]["properties"]
-    if set(definitions["manifestation"]["required"]) != MANIFESTATION_FIELDS or set(properties) != MANIFESTATION_FIELDS:
+    if (
+        set(definitions["manifestation"]["required"]) != MANIFESTATION_FIELDS
+        or set(properties) != MANIFESTATION_FIELDS
+    ):
         fail("manifestation schema record fields drifted")
     enum_contracts = (
         (properties["format"]["enum"], FORMATS, "formats"),
         (properties["variant"]["enum"], VARIANTS, "variants"),
         (properties["status"]["enum"], STATUSES, "statuses"),
-        (definitions["identifier"]["properties"]["scheme"]["enum"], IDENTIFIER_SCHEMES, "identifier schemes"),
-        (definitions["availability"]["properties"]["status"]["enum"], AVAILABILITY, "availability states"),
+        (
+            definitions["identifier"]["properties"]["scheme"]["enum"],
+            IDENTIFIER_SCHEMES,
+            "identifier schemes",
+        ),
+        (
+            definitions["availability"]["properties"]["status"]["enum"],
+            AVAILABILITY,
+            "availability states",
+        ),
         (definitions["relation"]["properties"]["type"]["enum"], RELATIONS, "relation types"),
     )
     for actual, expected_values, label in enum_contracts:
@@ -258,7 +303,9 @@ def validate_prices(prices, availability_territories, availability_status, label
         if not isinstance(amount, str) or not PRICE.fullmatch(amount):
             fail(f"{label} price amount must use a nonnegative two-decimal string")
         territories = validate_territories(price["territories"], f"{label} price")
-        if "WORLD" not in availability_territories and not territories.issubset(availability_territories):
+        if "WORLD" not in availability_territories and not territories.issubset(
+            availability_territories
+        ):
             fail(f"{label} price territory falls outside availability")
         if not isinstance(price["tax_included"], bool):
             fail(f"{label} price tax_included must be boolean")
@@ -275,7 +322,9 @@ def validate_availability(availability, status, label):
         fail(f"{label} availability status is unsupported")
     territories = validate_territories(availability["territories"], f"{label} availability")
     channels = availability["channels"]
-    if not isinstance(channels, list) or any(not isinstance(item, str) or not item.strip() for item in channels):
+    if not isinstance(channels, list) or any(
+        not isinstance(item, str) or not item.strip() for item in channels
+    ):
         fail(f"{label} availability channels must be nonempty strings")
     if len(channels) != len(set(channels)):
         fail(f"{label} availability channels must be unique")
@@ -341,9 +390,13 @@ def validate_record(root, data):
             fail(f"{label} format is unsupported")
         if manifestation["variant"] not in VARIANTS:
             fail(f"{label} variant is unsupported")
-        if not isinstance(manifestation["edition"], str) or not ID.fullmatch(manifestation["edition"]):
+        if not isinstance(manifestation["edition"], str) or not ID.fullmatch(
+            manifestation["edition"]
+        ):
             fail(f"{label} edition must be lowercase kebab-case")
-        if not isinstance(manifestation["language"], str) or not LANGUAGE.fullmatch(manifestation["language"]):
+        if not isinstance(manifestation["language"], str) or not LANGUAGE.fullmatch(
+            manifestation["language"]
+        ):
             fail(f"{label} language must use the supported BCP 47 form")
         if manifestation["status"] not in STATUSES:
             fail(f"{label} lifecycle status is unsupported")
@@ -369,7 +422,10 @@ def validate_record(root, data):
             local_schemes.add(key[0])
             if key[0].startswith("isbn-"):
                 isbn_values[key[0]] = key[1]
-        if set(isbn_values) == {"isbn-10", "isbn-13"} and isbn13_from_isbn10(isbn_values["isbn-10"]) != isbn_values["isbn-13"]:
+        if (
+            set(isbn_values) == {"isbn-10", "isbn-13"}
+            and isbn13_from_isbn10(isbn_values["isbn-10"]) != isbn_values["isbn-13"]
+        ):
             fail(f"{label} ISBN-10 and ISBN-13 identify different products")
 
         dimensions[identifier] = validate_dimensions(
@@ -382,7 +438,11 @@ def validate_record(root, data):
         )
         validate_prices(manifestation["prices"], territories, availability_status, label)
         artifact = validate_production(
-            root, manifestation["production"], manifestation["format"], manifestation["status"], label
+            root,
+            manifestation["production"],
+            manifestation["format"],
+            manifestation["status"],
+            label,
         )
         if artifact is not None:
             if artifact in artifacts:
@@ -421,7 +481,10 @@ def validate_record(root, data):
         if target["language"] != manifestation["language"] and relation["type"] != "translation-of":
             fail(f"{label} non-translation relation must retain language")
         if relation["type"] == "translation-of":
-            if target["language"] == manifestation["language"] or target["format"] != manifestation["format"]:
+            if (
+                target["language"] == manifestation["language"]
+                or target["format"] != manifestation["format"]
+            ):
                 fail(f"{label} translation must change language within one format")
         if relation["type"] == "preview-of":
             if target["variant"] != "full":
@@ -493,7 +556,10 @@ def validate_repository(root, registry, records):
             fail(f"{label} language is absent from the locale registry")
 
         artifact = manifestation["production"]["artifact"]
-        if manifestation["format"] in {"web", "epub", "pdf"} and manifestation["variant"] in {"full", "review"}:
+        if manifestation["format"] in {"web", "epub", "pdf"} and manifestation["variant"] in {
+            "full",
+            "review",
+        }:
             if artifact not in reproducible_artifacts:
                 fail(f"{label} primary artifact is absent from the reproducibility policy")
         if manifestation["format"] == "pdf" and manifestation["variant"] in {"full", "review"}:
@@ -503,7 +569,11 @@ def validate_repository(root, registry, records):
             expected = manifestation["dimensions"]
             width = points_to_inches(profile["trim_points"][0])
             height = points_to_inches(profile["trim_points"][1])
-            if expected["unit"] != "in" or Decimal(str(expected["width"])) != width or Decimal(str(expected["height"])) != height:
+            if (
+                expected["unit"] != "in"
+                or Decimal(str(expected["width"])) != width
+                or Decimal(str(expected["height"])) != height
+            ):
                 fail(f"{label} dimensions drifted from PDF preflight")
         for item in manifestation["identifiers"]:
             if item["scheme"] == "uuid-urn" and manifestation["format"] != "epub":
@@ -555,10 +625,7 @@ def validate_repository(root, registry, records):
     for marker in ("check-%:", "test-%:"):
         if marker not in texts["makefile"]:
             fail(f"Makefile is missing manifestation target {marker}")
-    for marker in (
-        '"manifestations", ":check-manifestations"',
-        '"manifestations", "test-manifestations.py"',
-    ):
+    for marker in ('"manifestations", ":check-manifestations"',):
         if marker not in texts["tasks"]:
             fail(f"task registry does not include manifestations entry {marker}")
     for marker in (

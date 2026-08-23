@@ -11,7 +11,6 @@ from typing import Final
 
 ROOT: Final = Path(__file__).resolve().parents[2]
 SCRIPTS: Final = ROOT / "scripts"
-INTEGRATION_TESTS: Final = ROOT / "tests" / "integration"
 LOCKED_PYTHON: Final = Path("/opt/alkahest/tools/bin/python")
 
 
@@ -48,13 +47,10 @@ SOURCE_CHECKS: Final = (
     ScriptTask("physics-diagrams", "@alkahest.checks.physics", "physics diagrams"),
     ScriptTask("rich-media", "@alkahest.checks.rich_media", "rich media and fallbacks"),
     ScriptTask("asset-rights", ":check-asset-rights", "asset rights and privacy"),
-    ScriptTask("source-archive", ":check-source-archive-policy", "source archive policy"),
     ScriptTask("template-engine", ":check-template-engine", "template extraction boundary"),
     ScriptTask("new-book", "@alkahest.checks.new_book", "minimal generated-book scaffold"),
     ScriptTask("theme-defaults", ":check-theme-defaults", "theme defaults and adapters"),
     ScriptTask("release-profiles", ":check-release-profiles", "full and excerpt profiles"),
-    ScriptTask("extension-apis", ":check-extension-apis", "extension API inventory"),
-    ScriptTask("book-contracts", ":check-book-contracts", "book-owned contract layers"),
     ScriptTask("pdf-backend", "@alkahest.checks.pdf_backend", "PDF backend decision"),
     ScriptTask(
         "pdf-accessibility-policy",
@@ -74,45 +70,6 @@ SOURCE_CHECKS: Final = (
     ScriptTask("index", "@alkahest.checks.index", "subject and person index"),
     ScriptTask("notes", "@alkahest.checks.notes", "semantic notes"),
     ScriptTask("localization", "@alkahest.checks.localization", "localized source profiles"),
-)
-
-
-SOURCE_TESTS: Final = (
-    ScriptTask("execution-policy", "test-execution-policy.py", "execution-policy fixtures"),
-    ScriptTask("reproducibility", "test-reproducibility.py", "reproducibility fixtures"),
-    ScriptTask("golden-pages", "test-golden-pages.py", "golden-page fixtures"),
-    ScriptTask("publication-metadata", "test-publication-metadata.py", "metadata fixtures"),
-    ScriptTask("manifestations", "test-manifestations.py", "manifestation fixtures"),
-    ScriptTask("covers", "test-covers.py", "cover fixtures"),
-    ScriptTask("metadata-generation", "test-metadata-generation.py", "generation fixtures"),
-    ScriptTask(
-        "pdf-accessibility-policy",
-        "test-pdf-accessibility-policy.py",
-        "PDF accessibility policy fixtures",
-    ),
-    ScriptTask("editorial-integrity", "test-editorial-integrity.py", "integrity fixtures"),
-    ScriptTask("identities", "test-identities.sh", "identity fixtures"),
-    ScriptTask("editions", "test-editions.py", "edition fixtures"),
-    ScriptTask("learning", "test-learning.py", "learning fixtures"),
-    ScriptTask("companions", "test-companions.py", "companion fixtures"),
-    ScriptTask("companion-bundles", "test-companion-bundles.py", "bundle fixtures"),
-    ScriptTask("reuse", "test-reuse.py", "reuse fixtures"),
-    ScriptTask("citations", "test-citations.sh", "citation fixtures"),
-    ScriptTask("generated-lists", "test-generated-lists.sh", "generated-list fixtures"),
-    ScriptTask("glossary", "test-glossary.sh", "glossary fixtures"),
-    ScriptTask("index", "test-index.sh", "index fixtures"),
-    ScriptTask("notes", "test-notes.sh", "note fixtures"),
-    ScriptTask("localization", "test-localization.py", "localization fixtures"),
-    ScriptTask("asset-rights", "test-asset-rights.py", "asset-rights fixtures"),
-    ScriptTask("rights-report", "test-rights-report.py", "rights-report fixtures"),
-    ScriptTask("source-archive", "test-source-archive.py", "source-archive fixtures"),
-    ScriptTask("template-engine", "test-template-engine.py", "template-engine fixtures"),
-    ScriptTask("new-book", "test-new-book.py", "new-book fixtures"),
-    ScriptTask("theme-defaults", "test-theme-defaults.py", "theme fixtures"),
-    ScriptTask("release-profiles", "test-release-profiles.py", "release-profile fixtures"),
-    ScriptTask("extension-apis", "test-extension-apis.py", "extension API fixtures"),
-    ScriptTask("book-contracts", "test-book-contracts.py", "book-contract fixtures"),
-    ScriptTask("preview-artifacts", "test-preview.py", "preview artifact fixtures"),
 )
 
 
@@ -158,9 +115,6 @@ CHECKS: Final = {
         "glyph-coverage", "@alkahest.checks.glyph_coverage", "font glyph coverage", True
     ),
     "rights-report": ScriptTask("rights-report", ":check-rights-report", "rights report bytes"),
-    "source-archive": ScriptTask(
-        "source-archive", ":check-source-archive", "source archive artifact"
-    ),
     "template-package": ScriptTask(
         "template-package", ":check-template-package", "template package artifact"
     ),
@@ -188,7 +142,6 @@ CHECKS: Final = {
         True,
         arguments=("epub-accessibility",),
     ),
-    "epub-review": ScriptTask("epub-review", ":check-epub-review", "manual EPUB review ledger"),
     "pdf-profiles": ScriptTask(
         "pdf-profiles", "@alkahest.checks.pdf_profiles", "rendered PDF profiles", True
     ),
@@ -258,34 +211,6 @@ CHECKS: Final = {
 }
 
 
-TESTS: Final = {
-    "accessibility": ScriptTask(
-        "accessibility",
-        "@alkahest.checks.suites",
-        "accessibility policy fixtures",
-        True,
-        arguments=("accessibility", "--fixtures"),
-    ),
-    "epub-accessibility": ScriptTask(
-        "epub-accessibility",
-        "@alkahest.checks.suites",
-        "EPUB accessibility fixtures",
-        True,
-        arguments=("epub-accessibility", "--fixtures"),
-    ),
-    "epub-review": ScriptTask(
-        "epub-review", "test-epub-reading-system-review.py", "EPUB reader-review fixtures"
-    ),
-    "pdf-preflight": ScriptTask("pdf-preflight", "test-pdf-preflight.py", "PDF preflight fixtures"),
-    "writing-overrides": ScriptTask(
-        "writing-overrides", "test-writing-overrides.py", "writing override fixtures"
-    ),
-    "writing-quality": ScriptTask(
-        "writing-quality", "test-writing-quality.py", "writing quality fixtures"
-    ),
-}
-
-
 GENERATORS: Final = {
     task.name: task
     for task in (
@@ -329,7 +254,6 @@ PACKAGERS: Final = {
     task.name: task
     for task in (
         ScriptTask("template-engine", ":package-template-engine", "template engine ZIP"),
-        ScriptTask("source-archive", ":package-source-archive", "private source ZIP"),
         ScriptTask("companion-bundles", ":package-companion-bundles", "companion bundles"),
     )
 }
@@ -358,17 +282,13 @@ RENDER_PROFILES: Final = (
 
 
 def script_path(task: ScriptTask) -> Path:
-    """Find a registered script in one of the two implementation directories."""
+    """Find a registered external script at the stable process boundary."""
     if task.script.startswith((":", "@")):
         raise ValueError(f"direct operation has no script path: {task.script[1:]}")
-    matches = [
-        base / task.script
-        for base in (SCRIPTS, INTEGRATION_TESTS)
-        if (base / task.script).is_file()
-    ]
-    if len(matches) != 1:
-        raise RuntimeError(f"task script must resolve exactly once: {task.script}")
-    return matches[0]
+    path = SCRIPTS / task.script
+    if not path.is_file():
+        raise RuntimeError(f"task script does not exist: {task.script}")
+    return path
 
 
 def script_command(task: ScriptTask) -> list[str]:

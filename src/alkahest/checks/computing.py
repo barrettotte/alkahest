@@ -28,7 +28,14 @@ OUTPUTS = {
     "memory-instruction-layout.svg": {
         "viewbox": "0 0 1000 540",
         "minimum_geometry": 10,
-        "markers": ("16-bit address space", "ROM", "RAM", "Memory-mapped I/O", "opcode", "immediate"),
+        "markers": (
+            "16-bit address space",
+            "ROM",
+            "RAM",
+            "Memory-mapped I/O",
+            "opcode",
+            "immediate",
+        ),
     },
     "processor-datapath.svg": {
         "viewbox": "0 0 1000 450",
@@ -207,5 +214,8 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError, TypeError, ValueError) as error:
-        print(str(error) if isinstance(error, RuntimeError) else "error: " + str(error), file=sys.stderr)
+        print(
+            str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
+            file=sys.stderr,
+        )
         sys.exit(1)

@@ -6,7 +6,7 @@
 - Base manifest: `sha256:280aa58ecdb814dcced42066e4f64d1825020ce5822f2ca2749fc6396020d7de`
 
 Run `make toolchain-report` to inspect the locally built image. The Containerfile
-also checks source archives, installed browser bytes, TeX package revisions,
+also checks installed browser bytes, TeX package revisions,
 and selected font files during bootstrap. A mismatch fails the image build and
 requires an intentional lock update.
 
