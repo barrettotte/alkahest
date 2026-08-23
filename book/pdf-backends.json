@@ -3,8 +3,8 @@
   "decision": {
     "date": "2026-08-19",
     "default": "typst",
-    "compatibility_backend": "lualatex",
-    "policy": "Typst is the default PDF path; LuaLaTeX remains a supported compatibility and diagnostic backend.",
+    "secondary_backend": "lualatex",
+    "policy": "Typst is the default PDF path; LuaLaTeX remains a supported secondary and diagnostic backend.",
     "review_triggers": [
       "a publisher or printer requires a backend-specific source or PDF feature",
       "PDF/UA evaluation materially changes the accessibility comparison",
@@ -19,12 +19,12 @@
     },
     "lualatex": {
       "profile": "latex",
-      "status": "supported-compatibility"
+      "status": "supported-secondary"
     }
   },
   "measurement": {
     "captured": "2026-08-20",
-    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v17",
+    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v18",
     "method": "One sequential primary 7 x 10 render per backend with network disabled and ephemeral container caches.",
     "typst": {
       "seconds": 8.76,

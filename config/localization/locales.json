@@ -85,7 +85,7 @@
     "html_theme": "book/theme/alkahest.scss",
     "epub_theme": "book/theme/alkahest-epub.css",
     "containerfile": "Containerfile",
-    "toolchain_report": "scripts/toolchain-report.sh"
+    "toolchain_report": "src/alkahest/reporting.py"
   },
   "rendered_contract": {
     "canonical_html": "book/_build/html/index.html",

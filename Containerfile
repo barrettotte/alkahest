@@ -286,18 +286,17 @@ RUN groupadd --gid 10001 alkahest \
         alkahest \
     && install --directory --owner=10001 --group=10001 /workspace
 
-# Core validators use the system Python standard library. Install it after the
-# large publishing stack so validator changes do not invalidate TeX, fonts,
-# browser, or EPUB checker layers.
+# Retain the base-compatible Ubuntu Python for Quarto internals and bootstrap
+# utilities. Repository validators use the locked uv Python selected below.
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
         python3=3.8.2-0ubuntu2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install the exact uv release used to lock the small Python media toolchain.
-# uv then installs its checksum-verified Python build and the fully locked
-# diagram environment; neither normal rendering nor regeneration needs the
-# network or writes package state into the bind-mounted repository.
+# Install the exact uv release used by the root Python project. uv then installs
+# its checksum-verified Python build and the locked runtime/diagram environment;
+# neither normal rendering nor regeneration needs the network or writes package
+# state into the bind-mounted repository.
 RUN curl --fail --location --silent --show-error \
         --output /tmp/uv.tar.gz \
         "${ALKAHEST_UV_ARCHIVE_URL}" \
@@ -311,13 +310,13 @@ RUN curl --fail --location --silent --show-error \
         | sha256sum --check \
     && uv --version
 
-COPY tools/pyproject.toml tools/uv.lock tools/.python-version /opt/alkahest/tools-project/
+COPY pyproject.toml uv.lock .python-version /opt/alkahest/tools-project/
 
 RUN UV_CACHE_DIR=/tmp/uv-cache \
         UV_PYTHON_INSTALL_DIR=/opt/alkahest/python \
         UV_PROJECT_ENVIRONMENT=/opt/alkahest/tools \
         UV_LINK_MODE=copy \
-        uv python install 3.12.13 \
+        uv python install 3.13.15 \
     && UV_CACHE_DIR=/tmp/uv-cache \
         UV_PYTHON_INSTALL_DIR=/opt/alkahest/python \
         UV_PROJECT_ENVIRONMENT=/opt/alkahest/tools \
@@ -325,11 +324,12 @@ RUN UV_CACHE_DIR=/tmp/uv-cache \
         uv sync \
             --project /opt/alkahest/tools-project \
             --locked \
-            --no-dev \
+            --no-default-groups \
+            --group diagrams \
             --no-install-project \
-            --python 3.12.13 \
+            --python 3.13.15 \
     && /opt/alkahest/tools/bin/python -c \
-        'import schemdraw; from rdkit import rdBase; assert schemdraw.__version__ == "0.23"; assert rdBase.rdkitVersion == "2026.03.5"' \
+        'import defusedxml, schemdraw; from rdkit import rdBase; assert defusedxml.__version__ == "0.7.1"; assert schemdraw.__version__ == "0.23"; assert rdBase.rdkitVersion == "2026.03.5"' \
     && chmod -R a+rX /opt/alkahest/python /opt/alkahest/tools /opt/alkahest/tools-project \
     && rm -rf /tmp/uv-cache
 
@@ -422,6 +422,8 @@ RUN tlmgr update latex l3kernel \
         | sed -n 's/^revision:[[:space:]]*//p')" = "79799"
 
 ENV HOME=/home/alkahest
+ENV PYTHONPATH=/workspace/src
+ENV PATH="/opt/alkahest/tools/bin:${PATH}"
 WORKDIR /workspace
 
 # Rendering and validation run unprivileged even when the caller invokes the

@@ -44,7 +44,7 @@
       "title": "Appendix structure and numbering",
       "level": "book-config",
       "documentation_anchor": "api-appendices",
-      "entrypoints": ["scripts/lib/alkahest/editions.py", "scripts/lib/alkahest/release_profiles.py", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
+      "entrypoints": ["src/alkahest/editions.py", "src/alkahest/release_profiles.py", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
       "book_inputs": ["book/editions.json", "book/releases.json"],
       "author_markers": ["book.appendices", "role: appendix", "make check-editions"]
     },
@@ -80,7 +80,7 @@
       "title": "Learning blocks",
       "level": "author",
       "documentation_anchor": "api-learning-blocks",
-      "entrypoints": ["scripts/lib/alkahest/learning.py", "book/theme/alkahest.scss", "book/theme/alkahest-epub.css", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
+      "entrypoints": ["src/alkahest/learning.py", "book/theme/alkahest.scss", "book/theme/alkahest-epub.css", "book/typst/typst-show.typ", "book/latex/book-layout.tex"],
       "book_inputs": ["book/editions.json"],
       "author_markers": [".learning-objectives", ".review-question", "data-for="]
     },
@@ -89,7 +89,7 @@
       "title": "Companion materials",
       "level": "book-config",
       "documentation_anchor": "api-companions",
-      "entrypoints": ["book/_extensions/alkahest-companions/_extension.yml", "book/_extensions/alkahest-companions/alkahest-companions.lua", "book/_extensions/alkahest-companions/registry.lua", "scripts/lib/alkahest/companion_bundles.py"],
+      "entrypoints": ["book/_extensions/alkahest-companions/_extension.yml", "book/_extensions/alkahest-companions/alkahest-companions.lua", "book/_extensions/alkahest-companions/registry.lua", "src/alkahest/companion_bundles.py"],
       "book_inputs": ["book/companion.json"],
       "author_markers": ["{{< alk-companion", "bundle-", "make package-companion-bundles"]
     },
@@ -98,7 +98,7 @@
       "title": "Localization",
       "level": "book-config",
       "documentation_anchor": "api-localization",
-      "entrypoints": ["book/alkahest-defaults.yml", "scripts/check-localization.py", "scripts/lib/alkahest/markup.py"],
+      "entrypoints": ["book/alkahest-defaults.yml", "src/alkahest/checks/localization.py", "src/alkahest/markup.py"],
       "book_inputs": ["config/localization/locales.json", "book/_quarto-locale-fr.yml"],
       "author_markers": ["lang=", "dir=\"rtl\"", "make check-localization"]
     },
@@ -134,9 +134,10 @@
       "title": "Deterministic generators",
       "level": "maintainer-tooling",
       "documentation_anchor": "api-generators",
-      "entrypoints": ["scripts/generate-chemistry.py", "scripts/generate-circuits.py", "scripts/generate-computing-diagrams.py", "scripts/generate-covers.py", "scripts/generate-graphs.py", "scripts/generate-physics-diagrams.py", "scripts/generate-publication-metadata.py", "scripts/generate-rich-media-fixtures.py", "scripts/generate-rights-report.py", "scripts/generate-writing-terminology.py"],
+      "entrypoints": ["src/alkahest/generators/chemistry.py", "src/alkahest/generators/circuits.py", "src/alkahest/generators/computing.py", "src/alkahest/generators/graphs.py", "src/alkahest/generators/physics.py", "src/alkahest/generators/rich_media.py", "src/alkahest/generators/writing_terminology.py", "src/alkahest/covers.py", "src/alkahest/metadata_generation.py", "src/alkahest/rights_report.py"],
+      "tasks": ["chemistry", "circuits", "computing-diagrams", "covers", "graphs", "physics-diagrams", "publication-metadata", "rich-media-fixtures", "rights-report", "writing-terminology"],
       "book_inputs": ["book/reproducibility.json"],
-      "author_markers": ["make generate-graphs", "generated derivatives", "do not edit"]
+      "author_markers": ["alkahest generate", "make generate-graphs", "generated derivatives", "do not edit"]
     }
   ]
 }

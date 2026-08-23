@@ -45,7 +45,7 @@ When publication data is complete, normal generation writes deterministic
 ONIX 3.1 reference-tag XML. A release workflow can require it explicitly:
 
 ```sh
-python3 scripts/generate-publication-metadata.py --require-onix
+alkahest generate publication-metadata --require-onix
 ```
 
 That command fails if no product is eligible. Fixtures exercise ISBN, product

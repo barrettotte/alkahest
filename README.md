@@ -14,28 +14,25 @@ space.
 ## Common commands
 
 ```sh
-make                 # Show the concise author workflow.
+make                 # Show the concise workflow.
+make list            # List every specialist task and render profile.
 make bootstrap       # Build the pinned rootless publishing image.
-make check-source    # Validate all semantic source policies.
-make check-writing   # Run spelling, terminology, and prose checks.
+make doctor          # Diagnose the publishing toolchain.
+make check           # Validate all semantic source policies.
+make test            # Run all semantic fixture suites.
+make quality         # Run Ruff, formatting, mypy, and unit tests.
+make security        # Scan Python source and dependencies.
 make render          # Build HTML, EPUB, and both primary PDFs.
-make render-html     # Build only the web book.
-make render-epub     # Build only the EPUB.
-make render-pdf      # Build the default Typst PDF.
-make package-companion-bundles # Build versioned project-download ZIPs.
-make generate-covers # Build development wrap templates and thumbnails.
-make generate-rights-report # Build the release rights and credits inventory.
-make package-template-engine # Build the reusable presentation-engine ZIP.
+make preview         # Build the curated public preview.
 make new-book DEST=../my-book TITLE="My Book" AUTHOR="Author Name" # Create a book.
-make generate-theme  # Apply book/theme.json to every output adapter.
-make generate-release-profiles  # Apply full/preview allowlists and metadata.
-make check-extension-apis # Verify the shipped author and maintainer API reference.
-make check-book-contracts # Verify schemas and book-owned metadata layers.
-make check-compatibility # Verify template versions and reversible migrations.
-make package-source-archive # Build the private recovery source ZIP.
 make ci              # Run the complete rendering and validation pipeline.
-make help-all        # Show maintainer and specialist commands.
 ```
+
+Specialist commands use regular patterns. For example, `make check-icons`,
+`make test-citations`, `make render-epub`, `make generate-theme`, and
+`make package-template-engine` remain available. Recovery and release work uses
+`make package-source-archive` and `make generate-release-profiles`. Run `make list`
+for the complete index.
 
 Normal rendering and validation are offline after `make bootstrap`. Generated
 artifacts are written below `book/_build/` and ignored by Git.
@@ -43,10 +40,17 @@ artifacts are written below `book/_build/` and ignored by Git.
 ## Repository roles
 
 - `book/` is the exhaustive reference manuscript and its format adapters.
-- `scripts/` contains the publishing orchestration and policy implementations.
-- `tests/` contains negative and compatibility fixtures.
+- `src/alkahest/` is the reusable Python library and central task registry;
+  checks, generators, and rendered-output helpers have their own packages.
+- `scripts/` contains nine boundaries that still need their own process or
+  stable path: generic container wrappers, the browser check, Quarto hooks,
+  and generated-book adapters. Rendering, writing checks, and CI live in the
+  typed library.
+- `tests/unit/` contains fast library tests; `tests/integration/` contains the
+  exhaustive publishing-policy fixtures.
 - `docs/` records author workflows and evaluated design decisions.
-- `tools/` locks the Python environment used by specialized diagram checks.
+- `pyproject.toml` and `uv.lock` define the Python 3.13 development, security,
+  and specialized-diagram environments; `tools/` retains non-Python locks.
 
 ## Documentation map
 
@@ -59,7 +63,7 @@ artifacts are written below `book/_build/` and ignored by Git.
 - [Source and writing quality](docs/quality.md) covers integrity checks, the
   static-only execution boundary, spelling, terminology, and overrides.
 - [Publication profiles](docs/publication-profiles.md) covers page geometry and
-  the reversible Typst/LuaLaTeX backend decision.
+  the Typst/LuaLaTeX backend decision.
 - [Publication metadata](docs/publication-metadata.md) defines canonical
   work-level facts; [manifestations](docs/manifestations.md) define product
   variants, relations, availability, and typed identifiers; [metadata
@@ -81,7 +85,4 @@ artifacts are written below `book/_build/` and ignored by Git.
   book-local registries, engine hooks, filters, and deterministic generators.
 - [Reusable book contracts](docs/book-contracts.md) defines the schemas,
   ownership, and override boundary for book-specific facts.
-- [Compatibility and migrations](docs/compatibility.md) defines versioning,
-  deprecations, stable-ID protection, and private template release records.
-
 Named after the theoretical “universal solvent” in Renaissance alchemy.

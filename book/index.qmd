@@ -26,5 +26,5 @@ metadata as the print templates without implying that the specimen is released.
 
 ## Dedication {.unnumbered .unlisted #sec-dedication}
 
-*{{< meta alkahest.dedication >}}*
+*{{< meta dedication >}}*
 :::

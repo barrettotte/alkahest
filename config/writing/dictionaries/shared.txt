@@ -21,6 +21,7 @@ crossref
 CSpell
 CTAN
 datapath
+defusedxml
 diffable
 DPUB
 Drom
@@ -47,6 +48,7 @@ MathML
 Matplotlib
 multipage
 multiword
+mypy
 nonblocking
 nonbreaking
 nonselectable
@@ -57,6 +59,7 @@ pdfcol
 pdfinfo
 Poppler
 pyproject
+pytest
 Quarto
 Readium
 reflowable

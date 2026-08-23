@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Exercise valid and deliberately invalid citation registries, styles, and calls.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "${script_dir}/../.." && pwd)"
+edit="${repo_root}/tests/integration/replace-text.py"
+base_fixture="${repo_root}/tests/citations/base"
+test_root="$(mktemp -d /tmp/alkahest-citation-tests.XXXXXX)"
+
+cleanup() {
+  rm -rf -- "${test_root}"
+}
+trap cleanup EXIT
+
+prepare_case() {
+  local case_root="$1"
+  cp -R "${base_fixture}" "${case_root}"
+  mkdir -p "${case_root}/citations"
+  cp "${repo_root}/book/citations/chicago-author-date.csl" \
+    "${repo_root}/book/citations/ieee.csl" "${case_root}/citations/"
+}
+
+run_validator() {
+  ALKAHEST_CITATION_BOOK_ROOT="$1" \
+    PYTHONPATH="${repo_root}/src${PYTHONPATH:+:${PYTHONPATH}}" \
+    python3 -m alkahest.checks.citations
+}
+
+expect_failure() {
+  local name="$1"
+  local expected="$2"
+  local mutation="$3"
+  local case_root="${test_root}/${name}"
+  local output
+  local status
+
+  prepare_case "${case_root}"
+  "${mutation}" "${case_root}"
+  set +e
+  output="$(run_validator "${case_root}" 2>&1)"
+  status=$?
+  set -e
+  if [[ "${status}" -eq 0 ]]; then
+    echo "error: citation fixture ${name} unexpectedly passed" >&2
+    return 1
+  fi
+  if [[ "${output}" != *"${expected}"* ]]; then
+    echo "error: citation fixture ${name} missed expected diagnostic: ${expected}" >&2
+    echo "${output}" >&2
+    return 1
+  fi
+}
+
+missing_key() {
+  python3 "${edit}" '@primary' '@missing' "$1/chapter.qmd"
+}
+
+duplicate_key() {
+  python3 "${edit}" '@book{secondary,' '@book{primary,' "$1/references.bib"
+}
+
+unused_key() {
+  python3 "${edit}" $'nocite: |\n  @background\n' '' "$1/_quarto.yml"
+}
+
+missing_nocite_key() {
+  python3 "${edit}" '@background' '@missing' "$1/_quarto.yml"
+}
+
+changed_style() {
+  python3 "${edit}" '<summary>' '<summary>Modified ' \
+    "$1/citations/chicago-author-date.csl"
+}
+
+drifted_profile() {
+  python3 "${edit}" 'citations/ieee.csl' 'citations/chicago-author-date.csl' \
+    "$1/_quarto-citation-numeric.yml"
+}
+
+valid_root="${test_root}/valid"
+prepare_case "${valid_root}"
+run_validator "${valid_root}" >/dev/null
+expect_failure missing-key "missing bibliography key missing" missing_key
+expect_failure duplicate-key "duplicate bibliography key primary" duplicate_key
+expect_failure unused-key "bibliography key background is unused" unused_key
+expect_failure missing-nocite-key "nocite metadata references missing bibliography key missing" missing_nocite_key
+expect_failure changed-style "citation style citations/chicago-author-date.csl changed" changed_style
+expect_failure drifted-profile "numeric profile must select the locked IEEE file" drifted_profile
+
+echo "ok: citation fixtures (valid style and calls; 6 invalid contracts rejected)"

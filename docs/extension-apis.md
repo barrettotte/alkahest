@@ -1,15 +1,15 @@
 # Extension API reference
 
-This is the shipped compatibility reference for extending an Alkahest book.
+This is the internal reference for extending an Alkahest book.
 It documents source syntax and configuration that books may depend on, and it
 separates those contracts from internal implementation files that may move.
 `config/template/extension-apis.json` is the machine-readable inventory behind
-this document. The current API version is `0.1.0` and remains provisional until
-the template compatibility policy is established.
+this document. The current API version is `0.1.0` and remains provisional
+before the first public release.
 
 ## Authority levels
 
-| Level | May change it | Compatibility expectation |
+| Level | May change it | Current stability |
 |---|---|---|
 | `author` | Any book author | Syntax and semantic IDs are the most stable surface. |
 | `book-config` | A book maintainer | Edit the named registry and run its validator in the same change. |
@@ -200,8 +200,8 @@ backend output is allowed only as a contained adapter fallback.
 
 ## Deterministic generators {#api-generators}
 
-Invoke generators through documented Make targets such as `make generate-graphs`;
-do not edit generated derivatives. Inputs, tool versions,
+Invoke generators through stable tasks such as `alkahest generate graphs` or
+their documented Make aliases such as `make generate-graphs`; do not edit generated derivatives. Inputs, tool versions,
 ordering, numeric formatting, metadata, and checksums are part of the
 reproducibility boundary. A generator must operate offline after bootstrap,
 write only declared outputs, and pair generation with an exact stale-output
@@ -219,8 +219,8 @@ packages remain ignored products rather than generator source.
 4. Add positive and negative source fixtures plus relevant rendered evidence.
 5. Run `make check-extension-apis`, the feature-specific check, all source
    tests, and the affected formats.
-6. Preserve semantic IDs; record an intentional breaking change only through
-   the future compatibility and migration policy.
+6. Preserve semantic IDs where they identify authored content; before the first
+   public release, update the provisional API and its tests directly.
 
 The detailed reference-specimen rationale remains in `docs/components.md`,
 `docs/icons.md`, `docs/glossary.md`, `docs/appendices.md`, `docs/notes.md`,

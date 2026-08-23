@@ -28,14 +28,14 @@
         "figures/source/half-adder.mmd"
       ],
       "distributed_files": {
-        "figures/generated/build-dependency-graph.svg": "d765de175f01e4834887db3ab7cf970b11d59055367b318b49d2097c62fdb041",
+        "figures/generated/build-dependency-graph.svg": "1fd3e2f1c1c1a79e702d4a05c5bc65a5254e4274c7ed8106c26ed1b35dd0edcc",
         "figures/generated/fischer-esterification.svg": "00c5bd86fb9d8f0411947c00ab53ffdceda0f8e472dc83712fab1b9e7ebe7d62",
         "figures/generated/half-adder-gates.svg": "55e852d625e03945e534bef7c5186847684b2a5703952571cfb931dd0fed4d55",
         "figures/generated/inverse-square-field.svg": "4d4fa08b836e90880490d3941fe810a41330bbdf4d72d4ac3a095dba7bcc8e78",
         "figures/generated/memory-instruction-layout.svg": "146cf8002c820e8657dd65eab449e418093eb805af88642c73c610cd2d3804c9",
         "figures/generated/processor-datapath.svg": "d9b47b55b2bad62af69eeae1253ae2cd24c9d516ebbbf743342d40fcc72751e1",
         "figures/generated/read-cycle-timing.svg": "096882041f3dfa4f177d793474def5cc18ff40fc2ea3c1e3d659e54d52e9d30a",
-        "figures/generated/response-time.svg": "c57af84f66721da38b73e679e52978ab4a50b626c7b0840906b9dcdc7a7ed353",
+        "figures/generated/response-time.svg": "dc9accc9fff6e28f24cf95f8b3a76aae550abfa2a22042f435ccb660482cccb9",
         "figures/generated/velocity-vector.svg": "6645c211091003f44b3f3926313f4bc7b8dfb72672b941ba42826fccb13a23e2",
         "figures/generated/voltage-divider.svg": "23d3b64e3c9251e69fbfb5b021780e4e099698ac66a04cf7592f2641834cd2b8",
         "figures/signal-chain.svg": "a10badbdf1f972527c726765bae1b6b62f779d1f66ff659bf3ff1ca5a8303a6f",

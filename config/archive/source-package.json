@@ -12,15 +12,18 @@
   "root_files": [
     ".containerignore",
     ".gitignore",
+    ".python-version",
     ".vale.ini",
     "AGENTS.md",
     "CHANGELOG.md",
     "Containerfile",
     "LICENSE",
     "Makefile",
+    "pyproject.toml",
     "README.md",
     "ROADMAP.md",
-    "cspell.json"
+    "cspell.json",
+    "uv.lock"
   ],
   "source_roots": [
     ".github",
@@ -29,6 +32,7 @@
     "config",
     "docs",
     "scripts",
+    "src",
     "template",
     "tests",
     "tools"
@@ -69,8 +73,8 @@
     "dependency_inventory": [
       "Containerfile",
       "docs/toolchain-lock.md",
-      "tools/pyproject.toml",
-      "tools/uv.lock",
+      "pyproject.toml",
+      "uv.lock",
       "tools/writing/package.json",
       "tools/writing/package-lock.json"
     ],
@@ -97,8 +101,8 @@
   "dependency_files": {
     "container_definition": "Containerfile",
     "human_lock_record": "docs/toolchain-lock.md",
-    "python_manifest": "tools/pyproject.toml",
-    "python_lock": "tools/uv.lock",
+    "python_manifest": "pyproject.toml",
+    "python_lock": "uv.lock",
     "writing_manifest": "tools/writing/package.json",
     "writing_lock": "tools/writing/package-lock.json"
   },
@@ -117,7 +121,6 @@
       "release-profiles",
       "extension-apis",
       "book-contracts",
-      "compatibility",
       "editorial-integrity",
       "identities",
       "editions",

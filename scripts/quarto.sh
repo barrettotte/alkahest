@@ -3,8 +3,8 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/toolchain.sh
-source "${script_dir}/lib/toolchain.sh"
+# shellcheck source=scripts/toolchain.sh
+source "${script_dir}/toolchain.sh"
 repo_root="$(alkahest_repo_root)"
 invoking_uid="$(id -u)"
 invoking_gid="$(id -g)"

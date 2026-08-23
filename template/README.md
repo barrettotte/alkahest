@@ -15,13 +15,13 @@ machine inventory; generated books install both without reference-manuscript
 content. It also bundles seven JSON Schemas and an ownership inventory for
 book-specific identities, editions, publication facts, rights, accessibility,
 cover parameters, and localized labels.
-The bundled compatibility policy, reversible-migration rules, and template
-release registry identify this build as private development rather than a
-published template release.
-The bundled author command reads one `book.toml`, discovers numbered manuscript
-files, and creates all Quarto, release, theme, registry, and backend inputs in a
-disposable workspace. New repositories pin this package as one archive instead
-of committing its extracted implementation files.
+The bundled author command merges a short `book.toml` with managed project
+identity and layout defaults, discovers numbered manuscript files, diagnoses
+the rendering environment, and creates all Quarto, release, theme, registry,
+and backend inputs in a disposable workspace. Routine builds produce HTML,
+EPUB, and the production Typst PDF; an explicit advanced command also exercises
+the secondary LuaLaTeX path. New repositories pin this package as one
+archive instead of committing its extracted implementation files.
 
 `MANIFEST.json` records every source-to-package mapping and checksum.
 `SHA256SUMS` verifies all package files. The engine is licensed under the MIT

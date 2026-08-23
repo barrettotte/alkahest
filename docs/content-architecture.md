@@ -60,7 +60,7 @@ distinguish it without inventing a retail cover. A later cover-pipeline item
 will generate actual cover files once dimensions and publication identity are
 known.
 
-`scripts/stage-edition.py` builds a disposable project containing only selected
+The edition staging library builds a disposable project containing only selected
 sources. For HTML it also materializes only rich-media files called by those
 sources, so an omitted chapter cannot contribute an unused interactive page,
 poster, transcript, caption, audio file, or video file. A public tree never

@@ -56,7 +56,7 @@ visible; a future vendor profile may perform a declared press conversion.
 
 Artifacts are grouped under `book/_build/print/7x10/`,
 `book/_build/print/6x9/`, and `book/_build/review/letter/` by PDF backend.
-Typst is the scored default; LuaLaTeX remains a tested compatibility and
+Typst is the scored default; LuaLaTeX remains a tested secondary and
 diagnostic backend. The decision and reversal policy follow below.
 
 ## Print preflight
@@ -109,7 +109,7 @@ the explicit `make update-golden-pages` maintenance target.
 
 ## PDF backend decision
 
-Typst is the default PDF backend. LuaLaTeX remains a supported compatibility
+Typst is the default PDF backend. LuaLaTeX remains a supported secondary
 and diagnostic backend; ordinary renders and CI continue building both so the
 fallback cannot decay unnoticed. The machine-readable scorecard is
 `book/pdf-backends.json`.
@@ -144,7 +144,7 @@ backend.
   automation passes, but human review remains pending in
   [`accessibility.md`](accessibility.md#pdf-and-pdfua).
 
-### Migration and reversal
+### Switching backends
 
 Canonical chapters remain neutral Quarto Markdown. Backend code stays in
 `book/typst/`, `book/latex/`, profiles, filters, and asset adapters. A production
@@ -156,7 +156,7 @@ toolchain upgrade materially changes fidelity or reliability. Reversal updates
 the registry, render alias, scorecard, and evidence while stable content IDs and
 authoring syntax remain unchanged.
 
-`make check-pdf-backend-decision` validates score arithmetic, operational
+`make check-pdf-backend` validates score arithmetic, operational
 default, adapters, documentation markers, and neutral manuscript source.
 
 The initial 2026-08-16 validation confirmed 504 x 720 point media boxes for

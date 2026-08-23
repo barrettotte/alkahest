@@ -54,7 +54,7 @@ image alternative, and semantic classes, but mark the complete icon span
 `aria-hidden="true"`. Because equivalent visible wording is mandatory, this
 keeps the icon decorative in the accessibility tree and avoids announcing the
 same meaning twice. Typst consumes the canonical SVG directly. Before
-rendering, `scripts/stage-icons.sh` deterministically derives a PDF vector from
+rendering, `python3 -m alkahest.staging icons` deterministically derives a PDF vector from
 each SVG for LuaLaTeX, whose callout-title path does not run Quarto's normal SVG
 conversion. The derivative remains an ignored build input, not a second
 artwork source. Both PDF backends use a one-em inline size. Adjacent visible

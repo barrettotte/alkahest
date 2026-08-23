@@ -10,9 +10,9 @@ a requirement the shared derivative cannot satisfy.
 
 | Domain | Canonical source | Generator | Publication derivatives | Check |
 |---|---|---|---|---|
-| Graphs and charts | CSV, JSON, Mermaid, or DOT under `book/figures/data/` and `book/figures/source/` | `scripts/generate-graphs.py` and the computing generator | Dependency graph, response-time chart, and half-adder SVGs | `make check-graphs` |
-| Electrical circuits | Diagram construction in `scripts/generate-circuits.py` | Schemdraw 0.23 through the locked `uv` environment | `voltage-divider.svg` | `make check-circuits` |
-| Chemistry | Reaction data in `scripts/generate-chemistry.py` | RDKit 2026.03.5 through the locked `uv` environment | `fischer-esterification.svg` | `make check-chemistry` |
+| Graphs and charts | CSV, JSON, Mermaid, or DOT under `book/figures/data/` and `book/figures/source/` | `alkahest.generators.graphs` and the computing generator | Dependency graph, response-time chart, and half-adder SVGs | `make check-graphs` |
+| Electrical circuits | Diagram construction in `alkahest.generators.circuits` | Schemdraw 0.23 through the locked `uv` environment | `voltage-divider.svg` | `make check-circuits` |
+| Chemistry | Reaction data in `alkahest.generators.chemistry` | RDKit 2026.03.5 through the locked `uv` environment | `fischer-esterification.svg` | `make check-chemistry` |
 | Computing | `computing-diagrams.json` | Standard-library Python | Timing, gates, memory/instruction, and datapath SVGs | `make check-computing-diagrams` |
 | Physics | `physics-diagrams.json` | Standard-library Python | Vector and inverse-square-field SVGs | `make check-physics-diagrams` |
 | Rich media | `book/media.json` plus local assets | Registry filter and one deterministic audio generator | Native HTML enhancement plus SVG/text fallbacks | `make check-rich-media` |
@@ -20,7 +20,7 @@ a requirement the shared derivative cannot satisfy.
 Every generator runs offline. The check command validates source schema and
 domain invariants, regenerates into a disposable directory, and requires byte
 equality with the committed derivative. Version, runtime, package, and binary
-hashes belong in `tools/uv.lock`, the container lock, and
+hashes belong in the root `uv.lock`, the container lock, and
 `docs/toolchain-lock.md`; duplicating them in prose makes documentation stale.
 
 ## Candidate decisions

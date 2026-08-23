@@ -3,8 +3,8 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/lib/toolchain.sh
-source "${script_dir}/lib/toolchain.sh"
+# shellcheck source=scripts/toolchain.sh
+source "${script_dir}/toolchain.sh"
 
 if ! command -v podman >/dev/null 2>&1; then
   echo "error: Podman is required but was not found" >&2

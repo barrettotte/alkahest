@@ -4,6 +4,7 @@
 **/*.pyc
 **/node_modules
 tools/.venv
+.venv
 book/_build
 book/site_libs
 book/theme/fonts

@@ -9,7 +9,7 @@
       "schema": "config/metadata/identities.schema.json",
       "installed_schema": "schemas/identities.schema.json",
       "record": "book/identities.json",
-      "validator": "scripts/check-identities.py",
+      "validator_task": "identities",
       "composition": "replace",
       "generated_adapter": null
     },
@@ -18,7 +18,7 @@
       "schema": "config/metadata/editions.schema.json",
       "installed_schema": "schemas/editions.schema.json",
       "record": "book/editions.json",
-      "validator": "scripts/check-editions.py",
+      "validator_task": "editions",
       "composition": "replace",
       "generated_adapter": null
     },
@@ -27,7 +27,7 @@
       "schema": "config/metadata/publication.schema.json",
       "installed_schema": "schemas/publication.schema.json",
       "record": "book/publication.json",
-      "validator": "scripts/check-publication-metadata.py",
+      "validator_task": "publication-metadata",
       "composition": "replace",
       "generated_adapter": "book/generated/metadata.yml"
     },
@@ -36,7 +36,7 @@
       "schema": "config/metadata/rights.schema.json",
       "installed_schema": "schemas/rights.schema.json",
       "record": "book/assets.json",
-      "validator": "scripts/check-asset-rights.py",
+      "validator_task": "asset-rights",
       "composition": "replace",
       "generated_adapter": "book/_build/release/rights-credits.json"
     },
@@ -45,7 +45,7 @@
       "schema": "config/metadata/accessibility.schema.json",
       "installed_schema": "schemas/accessibility.schema.json",
       "record": "book/epub-accessibility.json",
-      "validator": "scripts/check-epub-accessibility-policy.py",
+      "validator_task": "epub-accessibility",
       "composition": "replace",
       "generated_adapter": null
     },
@@ -54,7 +54,7 @@
       "schema": "config/metadata/covers.schema.json",
       "installed_schema": "schemas/covers.schema.json",
       "record": "config/covers/cover-policy.json",
-      "validator": "scripts/check-covers.py",
+      "validator_task": "covers",
       "composition": "replace",
       "generated_adapter": null
     },
@@ -63,7 +63,7 @@
       "schema": "config/metadata/localized-labels.schema.json",
       "installed_schema": "schemas/localized-labels.schema.json",
       "record": "config/localization/locales.json",
-      "validator": "scripts/check-localization.py",
+      "validator_task": "localization",
       "composition": "replace",
       "generated_adapter": null
     }

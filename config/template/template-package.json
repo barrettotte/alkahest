@@ -70,16 +70,6 @@
       "destination": "defaults/book-contracts.json"
     },
     {
-      "id": "compatibility-policy",
-      "source": "config/template/compatibility.json",
-      "destination": "defaults/compatibility.json"
-    },
-    {
-      "id": "template-release-registry",
-      "source": "config/template/releases.json",
-      "destination": "defaults/template-releases.json"
-    },
-    {
       "id": "extension-api-documentation",
       "source": "docs/extension-apis.md",
       "destination": "docs/extension-apis.md"
@@ -88,11 +78,6 @@
       "id": "book-contract-documentation",
       "source": "docs/book-contracts.md",
       "destination": "docs/book-contracts.md"
-    },
-    {
-      "id": "compatibility-documentation",
-      "source": "docs/compatibility.md",
-      "destination": "docs/compatibility.md"
     },
     {
       "id": "schema-identities",
@@ -136,8 +121,8 @@
     },
     {
       "id": "theme-library",
-      "source": "scripts/lib/alkahest/theme.py",
-      "destination": "scripts/lib/alkahest/theme.py"
+      "source": "src/alkahest/theme.py",
+      "destination": "src/alkahest/theme.py"
     },
     {
       "id": "release-sync",
@@ -151,8 +136,8 @@
     },
     {
       "id": "release-library",
-      "source": "scripts/lib/alkahest/release_profiles.py",
-      "destination": "scripts/lib/alkahest/release_profiles.py"
+      "source": "src/alkahest/release_profiles.py",
+      "destination": "src/alkahest/release_profiles.py"
     },
     {
       "id": "author-command",
@@ -161,13 +146,13 @@
     },
     {
       "id": "author-library",
-      "source": "scripts/lib/alkahest/author_project.py",
-      "destination": "scripts/lib/alkahest/author_project.py"
+      "source": "src/alkahest/author_project.py",
+      "destination": "src/alkahest/author_project.py"
     },
     {
       "id": "theme-package-init",
-      "source": "scripts/lib/alkahest/__init__.py",
-      "destination": "scripts/lib/alkahest/__init__.py"
+      "source": "src/alkahest/__init__.py",
+      "destination": "src/alkahest/__init__.py"
     },
     {
       "id": "license",
@@ -186,13 +171,10 @@
     "defaults/quarto.yml",
     "defaults/extension-apis.json",
     "defaults/book-contracts.json",
-    "defaults/compatibility.json",
     "defaults/releases.json",
     "defaults/theme.json",
-    "defaults/template-releases.json",
     "docs/extension-apis.md",
     "docs/book-contracts.md",
-    "docs/compatibility.md",
     "schemas/accessibility.schema.json",
     "schemas/covers.schema.json",
     "schemas/editions.schema.json",
@@ -219,10 +201,10 @@
     "theme/alkahest-epub.css",
     "theme/alkahest-fonts.css",
     "theme/alkahest.scss",
-    "scripts/lib/alkahest/__init__.py",
-    "scripts/lib/alkahest/author_project.py",
-    "scripts/lib/alkahest/release_profiles.py",
-    "scripts/lib/alkahest/theme.py",
+    "src/alkahest/__init__.py",
+    "src/alkahest/author_project.py",
+    "src/alkahest/release_profiles.py",
+    "src/alkahest/theme.py",
     "scripts/stage-release.py",
     "scripts/author.py",
     "scripts/sync-release-profiles.py",

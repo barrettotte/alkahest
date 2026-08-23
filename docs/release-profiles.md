@@ -3,9 +3,9 @@
 Alkahest separates reusable release behavior from book-specific editorial
 choices. In a minimal generated book, authors select one or two excerpt chapter
 filenames in `book.toml`; numbered full chapters are discovered automatically,
-and `make build` or `make excerpt` creates every profile and allowlist only in
-ignored workspace state. The direct JSON workflow below remains the exhaustive
-specimen and advanced engine contract.
+and `make build` or `make excerpt` creates the relevant profile and allowlist
+only in ignored workspace state. The direct JSON workflow below remains the
+exhaustive specimen and advanced engine contract.
 
 The engine supplies the closed defaults in
 `book/alkahest-release-defaults.json` (installed as
@@ -23,7 +23,8 @@ make test-release-profiles
 ```
 
 Minimal generated books expose `make build` for the full release and
-`make excerpt` for the public HTML, EPUB, and Typst excerpt.
+`make excerpt` for the public HTML, EPUB, and Typst excerpt. `make build-all`
+adds the secondary LuaLaTeX PDF to the normal full build.
 
 ## Book-local contract
 

@@ -9,7 +9,7 @@ that could silently drift.
 `config/template/template-package.json` selects five complete reusable source
 trees—Quarto extensions, Lua filters, LuaLaTeX adapters, web/EPUB themes, and
 the Typst adapter—plus the shared brand, package README, and MIT license. It
-maps 65 source files to standalone package-relative paths. Installed fonts are
+maps 62 source files to standalone package-relative paths. Installed fonts are
 excluded because they are locked build dependencies rather than template
 source; a generated book obtains them through the existing toolchain. The
 package also carries shared Quarto, theme, and release defaults plus the small
@@ -20,9 +20,6 @@ author, book-configuration, engine, filter, and generator boundaries. Seven
 JSON Schemas and their ownership inventory define stable IDs, editions,
 publication facts, rights, accessibility, covers, and localized labels without
 copying laboratory metadata.
-The compatibility policy and private-development release registry travel with
-the package so installed books can identify their engine contract without
-mistaking a locally validated package for a public release.
 
 Run:
 
@@ -57,8 +54,6 @@ This package includes:
 - `docs/extension-apis.md` plus its exact provisional API inventory; and
 - `docs/book-contracts.md`, seven reusable schemas, and the exact record-layer
   inventory; and
-- `docs/compatibility.md`, semantic-version policy, reversible-migration rules,
-  and the private-development template release registry; and
 - the minimal author command that compiles `book.toml` into disposable full and
   excerpt workspaces.
 
@@ -66,8 +61,8 @@ It deliberately excludes reference-book chapters and fixtures, book metadata,
 identities, rights decisions, book-specific edition and release allowlists, source
 assets, generated fonts, maintainer scripts, and tests. Those do not belong in
 a reusable presentation engine. The generated-book, theme, and release layers
-now surround this package; a later version adds a migration only when a real
-schema transition exists.
+now surround this package. The engine remains an unreleased, provisional
+contract and may be changed directly until its first public release.
 
 The reference specimen remains the exhaustive acceptance consumer in this
 repository. Packaging from its canonical engine files proves extraction, and

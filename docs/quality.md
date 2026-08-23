@@ -30,6 +30,38 @@ time rather than during deterministic local builds.
 `make check-source` runs every semantic source group. `make test-source` runs
 their positive and negative fixture suites.
 
+## Toolkit development gates
+
+The repository is one uv project pinned to Python 3.13.15. `make quality` runs
+Ruff linting and formatting, mypy, and pytest from the committed `uv.lock`;
+fast unit tests live under `tests/unit/`, while comprehensive integration
+fixtures remain available through `make test` and focused `make test-NAME`
+commands. Ruff formatting/linting and mypy initially gate the new CLI/task
+orchestration layer; publishing modules remain protected by their integration
+functional suites and can be brought into the static baseline incrementally.
+`make security` applies Ruff's security rules across the reusable
+library and audits the locked Python environment for known vulnerabilities.
+Add reusable orchestration to `src/alkahest/` and register tasks once in
+`src/alkahest/tasks.py`; Make and CI consume that inventory rather than copying
+command lists. Pure Python orchestration belongs in the direct-operation or
+project-check modules; validators, generators, and rendered-output helpers
+belong in the corresponding `checks`, `generators`, or `rendering` subpackage.
+Add a standalone script only when an external process or published file path is
+itself part of the interface. Locked Python checks share one container runner;
+its read-only mode prevents validators from mutating the workspace, while
+registered generators opt into a writable mount explicitly.
+
+Cross-tool artifact suites live in `alkahest.checks.suites`, pre-render asset
+staging lives in `alkahest.staging`, and local diagnostics use `alkahest report
+build|toolchain`. These modules keep the public Make commands stable without
+adding one shell launcher per workflow.
+
+The profile graph in `alkahest.rendering.pipeline` owns render composition and
+safe artifact promotion. `alkahest.checks.writing` owns the locked CSpell/Vale
+workflow, and `alkahest.ci` records the provider-neutral validation sequence.
+The remaining shell files are generic Podman/Quarto boundaries rather than
+feature-specific orchestration.
+
 ## Publication consistency
 
 The source gates establish editorial intent; rendered gates prove that format

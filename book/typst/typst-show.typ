@@ -74,7 +74,7 @@ $endif$
     ])
   ]
   #page(header: none, footer: none, numbering: none)[
-    #place(center + horizon, text(font: "$displayfont$", fallback: false, size: 18pt)[$alkahest.dedication$])
+    #place(center + horizon, text(font: "$displayfont$", fallback: false, size: 18pt)[$dedication$])
   ]
   // Reserve the verso after the dedication so the contents begins recto.
   #page(header: none, footer: none, numbering: none)[]

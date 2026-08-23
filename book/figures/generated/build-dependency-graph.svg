@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
   <title id="title">Validated source-to-publication dependency graph</title>
   <desc id="desc">Manuscript source and data and assets both feed validation. Validation feeds rendering, which produces HTML, EPUB, Typst PDF, and LuaLaTeX PDF outputs.</desc>
-  <metadata>Generated deterministically by scripts/generate-graphs.py from the evaluated Graphviz design in figures/source/build-dependency.dot; original Alkahest fixture, CC0 1.0.</metadata>
+  <metadata>Generated deterministically by alkahest.generators.graphs from the evaluated Graphviz design in figures/source/build-dependency.dot; original Alkahest fixture, CC0 1.0.</metadata>
   <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>
   <rect width="1200" height="320" fill="#ffffff"/>
   <g fill="none" stroke="#334155" stroke-width="4" marker-end="url(#arrow)">

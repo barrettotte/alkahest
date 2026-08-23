@@ -18,7 +18,7 @@ rejected.
 Run:
 
 ```sh
-make check-archive-policy
+make check-source-archive
 make test-source-archive
 make package-source-archive
 make check-source-archive
@@ -54,8 +54,7 @@ semantic source groups there, including the archive policy itself. Keeping
 generated package records below `.archive/` means they do not violate restored
 top-level source coverage. The smoke includes the template engine, new-book
 generator, reusable release-profile contracts, extension APIs, and book-record
-schemas, plus template compatibility and migration policy. CI performs this restoration
-smoke on every run.
+schemas. CI performs this restoration smoke on every run.
 A full render remains a deliberate periodic recovery drill after rebuilding or
 obtaining the locked container image; the archive itself never accesses the
 network.

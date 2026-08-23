@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(SCRIPT_DIR / "lib"))
+sys.path.insert(0, str(SCRIPT_DIR.parent / "src"))
 
 from alkahest.theme import ThemeError, sync_project_theme
 

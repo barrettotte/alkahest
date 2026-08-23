@@ -4,9 +4,9 @@ project:
   # one dispatcher, then stage generated vector and font build inputs.
   pre-render:
     - python3 ../scripts/sync-theme.py
-    - python3 ../scripts/check-source.py
-    - ../scripts/stage-icons.sh
-    - ../scripts/stage-webfonts.sh
+    - python3 -m alkahest check --source
+    - python3 -m alkahest.staging icons
+    - python3 -m alkahest.staging webfonts
 
 # Work-level values are generated from publication.json. This top-level include
 # is inherited by every profile and by disposable edition staging projects.
@@ -48,8 +48,7 @@ book:
 
 # Authored presentation settings stay here; publication facts are generated
 # into generated/metadata.yml from the canonical work and product records.
-alkahest:
-  dedication: "For the readers who build things to understand them."
+dedication: "For the readers who build things to understand them."
 
 bibliography: references.bib
 csl: citations/chicago-author-date.csl
