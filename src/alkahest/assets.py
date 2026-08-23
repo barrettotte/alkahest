@@ -6,10 +6,11 @@ import hashlib
 import json
 import re
 import shutil
-import subprocess
 from datetime import date
 from pathlib import Path, PurePosixPath
 from zipfile import BadZipFile, ZipFile
+
+from .process import run_process
 
 RIGHTS_FIELDS = (
     "creator",
@@ -545,9 +546,7 @@ def validate_pdf_metadata(label, info, metadata, contract):
 
 
 def run_command(command, label):
-    result = subprocess.run(  # noqa: S603 - callers build fixed PDF tool commands
-        command, check=False, capture_output=True, text=True
-    )
+    result = run_process(command, check=False, capture_output=True, text=True)
     if result.returncode:
         fail(f"{label} failed: {result.stderr.strip() or result.stdout.strip()}")
     return result.stdout

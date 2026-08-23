@@ -10,6 +10,7 @@ from collections.abc import Sequence
 
 from .common import ContractError
 from .new_book import create_new_book
+from .process import run_process
 from .tasks import (
     CHECKS,
     GENERATORS,
@@ -71,7 +72,7 @@ def _list_tasks() -> int:
 def _run_tests(names: Sequence[str]) -> int:
     root = ROOT / "tests/integration"
     if not names:
-        return subprocess.run(  # noqa: S603 - current interpreter and repository test path
+        return run_process(
             [sys.executable, "-m", "pytest", root, "-m", "not locked"],
             cwd=ROOT,
             check=False,
@@ -111,9 +112,7 @@ def _run_tests(names: Sequence[str]) -> int:
             ]
         else:
             raise ValueError(f"unknown test: {name}; run make test for the complete suite")
-        if subprocess.run(  # noqa: S603 - command is built from fixed pytest arguments
-            command, cwd=ROOT, check=False
-        ).returncode:
+        if run_process(command, cwd=ROOT, check=False).returncode:
             return 1
     return 0
 
@@ -127,7 +126,7 @@ def _quality() -> int:
     )
     for command in commands:
         try:
-            subprocess.run(command, cwd=ROOT, check=True)  # noqa: S603 - closed registry
+            run_process(command, cwd=ROOT, check=True)
         except (OSError, subprocess.CalledProcessError) as error:
             print(f"error: quality command failed: {error}", file=sys.stderr)
             return 1
@@ -148,7 +147,7 @@ def _security() -> int:
     )
     for command in commands:
         try:
-            subprocess.run(command, cwd=ROOT, check=True)  # noqa: S603 - closed registry
+            run_process(command, cwd=ROOT, check=True)
         except (OSError, subprocess.CalledProcessError) as error:
             print(f"error: security command failed: {error}", file=sys.stderr)
             return 1
@@ -208,13 +207,9 @@ def main(arguments: Sequence[str] | None = None) -> int:
         if values.command == "list":
             return _list_tasks()
         if values.command == "doctor":
-            return subprocess.run(  # noqa: S603 - fixed repository wrapper
-                [SCRIPTS / "quarto.sh", "check"], cwd=ROOT, check=False
-            ).returncode
+            return run_process([SCRIPTS / "quarto.sh", "check"], cwd=ROOT, check=False).returncode
         if values.command == "bootstrap":
-            return subprocess.run(  # noqa: S603 - command is selected from a closed set
-                [SCRIPTS / "bootstrap.sh"], cwd=ROOT, check=False
-            ).returncode
+            return run_process([SCRIPTS / "bootstrap.sh"], cwd=ROOT, check=False).returncode
         if values.command == "ci":
             from .ci import run as run_ci
 

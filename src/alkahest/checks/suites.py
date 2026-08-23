@@ -5,10 +5,11 @@ from __future__ import annotations
 import argparse
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parents[3]
 INTEGRATION_FIXTURES = ROOT / "tests" / "integration"
@@ -30,7 +31,7 @@ def executable(name: str) -> str:
 
 def run(arguments: list[str], *, check: bool = True) -> int:
     """Run one command in the current locked environment."""
-    result = subprocess.run(  # noqa: S603 - commands come from closed suite definitions
+    result = run_process(
         arguments,
         cwd=ROOT,
         check=False,

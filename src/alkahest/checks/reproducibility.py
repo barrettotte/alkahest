@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from alkahest.process import run_process
 from alkahest.reproducibility import (
     ReproducibilityError,
     compare_snapshots,
@@ -58,7 +59,7 @@ def main():
         before = snapshot(root, policy, identifiers)
         artifacts = {item["id"]: item for item in policy["contract"]["artifacts"]}
         for identifier in identifiers:
-            subprocess.run(  # noqa: S603 - policy-validated render targets
+            run_process(
                 [
                     sys.executable,
                     "-m",

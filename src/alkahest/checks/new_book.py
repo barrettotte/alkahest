@@ -2,7 +2,6 @@
 
 import json
 import os
-import subprocess
 import sys
 import tempfile
 import tomllib
@@ -17,6 +16,7 @@ from alkahest.new_book import (
     validate_new_book_integration,
     validate_scaffold,
 )
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -69,7 +69,7 @@ def main():
         facts = validate_scaffold(destination, first)
         if result["files"] != facts["files"]:
             raise RuntimeError("error: new-book result file count is inconsistent")
-        subprocess.run(
+        run_process(
             [sys.executable, ".alkahest/alkahest.py", "check"],
             cwd=destination,
             check=True,
@@ -78,7 +78,7 @@ def main():
         )
         doctor_environment = os.environ.copy()
         doctor_environment["QUARTO"] = sys.executable
-        doctor_result = subprocess.run(
+        doctor_result = run_process(
             [sys.executable, ".alkahest/alkahest.py", "doctor"],
             cwd=destination,
             check=True,
@@ -86,8 +86,8 @@ def main():
             text=True,
             env=doctor_environment,
         )
-        help_result = subprocess.run(
-            ["make", "help"],  # noqa: S607 - fixed smoke command
+        help_result = run_process(
+            ["make", "help"],
             cwd=destination,
             check=True,
             capture_output=True,

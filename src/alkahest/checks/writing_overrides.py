@@ -6,10 +6,9 @@ import re
 import sys
 from pathlib import Path
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
-
 from .writing_sources import writing_sources
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 CSPELL_DIRECTIVE = re.compile(r"cspell\s*:\s*([A-Za-z-]+)(?:\s+(.*?))?", re.I)
 HTML_COMMENT = re.compile(r"<!--[ \t]*(.*?)[ \t]*-->", re.S)
 REASON = re.compile(r"writing-override\s*:\s*(.+)", re.I)

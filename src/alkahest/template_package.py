@@ -12,7 +12,6 @@ from pathlib import Path, PurePosixPath
 
 from .common import fail, load_json
 
-
 POLICY_PATH = "config/template/template-package.json"
 ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 SEMVER = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
@@ -253,7 +252,7 @@ def validate_template_integration(root):
         "config/template/template-package.json",
         "make package-template-engine",
         "make check-template-package",
-        "54 source files",
+        "55 source files",
         "Deliberate boundary",
     ):
         if marker not in texts["documentation"]:

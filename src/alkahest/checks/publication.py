@@ -8,6 +8,8 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from alkahest.process import run_process
+
 ROOT = Path(__file__).resolve().parents[3]
 BOOK = ROOT / "book"
 BUILD = BOOK / "_build"
@@ -86,7 +88,7 @@ def html_tree(root):
 
 
 def run_checked(command, *, input_text=None):
-    result = subprocess.run(  # noqa: S603 - callers supply closed contract commands
+    result = run_process(
         command,
         cwd=ROOT,
         input=input_text,

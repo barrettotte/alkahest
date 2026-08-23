@@ -12,6 +12,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from alkahest.process import run_process
 from alkahest.rendering.text_contract import validate as validate_text_contract
 from alkahest.rendering.text_normalize import normalize
 
@@ -54,7 +55,7 @@ def require_pattern(text: str, pattern: str, label: str) -> None:
 
 def run(arguments: list[str], *, capture: bool = True) -> subprocess.CompletedProcess[str]:
     try:
-        return subprocess.run(  # noqa: S603 - arguments come from closed validators
+        return run_process(
             arguments,
             cwd=ROOT,
             check=True,

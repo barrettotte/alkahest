@@ -12,9 +12,9 @@ import uuid
 from datetime import date, datetime, timezone
 from pathlib import Path, PurePosixPath
 
+from .process import run_process
 from .release_profiles import ReleaseProfileError, release_outputs
 from .theme import ThemeError, theme_outputs
-
 
 BOOK_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 LANGUAGE = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
@@ -512,7 +512,7 @@ def doctor(root):
     quarto = configured_quarto or shutil.which("quarto")
     if quarto is not None:
         try:
-            result = subprocess.run(  # noqa: S603 - explicit or PATH-resolved executable
+            result = run_process(
                 [quarto, "--version"],
                 check=True,
                 capture_output=True,
@@ -538,7 +538,7 @@ def doctor(root):
     image = os.environ.get("ALKAHEST_TOOLCHAIN_IMAGE", TOOLCHAIN_IMAGE)
     try:
         available = (
-            subprocess.run(  # noqa: S603 - PATH-resolved Podman probe
+            run_process(
                 [podman, "image", "exists", image],
                 check=False,
                 stdout=subprocess.DEVNULL,
@@ -577,8 +577,8 @@ def render(root, engine_root, profile, formats):
     if quarto is None and shutil.which("podman"):
         image = os.environ.get("ALKAHEST_TOOLCHAIN_IMAGE", TOOLCHAIN_IMAGE)
         available = (
-            subprocess.run(  # noqa: S603,S607 - fixed Podman probe
-                ["podman", "image", "exists", image],  # noqa: S607 - required CLI on PATH
+            run_process(
+                ["podman", "image", "exists", image],
                 check=False,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
@@ -589,6 +589,7 @@ def render(root, engine_root, profile, formats):
             created = datetime.fromisoformat(result["config"]["book"]["created"])
             epoch = int(created.replace(tzinfo=timezone.utc).timestamp())
             relative_stage = result["stage"].relative_to(root).as_posix()
+            container_tmp = PurePosixPath("/") / "tmp"
             container = [
                 "podman",
                 "run",
@@ -601,17 +602,17 @@ def render(root, engine_root, profile, formats):
                 "--security-opt",
                 "label=disable",
                 "--tmpfs",
-                "/tmp:rw,size=2g,mode=1777",  # noqa: S108 - isolated container tmpfs
+                f"{container_tmp}:rw,size=2g,mode=1777",
                 "--env",
-                "HOME=/tmp",
+                f"HOME={container_tmp}",
                 "--env",
-                "JAVA_TOOL_OPTIONS=-Duser.home=/tmp",
+                f"JAVA_TOOL_OPTIONS=-Duser.home={container_tmp}",
                 "--env",
-                "TEXMFCACHE=/tmp",
+                f"TEXMFCACHE={container_tmp}",
                 "--env",
-                "TEXMFVAR=/tmp",
+                f"TEXMFVAR={container_tmp}",
                 "--env",
-                "XDG_CACHE_HOME=/tmp/cache",
+                f"XDG_CACHE_HOME={container_tmp / 'cache'}",
                 "--env",
                 f"SOURCE_DATE_EPOCH={epoch}",
                 "--env",
@@ -626,6 +627,7 @@ def render(root, engine_root, profile, formats):
     if quarto is None and container is None:
         _fail("Quarto is not on PATH and the pinned Alkahest Podman image is unavailable")
     for format_name in formats:
+        print(f"rendering: {profile} {format_name}", flush=True)
         command = (
             [quarto, "render", "--profile", f"release-{release},{format_name}"]
             if quarto is not None
@@ -637,11 +639,20 @@ def render(root, engine_root, profile, formats):
             ]
         )
         try:
-            subprocess.run(  # noqa: S603 - validated Quarto or Podman command
-                command, cwd=result["stage"], check=True
+            completed = run_process(
+                command,
+                cwd=result["stage"],
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
             )
-        except (OSError, subprocess.CalledProcessError) as error:
-            _fail(f"{format_name} render failed: {error}")
+        except OSError as error:
+            _fail(f"{format_name} render could not start: {error}")
+        if completed.returncode:
+            detail = completed.stdout.strip()
+            suffix = f"\n{detail}" if detail else ""
+            _fail(f"{format_name} render failed with status {completed.returncode}{suffix}")
         generated = result["stage"] / "_output" / format_name
         destination = root / "_build" / profile / format_name
         if not generated.is_dir():
@@ -654,6 +665,7 @@ def render(root, engine_root, profile, formats):
             shutil.rmtree(destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(generated, destination)
+        print(f"built: _build/{profile}/{format_name}")
     return result
 
 

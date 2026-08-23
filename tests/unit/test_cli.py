@@ -90,7 +90,7 @@ def test_accessibility_test_adds_the_locked_browser_fixture(monkeypatch) -> None
         commands.append(command)
         return type("Result", (), {"returncode": 0})()
 
-    monkeypatch.setattr(cli.subprocess, "run", run)
+    monkeypatch.setattr(cli, "run_process", run)
     assert cli._run_tests(["accessibility"]) == 0
     assert str(commands[0][-1]).endswith("test_accessibility_policy.py")
     assert commands[1][-2:] == ["alkahest.checks.suites", "browser-fixture"]
@@ -121,7 +121,7 @@ def test_locked_direct_operation_uses_container_wrapper(monkeypatch, tmp_path) -
         return type("Result", (), {"returncode": 7})()
 
     monkeypatch.setattr(task_module, "ROOT", tmp_path)
-    monkeypatch.setattr(task_module.subprocess, "run", run)
+    monkeypatch.setattr(task_module, "run_process", run)
     task = ScriptTask("covers", ":generate-covers", "cover artifacts", True, writes_workspace=True)
     assert task_module.run_task(task) == 7
     assert observed["command"][-3:] == [
@@ -139,7 +139,7 @@ def test_locked_check_uses_read_only_workspace(monkeypatch, tmp_path) -> None:
         return type("Result", (), {"returncode": 0})()
 
     monkeypatch.setattr(task_module, "ROOT", tmp_path)
-    monkeypatch.setattr(task_module.subprocess, "run", run)
+    monkeypatch.setattr(task_module, "run_process", run)
     task = ScriptTask("assets", ":check-release-assets", "release assets", True)
     assert task_module.run_task(task) == 0
     assert "--read-only" in observed["command"]

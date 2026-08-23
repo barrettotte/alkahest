@@ -110,6 +110,11 @@
       "destination": "src/alkahest/author_project.py"
     },
     {
+      "id": "process-library",
+      "source": "src/alkahest/process.py",
+      "destination": "src/alkahest/process.py"
+    },
+    {
       "id": "theme-package-init",
       "source": "src/alkahest/__init__.py",
       "destination": "src/alkahest/__init__.py"
@@ -155,6 +160,7 @@
     "theme/alkahest.scss",
     "src/alkahest/__init__.py",
     "src/alkahest/author_project.py",
+    "src/alkahest/process.py",
     "src/alkahest/release_profiles.py",
     "src/alkahest/theme.py",
     "scripts/stage-release.py",

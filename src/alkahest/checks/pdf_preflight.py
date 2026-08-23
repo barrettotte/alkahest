@@ -5,10 +5,9 @@ import json
 import sys
 from pathlib import Path, PurePosixPath
 
-ROOT = Path(__file__).resolve().parents[3]
-
 from alkahest.pdf_preflight import PreflightError, inspect_pdf
 
+ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_POLICY = ROOT / "config" / "pdf" / "preflight.json"
 
 

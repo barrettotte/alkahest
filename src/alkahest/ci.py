@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import shlex
-import subprocess
 import sys
 from pathlib import Path
+
+from .process import run_process
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -37,9 +38,7 @@ COMMANDS = (
 
 def run() -> int:
     """Build the image, then run each closed CI command in order."""
-    bootstrap = subprocess.run(  # noqa: S603 - fixed repository bootstrap boundary
-        [ROOT / "scripts" / "bootstrap.sh"], cwd=ROOT, check=False
-    )
+    bootstrap = run_process([ROOT / "scripts" / "bootstrap.sh"], cwd=ROOT, check=False)
     if bootstrap.returncode:
         return bootstrap.returncode
     for display in COMMANDS:
@@ -48,9 +47,7 @@ def run() -> int:
             arguments = [sys.executable, "-m", "alkahest", *arguments[1:]]
         else:
             arguments[0] = sys.executable
-        result = subprocess.run(  # noqa: S603 - commands come from the closed sequence above
-            arguments, cwd=ROOT, check=False
-        )
+        result = run_process(arguments, cwd=ROOT, check=False)
         if result.returncode:
             print(f"error: CI command failed: {display}", file=sys.stderr)
             return result.returncode

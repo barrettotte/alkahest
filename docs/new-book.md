@@ -69,7 +69,9 @@ routine `build` creates full HTML, EPUB, and the production Typst PDF. The
 advanced `build-all` command additionally creates the slower secondary
 LuaLaTeX PDF. `excerpt` creates HTML, EPUB, and Typst products containing
 only the one or two chapters selected in `book.toml`, plus front and back
-matter. `clean` removes all disposable output.
+matter. Successful renders show one concise progress/result pair per format;
+if a renderer fails, its complete diagnostics remain visible. `clean` removes
+all disposable output.
 
 The generated `book.toml` is intentionally short. To change colors or display
 type, uncomment the optional `[theme.colors]` or `[theme.typography]` examples.

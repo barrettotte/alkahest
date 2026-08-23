@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .common import fail, load_json
 from .editions import edition_source_ids, load_editions
-
+from .process import run_process
 
 PREVIEW_DESCRIPTION = (
     "A two-chapter preview of Alkahest Reference Book for evaluating the book "
@@ -60,9 +60,7 @@ def preview_inventory(root):
 
 def _run(command, label):
     try:
-        result = subprocess.run(  # noqa: S603 - callers select fixed artifact inspectors
-            command, check=True, capture_output=True, text=True, encoding="utf-8"
-        )
+        result = run_process(command, check=True, capture_output=True, text=True, encoding="utf-8")
     except (OSError, subprocess.CalledProcessError) as error:
         fail(f"cannot inspect preview {label}: {error}")
     return result.stdout

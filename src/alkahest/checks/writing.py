@@ -10,6 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from ..process import run_process
 from .writing_sources import writing_sources
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -29,7 +30,7 @@ def executable(name: str) -> str:
 
 def run(arguments: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
     """Run one writing command in the locked environment."""
-    result = subprocess.run(  # noqa: S603 - commands come from closed definitions
+    result = run_process(
         arguments,
         cwd=ROOT,
         text=True,
@@ -42,7 +43,7 @@ def run(arguments: list[str], *, check: bool = True) -> subprocess.CompletedProc
 
 def version(arguments: list[str]) -> str:
     """Capture one tool version."""
-    result = subprocess.run(  # noqa: S603 - commands are resolved below
+    result = run_process(
         arguments,
         cwd=ROOT,
         capture_output=True,

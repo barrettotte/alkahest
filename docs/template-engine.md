@@ -9,7 +9,7 @@ that could silently drift.
 `config/template/template-package.json` selects five complete reusable source
 trees—Quarto extensions, Lua filters, LuaLaTeX adapters, web/EPUB themes, and
 the Typst adapter—plus the shared brand, package README, and MIT license. It
-maps 54 source files to standalone package-relative paths. Installed fonts are
+maps 55 source files to standalone package-relative paths. Installed fonts are
 excluded because they are locked build dependencies rather than template
 source; a generated book obtains them through the existing toolchain. The
 package also carries shared Quarto, theme, and release defaults plus the small

@@ -13,6 +13,7 @@ from defusedxml import ElementTree as ET
 
 from .common import fail, load_json
 from .manifestations import load_and_validate
+from .process import run_process
 
 ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 DECIMAL = re.compile(r"(?:0|[1-9][0-9]*)(?:\.[0-9]+)?")
@@ -397,8 +398,8 @@ def _thumbnail_svg(profile, manifestation, context, geometry):
 
 def _inspect_pdf(path, dimensions):
     try:
-        result = subprocess.run(  # noqa: S603 - fixed local PDF inspector
-            ["pdfinfo", str(path)],  # noqa: S607 - required CLI on PATH
+        result = run_process(
+            ["pdfinfo", str(path)],
             check=True,
             capture_output=True,
             text=True,

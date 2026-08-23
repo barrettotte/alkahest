@@ -22,6 +22,7 @@ from alkahest.golden_pages import (
     visual_digest,
     write_rgb_png,
 )
+from alkahest.process import run_process
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[3]
 
@@ -75,7 +76,7 @@ def validate_integration(root, policy):
 
 def tool_output(arguments, cwd):
     try:
-        result = subprocess.run(  # noqa: S603 - closed rasterizer commands
+        result = run_process(
             arguments,
             cwd=cwd,
             stdout=subprocess.PIPE,
@@ -93,7 +94,7 @@ def tool_output(arguments, cwd):
 def validate_rasterizer(policy, root):
     program = policy["rasterizer"]["program"]
     try:
-        result = subprocess.run(  # noqa: S603 - policy-locked rasterizer
+        result = run_process(
             [program, "-v"],
             cwd=root,
             stdout=subprocess.PIPE,

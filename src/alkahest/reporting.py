@@ -16,6 +16,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .author_project import TOOLCHAIN_IMAGE
+from .process import run_process
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -164,7 +165,7 @@ def run(
     arguments: list[str], *, environment: dict[str, str] | None = None
 ) -> subprocess.CompletedProcess[str]:
     """Run a report command and capture its text output."""
-    return subprocess.run(  # noqa: S603 - callers use resolved or fixed commands
+    return run_process(
         arguments,
         cwd=ROOT,
         env=environment,
@@ -408,7 +409,7 @@ def toolchain_inside() -> int:
 def toolchain_report() -> int:
     """Run the installed-image inventory offline."""
     podman = require_image()
-    result = subprocess.run(  # noqa: S603 - fixed offline image inspection
+    result = run_process(
         [
             podman,
             "run",

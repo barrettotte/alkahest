@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import re
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from .process import run_process
 
 BOX_NAMES = ("MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox")
 FONT_ROW = re.compile(
@@ -329,9 +329,7 @@ def validate_color_spaces(
 
 
 def run_tool(command: list[str], allowed_stderr: set[str] | None = None) -> str:
-    result = subprocess.run(  # noqa: S603 - caller builds a closed tool command
-        command, text=True, capture_output=True, check=False
-    )
+    result = run_process(command, text=True, capture_output=True, check=False)
     if result.returncode:
         fail(f"{' '.join(command)} failed: {result.stderr.strip()}")
     diagnostics = {line.strip() for line in result.stderr.splitlines() if line.strip()}

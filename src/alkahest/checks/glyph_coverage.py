@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import json
 import shutil
-import subprocess
 import sys
 from pathlib import Path
+
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parents[3]
 POLICY = ROOT / "config" / "localization" / "locales.json"
@@ -32,8 +33,8 @@ def manuscript_codepoints():
 
 
 def families_for(codepoint):
-    result = subprocess.run(  # noqa: S603 - fixed fontconfig query
-        [  # noqa: S607 - locked container executable
+    result = run_process(
+        [
             "fc-list",
             f":charset={codepoint:04X}",
             "--format",

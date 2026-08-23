@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import argparse
 import shutil
-import subprocess
 import sys
 from pathlib import Path
+
+from .process import run_process
 
 ROOT = Path(__file__).resolve().parents[2]
 WEBFONT_SOURCE = Path("/opt/alkahest/fonts/web")
@@ -43,7 +44,7 @@ def stage_icons() -> None:
         destination = source.with_suffix(".pdf")
         if destination.is_file() and destination.stat().st_mtime_ns >= source.stat().st_mtime_ns:
             continue
-        result = subprocess.run(  # noqa: S603 - converter is resolved above
+        result = run_process(
             [converter, "--format=pdf", "--output", destination, source],
             cwd=ROOT,
             check=False,

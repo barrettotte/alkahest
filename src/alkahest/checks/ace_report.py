@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 EXPECTED_ACE_VERSION = "1.4.6"
@@ -51,7 +52,7 @@ def validate_report(path):
 
 
 def main():
-    default = Path("/tmp/alkahest-ace/report.json")  # noqa: S108 - container-owned report
+    default = Path(tempfile.gettempdir()) / "alkahest-ace" / "report.json"
     report_path = Path(os.environ.get("ALKAHEST_ACE_REPORT", default))
     if len(sys.argv) > 2:
         fail("usage: python -m alkahest.checks.ace_report [REPORT_JSON]")

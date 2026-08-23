@@ -8,6 +8,8 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from alkahest.process import run_process
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BOOK_ROOT = REPO_ROOT / "book"
 DATA_PATH = BOOK_ROOT / "figures" / "data" / "response-time.csv"
@@ -28,7 +30,7 @@ def check_derivative():
     with tempfile.TemporaryDirectory(prefix="alkahest-graphs.") as directory:
         candidate = Path(directory) / "response-time.svg"
         dependency_candidate = Path(directory) / "build-dependency-graph.svg"
-        result = subprocess.run(  # noqa: S603 - fixed generator module
+        result = run_process(
             [
                 sys.executable,
                 "-m",

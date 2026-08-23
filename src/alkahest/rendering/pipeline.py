@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..markup import canonicalize_markup
+from ..process import run_process
 from .canonicalize import candidates
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -137,7 +138,7 @@ PLANS = {
 
 def run(arguments: list[str], *, stdout=None) -> None:
     """Run one closed render command."""
-    result = subprocess.run(  # noqa: S603 - commands come from the fixed pipeline
+    result = run_process(
         arguments,
         cwd=ROOT,
         stdout=stdout,

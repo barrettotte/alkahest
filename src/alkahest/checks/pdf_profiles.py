@@ -10,6 +10,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from alkahest.process import run_process
 from alkahest.rendering.text_contract import validate as validate_text_contract
 from alkahest.rendering.text_normalize import normalize
 
@@ -319,7 +320,7 @@ def command(name: str) -> str:
 
 def run(arguments: list[str], *, text: bool = True) -> subprocess.CompletedProcess:
     """Run one resolved command and preserve its diagnostics for validation."""
-    return subprocess.run(  # noqa: S603 - executables are resolved from a closed set
+    return run_process(
         arguments,
         cwd=ROOT,
         capture_output=True,

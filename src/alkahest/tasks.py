@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import os
-import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final
+
+from .process import run_process
 
 ROOT: Final = Path(__file__).resolve().parents[2]
 SCRIPTS: Final = ROOT / "scripts"
@@ -349,7 +350,7 @@ def run_task(task: ScriptTask, extra_arguments: tuple[str, ...] = ()) -> int:
             command = [str(SCRIPTS / "python-tools.sh")]
             if not task.writes_workspace:
                 command.append("--read-only")
-            return subprocess.run(  # noqa: S603 - closed operation registry and wrapper
+            return run_process(
                 [*command, "-m", "alkahest.operations", operation, *arguments],
                 cwd=ROOT,
                 check=False,
@@ -360,7 +361,7 @@ def run_task(task: ScriptTask, extra_arguments: tuple[str, ...] = ()) -> int:
     environment["PYTHONPATH"] = (
         f"{ROOT / 'src'}{os.pathsep}{existing}" if existing else str(ROOT / "src")
     )
-    return subprocess.run(  # noqa: S603 - task commands come from the closed registry
+    return run_process(
         [*script_command(task), *extra_arguments], cwd=ROOT, env=environment, check=False
     ).returncode
 

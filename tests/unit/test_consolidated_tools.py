@@ -44,7 +44,7 @@ def test_ci_preserves_module_commands(monkeypatch) -> None:
         observed.append([str(value) for value in arguments])
         return type("Result", (), {"returncode": 0})()
 
-    monkeypatch.setattr(ci.subprocess, "run", record)
+    monkeypatch.setattr(ci, "run_process", record)
     assert ci.run() == 0
     assert observed[0][-1].endswith("scripts/bootstrap.sh")
     assert ["-m", "alkahest", "quality"] == observed[1][-3:]

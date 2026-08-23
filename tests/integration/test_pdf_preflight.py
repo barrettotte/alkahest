@@ -1,13 +1,6 @@
 """Exercise PDF preflight parsers and rejection boundaries with text fixtures."""
 
-import sys
-from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-
-from alkahest.pdf_preflight import (  # noqa: E402
+from alkahest.pdf_preflight import (
     PreflightError,
     validate_color_spaces,
     validate_document_metadata,
@@ -15,7 +8,6 @@ from alkahest.pdf_preflight import (  # noqa: E402
     validate_page_boxes,
     validate_raster_images,
 )
-
 
 INFO = """Pages:           2
 Encrypted:       no

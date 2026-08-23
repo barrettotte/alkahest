@@ -75,6 +75,7 @@ files = [
   "src/alkahest/cli.py",
   "src/alkahest/operations.py",
   "src/alkahest/project_checks.py",
+  "src/alkahest/process.py",
   "src/alkahest/reporting.py",
   "src/alkahest/staging.py",
   "src/alkahest/tasks.py",

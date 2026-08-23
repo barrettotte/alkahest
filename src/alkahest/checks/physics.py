@@ -11,6 +11,8 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from alkahest.process import run_process
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BOOK_ROOT = REPO_ROOT / "book"
 DATA_PATH = BOOK_ROOT / "figures" / "data" / "physics-diagrams.json"
@@ -143,7 +145,7 @@ def check_data(data):
 def check_derivatives():
     with tempfile.TemporaryDirectory(prefix="alkahest-physics.") as directory:
         candidate_dir = Path(directory)
-        result = subprocess.run(  # noqa: S603 - fixed generator module
+        result = run_process(
             [
                 sys.executable,
                 "-m",

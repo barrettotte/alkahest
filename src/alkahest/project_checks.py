@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 from typing import Final
 
-from .common import fail
 from .release_profiles import ReleaseProfileError, release_outputs, validate_project_releases
 from .theme import ThemeError, sync_project_theme, theme_outputs
 

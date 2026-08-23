@@ -21,7 +21,6 @@ from alkahest.template_package import (
     template_members,
 )
 
-
 ROOT = SCRIPT_DIR.parents[1]
 
 
@@ -125,7 +124,7 @@ def main():
         output_root = Path(temporary)
         write_outputs(output_root, first)
         result = check_template_package(ROOT, output_root=output_root)
-        if result["source_files"] != 54 or result["members"] != 56:
+        if result["source_files"] != 55 or result["members"] != 57:
             raise RuntimeError("error: valid template package returned incorrect facts")
 
     policy_failure(

@@ -7,6 +7,8 @@ from pathlib import Path
 
 from defusedxml import ElementTree as ET
 
+from alkahest.process import run_process
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BOOK_ROOT = REPO_ROOT / "book"
 SVG_PATH = BOOK_ROOT / "figures" / "generated" / "voltage-divider.svg"
@@ -23,7 +25,7 @@ def check_derivative():
         fail("missing generated circuit; run make generate-circuits")
     with tempfile.TemporaryDirectory(prefix="alkahest-circuits.") as directory:
         candidate = Path(directory) / "voltage-divider.svg"
-        result = subprocess.run(  # noqa: S603 - fixed generator module
+        result = run_process(
             [
                 sys.executable,
                 "-m",
