@@ -50,6 +50,7 @@ LINK_PATTERN = re.compile(
     r"(?:\s+(?:\"[^\"\n]*\"|'[^'\n]*'))?\s*\)"
 )
 INLINE_MATH_PATTERN = re.compile(r"(?<![$\\])\$(?!\$)(?:\\.|[^$\\\n])+(?<!\\)\$(?!\$)")
+RAW_BACKEND_PATTERN = re.compile(r"\{=(?:latex|typst)\}|```\{(?:latex|typst)\}")
 
 
 def fail(errors):
@@ -110,13 +111,18 @@ def scan_sources(root, sources):
     image_count = diagram_count = math_count = external_count = 0
 
     for source in sources:
+        content = source.read_text(encoding="utf-8")
+        if RAW_BACKEND_PATTERN.search(content):
+            errors.append(
+                f"{source.relative_to(root)}: manuscript source must remain backend-neutral"
+            )
         fence_char = None
         fence_length = 0
         diagram = None
         diagram_alt = False
         diagram_line = 0
         display_math_line = None
-        for line_number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
+        for line_number, line in enumerate(content.splitlines(), 1):
             if fence_char:
                 if re.fullmatch(rf"\s*{re.escape(fence_char)}{{{fence_length},}}\s*", line):
                     if diagram and not diagram_alt:

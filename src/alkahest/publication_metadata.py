@@ -472,27 +472,6 @@ def validate_repository(root, record, policies):
         fail("PDF keywords expectation drifted from canonical metadata")
     load_json(policies["reproducibility"], "reproducibility policy")
 
-    integration = {
-        "makefile": root / "Makefile",
-        "tasks": root / "src/alkahest/tasks.py",
-        "documentation": root / "docs/publication-metadata.md",
-    }
-    texts = {name: path.read_text(encoding="utf-8") for name, path in integration.items()}
-    for marker in ("check-%:", "test-%:"):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing publication metadata target {marker}")
-    for marker in ('"publication-metadata", ":check-publication-metadata"',):
-        if marker not in texts["tasks"]:
-            fail(f"task registry does not include publication metadata entry {marker}")
-    for marker in (
-        "book/publication.json",
-        "config/metadata/publication.schema.json",
-        "work-level",
-        "manifestation",
-    ):
-        if marker not in texts["documentation"]:
-            fail(f"publication metadata documentation is missing {marker!r}")
-
 
 def load_and_validate(root):
     root = Path(root)

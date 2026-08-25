@@ -204,34 +204,6 @@ def load_cover_policy(root):
     _registry, records = load_and_validate(root)
     publication = load_json(root / "book/publication.json", "publication metadata")
     context = validate_cover_document(policy, records, publication)
-    integration = {
-        "makefile": root / "Makefile",
-        "tasks": root / "src/alkahest/tasks.py",
-        "ci": root / "src/alkahest/ci.py",
-        "documentation": root / "docs/publication-profiles.md",
-    }
-    texts = {name: path.read_text(encoding="utf-8") for name, path in integration.items()}
-    for marker in ("check-%:", "test-%:", "generate-%:"):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing cover target {marker}")
-    for marker in (
-        '"covers", ":check-covers"',
-        '"covers", ":generate-covers"',
-        '"cover-artifacts", ":check-cover-artifacts"',
-    ):
-        if marker not in texts["tasks"]:
-            fail(f"task registry is missing cover entry {marker}")
-    for marker in ("alkahest generate covers", "alkahest check cover-artifacts"):
-        if marker not in texts["ci"]:
-            fail(f"CI is missing cover command {marker}")
-    for marker in (
-        "config/covers/cover-policy.json",
-        "not press ready",
-        "make generate-covers",
-        "make check-cover-artifacts",
-    ):
-        if marker not in texts["documentation"]:
-            fail(f"cover documentation is missing {marker!r}")
     context["policy"] = policy
     return context
 

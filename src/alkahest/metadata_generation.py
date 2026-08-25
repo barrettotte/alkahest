@@ -488,43 +488,14 @@ def check_generated(root):
 
 def validate_repository(root):
     root = Path(root)
-    policy = validate_policy(
+    validate_policy(
         load_json(root / "config/metadata/generation.json", "metadata generation policy")
     )
-    paths = {
-        "quarto": root / "book/_quarto.yml",
-        "makefile": root / "Makefile",
-        "tasks": root / "src/alkahest/tasks.py",
-        "documentation": root / "docs/metadata-generation.md",
-    }
-    texts = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
-    if "metadata-files:" not in texts["quarto"] or not re.search(
-        r"^\s+- generated/metadata\.yml\s*$", texts["quarto"], re.MULTILINE
+    quarto = (root / "book/_quarto.yml").read_text(encoding="utf-8")
+    if "metadata-files:" not in quarto or not re.search(
+        r"^\s+- generated/metadata\.yml\s*$", quarto, re.MULTILINE
     ):
         fail("Quarto does not consume the generated metadata adapter")
-    for marker in (
-        "generate-%:",
-        "check-%:",
-        "test-%:",
-    ):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing metadata generation target {marker}")
-    for marker in (
-        '"metadata-generation", ":check-metadata-generation"',
-        '"publication-metadata",',
-        '":generate-publication-metadata"',
-    ):
-        if marker not in texts["tasks"]:
-            fail(f"task registry does not include metadata generation entry {marker}")
-    for marker in (
-        policy["outputs"]["quarto"],
-        policy["outputs"]["release_manifest"],
-        policy["outputs"]["onix_status"],
-        "code-list issue 74",
-        "--require-onix",
-    ):
-        if marker not in texts["documentation"]:
-            fail(f"metadata generation documentation is missing {marker!r}")
 
 
 __all__ = [

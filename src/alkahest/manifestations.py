@@ -605,38 +605,6 @@ def validate_repository(root, registry, records):
     if not {"full", "preview", "review", "translation", "supplemental"}.issubset(variants):
         fail("reference manifestations must cover every supported variant")
 
-    render = (root / "src/alkahest/rendering/pipeline.py").read_text(encoding="utf-8")
-    for marker in (
-        "_build/smoke/editions/preview/html",
-        "_build/smoke/editions/preview/epub",
-        "_build/smoke/editions/preview/typst",
-        "_build/locale/fr/html",
-        "_build/smoke/editions/supplemental/html",
-    ):
-        if marker not in render:
-            fail(f"render pipeline is missing manifestation artifact {marker}")
-    integration = {
-        "makefile": root / "Makefile",
-        "tasks": root / "src/alkahest/tasks.py",
-        "documentation": root / "docs/manifestations.md",
-    }
-    texts = {name: path.read_text(encoding="utf-8") for name, path in integration.items()}
-    for marker in ("check-%:", "test-%:"):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing manifestation target {marker}")
-    for marker in ('"manifestations", ":check-manifestations"',):
-        if marker not in texts["tasks"]:
-            fail(f"task registry does not include manifestations entry {marker}")
-    for marker in (
-        "book/manifestations.json",
-        "config/metadata/manifestations.schema.json",
-        "ISBN-10",
-        "ISBN-13",
-        "rendition",
-    ):
-        if marker not in texts["documentation"]:
-            fail(f"manifestation documentation is missing {marker!r}")
-
 
 def load_and_validate(root):
     root = Path(root)

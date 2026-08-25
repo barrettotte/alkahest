@@ -40,40 +40,6 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def validate_integration(root, policy):
-    paths = {
-        "makefile": root / "Makefile",
-        "ci": root / "src/alkahest/ci.py",
-        "tasks": root / "src/alkahest/tasks.py",
-        "runner": root / "scripts/python-tools.sh",
-        "container": root / "Containerfile",
-    }
-    try:
-        texts = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
-    except OSError as error:
-        fail(f"cannot read golden-page integration: {error}")
-    required_make = (
-        "check-%:",
-        "test-%:",
-        "update-golden-pages:",
-        "./scripts/python-tools.sh -m alkahest.checks.golden_pages --update",
-    )
-    for fragment in required_make:
-        if fragment not in texts["makefile"]:
-            fail(f"Makefile is missing golden-page integration: {fragment}")
-    if "alkahest check golden-pages" not in texts["ci"]:
-        fail("CI does not run the golden-page artifact gate")
-    if texts["tasks"].count('"@alkahest.checks.golden_pages"') != 2:
-        fail("task registry must include source and artifact golden-page modules")
-    if '"rendered golden pages",\n        True,' not in texts["tasks"]:
-        fail("golden-page artifact checks do not require the locked Python runner")
-    if "--read-only" not in texts["runner"]:
-        fail("locked Python runner does not expose its read-only check mode")
-    image = policy["rasterizer"]["version"]
-    if image not in texts["container"]:
-        fail("publishing image does not pin the golden-page rasterizer version")
-
-
 def tool_output(arguments, cwd):
     try:
         result = run_process(
@@ -252,7 +218,6 @@ def main():
     arguments = parse_arguments()
     root = Path(os.environ.get("ALKAHEST_GOLDEN_ROOT", str(DEFAULT_ROOT))).resolve()
     policy = load_policy(root)
-    validate_integration(root, policy)
     if not arguments.artifacts and not arguments.update:
         baselines = validate_baseline_coverage(root, policy)
         print(

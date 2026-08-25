@@ -129,10 +129,20 @@ def main():
             "dangling cross-reference '@sec-missing'",
             lambda root: replace(root / "chapter.qmd", "@sec-other.", "@sec-missing."),
         )
+        expect_failure(
+            parent,
+            "raw-backend-markup",
+            "manuscript source must remain backend-neutral",
+            lambda root: replace(
+                root / "chapter.qmd",
+                "# Editorial integrity fixture {#sec-fixture}",
+                "# Editorial integrity fixture {#sec-fixture}\n\n\\newpage{=latex}",
+            ),
+        )
     print(
         "ok: editorial-integrity fixtures "
         "(valid links, alternatives, decorative image, diagram, IDs, and references; "
-        "9 invalid contracts rejected)"
+        "10 invalid contracts rejected)"
     )
 
 

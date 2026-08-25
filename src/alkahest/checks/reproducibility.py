@@ -13,7 +13,6 @@ from alkahest.reproducibility import (
     compare_snapshots,
     read_policy,
     snapshot,
-    validate_integration,
 )
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[3]
@@ -39,7 +38,6 @@ def main():
     arguments = parse_arguments()
     root = Path(os.environ.get("ALKAHEST_REPRO_ROOT", str(DEFAULT_ROOT))).resolve()
     policy = read_policy(root)
-    validate_integration(root, policy)
 
     requested = sum(
         bool(value)

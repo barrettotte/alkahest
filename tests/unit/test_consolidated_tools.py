@@ -32,6 +32,7 @@ def test_staging_copy_skips_identical_bytes(tmp_path) -> None:
 
 
 def test_render_plans_reference_closed_specs() -> None:
+    assert DEFAULT_PDF_PROFILE == "typst"
     assert PLANS["pdf"] == (DEFAULT_PDF_PROFILE,)
     assert PLANS["preview"] == ("preview-html", "preview-epub", "preview-typst")
     assert set().union(*map(set, PLANS.values())) == set(SPECS)

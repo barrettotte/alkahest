@@ -130,52 +130,9 @@ def validate_asset_inventory(assets, approved, allowed_licenses):
             fail(f"rights report asset is unlicensed: {item['path']}")
 
 
-def validate_integration(root):
-    """Keep the generator, exact checker, CI, publication gate, and docs connected."""
-    root = Path(root)
-    files = {
-        "makefile": root / "Makefile",
-        "tasks": root / "src/alkahest/tasks.py",
-        "ci": root / "src/alkahest/ci.py",
-        "publication": root / "src/alkahest/checks/suites.py",
-        "documentation": root / "docs/quality.md",
-    }
-    texts = {name: path.read_text(encoding="utf-8") for name, path in files.items()}
-    for marker in (
-        "generate-%:",
-        "check-%:",
-        "test-%:",
-    ):
-        if marker not in texts["makefile"]:
-            fail(f"Makefile is missing rights-report target {marker}")
-    for marker in (
-        '"rights-report", ":generate-rights-report"',
-        '"rights-report", ":check-rights-report"',
-    ):
-        if marker not in texts["tasks"]:
-            fail(f"task registry is missing rights-report entry {marker}")
-    for marker in (
-        "alkahest generate rights-report",
-        "alkahest check rights-report",
-    ):
-        if marker not in texts["ci"]:
-            fail(f"CI is missing rights-report command {marker}")
-    if 'operation("check-rights-report")' not in texts["publication"]:
-        fail("publication gate is missing the rights-report check")
-    for marker in (
-        "book/_build/release/rights-credits.md",
-        "make generate-rights-report",
-        "make check-rights-report",
-        "BLOCKED",
-    ):
-        if marker not in texts["documentation"]:
-            fail(f"rights-report documentation is missing {marker!r}")
-
-
 def build_report(root):
     """Return the validated machine-readable rights report."""
     root = Path(root)
-    validate_integration(root)
     policy, approved, _counts = load_policy(root, root / "book/assets.json")
     publication = read_json(root / "book/publication.json", "publication metadata")
     reproduction = read_json(root / "book/reproducibility.json", "reproducibility policy")

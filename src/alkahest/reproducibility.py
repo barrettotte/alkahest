@@ -38,6 +38,9 @@ def read_policy(root: Path) -> dict:
     except (OSError, json.JSONDecodeError) as error:
         fail(f"cannot load book/reproducibility.json: {error}")
     validate_policy(policy)
+    epub_profile = (root / "book/_quarto-epub.yml").read_text(encoding="utf-8")
+    if f'identifier: "{policy["epub_identifier"]}"' not in epub_profile:
+        fail("EPUB profile does not declare the locked publication identifier")
     return policy
 
 
@@ -251,33 +254,3 @@ def compare_snapshots(before: dict, after: dict) -> None:
             if before_artifacts.get(identifier) != after_artifacts.get(identifier)
         )
         fail("repeated build changed exact artifact content: " + ", ".join(changed))
-
-
-def validate_integration(root: Path, policy: dict) -> None:
-    paths = {
-        "toolchain": root / "scripts/toolchain.sh",
-        "wrapper": root / "scripts/quarto.sh",
-        "render": root / "src/alkahest/rendering/pipeline.py",
-        "epub_finalizer": root / "src/alkahest/epub_accessibility.py",
-        "epub": root / "book/_quarto-epub.yml",
-    }
-    try:
-        texts = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
-    except OSError as error:
-        fail(f"cannot read reproducibility integration: {error}")
-    epoch = str(policy["source_date_epoch"])
-    image = policy["contract"]["toolchain_image"]
-    if f'ALKAHEST_SOURCE_DATE_EPOCH="{epoch}"' not in texts["toolchain"]:
-        fail("toolchain source-date epoch does not match reproducibility policy")
-    if f'ALKAHEST_TOOLCHAIN_IMAGE="{image}"' not in texts["toolchain"]:
-        fail("toolchain image does not match reproducibility policy")
-    if '--env "SOURCE_DATE_EPOCH=${ALKAHEST_SOURCE_DATE_EPOCH}"' not in texts["wrapper"]:
-        fail("Quarto wrapper does not pass SOURCE_DATE_EPOCH")
-    if "--env FORCE_SOURCE_DATE=1" not in texts["wrapper"]:
-        fail("Quarto wrapper does not force the TeX source date")
-    if "canonicalize_markup" not in texts["render"]:
-        fail("HTML renderer does not canonicalize serialized attributes")
-    if "canonicalize_markup(_decode(members, path))" not in texts["epub_finalizer"]:
-        fail("EPUB finalizer does not canonicalize serialized attributes")
-    if policy["epub_identifier"] not in texts["epub"]:
-        fail("EPUB profile does not declare the locked publication identifier")

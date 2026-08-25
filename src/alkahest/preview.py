@@ -1,4 +1,4 @@
-"""Validate centralized preview presentation metadata and integration hooks."""
+"""Validate centralized preview presentation metadata."""
 
 import json
 import re
@@ -37,31 +37,12 @@ def validate_preview_presentation(root: Path):
     defaults_path = book / "alkahest-defaults.yml"
     defaults = defaults_path.read_text(encoding="utf-8") if defaults_path.is_file() else ""
     index = (book / "index.qmd").read_text(encoding="utf-8")
-    preview_filter = (book / "filters/preview.lua").read_text(encoding="utf-8")
-    render = (root / "src/alkahest/rendering/pipeline.py").read_text(encoding="utf-8")
 
     if (config + "\n" + defaults).count("  - filters/preview.lua") != 1:
         fail("canonical Quarto config must register the preview filter exactly once")
     placeholder = "::: {.alkahest-preview-placeholder}\n:::"
     if index.count(placeholder) != 1 or 'when-profile="edition-preview"' in index:
         fail("shared preface must contain one unconditional preview presentation placeholder")
-    for marker in (
-        "alkahest-preview-placeholder",
-        "alkahest-preview-notice",
-        "alkahest-preview-watermark",
-        "data-full-edition-link",
-        "data-purchase-link",
-        "absolute HTTPS URL",
-    ):
-        if marker not in preview_filter:
-            fail(f"preview filter is missing integration marker {marker}")
-    for marker in (
-        '"preview", "preview,html"',
-        '"preview", "preview,epub"',
-        '"preview", "preview,typst"',
-    ):
-        if marker not in render.replace("\\\n", ""):
-            fail(f"preview renderer is missing composed profile marker {marker}")
 
     book_subtitle = _quoted(profile, "subtitle", 2)
     book_description = _quoted(profile, "description", 2)

@@ -111,8 +111,8 @@ the explicit `make update-golden-pages` maintenance target.
 
 Typst is the default PDF backend. LuaLaTeX remains a supported secondary
 and diagnostic backend; ordinary renders and CI continue building both so the
-fallback cannot decay unnoticed. The machine-readable scorecard is
-`book/pdf-backends.json`.
+fallback cannot decay unnoticed. The following table preserves the evaluated
+decision without maintaining a second executable policy for historical scores.
 
 | Criterion | Weight | Typst | LuaLaTeX |
 |---|---:|---:|---:|
@@ -153,11 +153,9 @@ blocker can switch the default alias to LuaLaTeX without rewriting content.
 Review the decision when a publisher requires backend-specific source or PDF
 features, accessibility evidence changes, a required feature fails, or a
 toolchain upgrade materially changes fidelity or reliability. Reversal updates
-the registry, render alias, scorecard, and evidence while stable content IDs and
-authoring syntax remain unchanged.
-
-`make check-pdf-backend` validates score arithmetic, operational
-default, adapters, documentation markers, and neutral manuscript source.
+the render alias and evidence while stable content IDs and authoring syntax
+remain unchanged. Behavioral render, preflight, accessibility, and golden-page
+checks protect both backend paths directly.
 
 The initial 2026-08-16 validation confirmed 504 x 720 point media boxes for
 7 x 10, 432 x 648 for 6 x 9, and 612 x 792 for Letter. All fonts in all six

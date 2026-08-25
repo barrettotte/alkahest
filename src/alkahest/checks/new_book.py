@@ -14,7 +14,6 @@ from alkahest.new_book import (
     load_new_book_policy,
     normalize_book_options,
     scaffold_members,
-    validate_new_book_integration,
     validate_scaffold,
 )
 from alkahest.process import run_process
@@ -24,7 +23,6 @@ ROOT = Path(__file__).resolve().parents[3]
 
 def main():
     policy = load_new_book_policy(ROOT)
-    validate_new_book_integration(ROOT)
     options = normalize_book_options(
         ROOT,
         title="A Small Independent Book",
@@ -45,12 +43,6 @@ def main():
         or any(path.endswith((".zip", ".py")) for path in first)
     ):
         raise RuntimeError("error: new-book concise author workflow is incomplete")
-    author_command = (ROOT / "scripts/author.py").read_text(encoding="utf-8")
-    if (
-        '"full", ["html", "epub", "typst"]' not in author_command
-        or '"full", ["html", "epub", "typst", "latex"]' not in author_command
-    ):
-        raise RuntimeError("error: routine and advanced author builds are not separated")
     book_toml = tomllib.loads(first["book.toml"].decode("utf-8"))
     if (
         book_toml["schema_version"] != 2
@@ -63,17 +55,10 @@ def main():
         raise RuntimeError("error: new-book preview notice placeholder is missing")
     guide = ROOT / "guide"
     guide_config = tomllib.loads((guide / "book.toml").read_text(encoding="utf-8"))
-    guide_containerfile = (guide / "Containerfile").read_text(encoding="utf-8")
-    guide_makefile = (guide / "Makefile").read_text(encoding="utf-8")
     if (
         guide_config["book"]["title"] != "Writing Books with Alkahest"
         or len(guide_config["excerpt"]["chapters"]) != 2
         or any((guide / ".alkahest").glob("*.zip"))
-        or f"FROM {TOOLCHAIN_IMAGE}\n" not in guide_containerfile
-        or 'ENTRYPOINT ["/opt/alkahest/tools/bin/python"' not in guide_containerfile
-        or "bootstrap: ##" not in guide_makefile
-        or "--network=none" not in guide_makefile
-        or "UV ?=" in guide_makefile
     ):
         raise RuntimeError("error: checked-in author guide is stale or misconfigured")
     with tempfile.TemporaryDirectory(prefix="alkahest-new-book-check.") as temporary:

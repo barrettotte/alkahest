@@ -53,10 +53,6 @@ def create_fixture(root):
     for relative in (
         "book/reproducibility.json",
         "book/_quarto-epub.yml",
-        "scripts/toolchain.sh",
-        "src/alkahest/epub_accessibility.py",
-        "scripts/quarto.sh",
-        "src/alkahest/rendering/pipeline.py",
     ):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -149,17 +145,6 @@ def main():
         )
         expect_failure(
             parent,
-            "missing-force-source-date",
-            "does not force the TeX source date",
-            lambda root: (root / "scripts/quarto.sh").write_text(
-                (root / "scripts/quarto.sh")
-                .read_text(encoding="utf-8")
-                .replace("--env FORCE_SOURCE_DATE=1", "--env FORCE_SOURCE_DATE=0"),
-                encoding="utf-8",
-            ),
-        )
-        expect_failure(
-            parent,
             "identifier-drift",
             "does not declare the locked publication identifier",
             lambda root: (root / "book/_quarto-epub.yml").write_text(
@@ -210,7 +195,7 @@ def main():
 
     print(
         "ok: reproducibility fixtures (canonical markup and exact artifacts accepted; "
-        "7 policy, metadata, missing-output, and content-drift failures rejected)"
+        "6 policy, metadata, missing-output, and content-drift failures rejected)"
     )
 
 

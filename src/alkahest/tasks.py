@@ -51,7 +51,6 @@ SOURCE_CHECKS: Final = (
     ScriptTask("new-book", "@alkahest.checks.new_book", "minimal generated-book scaffold"),
     ScriptTask("theme-defaults", ":check-theme-defaults", "theme defaults and adapters"),
     ScriptTask("release-profiles", ":check-release-profiles", "full and excerpt profiles"),
-    ScriptTask("pdf-backend", "@alkahest.checks.pdf_backend", "PDF backend decision"),
     ScriptTask(
         "pdf-accessibility-policy",
         "@alkahest.checks.pdf_accessibility",

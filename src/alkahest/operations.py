@@ -191,16 +191,32 @@ def check_reuse(arguments: tuple[str, ...]) -> None:
 
 def check_release_profiles(arguments: tuple[str, ...]) -> None:
     _require_no_arguments(arguments)
-    from .project_checks import check_release_profiles as validate
 
-    validate()
+    from .release_profiles import validate_project_releases
+
+    result = validate_project_releases(ROOT)
+    profiles = result["resolved"]["profiles"]
+    print(
+        "ok: reusable release profiles "
+        f"({len(result['resolved']['sources'])} registered sources; "
+        f"full {len(profiles['full']['chapters']) + len(profiles['full']['appendices'])}; "
+        f"preview {len(profiles['preview']['chapters']) + len(profiles['preview']['appendices'])}; "
+        f"{result['outputs']} exact adapters)"
+    )
 
 
 def check_theme_defaults(arguments: tuple[str, ...]) -> None:
     _require_no_arguments(arguments)
-    from .project_checks import check_theme_defaults as validate
 
-    validate()
+    from .theme import sync_project_theme
+
+    result = sync_project_theme(ROOT, check=True)
+    print(
+        "ok: shared theme defaults "
+        f"({len(result['theme']['colors'])} colors; "
+        f"{len(result['theme']['typography'])} font roles; "
+        f"{result['outputs']} exact adapters)"
+    )
 
 
 def check_companion_bundles_operation(arguments: tuple[str, ...]) -> None:
