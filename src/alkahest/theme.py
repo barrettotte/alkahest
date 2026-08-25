@@ -6,7 +6,6 @@ import re
 import unicodedata
 from pathlib import Path
 
-
 COLOR_FIELDS = ("ink", "primary", "muted", "line", "surface", "paper", "accent")
 FONT_FIELDS = ("body", "display", "sans", "math", "mono")
 HEX_COLOR = re.compile(r"#[0-9a-fA-F]{6}")
@@ -127,7 +126,7 @@ defaults:
   bootstrap:
     defaults:
       link-decoration: underline
-""".encode("utf-8")
+""".encode()
 
 
 def _metadata(theme):
@@ -139,7 +138,7 @@ displayfont: {quote(fonts["display"])}
 sansfont: {quote(fonts["sans"])}
 mathfont: {quote(fonts["math"])}
 monofont: {quote(fonts["mono"])}
-""".encode("utf-8")
+""".encode()
 
 
 def _css(theme):
@@ -230,7 +229,7 @@ blockquote,
   color: {colors["muted"]};
   color: var(--alkahest-muted);
 }}
-""".encode("utf-8")
+""".encode()
 
 
 def _tex(theme):

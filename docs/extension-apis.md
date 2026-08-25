@@ -88,10 +88,12 @@ Run `make check-editions` and release-profile checks whenever inclusion changes.
 
 ## Notes and placement {#api-notes}
 
-Use a named note call such as `[^note-id]` and one definition whose first span
-has the matching ID and `.alkahest-note`. Register its source, repeat policy,
-reference count, and whole-book order in `book/notes.yml`. Inline notes are not
-part of this API.
+Ordinary named footnotes without an `.alkahest-note` marker remain native and
+need no registry. For configurable placement, use a named note call such as
+`[^note-id]` and one definition whose first span has the matching ID and
+`.alkahest-note`. Register its source, repeat policy, reference count, and
+whole-book order in `book/notes.yml`. Inline notes are not part of the semantic
+notes API.
 
 The metadata key `alkahest.notes.placement` selects native footnotes,
 chapter/book endnotes, or an accepted sidenote profile. Add a placement only

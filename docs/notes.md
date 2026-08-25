@@ -1,11 +1,23 @@
 # Semantic notes contract
 
-Authors write one registered Pandoc named note in ordinary Markdown. Edition
-profiles decide whether that same source appears as a footnote, a chapter
-endnote, a consolidated whole-book endnote, or a sidenote. Do not copy note
-text into a backend file or create separate definitions for different outputs.
+Ordinary Pandoc named footnotes need no registry and remain native footnotes in
+every output. Register a note only when it needs stable repeat policy or
+configurable placement as a footnote, chapter endnote, consolidated whole-book
+endnote, or sidenote. Do not copy note text into a backend file or create
+separate definitions for different outputs.
 
 ## Authoring syntax
+
+A simple named footnote uses ordinary Markdown:
+
+```markdown
+This statement needs a short note.[^source-note]
+
+[^source-note]: Keep the source note specific enough to verify.
+```
+
+The notes filter leaves definitions without an `.alkahest-note` marker alone.
+Use the semantic form below only for a note registered in `notes.yml`.
 
 Reference a stable lowercase, hyphenated note ID with standard named-note
 syntax. Keep its one definition in the same source file and begin the
@@ -89,10 +101,12 @@ and Quarto's documented
 
 ## Validation and acceptance
 
-`make check-notes` rejects malformed registries, unsupported source paths or
-repeat policies, missing and duplicate definitions, unknown calls, count drift,
-cross-source calls, incorrect semantic markers, inline notes, and missing or
-duplicate apparatus placeholders. It runs before every render and in CI.
+`make check-notes` validates the reference specimen's registered semantic-note
+contract: malformed registries, unsupported source paths or repeat policies,
+missing and duplicate definitions, unknown calls, count drift, cross-source
+calls, incorrect semantic markers, inline notes, and missing or duplicate
+apparatus placeholders. It runs before every reference-specimen render and in
+CI. Generated author books may also use unregistered native named footnotes.
 
 `make test-notes` copies the minimal fixture under `tests/notes/base` and proves
 the valid contract passes while twelve mutations fail. Rendered smoke checks

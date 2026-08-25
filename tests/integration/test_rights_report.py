@@ -17,7 +17,6 @@ from alkahest.rights_report import (
     validate_asset_inventory,
 )
 
-
 ROOT = SCRIPT_DIR.parents[1]
 
 

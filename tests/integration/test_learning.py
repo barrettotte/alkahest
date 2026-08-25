@@ -13,7 +13,6 @@ sys.path.insert(0, str(SCRIPT_DIR.parents[1] / "src"))
 from alkahest.common import ContractError
 from alkahest.learning import validate_learning
 
-
 FIXTURE = SCRIPT_DIR.parents[1] / "tests" / "learning" / "base"
 
 
@@ -42,7 +41,9 @@ def expect_failure(name, expected, mutate):
             validate_learning(root, registry)
         except ContractError as error:
             if expected not in str(error):
-                raise RuntimeError(f"error: learning fixture '{name}' missed '{expected}': {error}")
+                raise RuntimeError(
+                    f"error: learning fixture '{name}' missed '{expected}': {error}"
+                ) from error
         else:
             raise RuntimeError(f"error: learning fixture '{name}' unexpectedly passed")
     finally:

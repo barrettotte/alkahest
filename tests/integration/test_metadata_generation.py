@@ -3,8 +3,9 @@
 import copy
 import json
 import tempfile
-import xml.etree.ElementTree as ET
 from pathlib import Path
+
+from defusedxml import ElementTree as ET
 
 from alkahest.metadata_generation import (
     ContractError,
@@ -14,7 +15,6 @@ from alkahest.metadata_generation import (
     output_bundle,
     validate_policy,
 )
-
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -30,7 +30,9 @@ def expect_failure(name, message, operation):
         operation()
     except ContractError as error:
         if message not in str(error):
-            raise RuntimeError(f"metadata-generation fixture {name!r} missed {message!r}: {error}")
+            raise RuntimeError(
+                f"metadata-generation fixture {name!r} missed {message!r}: {error}"
+            ) from error
         return
     raise RuntimeError(f"invalid metadata-generation fixture passed: {name}")
 

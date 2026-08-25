@@ -25,7 +25,7 @@ def load_rows(path):
             except (TypeError, ValueError):
                 raise RuntimeError(
                     "response-time CSV row " + str(number) + " must contain integers"
-                )
+                ) from None
             if not 0 <= load <= 100 or not 0 <= response <= 80:
                 raise RuntimeError(
                     "response-time CSV row " + str(number) + " is outside the chart domain"
@@ -58,40 +58,30 @@ def render_svg(rows):
     for tick in range(0, 81, 20):
         y = y_position(tick)
         lines.append(
-            '    <line x1="110" y1="{:.1f}" x2="730" y2="{:.1f}" stroke="#c5cbd3" stroke-width="1"/>'.format(
-                y, y
-            )
+            f'    <line x1="110" y1="{y:.1f}" x2="730" y2="{y:.1f}" stroke="#c5cbd3" stroke-width="1"/>'
         )
         lines.append(
-            '    <text x="94" y="{:.1f}" text-anchor="end" dominant-baseline="middle">{}</text>'.format(
-                y, tick
-            )
+            f'    <text x="94" y="{y:.1f}" text-anchor="end" dominant-baseline="middle">{tick}</text>'
         )
     for tick in range(0, 101, 25):
         x = x_position(tick)
         lines.append(
-            '    <line x1="{:.1f}" y1="375" x2="{:.1f}" y2="382" stroke="#20262e" stroke-width="2"/>'.format(
-                x, x
-            )
+            f'    <line x1="{x:.1f}" y1="375" x2="{x:.1f}" y2="382" stroke="#20262e" stroke-width="2"/>'
         )
-        lines.append('    <text x="{:.1f}" y="407" text-anchor="middle">{}</text>'.format(x, tick))
+        lines.append(f'    <text x="{x:.1f}" y="407" text-anchor="middle">{tick}</text>')
     points = " ".join(
-        "{:.1f},{:.1f}".format(x_position(load), y_position(response)) for load, response in rows
+        f"{x_position(load):.1f},{y_position(response):.1f}" for load, response in rows
     )
     lines.extend(
         [
             '    <line x1="110" y1="45" x2="110" y2="375" stroke="#20262e" stroke-width="2"/>',
             '    <line x1="110" y1="375" x2="730" y2="375" stroke="#20262e" stroke-width="2"/>',
-            '    <polyline points="{}" fill="none" stroke="#1f5d8f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>'.format(
-                points
-            ),
+            f'    <polyline points="{points}" fill="none" stroke="#1f5d8f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>',
         ]
     )
     for load, response in rows:
         lines.append(
-            '    <circle cx="{:.1f}" cy="{:.1f}" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>'.format(
-                x_position(load), y_position(response)
-            )
+            f'    <circle cx="{x_position(load):.1f}" cy="{y_position(response):.1f}" r="7" fill="#ffffff" stroke="#1f5d8f" stroke-width="4"/>'
         )
     lines.extend(
         [
@@ -106,40 +96,45 @@ def render_svg(rows):
 
 
 def render_dependency_svg():
-    return "\n".join(
-        [
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">',
-            '  <title id="title">Validated source-to-publication dependency graph</title>',
-            '  <desc id="desc">Manuscript source and data and assets both feed validation. Validation feeds rendering, which produces HTML, EPUB, Typst PDF, and LuaLaTeX PDF outputs.</desc>',
-            "  <metadata>Generated deterministically by alkahest.generators.graphs from the evaluated Graphviz design in figures/source/build-dependency.dot; original Alkahest fixture, CC0 1.0.</metadata>",
-            '  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>',
-            '  <rect width="1200" height="320" fill="#ffffff"/>',
-            '  <g fill="none" stroke="#334155" stroke-width="4" marker-end="url(#arrow)">',
-            '    <path d="M 245 92 C 310 92, 315 160, 380 160"/>',
-            '    <path d="M 245 228 C 310 228, 315 160, 380 160"/>',
-            '    <path d="M 590 160 L 690 160"/>',
-            '    <path d="M 900 160 L 980 160"/>',
-            "  </g>",
-            '  <g fill="#f8fafc" stroke="#1f5d8f" stroke-width="3">',
-            '    <rect x="35" y="42" width="210" height="100" rx="18"/>',
-            '    <rect x="35" y="178" width="210" height="100" rx="18"/>',
-            '    <rect x="380" y="110" width="210" height="100" rx="18"/>',
-            '    <rect x="690" y="110" width="210" height="100" rx="18"/>',
-            '    <rect x="980" y="74" width="190" height="172" rx="18"/>',
-            "  </g>",
-            '  <g font-family="Libertinus Sans, sans-serif" font-size="25" fill="#172033" text-anchor="middle">',
-            '    <text x="140" y="100">Manuscript</text>',
-            '    <text x="140" y="222">Data and assets</text>',
-            '    <text x="485" y="168">Validate</text>',
-            '    <text x="795" y="168">Render</text>',
-            '    <text x="1075" y="116" font-weight="700">Outputs</text>',
-            '    <text x="1075" y="153" font-size="21">HTML · EPUB</text>',
-            '    <text x="1075" y="186" font-size="21">Typst PDF</text>',
-            '    <text x="1075" y="219" font-size="21">LuaLaTeX PDF</text>',
-            "  </g>",
-            "</svg>",
-            "",
-        ]
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" '
+        'role="img" aria-labelledby="title desc">\n'
+        '  <title id="title">Validated source-to-publication dependency graph</title>\n'
+        '  <desc id="desc">Manuscript source and data and assets both feed validation. '
+        "Validation feeds rendering, which produces HTML, EPUB, Typst PDF, and LuaLaTeX PDF "
+        "outputs.</desc>\n"
+        "  <metadata>Generated deterministically by alkahest.generators.graphs from the "
+        "evaluated Graphviz design in figures/source/build-dependency.dot; original Alkahest "
+        "fixture, CC0 1.0.</metadata>\n"
+        '  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" '
+        'markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path '
+        'd="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker></defs>\n'
+        '  <rect width="1200" height="320" fill="#ffffff"/>\n'
+        '  <g fill="none" stroke="#334155" stroke-width="4" marker-end="url(#arrow)">\n'
+        '    <path d="M 245 92 C 310 92, 315 160, 380 160"/>\n'
+        '    <path d="M 245 228 C 310 228, 315 160, 380 160"/>\n'
+        '    <path d="M 590 160 L 690 160"/>\n'
+        '    <path d="M 900 160 L 980 160"/>\n'
+        "  </g>\n"
+        '  <g fill="#f8fafc" stroke="#1f5d8f" stroke-width="3">\n'
+        '    <rect x="35" y="42" width="210" height="100" rx="18"/>\n'
+        '    <rect x="35" y="178" width="210" height="100" rx="18"/>\n'
+        '    <rect x="380" y="110" width="210" height="100" rx="18"/>\n'
+        '    <rect x="690" y="110" width="210" height="100" rx="18"/>\n'
+        '    <rect x="980" y="74" width="190" height="172" rx="18"/>\n'
+        "  </g>\n"
+        '  <g font-family="Libertinus Sans, sans-serif" font-size="25" fill="#172033" '
+        'text-anchor="middle">\n'
+        '    <text x="140" y="100">Manuscript</text>\n'
+        '    <text x="140" y="222">Data and assets</text>\n'
+        '    <text x="485" y="168">Validate</text>\n'
+        '    <text x="795" y="168">Render</text>\n'
+        '    <text x="1075" y="116" font-weight="700">Outputs</text>\n'
+        '    <text x="1075" y="153" font-size="21">HTML · EPUB</text>\n'
+        '    <text x="1075" y="186" font-size="21">Typst PDF</text>\n'
+        '    <text x="1075" y="219" font-size="21">LuaLaTeX PDF</text>\n'
+        "  </g>\n"
+        "</svg>\n"
     )
 
 
@@ -162,4 +157,4 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, RuntimeError) as error:
-        raise SystemExit("error: " + str(error))
+        raise SystemExit("error: " + str(error)) from None

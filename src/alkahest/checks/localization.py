@@ -11,7 +11,7 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_POLICY = ROOT / "config" / "localization" / "locales.json"
 BCP47 = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
-LANGUAGE_SPAN = re.compile(r"\[(?P<text>.*?)\]\{(?P<attrs>[^{}]*\blang=[^{}]+)\}", re.S)
+LANGUAGE_SPAN = re.compile(r"\[(?P<text>.*?)\]\{(?P<attrs>[^{}]*\blang=[^{}]+)\}", re.DOTALL)
 LANG_ATTRIBUTE = re.compile(r"\blang=(?:\"(?P<quoted>[^\"]+)\"|(?P<plain>[^\s}]+))")
 DIR_ATTRIBUTE = re.compile(r"\bdir=(?:\"(?P<quoted>[^\"]+)\"|(?P<plain>[^\s}]+))")
 SCRIPT_RANGES = {
@@ -102,7 +102,7 @@ def validate_language_spans(root, policy, languages, document_languages):
         fail("localization policy found no manuscript sources")
 
     observed = set()
-    script_counts = {}
+    script_counts: dict[str, int] = {}
     unsupported = set(policy["unsupported_scripts"])
     for path, document_language in sorted(paths.items()):
         content = path.read_text(encoding="utf-8")
@@ -215,7 +215,7 @@ def validate(policy, root):
         for marker in locale.get("required_profile_markers", []):
             if marker not in combined_profile_text:
                 fail(f"locale {tag} profile is missing marker: {marker}")
-        declared = re.findall(r"^lang:\s*([^\s#]+)", combined_profile_text, re.M)
+        declared = re.findall(r"^lang:\s*([^\s#]+)", combined_profile_text, re.MULTILINE)
         if declared != [tag]:
             fail(f"locale {tag} profile must declare lang: {tag} exactly once")
         locale_root = repo_path(root, locale.get("root"), f"locale {tag} root")

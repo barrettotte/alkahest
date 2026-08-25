@@ -18,7 +18,6 @@ from alkahest.golden_pages import (
     write_rgb_png,
 )
 
-
 ROOT = Path(__file__).resolve().parent.parent.parent
 POLICY = json.loads((ROOT / "config/pdf/golden-pages.json").read_text(encoding="utf-8"))
 
@@ -30,7 +29,7 @@ def expect_failure(name, expected, operation):
         if expected not in str(error):
             raise RuntimeError(
                 f"golden-page fixture '{name}' missed diagnostic '{expected}': {error}"
-            )
+            ) from error
         return
     raise RuntimeError(f"invalid golden-page fixture unexpectedly passed: {name}")
 
@@ -62,7 +61,9 @@ def main():
         "artifact is unsafe or duplicated",
         lambda: validate_policy(
             changed_policy(
-                lambda policy: policy["profiles"][0].__setitem__("artifact", "/tmp/untrusted.pdf")
+                lambda policy: policy["profiles"][0].__setitem__(
+                    "artifact", "/outside/untrusted.pdf"
+                )
             )
         ),
     )

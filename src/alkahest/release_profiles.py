@@ -9,7 +9,6 @@ import unicodedata
 import uuid
 from pathlib import Path, PurePosixPath
 
-
 PROFILE_NAMES = ("full", "preview")
 FORMATS = ("html", "epub", "typst", "latex")
 ROLES = ("front", "chapter", "back", "appendix")
@@ -263,7 +262,7 @@ alkahest:
     watermark:
       enabled: {str(watermark["enabled"]).lower()}
       text: {quote(watermark["text"])}
-""".encode("utf-8")
+""".encode()
 
 
 def release_outputs(defaults_content, local_content):
@@ -422,7 +421,7 @@ def stage_project_release(root, name, html_resources=False):
         lambda _: _render_structure(resolved, name),
         config,
         count=1,
-        flags=re.M | re.S,
+        flags=re.MULTILINE | re.DOTALL,
     )
     if replacements != 1:
         _fail("canonical Quarto config has no replaceable book structure")

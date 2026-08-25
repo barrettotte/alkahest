@@ -29,7 +29,9 @@ def expect_failure(name, message, operation):
         operation()
     except ContractError as error:
         if message not in str(error):
-            raise RuntimeError(f"metadata fixture {name!r} missed diagnostic {message!r}: {error}")
+            raise RuntimeError(
+                f"metadata fixture {name!r} missed diagnostic {message!r}: {error}"
+            ) from error
         return
     raise RuntimeError(f"invalid publication metadata fixture passed: {name}")
 

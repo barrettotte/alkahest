@@ -5,7 +5,7 @@
   "epub_identifier": "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8",
   "contract": {
     "comparison": "exact-content",
-    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v18",
+    "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v19",
     "environment": {
       "SOURCE_DATE_EPOCH": "1787270400",
       "FORCE_SOURCE_DATE": "1"

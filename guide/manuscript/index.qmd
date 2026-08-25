@@ -1,0 +1,30 @@
+# Welcome {.unnumbered}
+
+::: {.alkahest-preview-placeholder}
+:::
+
+Alkahest lets you write one Markdown manuscript and produce a website, an EPUB,
+and print-oriented PDFs without maintaining separate source files for each
+format. This guide is itself an Alkahest book: every command and file described
+here is part of the same minimal author workflow you will use.
+
+If you want to begin immediately, run these commands from a generated book:
+
+```sh
+make doctor
+make draft
+```
+
+Then open `_build/full/html/index.html`. Edit a chapter in
+`manuscript/chapters/`, run `make draft` again, and keep writing.
+
+The chapters explain how to:
+
+1. understand the small author-facing repository;
+2. add and organize manuscript content;
+3. write code, mathematics, tables, figures, notes, and citations;
+4. validate and build every output; and
+5. share a one- or two-chapter excerpt without exposing the full manuscript.
+
+You do not need to understand the publishing engine before writing. Files under
+`.alkahest/` and `_build/.work/` are implementation details; leave them alone.

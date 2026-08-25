@@ -30,7 +30,7 @@ def structure_source_ids(registry, structure_name):
     structure = registry.get("structures", {}).get(structure_name)
     if structure is None:
         fail(f"unknown edition structure '{structure_name}'")
-    result = []
+    result: list[str] = []
     for item in structure["chapters"]:
         result.extend([item["source"]] if "source" in item else item["sources"])
     for group in structure["appendices"]:
@@ -252,16 +252,17 @@ def load_editions(path):
             if "source" in item:
                 if len(item) != 1:
                     fail(f"structure '{name}' direct chapter item is malformed")
-                ids = [item["source"]]
+                source_ids = [item["source"]]
             else:
                 part = item.get("part", "")
                 if not re.fullmatch(r"[A-Za-z][A-Za-z0-9 -]*", part) or part in parts:
                     fail(f"structure '{name}' has an invalid or duplicate part")
                 parts.add(part)
-                ids = item.get("sources")
-                if not isinstance(ids, list) or not ids:
+                registered_sources = item.get("sources")
+                if not isinstance(registered_sources, list) or not registered_sources:
                     fail(f"structure '{name}' part '{part}' has no sources")
-            for source_id in ids:
+                source_ids = registered_sources
+            for source_id in source_ids:
                 if source_id not in sources:
                     fail(f"structure '{name}' references unknown source '{source_id}'")
                 if sources[source_id]["role"] == "appendix":
@@ -356,7 +357,7 @@ def load_editions(path):
 
 def _visible_content(content, edition_name):
     pattern = rf'^:::\s+\{{\.content-visible\s+unless-profile="edition-{re.escape(edition_name)}"\}}\s*\n.*?^:::\s*$'
-    return re.sub(pattern, "", content, flags=re.M | re.S)
+    return re.sub(pattern, "", content, flags=re.MULTILINE | re.DOTALL)
 
 
 def validate_edition_book(book_root):
@@ -369,7 +370,7 @@ def validate_edition_book(book_root):
     registry = load_editions(book_root / "editions.json")
     preview = validate_preview_presentation(book_root.parent)
     config = (book_root / "_quarto.yml").read_text(encoding="utf-8")
-    structure_match = re.search(r"(^  chapters:\n.*?)(?=^\S)", config, re.M | re.S)
+    structure_match = re.search(r"(^  chapters:\n.*?)(?=^\S)", config, re.MULTILINE | re.DOTALL)
     if not structure_match:
         fail("canonical Quarto config has no book structure")
     if structure_match.group(1) != render_book_structure(registry, "full"):
@@ -386,32 +387,32 @@ def validate_edition_book(book_root):
     if len(disk_sources) != len(registered):
         fail("edition manifest and manuscript tree contain different source counts")
 
-    owners = {}
+    owners: dict[str, str] = {}
     for source in sorted(registered):
         source_id = registered[source]
         metadata = registry["sources"][source_id]
         content = (book_root / source).read_text(encoding="utf-8")
-        front_match = re.match(r"\A---\s*\n(.*?)^---\s*$", content, re.M | re.S)
+        front_match = re.match(r"\A---\s*\n(.*?)^---\s*$", content, re.MULTILINE | re.DOTALL)
         front_matter = front_match.group(1) if front_match else None
-        if front_matter and re.search(r"^bibliography\s*:", front_matter, re.M):
+        if front_matter and re.search(r"^bibliography\s*:", front_matter, re.MULTILINE):
             fail(
                 f"source '{source}' declares a local bibliography; use the shared book bibliography"
             )
-        headings = re.findall(r"^(# (?!#).*?)$", content, re.M)
+        headings = re.findall(r"^(# (?!#).*?)$", content, re.MULTILINE)
         if len(headings) != 1 or not re.search(r"\{[^}]*#[A-Za-z][A-Za-z0-9_.:-]*", headings[0]):
             fail(f"source '{source}' must have exactly one H1 with a persistent ID")
         if metadata["availability"] == "private":
             if front_matter is None or not re.search(
-                r"^alkahest-edition:\s*\n\s+access:\s*private\s*$", front_matter, re.M
+                r"^alkahest-edition:\s*\n\s+access:\s*private\s*$", front_matter, re.MULTILINE
             ):
                 fail(f"private source '{source}' must declare alkahest-edition access: private")
-        elif front_matter and re.search(r"^alkahest-edition:", front_matter, re.M):
+        elif front_matter and re.search(r"^alkahest-edition:", front_matter, re.MULTILINE):
             fail(f"public source '{source}' must not declare private edition metadata")
         if metadata["role"] == "appendix":
             declared_match = re.search(
                 r"^alkahest-appendix:\s*\n\s+availability:\s*([a-z-]+)\s*$",
                 front_matter or "",
-                re.M,
+                re.MULTILINE,
             )
             declared = declared_match.group(1) if declared_match else None
             if metadata["availability"] == "core" and declared is not None:

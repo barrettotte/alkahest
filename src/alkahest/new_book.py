@@ -1,6 +1,5 @@
-"""Create and validate minimal book repositories from the reusable engine."""
+"""Create and validate minimal book repositories for the rootless engine image."""
 
-import hashlib
 import json
 import os
 import re
@@ -8,21 +7,16 @@ import shutil
 import tempfile
 import unicodedata
 import uuid
-import zipfile
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path, PurePosixPath
 
 from .author_project import (
+    TOOLCHAIN_IMAGE,
     AuthorProjectError,
-    compile_workspace,
     discover_content,
     load_author_config,
 )
 from .common import fail, load_json
-from .release_profiles import ReleaseProfileError
-from .template_package import expected_template_outputs
-from .theme import ThemeError
-
 
 POLICY_PATH = "config/template/new-book.json"
 BOOK_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
@@ -43,10 +37,6 @@ def _relative(value, label):
     if path.is_absolute() or ".." in path.parts or str(path) != value:
         fail(f"{label} must be a normalized relative path")
     return value
-
-
-def _sha256(content):
-    return hashlib.sha256(content).hexdigest()
 
 
 def _json(document):
@@ -81,9 +71,8 @@ def load_new_book_policy(root):
         {
             "schema_version",
             "generator",
-            "engine_policy",
+            "engine_image",
             "defaults",
-            "engine_archive_members",
             "required_scaffold_paths",
         },
         "new-book policy",
@@ -103,8 +92,8 @@ def load_new_book_policy(root):
         fail("new-book generator uuid_namespace must be a UUID")
     if namespace.version != 5:
         fail("new-book generator uuid_namespace must be a version 5 UUID")
-    if policy["engine_policy"] != "config/template/template-package.json":
-        fail("new-book generator must use the canonical engine policy")
+    if policy["engine_image"] != TOOLCHAIN_IMAGE:
+        fail("new-book generator must use the canonical engine image")
     defaults = _exact(
         policy["defaults"], {"subtitle", "description", "language"}, "new-book defaults"
     )
@@ -115,15 +104,6 @@ def load_new_book_policy(root):
         or LANGUAGE.fullmatch(defaults["language"]) is None
     ):
         fail("default language must be a language tag")
-    evidence = policy["engine_archive_members"]
-    if not isinstance(evidence, list) or evidence != [
-        "LICENSE",
-        "MANIFEST.json",
-        "README.md",
-        "SHA256SUMS",
-        "scripts/author.py",
-    ]:
-        fail("new-book engine archive members must include evidence and author entrypoint")
     required = policy["required_scaffold_paths"]
     if not isinstance(required, list) or not required or len(required) != len(set(required)):
         fail("new-book required scaffold paths must be a unique nonempty array")
@@ -147,7 +127,7 @@ def normalize_book_options(
     identifier = book_id or _slug(title)
     if not identifier or BOOK_ID.fullmatch(identifier) is None:
         fail("book id must be supplied as lowercase kebab-case")
-    created_value = created or date.today().isoformat()
+    created_value = created or datetime.now(tz=UTC).date().isoformat()
     try:
         created_date = date.fromisoformat(created_value)
     except (TypeError, ValueError):
@@ -192,97 +172,34 @@ message = "This excerpt contains selected chapters, not the complete book."
 # accent = "#9a4f12"
 # [theme.typography]
 # display = "Libertinus Serif Display"
-""".encode("utf-8")
+""".encode()
 
 
-def _author_bootstrap(engine_filename, engine_sha256):
-    return f'''"""Verify, unpack, and run the pinned Alkahest author engine."""
+def _minimal_authored_files(options, engine_image):
+    makefile = rb""".DEFAULT_GOAL := help
 
-import hashlib
-import runpy
-import shutil
-import sys
-import tempfile
-import zipfile
-from pathlib import Path, PurePosixPath
+PODMAN ?= podman
+IMAGE ?= localhost/alkahest-book:development
+ALK := $(PODMAN) run --rm --pull=never --network=none \
+	--userns=keep-id --user "$$(id -u):$$(id -g)" \
+	--security-opt label=disable \
+	--tmpfs /tmp:rw,size=2g,mode=1777 \
+	--env HOME=/tmp \
+	--env JAVA_TOOL_OPTIONS=-Duser.home=/tmp \
+	--env TEXMFCACHE=/tmp \
+	--env TEXMFVAR=/tmp \
+	--env XDG_CACHE_HOME=/tmp/cache \
+	--volume "$(CURDIR):/book:rw" \
+	--workdir /book \
+	$(IMAGE)
 
-
-ROOT = Path(__file__).resolve().parent.parent
-ARCHIVE = ROOT / ".alkahest" / "{engine_filename}"
-EXPECTED_SHA256 = "{engine_sha256}"
-CACHE = ROOT / ".alkahest" / "cache" / EXPECTED_SHA256[:16]
-
-
-def engine_root():
-    content = ARCHIVE.read_bytes()
-    if hashlib.sha256(content).hexdigest() != EXPECTED_SHA256:
-        raise RuntimeError("error: pinned Alkahest engine archive checksum differs")
-    entrypoint = CACHE / "scripts" / "author.py"
-    if entrypoint.is_file():
-        return CACHE
-    CACHE.parent.mkdir(parents=True, exist_ok=True)
-    temporary = Path(tempfile.mkdtemp(prefix="engine-", dir=CACHE.parent))
-    try:
-        with zipfile.ZipFile(ARCHIVE) as package:
-            names = package.namelist()
-            paths = [PurePosixPath(name) for name in names if name]
-            if any(path.is_absolute() or ".." in path.parts for path in paths):
-                raise RuntimeError("error: Alkahest engine archive contains an unsafe path")
-            roots = {{path.parts[0] for path in paths}}
-            if len(roots) != 1:
-                raise RuntimeError("error: Alkahest engine archive has an invalid root")
-            package.extractall(temporary)
-        extracted = temporary / roots.pop()
-        if not (extracted / "scripts" / "author.py").is_file():
-            raise RuntimeError("error: Alkahest engine archive has no author command")
-        if CACHE.exists():
-            shutil.rmtree(CACHE)
-        extracted.rename(CACHE)
-    finally:
-        if temporary.exists():
-            shutil.rmtree(temporary)
-    return CACHE
-
-
-if __name__ == "__main__":
-    try:
-        runpy.run_path(str(engine_root() / "scripts" / "author.py"), run_name="__main__")
-    except (OSError, RuntimeError, UnicodeError, zipfile.BadZipFile) as error:
-        print(error, file=sys.stderr)
-        raise SystemExit(1)
-'''.encode("utf-8")
-
-
-def _minimal_authored_files(options, engine_filename, engine_content):
-    engine_sha256 = _sha256(engine_content)
-    return {
-        ".gitignore": b"_build/\n.alkahest/cache/\n__pycache__/\n*.py[cod]\n.DS_Store\n",
-        "README.md": f"""# {options["title"]}
-
-Write in `manuscript/`. Change title, excerpt selection, or optional theme
-choices in `book.toml`. Everything under `.alkahest/` is managed.
-
-```sh
-make chapter TITLE="A New Chapter"  # Create the next numbered chapter.
-make doctor                          # Check whether this book is ready to build.
-make draft                           # Build the full HTML draft.
-make check                           # Validate configuration and content.
-make build                           # Build HTML, EPUB, and the production PDF.
-make excerpt                         # Build the selected public excerpt.
-```
-
-Run `make help` for the complete concise workflow. Build output is disposable
-and lives under `_build/`; open `_build/full/html/index.html` after `make draft`.
-""".encode("utf-8"),
-        "Makefile": b""".DEFAULT_GOAL := help
-
-PYTHON ?= python3
-ALK := $(PYTHON) .alkahest/alkahest.py
-
-.PHONY: help chapter doctor draft check build build-all excerpt clean
+.PHONY: help bootstrap chapter doctor draft check build build-all excerpt clean
 
 help: ## Show the writer workflow.
-	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\\n\\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-12s %s\\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+bootstrap: ## Build this book's rootless container from the Alkahest engine.
+	$(PODMAN) build --pull=never --file Containerfile --tag $(IMAGE) .
 
 chapter: ## Create the next numbered chapter: make chapter TITLE="My Chapter".
 	@test -n "$(TITLE)" || (echo 'error: TITLE is required' >&2; exit 2)
@@ -308,7 +225,38 @@ excerpt: ## Build the selected public HTML, EPUB, and Typst excerpt.
 
 clean: ## Remove disposable build output.
 	$(ALK) clean
-""",
+"""
+    return {
+        ".gitignore": b"_build/\n.DS_Store\n",
+        "Containerfile": f"""# Use the complete rootless Alkahest author runtime.
+# The public template will pin a released GHCR image by digest.
+FROM {engine_image}
+
+WORKDIR /book
+ENTRYPOINT ["/opt/alkahest/tools/bin/python", "/opt/alkahest/engine/scripts/author.py"]
+""".encode(),
+        "README.md": f"""# {options["title"]}
+
+Write in `manuscript/`. Change title, excerpt selection, or optional theme
+choices in `book.toml`. Everything under `.alkahest/` is managed.
+
+```sh
+make bootstrap                        # Build this book's container once.
+make chapter TITLE="A New Chapter"  # Create the next numbered chapter.
+make doctor                          # Check whether this book is ready to build.
+make draft                           # Build the full HTML draft.
+make check                           # Validate configuration and content.
+make build                           # Build HTML, EPUB, and the production PDF.
+make excerpt                         # Build the selected public excerpt.
+```
+
+Run `make help` for the complete concise workflow. Build output is disposable
+and lives under `_build/`; open `_build/full/html/index.html` after `make draft`.
+This development scaffold expects the Alkahest engine image to have been built
+once in the source toolkit. Normal author commands need no host Python, uv,
+Quarto, or network access.
+""".encode(),
+        "Makefile": makefile,
         "book.toml": _minimal_book_toml(options),
         "manuscript/index.qmd": f"""# Welcome {{.unnumbered}}
 
@@ -318,7 +266,7 @@ clean: ## Remove disposable build output.
 This is **{options["title"]}** by {options["author"]}.
 
 Replace this page with the preface or introduction.
-""".encode("utf-8"),
+""".encode(),
         "manuscript/chapters/01-first-chapter.qmd": b"""# First chapter
 
 Start writing here.
@@ -335,8 +283,6 @@ The same manuscript builds as HTML, EPUB, and a production Typst PDF.
         "manuscript/appendices/README.md": b"Add numbered NN-name.qmd appendix files here when needed.\n",
         "assets/README.md": b"Store book images and other public source assets here.\n",
         "references.bib": b"% Add BibLaTeX or BibTeX records here.\n",
-        ".alkahest/alkahest.py": _author_bootstrap(engine_filename, engine_sha256),
-        f".alkahest/{engine_filename}": engine_content,
     }
 
 
@@ -344,13 +290,7 @@ def scaffold_members(root, options):
     """Return all deterministic scaffold members without writing them."""
     root = Path(root)
     policy = load_new_book_policy(root)
-    engine_context, engine_members, engine_outputs = expected_template_outputs(root)
-    missing_engine = set(policy["engine_archive_members"]) - set(engine_members)
-    if missing_engine:
-        fail(f"template engine omits required author member: {sorted(missing_engine)[0]}")
-    filename = engine_context["package"]["filename"]
-    archive = engine_outputs[filename]
-    files = _minimal_authored_files(options, filename, archive)
+    files = _minimal_authored_files(options, policy["engine_image"])
     files[".alkahest/scaffold.json"] = _json(
         {
             "schema_version": 1,
@@ -362,23 +302,19 @@ def scaffold_members(root, options):
                 "excerpt_identifier": options["preview_identifier"],
             },
             "engine": {
-                "id": engine_context["package"]["id"],
-                "version": engine_context["package"]["version"],
-                "archive": f".alkahest/{filename}",
-                "archive_sha256": _sha256(archive),
-                "package_members": len(engine_members),
+                "image": policy["engine_image"],
             },
         }
     )
     required = set(policy["required_scaffold_paths"])
     missing = required - set(files)
     if missing:
-        fail(f"new-book scaffold omits required path: {sorted(missing)[0]}")
+        fail(f"new-book scaffold omits required path: {min(missing)}")
     return files
 
 
 def validate_scaffold(root, expected=None):
-    """Validate a generated scaffold's closed files and engine evidence."""
+    """Validate a generated scaffold's closed files and image boundary."""
     root = Path(root)
     if not root.is_dir() or root.is_symlink():
         fail("generated book root is missing or unsafe")
@@ -396,48 +332,36 @@ def validate_scaffold(root, expected=None):
     if expected is not None and actual != expected:
         fail("generated book files differ from the deterministic scaffold")
     scaffold = load_json(root / ".alkahest/scaffold.json", "generated scaffold record")
-    engine = scaffold.get("engine", {})
-    archive_path = engine.get("archive")
-    if not isinstance(archive_path, str) or archive_path not in actual:
-        fail("generated scaffold has no pinned engine archive")
-    if _sha256(actual[archive_path]) != engine.get("archive_sha256"):
-        fail("generated scaffold engine archive is missing or changed")
+    _exact(scaffold, {"schema_version", "generator", "book", "engine"}, "generated scaffold")
+    if scaffold["schema_version"] != 1:
+        fail("generated scaffold schema_version must be 1")
+    engine = _exact(scaffold["engine"], {"image"}, "generated scaffold engine")
+    image = engine["image"]
+    if image != TOOLCHAIN_IMAGE:
+        fail("generated scaffold engine image differs from the current engine")
+    containerfile = actual.get("Containerfile", b"")
+    if f"FROM {image}\n".encode() not in containerfile:
+        fail("generated scaffold Containerfile does not pin its engine image")
+    makefile = actual.get("Makefile", b"")
+    if b"--network=none" not in makefile or b"bootstrap: ##" not in makefile:
+        fail("generated scaffold does not use the rootless container workflow")
+    if b"PYTHON ?=" in makefile or b"UV ?=" in makefile:
+        fail("generated scaffold requires a host Python toolchain")
+    if any(path.endswith((".zip", ".pyc")) for path in actual):
+        fail("generated scaffold contains a vendored engine or Python cache")
     try:
         config = load_author_config(root)
-        with tempfile.TemporaryDirectory(prefix="alkahest-engine-smoke.") as temporary:
-            extracted = Path(temporary)
-            with zipfile.ZipFile(root / archive_path) as package:
-                roots = {PurePosixPath(name).parts[0] for name in package.namelist() if name}
-                if len(roots) != 1:
-                    fail("generated scaffold engine archive has an invalid root")
-                package.extractall(extracted)
-            engine_root = extracted / roots.pop()
-            if engine.get("package_members") != len(
-                [path for path in engine_root.rglob("*") if path.is_file()]
-            ):
-                fail("generated scaffold engine member count differs")
-            compile_workspace(root, engine_root, "full")
-            compile_workspace(root, engine_root, "excerpt")
-    except (
-        AuthorProjectError,
-        ReleaseProfileError,
-        ThemeError,
-        zipfile.BadZipFile,
-    ) as error:
+        discovered = discover_content(root, config)
+    except AuthorProjectError as error:
         fail(str(error).removeprefix("error: "))
-    finally:
-        output = root / "_build"
-        if output.is_dir():
-            shutil.rmtree(output)
-    for path in actual:
-        text = actual[path].decode("utf-8", errors="ignore")
+    for path, content in actual.items():
+        text = content.decode("utf-8", errors="ignore")
         if "Alkahest Reference Book" in text or "REFERENCE SPECIMEN" in text:
             fail(f"generated scaffold leaks reference-book content: {path}")
     return {
         "files": len(actual),
-        "engine_files": 1,
-        "engine_members": engine["package_members"],
-        "chapters": len(discover_content(root, config)["chapters"]),
+        "engine_image": image,
+        "chapters": len(discovered["chapters"]),
     }
 
 
@@ -483,20 +407,24 @@ def validate_new_book_integration(root):
     for marker in ("new-book:", "check-%:", "test-%:"):
         if marker not in texts["makefile"]:
             fail(f"Makefile is missing new-book target {marker}")
-    for marker in ('"new-book", "@alkahest.checks.new_book"',):
+    for marker in ('"@alkahest.checks.new_book"',):
         if marker not in texts["tasks"]:
             fail(f"task registry is missing new-book entry {marker}")
     if "alkahest check" not in texts["ci"]:
         fail("CI is missing the new-book smoke check")
     if "make new-book" not in texts["readme"]:
         fail("README is missing the new-book author command")
+    if "guide/" not in texts["readme"]:
+        fail("README is missing the checked-in author guide")
     for marker in (
         "config/template/new-book.json",
         "uv run --locked alkahest new-book",
         "will not overwrite",
         "book.toml",
         "make chapter",
-        "checksum-pinned engine archive",
+        "rootless container",
+        "make bootstrap",
+        "does not contain an engine ZIP",
     ):
         if marker not in texts["documentation"]:
             fail(f"new-book documentation is missing {marker!r}")

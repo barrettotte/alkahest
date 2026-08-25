@@ -1,0 +1,59 @@
+# Start Here
+
+An Alkahest book is intentionally small. You write Markdown, keep a few facts in
+`book.toml`, and use ordinary `make` commands. The engine generates Quarto and
+backend-specific configuration in disposable build space.
+
+## Check the prerequisites
+
+You need Make and rootless Podman. The container supplies Python, Quarto, the
+PDF backends, fonts, and the Alkahest engine, so none of them must be installed
+on the host.
+
+Because this guide lives in the private engine repository, first run `make
+bootstrap` at the repository root to build the engine image. Then run `make
+bootstrap` here once to create the tiny book-facing image. A public book made
+from the eventual GitHub template will pull a released engine image instead.
+
+Run `make doctor` next. It validates the book configuration, counts the
+chapters, and confirms the renderer inside the container. Routine author
+commands run without network access and write host-owned output through the
+mounted book directory.
+
+## Know the files
+
+| Path | What you own |
+|---|---|
+| `book.toml` | Title, author, language, excerpt selection, and optional theme changes |
+| `manuscript/index.qmd` | Preface or introduction |
+| `manuscript/chapters/` | Numbered chapters in reading order |
+| `manuscript/appendices/` | Optional numbered appendices |
+| `manuscript/references.qmd` | The generated bibliography location |
+| `references.bib` | Citation records |
+| `assets/` | Images and other public source assets |
+
+Commit those files, the writer `Makefile`, and the small managed
+`.alkahest/scaffold.json` identity record. Commit the book's `Containerfile`,
+which pins its engine runtime, but do not copy engine code into the book or
+commit `_build/`; the `.gitignore` already excludes build output.
+
+## Build the first draft
+
+Run:
+
+```sh
+make draft
+```
+
+This builds only the full HTML book, making it the quickest visual writing
+loop. Open `_build/full/html/index.html` in a browser. A successful build prints
+only the format being rendered and the output location; renderer diagnostics
+remain visible when something fails.
+
+Use `make help` whenever you forget a command. The generated Makefile is the
+complete routine interface, not a small sample of a larger command list.
+
+::: {.callout-important}
+Edit the authored files at the repository root. Never fix a problem by editing
+`_build/.work/`; that directory is recreated by every check and build.
+:::

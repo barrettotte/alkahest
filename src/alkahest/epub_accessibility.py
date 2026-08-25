@@ -3,18 +3,20 @@
 from __future__ import annotations
 
 import html
+import itertools
 import json
 import os
 import posixpath
 import re
 import tempfile
+import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
+from typing import Never
+
+from defusedxml import ElementTree as DefusedET
 
 from .markup import canonicalize_markup
-
-from defusedxml import ElementTree as ET
-
 
 CONTAINER_NS = "urn:oasis:names:tc:opendocument:xmlns:container"
 DC_NS = "http://purl.org/dc/elements/1.1/"
@@ -55,7 +57,7 @@ class EpubPolicyError(RuntimeError):
     """A deterministic EPUB accessibility contract failed."""
 
 
-def fail(message: str) -> None:
+def fail(message: str) -> Never:
     raise EpubPolicyError(f"error: {message}")
 
 
@@ -209,13 +211,14 @@ def _read_members(epub_path: Path) -> tuple[list[zipfile.ZipInfo], dict[str, byt
 
 def _rootfile(members: dict[str, bytes]) -> str:
     try:
-        container = ET.fromstring(members["META-INF/container.xml"])
+        container = DefusedET.fromstring(members["META-INF/container.xml"])
     except (KeyError, ET.ParseError) as error:
         fail(f"EPUB container document is invalid: {error}")
     rootfile = container.find(f".//{{{CONTAINER_NS}}}rootfile")
-    if rootfile is None or not rootfile.get("full-path"):
+    full_path = rootfile.get("full-path") if rootfile is not None else None
+    if not full_path:
         fail("EPUB container has no package rootfile")
-    return rootfile.get("full-path")
+    return full_path
 
 
 def _package_inventory(
@@ -223,7 +226,7 @@ def _package_inventory(
 ) -> tuple[str, ET.Element, str, dict[str, str], list[str]]:
     opf_path = _rootfile(members)
     try:
-        package = ET.fromstring(members[opf_path])
+        package = DefusedET.fromstring(members[opf_path])
     except (KeyError, ET.ParseError) as error:
         fail(f"EPUB package document is invalid: {error}")
     base = posixpath.dirname(opf_path)
@@ -289,6 +292,8 @@ def _set_section_semantics(
         fail(f"cannot find rendered EPUB section id {target}")
     tag = match.group(0)
     if kind is not None:
+        if role is None:
+            fail(f"EPUB section {target} has a type without a matching role")
         tag = _add_attribute(tag, "epub:type", kind)
         tag = _add_attribute(tag, "role", role)
     text = text[: match.start()] + tag + text[match.end() :]
@@ -448,7 +453,7 @@ def _write_members(
 def finalize_epub(epub_path: Path, policy_path: Path, allow_missing_sections: bool = False) -> None:
     policy = load_policy(policy_path)
     infos, members = _read_members(epub_path)
-    opf_path, package, nav_path, manifest, spine = _package_inventory(members)
+    opf_path, _package, nav_path, manifest, _spine = _package_inventory(members)
     xhtml_paths = [
         path
         for path in manifest.values()
@@ -468,32 +473,32 @@ def finalize_epub(epub_path: Path, policy_path: Path, allow_missing_sections: bo
 
     for section in policy["sections"]:
         target = section["id"]
-        path = id_files.get(target)
-        if not path:
+        section_path = id_files.get(target)
+        if not section_path:
             if allow_missing_sections:
                 continue
             fail(f"cannot resolve EPUB semantic section {target}")
         updated = _set_section_semantics(
-            _decode(members, path),
+            _decode(members, section_path),
             target,
             section["epub_type"],
             section["role"],
             section["body_type"],
         )
-        members[path] = updated.encode("utf-8")
+        members[section_path] = updated.encode("utf-8")
 
     pages: list[tuple[str, str, str]] = []
     pagination = policy["pagination"]
     if pagination["mode"] == "print-equivalent":
         for page in pagination["pages"]:
-            path = id_files.get(page["anchor"])
-            if not path:
+            page_path = id_files.get(page["anchor"])
+            if not page_path:
                 fail(f"cannot resolve EPUB page anchor {page['anchor']}")
             marker = _slug_page_label(page["label"])
-            members[path] = _insert_page_marker(
-                _decode(members, path), page["anchor"], marker, page["label"]
+            members[page_path] = _insert_page_marker(
+                _decode(members, page_path), page["anchor"], marker, page["label"]
             ).encode("utf-8")
-            pages.append((page["label"], path, marker))
+            pages.append((page["label"], page_path, marker))
 
     members[opf_path] = _replace_discovery_metadata(_decode(members, opf_path), policy).encode(
         "utf-8"
@@ -574,7 +579,7 @@ def _parse_documents(
     ids: dict[str, dict[str, ET.Element]] = {}
     for path in paths:
         try:
-            root = ET.fromstring(members[path])
+            root = DefusedET.fromstring(members[path])
         except (KeyError, ET.ParseError) as error:
             fail(f"EPUB content document {path} is invalid XML: {error}")
         if root.get("lang") != language or root.get(f"{{{XML_NS}}}lang") != language:
@@ -716,7 +721,7 @@ def _validate_headings(documents: dict[str, ET.Element]) -> int:
                 levels.append(int(local[1]))
         if not levels:
             fail(f"EPUB content document {path} has no heading")
-        for previous, current in zip(levels, levels[1:]):
+        for previous, current in itertools.pairwise(levels):
             if current > previous + 1:
                 fail(f"EPUB heading outline skips a level in {path}")
         count += len(levels)
@@ -785,8 +790,9 @@ def _validate_math(
 ) -> int:
     properties = {}
     for item in manifest_root.findall(f".//{{{OPF_NS}}}manifest/{{{OPF_NS}}}item"):
-        if item.get("id") in manifest:
-            properties[manifest[item.get("id")]] = set((item.get("properties") or "").split())
+        item_id = item.get("id")
+        if item_id is not None and item_id in manifest:
+            properties[manifest[item_id]] = set((item.get("properties") or "").split())
     count = 0
     math_ns = "http://www.w3.org/1998/Math/MathML"
     for path, root in documents.items():

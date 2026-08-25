@@ -7,7 +7,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-
 SCRIPT_DIR = Path(__file__).resolve().parent
 FIXTURE = SCRIPT_DIR.parents[1] / "tests" / "editorial-integrity" / "base"
 

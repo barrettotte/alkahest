@@ -3,11 +3,11 @@
 import json
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CHECKER = ("-m", "alkahest.checks.accessibility_policy")
@@ -52,7 +52,7 @@ def run(files):
         ("ALKAHEST_ACCESSIBILITY_MEDIA_ROOT", "media_root"),
     ):
         environment[variable] = str(files[key])
-    return subprocess.run(
+    return run_process(
         [sys.executable, *CHECKER],
         env=environment,
         text=True,

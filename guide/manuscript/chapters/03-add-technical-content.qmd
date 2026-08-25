@@ -1,0 +1,86 @@
+# Add Technical Content
+
+Alkahest is designed for technical books, so ordinary source syntax should
+remain readable even when a chapter contains code, mathematics, tables,
+figures, and citations.
+
+## Code
+
+Use fenced code blocks and name the language for highlighting:
+
+~~~markdown
+```python
+def half_adder(a: bool, b: bool) -> tuple[bool, bool]:
+    return a ^ b, a and b
+```
+~~~
+
+The result is:
+
+```python
+def half_adder(a: bool, b: bool) -> tuple[bool, bool]:
+    return a ^ b, a and b
+```
+
+Long lines scroll in HTML and wrap safely in print. Builds are static-only:
+code is displayed but never executed. Put runnable examples and larger projects
+in companion material instead of relying on hidden notebook state.
+
+## Mathematics
+
+Write inline mathematics between dollar signs, such as $E = mc^2$. Put a
+displayed equation on its own lines:
+
+$$
+V = I R
+$$ {#eq-ohms-law}
+
+Refer to it as @eq-ohms-law. Prefer standard LaTeX mathematics that Pandoc can
+carry consistently into MathML, Typst, and LuaLaTeX.
+
+## Tables
+
+Simple pipe tables work across every output:
+
+| Command | Purpose |
+|---|---|
+| `make draft` | Fast HTML writing loop |
+| `make check` | Validate author inputs |
+| `make build` | Produce routine publication formats |
+
+: Routine build commands {#tbl-routine-commands}
+
+Introduce @tbl-routine-commands in prose. Keep headings short, identify units
+in headings, and avoid using empty cells to imply relationships.
+
+## Figures and assets
+
+Put public source images in `assets/` and provide useful alternative text:
+
+```markdown
+![A block diagram showing the fetch, decode, and execute stages.](assets/cpu-pipeline.svg){#fig-cpu-pipeline}
+```
+
+The path is relative to the book project, even when the reference appears in a
+chapter subdirectory. The sentence in brackets is not a caption placeholder;
+it must communicate the figure's purpose to someone who cannot see it.
+
+## Callouts, citations, and notes
+
+Use callouts for information that truly needs a distinct role:
+
+```markdown
+::: {.callout-warning}
+Disconnect power before changing the circuit.
+:::
+```
+
+Add BibTeX or BibLaTeX records to `references.bib`, cite them with a key such as
+`[@quarto-guide]`, and leave `manuscript/references.qmd` as the single generated
+bibliography location. The default citation style is Chicago author-date.
+
+Semantic icons, glossary terms, indexes, reusable notices, rich media, learning
+components, notes, and companion downloads are available when a book needs
+them. They use optional book-owned registries rather than extra fields in
+`book.toml`; start with ordinary Markdown and add those systems only for a real
+editorial need.

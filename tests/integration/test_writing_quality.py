@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 FIXTURES = ROOT / "tests/writing"
@@ -137,11 +138,12 @@ def sources(root):
     )
 
 
-def run_container(root, image, checker, paths):
+def run_container(root, image, checker, paths, podman):
     uid = os.getuid()
     gid = os.getgid()
+    container_tmp = Path("/") / "tmp"
     command = [
-        "podman",
+        podman,
         "run",
         "--rm",
         "--pull=never",
@@ -152,9 +154,9 @@ def run_container(root, image, checker, paths):
         "--security-opt",
         "label=disable",
         "--tmpfs",
-        "/tmp:rw,size=128m,mode=1777",
+        f"{container_tmp}:rw,size=128m,mode=1777",
         "--env",
-        "HOME=/tmp",
+        f"HOME={container_tmp}",
         "--volume",
         f"{root}:/workspace:ro",
         "--workdir",
@@ -194,12 +196,13 @@ def run_container(root, image, checker, paths):
     else:
         fail("unknown writing checker: " + checker)
     try:
-        return subprocess.run(
+        return run_process(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding="utf-8",
             timeout=20,
+            check=False,
         )
     except subprocess.TimeoutExpired:
         fail(f"{checker} exceeded the 20-second fixture runtime limit")
@@ -216,7 +219,7 @@ def require_result(name, result, returncode, required=(), forbidden=()):
             fail(f"{name} exposed excluded marker '{marker}':\n{result.stdout}")
 
 
-def check_positive(parent, image):
+def check_positive(parent, image, podman):
     root = parent / "positive"
     copy_environment(root)
     copy_tree_contents(FIXTURES / "positive", root)
@@ -225,25 +228,26 @@ def check_positive(parent, image):
         fail(f"positive fixture inventory has {len(paths)} sources, expected 4")
 
     try:
-        override_result = subprocess.run(
+        override_result = run_process(
             [sys.executable, *OVERRIDE_VALIDATOR, "--root", str(root)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             encoding="utf-8",
             timeout=20,
+            check=False,
         )
     except subprocess.TimeoutExpired:
         fail("override validator exceeded the 20-second fixture runtime limit")
     require_result("positive override policy", override_result, 0)
 
     for checker in ("cspell", "vale"):
-        result = run_container(root, image, checker, paths)
+        result = run_container(root, image, checker, paths, podman)
         require_result(f"positive {checker} fixtures", result, 0)
         if result.stdout.strip():
             fail(f"positive {checker} fixtures produced findings:\n{result.stdout}")
 
 
-def check_cases(parent, image):
+def check_cases(parent, image, podman):
     groups = {}
     for case in CASES:
         groups.setdefault((case["checker"], case["returncode"]), []).append(case)
@@ -262,7 +266,7 @@ def check_cases(parent, image):
             required.extend(case["required"])
             forbidden.extend(case["forbidden"])
         name = ", ".join(case["name"] for case in cases)
-        result = run_container(root, image, checker, destinations)
+        result = run_container(root, image, checker, destinations, podman)
         require_result(
             name,
             result,
@@ -275,15 +279,17 @@ def check_cases(parent, image):
 def main():
     if os.getuid() == 0:
         fail("writing-quality fixtures must run as a non-root host user")
-    if shutil.which("podman") is None:
+    podman = shutil.which("podman")
+    if podman is None:
         fail("Podman is required but was not found")
     image = toolchain_image()
     try:
-        image_check = subprocess.run(
-            ["podman", "image", "exists", image],
+        image_check = run_process(
+            [podman, "image", "exists", image],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             timeout=10,
+            check=False,
         )
     except subprocess.TimeoutExpired:
         fail("Podman image lookup exceeded the 10-second runtime limit")
@@ -292,8 +298,8 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="alkahest-writing-quality.") as directory:
         parent = Path(directory)
-        check_positive(parent, image)
-        check_cases(parent, image)
+        check_positive(parent, image, podman)
+        check_cases(parent, image, podman)
 
     print(
         "ok: writing-quality fixtures (4 positive sources; 8 negative/warning "

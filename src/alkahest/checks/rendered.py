@@ -11,6 +11,7 @@ import sys
 import tempfile
 import zipfile
 from pathlib import Path
+from typing import Never
 
 from alkahest.process import run_process
 from alkahest.rendering.text_contract import validate as validate_text_contract
@@ -24,7 +25,7 @@ class RenderedContractError(RuntimeError):
     """Report a rendered-artifact contract violation."""
 
 
-def fail(message: str) -> None:
+def fail(message: str) -> Never:
     raise RenderedContractError(f"error: {message}")
 
 
@@ -556,4 +557,4 @@ if __name__ == "__main__":
         zipfile.BadZipFile,
     ) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

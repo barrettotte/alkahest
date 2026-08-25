@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from typing import Final
 
+from .author_project import TOOLCHAIN_IMAGE
 from .release_profiles import ReleaseProfileError, release_outputs, validate_project_releases
 from .theme import ThemeError, sync_project_theme, theme_outputs
 
@@ -24,7 +25,7 @@ def check_release_profiles() -> None:
             "ci": ROOT / "src/alkahest/ci.py",
             "readme": ROOT / "README.md",
             "documentation": ROOT / "docs/release-profiles.md",
-            "template_policy": ROOT / "config/template/template-package.json",
+            "containerfile": ROOT / "Containerfile",
             "new_book_policy": ROOT / "config/template/new-book.json",
         }
     )
@@ -52,16 +53,16 @@ def check_release_profiles() -> None:
         if marker not in texts["documentation"]:
             raise ReleaseProfileError(f"error: release-profile documentation is missing {marker!r}")
     for marker in (
-        '"destination": "defaults/releases.json"',
-        '"destination": "scripts/sync-release-profiles.py"',
-        '"destination": "scripts/stage-release.py"',
+        "COPY book/alkahest-release-defaults.json /opt/alkahest/engine/defaults/releases.json",
+        "src/alkahest/release_profiles.py",
+        "/opt/alkahest/engine/src/alkahest/",
     ):
-        if marker not in texts["template_policy"]:
-            raise ReleaseProfileError(f"error: template package is missing {marker}")
+        if marker not in texts["containerfile"]:
+            raise ReleaseProfileError(f"error: runtime image is missing {marker}")
     for marker in (
-        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
+        f'"engine_image": "{TOOLCHAIN_IMAGE}"',
+        '"Containerfile"',
         '"book.toml"',
-        '"scripts/author.py"',
     ):
         if marker not in texts["new_book_policy"]:
             raise ReleaseProfileError(f"error: new-book policy is missing {marker}")
@@ -110,7 +111,7 @@ def check_theme_defaults() -> None:
             "ci": ROOT / "src/alkahest/ci.py",
             "readme": ROOT / "README.md",
             "documentation": ROOT / "docs/theme-overrides.md",
-            "template_policy": ROOT / "config/template/template-package.json",
+            "containerfile": ROOT / "Containerfile",
             "new_book_policy": ROOT / "config/template/new-book.json",
         }
     )
@@ -137,16 +138,16 @@ def check_theme_defaults() -> None:
         if marker not in texts["documentation"]:
             raise ThemeError(f"error: theme documentation is missing {marker!r}")
     for marker in (
-        '"destination": "defaults/quarto.yml"',
-        '"destination": "defaults/theme.json"',
-        '"destination": "scripts/sync-theme.py"',
+        "COPY book/alkahest-defaults.yml /opt/alkahest/engine/defaults/quarto.yml",
+        "COPY book/alkahest-theme-defaults.json /opt/alkahest/engine/defaults/theme.json",
+        "src/alkahest/theme.py",
     ):
-        if marker not in texts["template_policy"]:
-            raise ThemeError(f"error: template package is missing theme member {marker}")
+        if marker not in texts["containerfile"]:
+            raise ThemeError(f"error: runtime image is missing theme member {marker}")
     for marker in (
-        '".alkahest/alkahest-book-template-engine-0.2.0.zip"',
+        f'"engine_image": "{TOOLCHAIN_IMAGE}"',
+        '"Containerfile"',
         '"book.toml"',
-        '"scripts/author.py"',
     ):
         if marker not in texts["new_book_policy"]:
             raise ThemeError(f"error: new-book policy is missing theme path {marker}")

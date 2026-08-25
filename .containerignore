@@ -1,10 +1,15 @@
 .git
 .quarto
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.uv-cache
 **/__pycache__
 **/*.pyc
 **/node_modules
 tools/.venv
 .venv
 book/_build
+guide/_build
 book/site_libs
 book/theme/fonts

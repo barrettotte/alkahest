@@ -5,7 +5,6 @@ from pathlib import Path
 
 from .assets import AssetError, load_policy, read_json
 
-
 OUTPUT_ROOT = "book/_build/release"
 OUTPUT_FILES = ("rights-credits.json", "rights-credits.md")
 
@@ -325,8 +324,10 @@ def markdown_report(report):
             f"- Licensed runtime bundles: {summary['runtime_bundles']}",
             f"- SPDX licenses represented: {', '.join(summary['licenses'])}",
             "",
-            "This report inventories approved source assets. Final HTML, EPUB, and PDF "
-            "inclusion and privacy are independently enforced by `make check-release-assets`.",
+            (
+                "This report inventories approved source assets. Final HTML, EPUB, and PDF "
+                "inclusion and privacy are independently enforced by `make check-release-assets`."
+            ),
             "",
         ]
     )

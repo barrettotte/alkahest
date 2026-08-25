@@ -2,9 +2,9 @@
 
 import re
 from pathlib import Path
+from typing import Any
 
 from .common import fail, qmd_sources
-
 
 CLASS_TYPE = {
     "learning-objectives": ("objectives", "obj-"),
@@ -31,7 +31,7 @@ TYPES = (
 def _registered_selection(registry, edition_name):
     edition = registry["editions"][edition_name]
     structure = registry["structures"][edition["structure"]]
-    result = []
+    result: list[str] = []
     for item in structure.get("chapters", []):
         result.extend([item["source"]] if "source" in item else item.get("sources", []))
     for group in structure.get("appendices", []):
@@ -40,7 +40,8 @@ def _registered_selection(registry, edition_name):
 
 
 def _parse_source(path, source, records):
-    stack, code_fence = [], ""
+    stack: list[dict[str, Any] | None] = []
+    code_fence = ""
     try:
         lines = Path(path).read_text(encoding="utf-8").splitlines(keepends=True)
     except (OSError, UnicodeError) as error:
@@ -64,7 +65,7 @@ def _parse_source(path, source, records):
             learning_classes = [item for item in CLASS_TYPE if item in classes]
             if len(learning_classes) > 1:
                 fail(f"{source}:{line_number}: a block cannot have multiple learning roles")
-            block_type = prefix = None
+            block_type = prefix = ""
             if learning_classes:
                 block_type, prefix = CLASS_TYPE[learning_classes[0]]
             elif identity and identity.startswith("exr-"):
@@ -119,10 +120,10 @@ def _parse_source(path, source, records):
 
 def validate_learning(book_root, registry):
     root = Path(book_root)
-    records = {}
+    records: dict[str, dict[str, Any]] = {}
     for path in qmd_sources(root):
         _parse_source(path, path.relative_to(root).as_posix(), records)
-    counts = {}
+    counts: dict[str, int] = {}
     for record in records.values():
         counts[record["type"]] = counts.get(record["type"], 0) + 1
     for block_type in TYPES:
@@ -154,7 +155,9 @@ def validate_learning(book_root, registry):
         if difficulty.lower() not in plan["content"].lower():
             fail(f"{location}: difficulty must remain visible")
 
-    solutions_for, hints_for, answers_for = {}, {}, {}
+    solutions_for: dict[str, int] = {}
+    hints_for: dict[str, int] = {}
+    answers_for: dict[str, int] = {}
     for record in records.values():
         if record["type"] not in {"solution", "hint", "answer-key"}:
             continue

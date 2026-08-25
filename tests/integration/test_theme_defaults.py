@@ -11,7 +11,6 @@ sys.path.insert(0, str(SCRIPT_DIR.parents[1] / "src"))
 
 from alkahest.theme import ThemeError, sync_project_theme, theme_outputs
 
-
 ROOT = SCRIPT_DIR.parents[1]
 DEFAULTS = json.loads((ROOT / "book/alkahest-theme-defaults.json").read_text(encoding="utf-8"))
 OVERRIDES = {"schema_version": 1, "colors": {}, "typography": {}}

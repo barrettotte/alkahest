@@ -1,0 +1,51 @@
+# Check and Build
+
+Use the fastest command that answers the question you currently have. Routine
+writing should not wait for every publication format.
+
+## Use the short feedback loop
+
+1. Edit one or more files in `manuscript/`.
+2. Run `make draft` to inspect HTML.
+3. Run `make check` before committing a meaningful change.
+4. Run `make build` when layout or publication behavior matters.
+
+`make check` validates `book.toml`, chapter naming and ordering, excerpt
+selection, managed identity, engine integrity, and both disposable full and
+excerpt workspaces. It does not render the book.
+
+`make build` renders the routine outputs:
+
+| Format | Output directory |
+|---|---|
+| HTML | `_build/full/html/` |
+| EPUB | `_build/full/epub/` |
+| Typst PDF | `_build/full/typst/` |
+
+Typst is the production PDF default. Run `make build-all` only when you need to
+compare the slower secondary LuaLaTeX PDF.
+
+## Read failures from the top
+
+The author commands suppress successful renderer chatter but preserve complete
+failure diagnostics. Start with the first explicit error rather than later
+consequences. Common causes are:
+
+- a chapter filename that does not use `NN-kebab-case.qmd`;
+- an excerpt filename that no longer exists;
+- malformed TOML, YAML, BibTeX, or Markdown attributes;
+- a missing local asset or citation key; or
+- neither local Quarto nor the pinned Podman image being available.
+
+Run `make doctor` when the renderer itself is uncertain. Run `make check` when
+configuration or source discovery is uncertain.
+
+## Clean disposable output
+
+Run `make clean` whenever you want to remove `_build/`. Cleaning never removes
+manuscripts, configuration, bibliography data, or source assets. It also leaves
+the repository's development caches and rootless publishing image untouched.
+
+Do not manually copy generated HTML, EPUB, PDF, Quarto YAML, Typst, or LaTeX
+files back into the authored source tree. Fix the Markdown or `book.toml`, then
+rebuild every output from the same source.

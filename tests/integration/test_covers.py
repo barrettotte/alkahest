@@ -18,7 +18,6 @@ from alkahest.covers import (
 )
 from alkahest.manifestations import load_and_validate
 
-
 ROOT = SCRIPT_DIR.parents[1]
 BASE_POLICY = json.loads((ROOT / "config/covers/cover-policy.json").read_text(encoding="utf-8"))
 PUBLICATION = json.loads((ROOT / "book/publication.json").read_text(encoding="utf-8"))

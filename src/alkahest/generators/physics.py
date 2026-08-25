@@ -19,7 +19,7 @@ PALE = "#f8fafc"
 def number(value):
     """Format computed coordinates without platform-sensitive excess precision."""
     if abs(value - round(value)) < 0.000_001:
-        return str(int(round(value)))
+        return str(round(value))
     return f"{value:.2f}".rstrip("0").rstrip(".")
 
 
@@ -38,12 +38,16 @@ class Svg:
             f'<title id="title">{escape(title)}</title>',
             f'<desc id="desc">{escape(description)}</desc>',
             "<defs>",
-            '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" '
-            'markerWidth="7" markerHeight="7" orient="auto-start-reverse">',
+            (
+                '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" '
+                'markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
+            ),
             f'<path d="M 0 0 L 10 5 L 0 10 z" fill="{INK}"/>',
             "</marker>",
-            '<marker id="small-arrow" viewBox="0 0 10 10" refX="9" refY="5" '
-            'markerWidth="5" markerHeight="5" orient="auto-start-reverse">',
+            (
+                '<marker id="small-arrow" viewBox="0 0 10 10" refX="9" refY="5" '
+                'markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
+            ),
             f'<path d="M 0 0 L 10 5 L 0 10 z" fill="{INK}"/>',
             "</marker>",
             "</defs>",

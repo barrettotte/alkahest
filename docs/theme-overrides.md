@@ -3,9 +3,9 @@
 Alkahest separates versioned engine defaults from intentional book design.
 `book/alkahest-defaults.yml` owns shared Quarto behavior such as inert code
 execution, numbering, contents depth, semantic filters, default font roles, and
-portable accessibility cleanup. Generated books install the same file at
-inside their pinned engine archive; the author compiler includes it in a
-disposable workspace, so authors never fork it.
+portable accessibility cleanup. Generated books receive the same file inside
+their pinned engine image; the author compiler includes it in a disposable
+workspace, so authors never fork it.
 
 The shared palette and font-role defaults live in
 `book/alkahest-theme-defaults.json`. Minimal books set only differences beneath

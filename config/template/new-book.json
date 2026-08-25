@@ -2,27 +2,19 @@
   "schema_version": 1,
   "generator": {
     "id": "alkahest-new-book",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "uuid_namespace": "7c9258a3-0288-5cee-81d4-e5baf719c6cb"
   },
-  "engine_policy": "config/template/template-package.json",
+  "engine_image": "localhost/alkahest-publishing:quarto-1.10.18-v19",
   "defaults": {
     "subtitle": "A new technical book",
     "description": "A new book project created from the Alkahest technical-book template.",
     "language": "en-US"
   },
-  "engine_archive_members": [
-    "LICENSE",
-    "MANIFEST.json",
-    "README.md",
-    "SHA256SUMS",
-    "scripts/author.py"
-  ],
   "required_scaffold_paths": [
-    ".alkahest/alkahest.py",
-    ".alkahest/alkahest-book-template-engine-0.2.0.zip",
     ".alkahest/scaffold.json",
     ".gitignore",
+    "Containerfile",
     "Makefile",
     "README.md",
     "assets/README.md",

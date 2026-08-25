@@ -340,4 +340,4 @@ if __name__ == "__main__":
             str(error) if isinstance(error, RuntimeError) else "error: " + str(error),
             file=sys.stderr,
         )
-        raise SystemExit(1)
+        raise SystemExit(1) from None

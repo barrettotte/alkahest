@@ -187,12 +187,11 @@ secret and local-path signatures, PDF metadata, and embedded files. The latter
 runs automatically inside `make check-publication`, which also rechecks the
 rights report; both use the versioned contract in `book/assets.json`.
 
-`make package-template-engine` extracts the reusable extensions, filters,
-themes, brand, and PDF adapters directly from their canonical specimen paths;
-`make check-template-package` enforces exact deterministic bytes and standalone
-structure. The resulting local ZIP is the engine input for the later new-book
-scaffold workflow, not a copy of specimen chapters or metadata. See
-`template-engine.md` for the versioned boundary.
+The locked rootless image embeds the reusable extensions, filters, themes,
+brand, PDF adapters, and author command directly. Generated books select that
+single runtime instead of carrying engine source or a parallel package. The
+generated-book acceptance test compiles both full and excerpt workspaces
+through the image. See `template-engine.md` for the runtime boundary.
 
 `make check-glyph-coverage` rejects manuscript characters outside the declared
 Libertinus Serif coverage before rendering. `make render-locale-smoke` renders

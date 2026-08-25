@@ -4,11 +4,12 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any, Never
 
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise RuntimeError(f"error: {message}")
 
 
@@ -17,7 +18,12 @@ def main():
     if not root.is_dir():
         fail("index book root does not exist")
     registry_path = root / "index.yml"
-    version, language, in_entries, current, list_field, entries = None, None, False, None, None, {}
+    version: int | None = None
+    language: str | None = None
+    in_entries = False
+    current: str | None = None
+    list_field: str | None = None
+    entries: dict[str, dict[str, Any]] = {}
     for number, line in enumerate(registry_path.read_text(encoding="utf-8").splitlines(), 1):
         if re.match(r"^\s*(?:#.*)?$", line):
             continue
@@ -63,6 +69,8 @@ def main():
             continue
         match = re.fullmatch(r"      - (\S.*)", line) if list_field else None
         if match:
+            if list_field is None:
+                fail(f"{registry_path}:{number}: list value appears before a list field")
             entries[current][list_field].append(match.group(1))
             continue
         fail(f"{registry_path}:{number}: unsupported index syntax: {line}")
@@ -73,7 +81,7 @@ def main():
     if not entries:
         fail("index registry has no entries")
     lookup = {name: name for name in entries}
-    child_count = {}
+    child_count: dict[str, int] = {}
     for name in sorted(entries):
         entry = entries[name]
         if not entry.get("term", "").strip():
@@ -131,7 +139,8 @@ def main():
                     fail(f"index {field} cycle includes {cursor}")
                 visited.add(cursor)
                 cursor = entries[cursor][field]
-    expected_points, expected_ranges = set(), set()
+    expected_points: set[tuple[str, str, str]] = set()
+    expected_ranges: set[tuple[str, str, str]] = set()
     for name in sorted(entries):
         entry = entries[name]
         for field, target in (("locations", expected_points), ("ranges", expected_ranges)):
@@ -155,7 +164,10 @@ def main():
             and not child_count.get(name)
         ):
             fail(f"index entry {name} has no locator, range, child, or redirect")
-    observed_points, observed_edges, aliases_used, placeholders = set(), {}, set(), 0
+    observed_points: set[tuple[str, str, str]] = set()
+    observed_edges: dict[tuple[str, str, str], dict[str, int]] = {}
+    aliases_used: set[str] = set()
+    placeholders = 0
     call_pattern = re.compile(r"\{\{<\s*alk-index\b(.*?)>\}\}")
     for source in sorted(
         path
@@ -227,4 +239,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

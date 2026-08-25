@@ -6,7 +6,6 @@ from pathlib import Path
 
 from .common import fail, load_json, qmd_sources
 
-
 KINDS = ("notice", "definition", "legal", "example", "project-prerequisite")
 CONTEXTS = {"front-matter", "chapter", "appendix", "project", "back-matter"}
 
@@ -56,7 +55,9 @@ def validate_reuse(book_root):
         if path and path_values.count(path) > 1:
             fail(f"reusable-content path '{path}' is registered more than once")
 
-    paths, kind_count, parameters_by_id, contexts_by_id = set(), {}, {}, {}
+    paths = set()
+    kind_count: dict[str, int] = {}
+    parameters_by_id, contexts_by_id = {}, {}
     for item_id in sorted(items):
         if not re.fullmatch(r"reuse-[a-z][a-z0-9-]*", item_id):
             fail(f"invalid reusable-content ID '{item_id}'; expected reuse-...")
@@ -102,7 +103,7 @@ def validate_reuse(book_root):
         origin = item.get("origin", "")
         if not isinstance(origin, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", origin):
             fail(f"reusable-content item '{item_id}' has invalid origin")
-        if item.get("scope", "") not in {"book-local", "template-package"}:
+        if item.get("scope", "") not in {"book-local", "engine-shared"}:
             fail(f"reusable-content item '{item_id}' has unsupported scope")
         contexts = item.get("allowed_contexts")
         if not isinstance(contexts, list) or not contexts:
@@ -129,7 +130,7 @@ def validate_reuse(book_root):
         fragment = fragment_path.read_text(encoding="utf-8")
         if not re.search(r"[A-Za-z]", fragment):
             fail(f"reusable fragment '{path}' must contain visible prose")
-        if re.search(r"^\s*#", fragment, re.M):
+        if re.search(r"^\s*#", fragment, re.MULTILINE):
             fail(f"reusable fragment '{path}' must not contain headings")
         if re.search(r"""\{#[A-Za-z]|\bid=["']""", fragment):
             fail(f"reusable fragment '{path}' must not define persistent IDs")
@@ -140,7 +141,7 @@ def validate_reuse(book_root):
         if re.search(
             r"\{=(?:html|latex|typst)\}|^\s*\\(?:begin|input|include)\b|</?[A-Za-z][^>]*>",
             fragment,
-            re.M,
+            re.MULTILINE,
         ):
             fail(f"reusable fragment '{path}' must remain backend-neutral Markdown")
         placeholders = re.findall(r"\{\{([a-z][a-z0-9_]*)\}\}", fragment)
@@ -162,7 +163,8 @@ def validate_reuse(book_root):
             if relative not in paths:
                 fail(f"unregistered reusable fragment '{relative}'")
 
-    calls, instances = {}, set()
+    calls: dict[str, int] = {}
+    instances = set()
     pattern = re.compile(r"\{\{<\s*alk-reuse\s+(.+?)\s*>\}\}")
     for source_path in qmd_sources(root):
         disabled_fence = ""
@@ -206,7 +208,7 @@ def validate_reuse(book_root):
                     del kwargs[parameter]
                 if kwargs:
                     fail(
-                        f"{source_path}:{line_number}: reusable-content '{item_id}' has unexpected argument '{sorted(kwargs)[0]}'"
+                        f"{source_path}:{line_number}: reusable-content '{item_id}' has unexpected argument '{min(kwargs)}'"
                     )
                 calls[item_id] = calls.get(item_id, 0) + 1
     for item_id in sorted(items):

@@ -50,5 +50,5 @@ quietly changing its meaning.
 
 Reusable files are local, backend-neutral Markdown with no headings, persistent
 IDs, raw backend commands, or nested reuse calls. Cross-book text must be
-vendored or supplied by an explicitly versioned template package in a future
-multi-book extraction; direct paths into another book are never valid sources.
+vendored or supplied by an explicitly versioned engine release in a future
+multi-book workflow; direct paths into another book are never valid sources.

@@ -134,7 +134,9 @@ def validate_evidence(policy, evidence):
 
 def validate_theme(policy, theme_path, html_config, include_path, media_paths):
     theme = theme_path.read_text(encoding="utf-8")
-    colors = dict(re.findall(r"^\$alkahest-([a-z]+):\s*(#[0-9a-fA-F]{6});\s*$", theme, re.M))
+    colors = dict(
+        re.findall(r"^\$alkahest-([a-z]+):\s*(#[0-9a-fA-F]{6});\s*$", theme, re.MULTILINE)
+    )
     for pair in policy.get("contrast_pairs", []):
         foreground = pair.get("foreground", "")
         background = pair.get("background", "")
@@ -174,7 +176,7 @@ def validate_theme(policy, theme_path, html_config, include_path, media_paths):
     config = html_config.read_text(encoding="utf-8")
     if "include-before-body: theme/accessibility-before-body.html" not in config:
         fail("HTML profile must include the keyboard skip link")
-    if re.search(r"user-scalable\s*=\s*no|maximum-scale\s*=\s*1", config, re.I):
+    if re.search(r"user-scalable\s*=\s*no|maximum-scale\s*=\s*1", config, re.IGNORECASE):
         fail("HTML profile must not disable browser zoom")
     include = include_path.read_text(encoding="utf-8")
     if (
@@ -243,4 +245,4 @@ if __name__ == "__main__":
         main()
     except (OSError, RuntimeError, UnicodeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

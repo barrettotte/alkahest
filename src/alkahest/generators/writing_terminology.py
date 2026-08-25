@@ -84,8 +84,8 @@ def validate(data):
 
     dictionaries = []
     names = set()
-    accepted = {}
-    accepted_owners = {}
+    accepted: dict[str, set[str]] = {}
+    accepted_owners: dict[str, str] = {}
     for dictionary in data["dictionaries"]:
         required = {"name", "scope", "path", "description", "add_words"}
         if not isinstance(dictionary, dict) or set(dictionary) != required:

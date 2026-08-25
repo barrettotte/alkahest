@@ -5,7 +5,7 @@ import io
 import json
 import re
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 
 from .common import fail, load_json
@@ -22,7 +22,7 @@ def _source_date(book_root):
     source_date = policy.get("source_date_utc")
     if not isinstance(epoch, int) or epoch < 315532800:
         fail("companion bundles need a ZIP-compatible source_date_epoch")
-    expected = datetime.fromtimestamp(epoch, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    expected = datetime.fromtimestamp(epoch, UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     if source_date != expected:
         fail("companion bundle source date does not match source_date_epoch")
     return epoch, source_date
@@ -113,7 +113,7 @@ def _bundle_members(book_root, bundle_id, bundle, registry, source_date):
 
 
 def _archive_bytes(root_name, members, epoch):
-    timestamp = datetime.fromtimestamp(epoch, timezone.utc).timetuple()[:6]
+    timestamp = datetime.fromtimestamp(epoch, UTC).timetuple()[:6]
     output = io.BytesIO()
     # Stored members avoid zlib-version variation, keeping bytes identical even
     # when this lightweight packager runs outside the publishing container.
@@ -139,7 +139,7 @@ def bundle_outputs(book_root):
         archive = _archive_bytes(bundle["filename"][:-4], members, epoch)
         outputs[bundle["filename"]] = archive
         sidecar_name = bundle["filename"] + ".sha256"
-        outputs[sidecar_name] = (f"{_sha256(archive)}  {bundle['filename']}\n").encode("utf-8")
+        outputs[sidecar_name] = (f"{_sha256(archive)}  {bundle['filename']}\n").encode()
     return outputs, result
 
 
@@ -219,7 +219,7 @@ def check_companion_bundles(book_root, output_root):
         assets = load_json(assets_path, "asset registry")
         for entry in assets.get("artifact_contract", {}).get("forbidden_content_patterns", []):
             try:
-                forbidden.append((entry["label"], re.compile(entry["pattern"], re.I)))
+                forbidden.append((entry["label"], re.compile(entry["pattern"], re.IGNORECASE)))
             except (KeyError, re.error) as error:
                 fail(f"invalid companion bundle privacy pattern: {error}")
     if output_root.is_dir():

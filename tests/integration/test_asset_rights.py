@@ -286,7 +286,7 @@ def expect_asset_error(name, callback, expected):
         callback()
     except AssetError as error:
         if expected not in str(error):
-            raise AssertionError(f"{name}: expected {expected!r}; received {error}")
+            raise AssertionError(f"{name}: expected {expected!r}; received {error}") from error
     else:
         raise AssertionError(f"{name}: invalid fixture passed")
 
@@ -342,15 +342,13 @@ def rendered_cases():
         )
 
     contract = fixture_policy(digest_bytes(b"license"))["artifact_contract"]
-    valid_info = "\n".join(
-        (
-            "Title: Fixture Book",
-            "Author: Fixture Author",
-            "Creator: Typst 1.0",
-            "Producer:",
-            "Subject: Fixture description",
-            "Keywords: fixture, metadata",
-        )
+    valid_info = (
+        "Title: Fixture Book\n"
+        "Author: Fixture Author\n"
+        "Creator: Typst 1.0\n"
+        "Producer:\n"
+        "Subject: Fixture description\n"
+        "Keywords: fixture, metadata"
     )
     validate_pdf_metadata("fixture", valid_info, "<xmp/>", contract)
     expect_asset_error(

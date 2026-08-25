@@ -30,4 +30,4 @@ if __name__ == "__main__":
         main()
     except (OSError, ReleaseProfileError, UnicodeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

@@ -11,7 +11,7 @@ def main():
         raise RuntimeError(f"usage: {sys.argv[0]} HTML_OR_XHTML...")
     pattern = re.compile(
         r"""(<span\b(?=[^>]*class="semantic-icon\s)[^>]*>)(.*?)</span>((?:(?!</(?:p|div|h[1-6])>).){0,500})""",
-        re.I | re.S,
+        re.IGNORECASE | re.DOTALL,
     )
     for argument in sys.argv[1:]:
         path = Path(argument)
@@ -30,7 +30,7 @@ def main():
                 raise RuntimeError(
                     f"error: {path}: rendered semantic icon has no registry label metadata"
                 )
-            if not re.search(r'<img\b(?=[^>]*\balt="[^"]+")[^>]*>', body, re.S):
+            if not re.search(r'<img\b(?=[^>]*\balt="[^"]+")[^>]*>', body, re.DOTALL):
                 raise RuntimeError(
                     f"error: {path}: rendered semantic icon image has no fallback alternative"
                 )
@@ -53,4 +53,4 @@ if __name__ == "__main__":
         main()
     except (OSError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

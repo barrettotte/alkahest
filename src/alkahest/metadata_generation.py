@@ -9,7 +9,6 @@ from pathlib import Path
 
 from .common import ContractError, fail, load_json
 
-
 EXPECTED_SOURCES = {
     "publication": "book/publication.json",
     "manifestations": "book/manifestations.json",
@@ -500,7 +499,7 @@ def validate_repository(root):
     }
     texts = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
     if "metadata-files:" not in texts["quarto"] or not re.search(
-        r"^\s+- generated/metadata\.yml\s*$", texts["quarto"], re.M
+        r"^\s+- generated/metadata\.yml\s*$", texts["quarto"], re.MULTILINE
     ):
         fail("Quarto does not consume the generated metadata adapter")
     for marker in (

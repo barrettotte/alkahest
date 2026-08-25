@@ -3,6 +3,7 @@
 import argparse
 import re
 from pathlib import Path
+from typing import Any
 
 from rdkit import Chem
 from rdkit.Chem import rdChemReactions, rdDepictor
@@ -53,7 +54,7 @@ def generate(output):
     """Render the reaction to a self-contained monochrome SVG."""
     output.parent.mkdir(parents=True, exist_ok=True)
     drawer = rdMolDraw2D.MolDraw2DSVG(1000, 260)
-    options = drawer.drawOptions()
+    options: Any = drawer.drawOptions()
     options.useBWAtomPalette()
     options.bondLineWidth = 2.0
     options.padding = 0.08

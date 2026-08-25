@@ -117,15 +117,17 @@ return {
   },
   {
     Note = function(note)
-      local provisional = 1
       local first = note.content[1]
-      if first ~= nil and (first.t == "Para" or first.t == "Plain") then
-        local marker = first.content[1]
-        if marker ~= nil and marker.t == "Span" then
-          local name = marker.identifier:gsub("^note%-", "")
-          provisional = (occurrences[name] or 0) + 1
-        end
+      if first == nil or (first.t ~= "Para" and first.t ~= "Plain") then
+        return note
       end
+      local marker = first.content[1]
+      if marker == nil or marker.t ~= "Span"
+          or not marker.classes:includes("alkahest-note") then
+        return note
+      end
+      local name = marker.identifier:gsub("^note%-", "")
+      local provisional = (occurrences[name] or 0) + 1
       local entry = registry.identify_note(note, provisional)
       occurrences[entry.name] = provisional
       if placement == "book-endnotes" then

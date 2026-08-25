@@ -1,7 +1,7 @@
 # Toolchain lock record
 
 - Captured: 2026-08-20
-- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v18`
+- Derived image: `localhost/alkahest-publishing:quarto-1.10.18-v19`
 - Base image: `ghcr.io/quarto-dev/quarto-full:1.10.18`
 - Base manifest: `sha256:280aa58ecdb814dcced42066e4f64d1825020ce5822f2ca2749fc6396020d7de`
 

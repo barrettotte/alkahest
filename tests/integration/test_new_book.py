@@ -10,10 +10,9 @@ from unittest.mock import patch
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR.parents[1] / "src"))
 
-from alkahest.common import ContractError
 from alkahest.author_project import add_chapter, discover_content, doctor, load_author_config
+from alkahest.common import ContractError
 from alkahest.new_book import create_new_book, normalize_book_options, validate_scaffold
-
 
 ROOT = SCRIPT_DIR.parents[1]
 
@@ -71,6 +70,12 @@ def main():
         }
         if first_files != second_files:
             raise RuntimeError("error: identical new-book inputs produced different files")
+        if (
+            Path("Containerfile") not in first_files
+            or any(path.suffix in {".zip", ".py"} for path in first_files)
+            or b"--network=none" not in first_files[Path("Makefile")]
+        ):
+            raise RuntimeError("error: generated book does not use the container-only surface")
         author_toml = (first / "book.toml").read_text(encoding="utf-8")
         author_config = tomllib.loads(author_toml)
         resolved_config = load_author_config(first)
@@ -102,11 +107,16 @@ def main():
             "already exists",
             lambda: create_new_book(ROOT, first, **values),
         )
-        engine_path = first / scaffold["engine"]["archive"]
-        engine_path.write_bytes(engine_path.read_bytes() + b"\nchanged\n")
+        containerfile = first / "Containerfile"
+        containerfile.write_text(
+            containerfile.read_text().replace(
+                scaffold["engine"]["image"], "localhost/wrong-engine:development"
+            ),
+            encoding="utf-8",
+        )
         expect_failure(
-            "engine-drift",
-            "missing or changed",
+            "image-drift",
+            "does not pin its engine image",
             lambda: validate_scaffold(first),
         )
 

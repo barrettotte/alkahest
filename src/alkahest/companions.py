@@ -6,7 +6,6 @@ from pathlib import Path
 
 from .common import fail, load_json, qmd_sources
 
-
 KINDS = ("code", "dataset", "schematic", "bill-of-materials", "download")
 SEMANTIC_VERSION = re.compile(
     r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"
@@ -51,7 +50,7 @@ def _validate_bundles(root, registry, items):
         "credit",
         "compatibility",
     }
-    memberships = {item_id: [] for item_id in items}
+    memberships: dict[str, list[str]] = {item_id: [] for item_id in items}
     release_paths = set()
     companion_rights = None
     assets_path = root / "assets.json"
@@ -192,7 +191,8 @@ def validate_companions(book_root):
         "release_path",
         "url",
     }
-    paths, release_paths, kind_count = set(), set(), {}
+    paths, release_paths = set(), set()
+    kind_count: dict[str, int] = {}
     for item_id in sorted(items):
         if not re.fullmatch(r"asset-[a-z][a-z0-9-]*", item_id):
             fail(f"invalid companion ID '{item_id}'; expected asset-...")
@@ -224,7 +224,7 @@ def validate_companions(book_root):
             fail(f"companion item '{item_id}' references missing file '{path}'")
         media_type = item.get("media_type", "")
         if not isinstance(media_type, str) or not re.fullmatch(
-            r"[a-z0-9.+-]+/[a-z0-9.+-]+", media_type, re.I
+            r"[a-z0-9.+-]+/[a-z0-9.+-]+", media_type, re.IGNORECASE
         ):
             fail(f"companion item '{item_id}' has invalid media_type")
         version = item.get("version", "")
@@ -273,7 +273,7 @@ def validate_companions(book_root):
             if relative not in paths:
                 fail(f"unregistered companion file '{relative}'")
 
-    calls = {}
+    calls: dict[str, int] = {}
     call_pattern = re.compile(r"\{\{<\s*alk-companion\s+(.+?)\s*>\}\}")
     for source_path in qmd_sources(root):
         disabled_fence = ""

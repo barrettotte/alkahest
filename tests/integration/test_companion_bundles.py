@@ -14,7 +14,6 @@ from alkahest.companion_bundles import (
     package_companion_bundles,
 )
 
-
 FIXTURE = SCRIPT_DIR.parents[1] / "tests/companions/base"
 
 

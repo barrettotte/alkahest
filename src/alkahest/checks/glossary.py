@@ -4,11 +4,12 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any, Never
 
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise RuntimeError(f"error: {message}")
 
 
@@ -17,7 +18,12 @@ def main():
     if not root.is_dir():
         fail("glossary book root does not exist")
     registry_path = root / "glossary.yml"
-    entries, version, language, saw_terms, current, mode = {}, None, None, False, None, None
+    entries: dict[str, dict[str, Any]] = {}
+    version: int | None = None
+    language: str | None = None
+    saw_terms = False
+    current: str | None = None
+    mode: str | None = None
     for line_number, line in enumerate(registry_path.read_text(encoding="utf-8").splitlines(), 1):
         if current and mode == "definition" and re.match(r"^      \S", line):
             entries[current]["definition"] = (
@@ -30,6 +36,8 @@ def main():
             else None
         )
         if alias:
+            if current is None:
+                fail(f"{registry_path}:{line_number}: alias appears before a glossary ID")
             entries[current]["aliases"].append(alias.group(1))
             continue
         mode = None
@@ -89,7 +97,8 @@ def main():
         fail("glossary registry has no terms mapping")
     if not entries:
         fail("glossary registry has no entries")
-    lookup, display_terms = {}, set()
+    lookup: dict[str, str] = {}
+    display_terms: set[str] = set()
     for name in sorted(entries):
         entry = entries[name]
         for required in ("term", "definition"):
@@ -107,7 +116,10 @@ def main():
             lookup[key] = name
     valid_forms = {"term", "plural", "acronym", "acronym-plural", "first", "first-plural"}
     valid_cases = {"as-written", "sentence"}
-    first_uses, referenced, calls, generators = {}, {}, 0, 0
+    first_uses: dict[str, str] = {}
+    referenced: dict[str, int] = {}
+    calls = 0
+    generators = 0
     pattern = re.compile(r"\{\{<\s*alk-term\s+(.+?)\s*>\}\}")
     for source in sorted(
         path
@@ -136,7 +148,7 @@ def main():
                 requested, remainder = parsed.groups()
                 if requested not in lookup:
                     fail(f"{source}:{line_number}: unknown glossary name or alias: {requested}")
-                named = {}
+                named: dict[str, str] = {}
                 argument = re.compile(
                     r"""\b(form|case|link)\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s]+))"""
                 )
@@ -166,13 +178,13 @@ def main():
                     fail(f"{source}:{line_number}: alk-term link must be true or false")
                 name = lookup[requested]
                 entry = entries[name]
-                required = {
+                required_form: str | None = {
                     "plural": "plural",
                     "acronym": "acronym",
                     "acronym-plural": "acronym-plural",
                     "first-plural": "plural",
                 }.get(form)
-                if required and required not in entry:
+                if required_form and required_form not in entry:
                     fail(f"{source}:{line_number}: form {form} is unavailable for {name}")
                 if form == "first-plural" and "acronym" in entry and "acronym-plural" not in entry:
                     fail(f"{source}:{line_number}: first-plural needs acronym-plural for {name}")
@@ -206,4 +218,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

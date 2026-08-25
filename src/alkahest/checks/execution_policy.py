@@ -5,8 +5,9 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
-EXPECTED_POLICY = {
+EXPECTED_POLICY: dict[str, Any] = {
     "schema_version": 1,
     "publication": {
         "normal": "static-only",
@@ -178,13 +179,13 @@ def check_sources(root):
                     + "}'"
                 )
         yaml = front_matter(text)
-        match = FORBIDDEN_SOURCE_KEY.search(yaml)
-        if match:
+        forbidden_match = FORBIDDEN_SOURCE_KEY.search(yaml)
+        if forbidden_match:
             fail(
                 "source "
                 + source_name
                 + " overrides forbidden execution key '"
-                + match.group(1)
+                + forbidden_match.group(1)
                 + "'"
             )
         checked += 1

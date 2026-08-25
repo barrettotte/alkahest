@@ -9,7 +9,7 @@ import re
 import struct
 import zlib
 from pathlib import Path
-
+from typing import Never
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 EXPECTED_RASTERIZER = {
@@ -27,7 +27,7 @@ class GoldenPageError(RuntimeError):
     """A golden-page policy, baseline, or comparison is invalid."""
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise GoldenPageError("error: " + message)
 
 
@@ -157,7 +157,7 @@ def read_png(path: Path) -> dict:
     if not data.startswith(PNG_SIGNATURE):
         fail(f"golden image is not a PNG: {path}")
     cursor = len(PNG_SIGNATURE)
-    header = None
+    header: tuple[int, int, int, int, int, int, int] | None = None
     compressed = bytearray()
     while cursor < len(data):
         if cursor + 12 > len(data):

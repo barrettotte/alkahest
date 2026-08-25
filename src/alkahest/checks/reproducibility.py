@@ -32,7 +32,7 @@ def load_snapshot(path):
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise ReproducibilityError(f"error: cannot load snapshot {path}: {error}")
+        raise ReproducibilityError(f"error: cannot load snapshot {path}: {error}") from error
 
 
 def main():
@@ -86,6 +86,10 @@ def main():
             json.dumps(current, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
     if arguments.compare:
+        if current is None:
+            raise RuntimeError(
+                "cannot compare reproducibility artifacts without a current snapshot"
+            )
         compare_snapshots(load_snapshot(arguments.compare), current)
     if current:
         print(

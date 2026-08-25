@@ -17,7 +17,6 @@ from alkahest.release_profiles import (
     validate_project_releases,
 )
 
-
 ROOT = SCRIPT_DIR.parents[1]
 DEFAULTS = json.loads((ROOT / "book/alkahest-release-defaults.json").read_text(encoding="utf-8"))
 LOCAL = {

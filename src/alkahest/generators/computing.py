@@ -30,8 +30,10 @@ class Svg:
             f'<title id="title">{escape(title)}</title>',
             f'<desc id="desc">{escape(description)}</desc>',
             "<defs>",
-            '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" '
-            'markerWidth="7" markerHeight="7" orient="auto-start-reverse">',
+            (
+                '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" '
+                'markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
+            ),
             f'<path d="M 0 0 L 10 5 L 0 10 z" fill="{INK}"/>',
             "</marker>",
             "</defs>",
@@ -118,7 +120,7 @@ def render_timing(specification):
                 raise ValueError(f"timing signal {signal['name']} must contain {slots} values")
             high = y - 20
             low = y + 20
-            points = []
+            points: list[tuple[float, float]] = []
             for index, value in enumerate(values):
                 level = high if value else low
                 left = x_start + index * slot_width

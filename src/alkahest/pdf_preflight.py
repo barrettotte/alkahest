@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Never
 
 from defusedxml import ElementTree as ET
 
@@ -53,7 +54,7 @@ class RasterImage:
     y_ppi: float
 
 
-def fail(message: str) -> None:
+def fail(message: str) -> Never:
     raise PreflightError(message)
 
 
@@ -108,7 +109,12 @@ def validate_page_boxes(
     for line in output.splitlines():
         box_match = PAGE_BOX.match(line.strip())
         if box_match:
-            values = tuple(float(box_match.group(key)) for key in ("x0", "y0", "x1", "y1"))
+            values = (
+                float(box_match.group("x0")),
+                float(box_match.group("y0")),
+                float(box_match.group("x1")),
+                float(box_match.group("y1")),
+            )
             boxes.setdefault(int(box_match.group("page")), {})[box_match.group("box")] = values
             continue
         rotation_match = PAGE_ROTATION.match(line.strip())
@@ -155,7 +161,7 @@ def validate_page_boxes(
         expected_size = (media[2] - media[0], media[3] - media[1])
         if not all(
             close_enough(actual, expected, tolerance)
-            for actual, expected in zip(sizes[page], expected_size)
+            for actual, expected in zip(sizes[page], expected_size, strict=True)
         ):
             fail(
                 f"page {page} is {sizes[page][0]} x {sizes[page][1]} points; "
@@ -164,13 +170,13 @@ def validate_page_boxes(
 
     for page in sorted(box_pages):
         if set(boxes[page]) != set(BOX_NAMES):
-            missing = sorted(set(BOX_NAMES) - set(boxes[page]))
-            fail(f"page {page} omits required boxes: {', '.join(missing)}")
+            missing_boxes = sorted(set(BOX_NAMES) - set(boxes[page]))
+            fail(f"page {page} omits required boxes: {', '.join(missing_boxes)}")
         for box_name, expected in expected_boxes.items():
             actual = boxes[page][box_name]
             if not all(
                 close_enough(actual_value, expected_value, tolerance)
-                for actual_value, expected_value in zip(actual, expected)
+                for actual_value, expected_value in zip(actual, expected, strict=True)
             ):
                 fail(
                     f"page {page} {box_name} is {actual}; expected {expected} "
@@ -299,7 +305,7 @@ def validate_color_spaces(
     color_spaces = report.findall(".//featuresReport//colorSpace")
     if not color_spaces:
         fail("veraPDF did not report any document color spaces")
-    families = set()
+    families: set[str] = set()
     for color_space in color_spaces:
         family = color_space.get("family")
         if not family:
@@ -309,6 +315,8 @@ def validate_color_spaces(
             fail(f"document uses disallowed vector color-space family {family}")
         if family == "ICCBased":
             components_text = color_space.findtext("components")
+            if components_text is None:
+                fail("ICCBased color space does not report a component count")
             try:
                 components = int(components_text)
             except (TypeError, ValueError):

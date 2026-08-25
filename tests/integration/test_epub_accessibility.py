@@ -2,7 +2,6 @@
 
 import copy
 import json
-import subprocess
 import sys
 import tempfile
 import zipfile
@@ -13,7 +12,7 @@ from alkahest.epub_accessibility import (
     finalize_epub,
     validate_epub,
 )
-
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 ACE_REPORT_CHECKER = ("-m", "alkahest.checks.ace_report")
@@ -190,7 +189,7 @@ def ace_report(version="1.4.6", failure=False):
 
 
 def run_ace_report_fixture(path, should_pass):
-    result = subprocess.run(
+    result = run_process(
         [sys.executable, *ACE_REPORT_CHECKER, str(path)],
         text=True,
         capture_output=True,

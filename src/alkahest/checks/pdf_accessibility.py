@@ -25,7 +25,7 @@ EXPECTED_BACKENDS = {
     "typst": ("PDF/UA-1", "ua1", "book/_quarto-pdf-ua-typst.yml"),
     "lualatex": ("PDF/UA-2", "ua2", "book/_quarto-pdf-ua-latex.yml"),
 }
-EXPECTED_IMAGE = "localhost/alkahest-publishing:quarto-1.10.18-v18"
+EXPECTED_IMAGE = "localhost/alkahest-publishing:quarto-1.10.18-v19"
 SHA256 = re.compile(r"[0-9a-f]{64}")
 REVISION = re.compile(r"[0-9a-f]{40}")
 
@@ -293,4 +293,4 @@ if __name__ == "__main__":
         main()
     except PolicyError as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

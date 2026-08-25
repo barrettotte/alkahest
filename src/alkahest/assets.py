@@ -8,6 +8,7 @@ import re
 import shutil
 from datetime import date
 from pathlib import Path, PurePosixPath
+from typing import Never
 from zipfile import BadZipFile, ZipFile
 
 from .process import run_process
@@ -31,7 +32,7 @@ class AssetError(RuntimeError):
     """Report an invalid rights record or unsafe release asset."""
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise AssetError(message)
 
 
@@ -296,7 +297,7 @@ def load_policy(root, policy_path):
         fail("asset policy needs allowed_licenses")
     if any(not isinstance(value, str) or not value for value in licenses):
         fail("allowed_licenses must contain nonempty SPDX identifiers")
-    approved = {}
+    approved: dict[str, str] = {}
     collection_count, collection_files = validate_collections(root, policy, set(licenses), approved)
     registry_count, item_count, registry_files = validate_registries(
         root, policy, set(licenses), approved
@@ -381,9 +382,9 @@ def check_embedded_metadata(label, content):
             "sodipodi:docname",
             "<rdf:RDF",
         )
-        for marker in editor_markers:
-            if marker in text:
-                fail(f"{label} contains removable SVG editor metadata: {marker}")
+        for editor_marker in editor_markers:
+            if editor_marker in text:
+                fail(f"{label} contains removable SVG editor metadata: {editor_marker}")
     elif lower.endswith(".wav") and content.startswith(b"RIFF"):
         if b"LIST" in content and b"INFO" in content:
             fail(f"{label} contains removable WAV INFO metadata")

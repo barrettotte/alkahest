@@ -189,20 +189,6 @@ def check_reuse(arguments: tuple[str, ...]) -> None:
     )
 
 
-def check_template_engine(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .template_package import load_template_policy, validate_template_integration
-
-    validate_template_integration(ROOT)
-    context = load_template_policy(ROOT)
-    directory_count = len(context["policy"]["directory_components"])
-    print(
-        "ok: template engine policy "
-        f"({len(context['mappings'])} reusable files; {directory_count} directories; "
-        f"version {context['package']['version']}; {context['package']['license']})"
-    )
-
-
 def check_release_profiles(arguments: tuple[str, ...]) -> None:
     _require_no_arguments(arguments)
     from .project_checks import check_release_profiles as validate
@@ -226,18 +212,6 @@ def check_companion_bundles_operation(arguments: tuple[str, ...]) -> None:
         "ok: companion bundles "
         f"({result['bundles']} deterministic bundle; {result['items']} items; "
         f"license, manifest, internal/outer checksums; {result['bytes']} bytes)"
-    )
-
-
-def check_template_package(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .template_package import check_template_package as validate
-
-    result = validate(ROOT)
-    print(
-        "ok: template engine package "
-        f"({result['source_files']} exact reusable files; "
-        f"{result['members']} verified members; extracted smoke: yes)"
     )
 
 
@@ -406,18 +380,6 @@ def package_companion_bundles_operation(arguments: tuple[str, ...]) -> None:
     )
 
 
-def package_template_engine(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .template_package import package_template
-
-    result = package_template(ROOT)
-    print(
-        "ok: packaged template engine "
-        f"({result['source_files']} reusable files; {result['members']} members; "
-        f"{result['bytes']} bytes)"
-    )
-
-
 OPERATIONS: Final[dict[str, Operation]] = {
     "check-asset-rights": check_asset_rights,
     "check-companion-bundles": check_companion_bundles_operation,
@@ -436,15 +398,12 @@ OPERATIONS: Final[dict[str, Operation]] = {
     "check-release-assets": check_release_assets,
     "check-release-profiles": check_release_profiles,
     "check-rights-report": check_rights_report,
-    "check-template-engine": check_template_engine,
-    "check-template-package": check_template_package,
     "check-theme-defaults": check_theme_defaults,
     "finalize-epub": finalize_epub_operation,
     "generate-covers": generate_cover_artifacts_operation,
     "generate-publication-metadata": generate_publication_metadata,
     "generate-rights-report": generate_rights_report,
     "package-companion-bundles": package_companion_bundles_operation,
-    "package-template-engine": package_template_engine,
     "stage-edition": stage_edition_operation,
     "update-identities": update_identities_operation,
 }

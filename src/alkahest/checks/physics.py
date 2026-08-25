@@ -8,6 +8,7 @@ import tempfile
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from typing import Any
 
 from defusedxml import ElementTree as ET
 
@@ -18,7 +19,7 @@ BOOK_ROOT = REPO_ROOT / "book"
 DATA_PATH = BOOK_ROOT / "figures" / "data" / "physics-diagrams.json"
 GENERATED_DIR = BOOK_ROOT / "figures" / "generated"
 
-OUTPUTS = {
+OUTPUTS: dict[str, dict[str, Any]] = {
     "velocity-vector.svg": {
         "viewbox": "0 0 1000 540",
         "minimum_geometry": 16,

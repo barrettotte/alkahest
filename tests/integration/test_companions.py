@@ -12,7 +12,6 @@ sys.path.insert(0, str(SCRIPT_DIR.parents[1] / "src"))
 from alkahest.common import ContractError
 from alkahest.companions import validate_companions
 
-
 FIXTURE = SCRIPT_DIR.parents[1] / "tests" / "companions" / "base"
 
 
@@ -43,7 +42,7 @@ def expect_failure(name, expected, mutate):
             if expected not in str(error):
                 raise RuntimeError(
                     f"error: companion fixture {name} missed expected diagnostic '{expected}': {error}"
-                )
+                ) from error
         else:
             raise RuntimeError(f"error: companion fixture unexpectedly passed: {name}")
 

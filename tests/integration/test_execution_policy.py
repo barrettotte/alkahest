@@ -8,6 +8,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+from alkahest.process import run_process
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 BASE = SCRIPT_DIR.parents[1] / "tests" / "execution" / "base"
@@ -17,12 +18,13 @@ VALIDATOR = ("-m", "alkahest.checks.execution_policy")
 def run(root):
     environment = os.environ.copy()
     environment["ALKAHEST_EXECUTION_BOOK_ROOT"] = str(root)
-    return subprocess.run(
+    return run_process(
         [sys.executable, *VALIDATOR],
         env=environment,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         encoding="utf-8",
+        check=False,
     )
 
 

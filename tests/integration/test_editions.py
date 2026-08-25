@@ -33,7 +33,7 @@ def expect_failure(name, expected, mutate):
         if expected not in str(error):
             raise RuntimeError(
                 f"error: edition fixture {name} missed diagnostic '{expected}': {error}"
-            )
+            ) from error
     else:
         raise RuntimeError(f"error: edition fixture {name} unexpectedly passed")
 

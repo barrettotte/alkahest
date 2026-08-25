@@ -22,6 +22,7 @@ test = [
 quality = [
   "mypy>=1.18,<2",
   "ruff>=0.16,<0.17",
+  "types-defusedxml>=0.7,<0.8",
 ]
 security = [
   "pip-audit>=2.10,<3",
@@ -69,21 +70,7 @@ extend-select = ["B", "I", "S", "UP"]
 
 [tool.mypy]
 python_version = "3.13"
-files = [
-  "src/alkahest/__main__.py",
-  "src/alkahest/ci.py",
-  "src/alkahest/cli.py",
-  "src/alkahest/operations.py",
-  "src/alkahest/project_checks.py",
-  "src/alkahest/process.py",
-  "src/alkahest/reporting.py",
-  "src/alkahest/staging.py",
-  "src/alkahest/tasks.py",
-  "src/alkahest/checks/pdf_profiles.py",
-  "src/alkahest/checks/suites.py",
-  "src/alkahest/checks/writing.py",
-  "src/alkahest/rendering/pipeline.py",
-]
+files = ["src/alkahest"]
 check_untyped_defs = true
 no_implicit_optional = true
 warn_redundant_casts = true

@@ -415,7 +415,9 @@ def _inspect_pdf(path, dimensions):
         Decimal(str(dimensions["height"])) * Decimal(72),
     )
     actual = (Decimal(size.group(1)), Decimal(size.group(2)))
-    if any(abs(left - right) > Decimal("0.1") for left, right in zip(actual, expected)):
+    if any(
+        abs(left - right) > Decimal("0.1") for left, right in zip(actual, expected, strict=True)
+    ):
         fail(f"cover interior PDF '{path}' trim differs from manifestation")
     return {
         "pages": int(pages.group(1)),

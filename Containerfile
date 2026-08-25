@@ -421,8 +421,46 @@ RUN tlmgr update latex l3kernel \
     && test "$(tlmgr info --only-installed tagpdf \
         | sed -n 's/^revision:[[:space:]]*//p')" = "79799"
 
+# Embed the author engine in its runtime layout. The development
+# repository keeps canonical files in book/, scripts/, and src/; the runtime
+# image presents one read-only engine root so a mounted book needs none of this
+# repository's source code.
+COPY book/_extensions/ /opt/alkahest/engine/_extensions/
+COPY book/filters/ /opt/alkahest/engine/filters/
+COPY book/latex/ /opt/alkahest/engine/latex/
+COPY book/theme/ /opt/alkahest/engine/theme/
+COPY book/typst/ /opt/alkahest/engine/typst/
+COPY book/alkahest-defaults.yml /opt/alkahest/engine/defaults/quarto.yml
+COPY book/alkahest-theme-defaults.json /opt/alkahest/engine/defaults/theme.json
+COPY book/alkahest-release-defaults.json /opt/alkahest/engine/defaults/releases.json
+COPY scripts/author.py /opt/alkahest/engine/scripts/author.py
+COPY src/alkahest/__init__.py src/alkahest/author_project.py src/alkahest/process.py src/alkahest/release_profiles.py src/alkahest/theme.py /opt/alkahest/engine/src/alkahest/
+
+# Stage the twelve locked web faces as regular files. Quarto preserves resource
+# timestamps while copying, which cannot operate through a symlink whose target
+# lives in the image's read-only font directory at runtime.
+RUN install --directory /opt/alkahest/engine/theme/fonts \
+    && install -m 0644 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSans-Bold.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSans-Italic.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSans-Regular.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSerif-Bold.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSerif-BoldItalic.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSerif-Italic.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSerif-Regular.woff2 \
+        /opt/alkahest/fonts/web/libertinus/LibertinusSerifDisplay-Regular.woff2 \
+        /opt/alkahest/fonts/web/source-code-pro/SourceCodePro-Bold.otf.woff2 \
+        /opt/alkahest/fonts/web/source-code-pro/SourceCodePro-BoldIt.otf.woff2 \
+        /opt/alkahest/fonts/web/source-code-pro/SourceCodePro-It.otf.woff2 \
+        /opt/alkahest/fonts/web/source-code-pro/SourceCodePro-Regular.otf.woff2 \
+        /opt/alkahest/engine/theme/fonts/ \
+    && chmod -R a+rX /opt/alkahest/engine \
+    && /opt/alkahest/tools/bin/python /opt/alkahest/engine/scripts/author.py --help >/dev/null
+
 ENV HOME=/home/alkahest
-ENV PYTHONPATH=/workspace/src
+# Maintainer containers prefer a mounted checkout; standalone book containers
+# fall back to the embedded runtime when /workspace/src is absent.
+ENV PYTHONPATH=/workspace/src:/opt/alkahest/engine/src
 ENV PATH="/opt/alkahest/tools/bin:${PATH}"
 WORKDIR /workspace
 

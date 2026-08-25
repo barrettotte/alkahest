@@ -1,0 +1,74 @@
+# Write and Organize
+
+Write prose in `.qmd` files using Markdown with Quarto extensions. Quarto adds
+book structure, citations, cross-references, mathematics, and publishing
+formats while keeping the source readable as plain text [@quarto-guide].
+
+## Add chapters
+
+Create the next numbered chapter without editing a separate contents file:
+
+```sh
+make chapter TITLE="From Relays to Transistors"
+```
+
+The command creates a file such as
+`manuscript/chapters/06-from-relays-to-transistors.qmd`. Chapter filenames must
+use `NN-kebab-case.qmd`; their numeric prefixes determine book order.
+
+You may rename the starter `01-first-chapter.qmd` once you choose a real title.
+Keep the numeric prefix and update `[excerpt].chapters` in `book.toml` if the
+renamed file is part of the public excerpt.
+
+Add appendices in the same way by creating numbered `.qmd` files under
+`manuscript/appendices/`. They appear after the chapters automatically.
+
+## Structure a chapter
+
+Use one level-one heading for the chapter and level-two headings for its main
+sections:
+
+```markdown
+# From Relays to Transistors
+
+Opening prose introduces the chapter.
+
+## Electromechanical switching
+
+Section prose goes here.
+
+### Contact bounce
+
+Use deeper headings only when they make navigation clearer.
+```
+
+Give an important destination an explicit identifier, then refer to it by ID:
+
+```markdown
+## Contact bounce {#sec-contact-bounce}
+
+As explained in @sec-contact-bounce, the contacts do not settle instantly.
+```
+
+Explicit IDs survive wording changes and make links more durable. Prefer them
+for sections, figures, tables, equations, listings, exercises, and other items
+you expect to reference.
+
+## Keep the source portable
+
+Use semantic Markdown before raw HTML, Typst, or LaTeX. A few dependable forms
+cover most prose:
+
+- `**bold**` for strong importance and `*italic*` for emphasis;
+- `` `inline code` `` for commands, filenames, and identifiers;
+- `[useful link text](https://example.com)` for links;
+- `[^reason]` for a named footnote reference; and
+- block quotes beginning with `>` for quoted prose.
+
+A plain named footnote needs no registry.[^native-footnote]
+
+[^native-footnote]: Native named footnotes stay simple and portable.
+
+Avoid using bold text as a substitute for headings, and never use color or an
+icon as the only way to communicate meaning. These habits improve navigation,
+EPUB reflow, and accessibility across every output.

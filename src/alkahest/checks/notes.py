@@ -4,11 +4,12 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any, Never
 
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise RuntimeError(f"error: {message}")
 
 
@@ -17,7 +18,12 @@ def main():
     if not root.is_dir():
         fail("notes book root does not exist")
     registry_path = root / "notes.yml"
-    version, section, current, order, entries, order_seen = None, None, None, [], {}, set()
+    version: int | None = None
+    section: str | None = None
+    current: str | None = None
+    order: list[str] = []
+    entries: dict[str, dict[str, Any]] = {}
+    order_seen: set[str] = set()
     for number, line in enumerate(registry_path.read_text(encoding="utf-8").splitlines(), 1):
         if re.match(r"^\s*(?:#.*)?$", line):
             continue
@@ -77,7 +83,10 @@ def main():
         entry["references"] = int(entry["references"])
         if entry["repeat"] == "once" and entry["references"] != 1:
             fail(f"note {name} uses repeat=once with more than one reference")
-    definitions, references, reference_sources, placeholders = {}, {}, {}, 0
+    definitions: dict[str, dict[str, str]] = {}
+    references: dict[str, int] = {}
+    reference_sources: dict[str, set[str]] = {}
+    placeholders = 0
     for source in sorted(
         path
         for path in root.rglob("*.qmd")
@@ -87,7 +96,7 @@ def main():
         lines = source.read_text(encoding="utf-8").splitlines(keepends=True)
         content = "".join(lines)
         placeholders += len(
-            re.findall(r"^:::\s+\{\.alkahest-book-notes-placeholder\}\s*$", content, re.M)
+            re.findall(r"^:::\s+\{\.alkahest-book-notes-placeholder\}\s*$", content, re.MULTILINE)
         )
         if "^[" in content:
             fail(f"{relative} uses an inline note; use a registered named note")
@@ -107,9 +116,9 @@ def main():
             for name in re.findall(r"\[\^([a-z][a-z0-9-]*)\]", line):
                 references[name] = references.get(name, 0) + 1
                 reference_sources.setdefault(name, set()).add(relative)
-            definition = re.match(r"^\[\^([a-z][a-z0-9-]*)\]:\s*(.*)$", line)
-            if definition:
-                name, marker = definition.groups()
+            definition_match = re.match(r"^\[\^([a-z][a-z0-9-]*)\]:\s*(.*)$", line)
+            if definition_match:
+                name, marker = definition_match.groups()
                 if name in definitions:
                     fail(f"duplicate note definition: {name}")
                 location = f"{relative}:{index + 1}"
@@ -158,4 +167,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

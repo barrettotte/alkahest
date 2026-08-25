@@ -8,12 +8,15 @@ ROOT_DOCUMENTS = ("README.md", "ROADMAP.md")
 SOURCE_TREES = {
     "book": {".md", ".qmd"},
     "docs": {".md"},
+    "guide": {".md", ".qmd"},
 }
 EXCLUDED_PREFIXES = (
     Path("book/.quarto"),
     Path("book/_build"),
     Path("book/site_libs"),
     Path("book/theme/fonts"),
+    Path("guide/.alkahest"),
+    Path("guide/_build"),
 )
 
 

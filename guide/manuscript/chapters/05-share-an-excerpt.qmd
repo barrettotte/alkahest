@@ -1,0 +1,52 @@
+# Share an Excerpt
+
+An excerpt lets readers evaluate one or two chapters without receiving the
+complete book. It is a separate publication profile built from the same source,
+not a manually copied mini-book.
+
+## Select chapters
+
+Edit the `[excerpt]` table in `book.toml`:
+
+```toml
+[excerpt]
+chapters = ["01-start-here.qmd", "02-write-and-organize.qmd"]
+message = "This excerpt contains selected chapters, not the complete book."
+```
+
+Choose one or two exact chapter filenames. The introduction, references page,
+and necessary presentation files are included automatically; other chapters
+and all appendices are excluded.
+
+Write excerpt chapters so they remain understandable without links to omitted
+chapters. Keep private material out of shared front and back matter as well as
+the selected chapters.
+
+## Build and inspect it
+
+Run:
+
+```sh
+make excerpt
+```
+
+The command creates HTML, EPUB, and Typst products beneath `_build/excerpt/`.
+Inspect all three before sharing them. Confirm that:
+
+- the notice clearly says the publication is incomplete;
+- the contents contain only intended chapters;
+- links, citations, figures, and references still resolve;
+- no answer keys, private notes, or unrelated assets are present; and
+- title and author metadata are correct.
+
+## Commit source, not products
+
+Commit the manuscript, bibliography, source assets, `book.toml`, Makefile,
+README, `.gitignore`, and the managed `.alkahest/scaffold.json` identity record.
+Keep `_build/` ignored.
+
+The template creates publication files; it does not decide where you should
+upload them. Choose stores, web hosting, identifiers, licenses, companion
+hosting, and print vendors near publication, when those decisions are real.
+Until then, the most valuable test is continuing to write and noticing where
+the routine author workflow creates friction.

@@ -25,7 +25,7 @@ def main():
                 arguments.replacement,
                 content,
                 count=0 if arguments.all else 1,
-                flags=re.M,
+                flags=re.MULTILINE,
             )
         else:
             available = content.count(arguments.pattern)
@@ -43,4 +43,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, re.error, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

@@ -9,19 +9,20 @@ import subprocess
 import tomllib
 import unicodedata
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path, PurePosixPath
+from typing import Never
 
 from .process import run_process
 from .release_profiles import ReleaseProfileError, release_outputs
-from .theme import ThemeError, theme_outputs
+from .theme import COLOR_FIELDS, FONT_FIELDS, FONT_NAME, HEX_COLOR, ThemeError, theme_outputs
 
 BOOK_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 LANGUAGE = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
 CHAPTER = re.compile(r"[0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\.qmd")
 PROFILES = {"full", "excerpt"}
 FORMATS = {"html", "epub", "typst", "latex"}
-TOOLCHAIN_IMAGE = "localhost/alkahest-publishing:quarto-1.10.18-v18"
+TOOLCHAIN_IMAGE = "localhost/alkahest-publishing:quarto-1.10.18-v19"
 DEFAULT_CONTENT = {
     "front": ["manuscript/index.qmd"],
     "chapter_directory": "manuscript/chapters",
@@ -35,7 +36,7 @@ class AuthorProjectError(RuntimeError):
     """A user-facing minimal-author-project violation."""
 
 
-def _fail(message):
+def _fail(message: str) -> Never:
     raise AuthorProjectError(f"error: {message}")
 
 
@@ -175,6 +176,16 @@ def load_author_config(root):
     }
     if not isinstance(theme["colors"], dict) or not isinstance(theme["typography"], dict):
         _fail("theme colors and typography must be tables")
+    if not set(theme["colors"]) <= set(COLOR_FIELDS):
+        _fail("theme override colors contain an unknown field")
+    if not set(theme["typography"]) <= set(FONT_FIELDS):
+        _fail("theme override typography contains an unknown field")
+    for field, value in theme["colors"].items():
+        if not isinstance(value, str) or HEX_COLOR.fullmatch(value) is None:
+            _fail(f"theme color {field} must use #RRGGBB")
+    for field, value in theme["typography"].items():
+        if not isinstance(value, str) or FONT_NAME.fullmatch(value) is None:
+            _fail(f"theme font {field} contains unsupported characters")
     return {
         "schema_version": document["schema_version"],
         "book": book,
@@ -200,7 +211,7 @@ def discover_content(root, config):
             path.name for path in directory.glob("*.qmd") if CHAPTER.fullmatch(path.name) is None
         ]
         if invalid:
-            _fail(f"{kind} filename must use NN-kebab-case.qmd: {sorted(invalid)[0]}")
+            _fail(f"{kind} filename must use NN-kebab-case.qmd: {min(invalid)}")
         discovered[kind] = [
             path.relative_to(root).as_posix() for path in sorted(directory.glob("*.qmd"))
         ]
@@ -209,7 +220,7 @@ def discover_content(root, config):
     chapter_names = {PurePosixPath(path).name for path in discovered["chapters"]}
     missing_excerpt = set(config["excerpt"]["chapters"]) - chapter_names
     if missing_excerpt:
-        _fail(f"excerpt references a missing chapter: {sorted(missing_excerpt)[0]}")
+        _fail(f"excerpt references a missing chapter: {min(missing_excerpt)}")
     all_sources = [
         *content["front"],
         *discovered["chapters"],
@@ -357,8 +368,8 @@ bibliography: {bibliography}
 
 
 FORMAT_PROFILES = {
-    "html": b"""project:\n  output-dir: _output/html\n\nbrand: false\n\nformat:\n  html:\n    code-copy: true\n    include-before-body: theme/accessibility-before-body.html\n    code-overflow: scroll\n    html-math-method: mathml\n    theme: theme/alkahest.scss\n    css: generated/theme-overrides.css\n""",
-    "epub": b"""project:\n  output-dir: _output/epub\n\nformat:\n  epub:\n    css: generated/theme-overrides.css\n""",
+    "html": b"""project:\n  output-dir: _output/html\n\nbrand: false\n\nformat:\n  html:\n    code-copy: true\n    include-before-body: theme/accessibility-before-body.html\n    code-overflow: scroll\n    html-math-method: mathml\n    theme: theme/alkahest.scss\n    css:\n      - theme/alkahest-fonts.css\n      - generated/theme-overrides.css\n""",
+    "epub": b"""project:\n  output-dir: _output/epub\n\nformat:\n  epub:\n    css:\n      - theme/alkahest-epub.css\n      - generated/theme-overrides.css\n    epub-fonts:\n      - theme/fonts/LibertinusSerif-Regular.woff2\n      - theme/fonts/LibertinusSerif-Italic.woff2\n      - theme/fonts/LibertinusSerif-Bold.woff2\n      - theme/fonts/LibertinusSerif-BoldItalic.woff2\n      - theme/fonts/LibertinusSerifDisplay-Regular.woff2\n      - theme/fonts/LibertinusSans-Regular.woff2\n      - theme/fonts/LibertinusSans-Italic.woff2\n      - theme/fonts/LibertinusSans-Bold.woff2\n      - theme/fonts/SourceCodePro-Regular.otf.woff2\n      - theme/fonts/SourceCodePro-It.otf.woff2\n      - theme/fonts/SourceCodePro-Bold.otf.woff2\n      - theme/fonts/SourceCodePro-BoldIt.otf.woff2\n""",
     "typst": b"""project:\n  output-dir: _output/typst\n\ntrim-width: 7in\ntrim-height: 10in\nbody-font-size: 10pt\nbody-leading: 3pt\nparagraph-indent: 1em\nparagraph-spacing: 3pt\n\nformat:\n  typst:\n    citeproc: true\n    keep-typ: true\n    template-partials:\n      - typst/typst-show.typ\n    margin:\n      top: 0.70in\n      bottom: 0.80in\n    margin-geometry:\n      inner:\n        far: 0.85in\n        width: 0in\n        separation: 0in\n      outer:\n        far: 0.70in\n        width: 0in\n        separation: 0in\n      clearance: 8pt\n""",
     "latex": b"""project:\n  output-dir: _output/latex\n\nformat:\n  pdf:\n    fig-pos: htbp\n    documentclass: scrbook\n    classoption: [twoside, openright]\n    pdf-engine: lualatex\n    keep-tex: true\n    include-in-header:\n      - latex/book-layout.tex\n      - generated/theme-overrides.tex\n    template-partials:\n      - latex/title.tex\n      - latex/before-body.tex\n    geometry: [paperwidth=7in, paperheight=10in, inner=0.85in, outer=0.70in, top=0.70in, bottom=0.80in]\n""",
 }
@@ -397,7 +408,7 @@ def compile_workspace(root, engine_root, profile="full"):
     for directory in ("_extensions", "filters", "latex", "theme", "typst"):
         source = engine_root / directory
         if not source.is_dir():
-            _fail(f"engine archive is missing {directory}")
+            _fail(f"engine runtime is missing {directory}")
         (stage / directory).symlink_to(Path(os.path.relpath(source, stage)))
     defaults = engine_root / "defaults"
     (stage / "alkahest-defaults.yml").symlink_to(
@@ -565,15 +576,20 @@ def render(root, engine_root, profile, formats):
     """Compile and render selected formats from one disposable workspace."""
     unknown = set(formats) - FORMATS
     if unknown:
-        _fail(f"unknown render format: {sorted(unknown)[0]}")
+        _fail(f"unknown render format: {min(unknown)}")
     if profile == "excerpt" and "latex" in formats:
         _fail("excerpt output does not include the LuaLaTeX diagnostic profile")
     result = compile_workspace(root, engine_root, profile)
     release = "full" if profile == "full" else "preview"
     root = Path(root).resolve()
+    created = datetime.fromisoformat(result["config"]["book"]["created"])
+    epoch = int(created.replace(tzinfo=UTC).timestamp())
+    render_environment = os.environ.copy()
+    render_environment["SOURCE_DATE_EPOCH"] = str(epoch)
+    render_environment["FORCE_SOURCE_DATE"] = "1"
     configured_quarto = os.environ.get("QUARTO")
     quarto = configured_quarto or shutil.which("quarto")
-    container = None
+    container: list[str] | None = None
     if quarto is None and shutil.which("podman"):
         image = os.environ.get("ALKAHEST_TOOLCHAIN_IMAGE", TOOLCHAIN_IMAGE)
         available = (
@@ -586,8 +602,6 @@ def render(root, engine_root, profile, formats):
             == 0
         )
         if available:
-            created = datetime.fromisoformat(result["config"]["book"]["created"])
-            epoch = int(created.replace(tzinfo=timezone.utc).timestamp())
             relative_stage = result["stage"].relative_to(root).as_posix()
             container_tmp = PurePosixPath("/") / "tmp"
             container = [
@@ -628,16 +642,17 @@ def render(root, engine_root, profile, formats):
         _fail("Quarto is not on PATH and the pinned Alkahest Podman image is unavailable")
     for format_name in formats:
         print(f"rendering: {profile} {format_name}", flush=True)
-        command = (
-            [quarto, "render", "--profile", f"release-{release},{format_name}"]
-            if quarto is not None
-            else [
+        if quarto is not None:
+            command = [quarto, "render", "--profile", f"release-{release},{format_name}"]
+        elif container is not None:
+            command = [
                 *container,
                 "render",
                 "--profile",
                 f"release-{release},{format_name}",
             ]
-        )
+        else:
+            _fail("renderer selection failed")
         try:
             completed = run_process(
                 command,
@@ -646,6 +661,7 @@ def render(root, engine_root, profile, formats):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                env=render_environment,
             )
         except OSError as error:
             _fail(f"{format_name} render could not start: {error}")

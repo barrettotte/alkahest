@@ -7,11 +7,11 @@ import subprocess
 import sys
 import tempfile
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from alkahest.markup import canonicalize_markup
-
+from alkahest.process import run_process
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parents[1]
@@ -30,7 +30,7 @@ def write_policy(root, data):
 
 def write_epub(path, data):
     epoch = data["source_date_epoch"]
-    stamp = datetime.fromtimestamp(epoch, timezone.utc)
+    stamp = datetime.fromtimestamp(epoch, UTC)
     date_time = (stamp.year, stamp.month, stamp.day, stamp.hour, stamp.minute, stamp.second)
     opf = (
         "<package><metadata>"
@@ -38,7 +38,7 @@ def write_epub(path, data):
         f"<date>{data['source_date_utc']}</date>"
         f"<modified>{data['source_date_utc']}</modified>"
         "</metadata></package>"
-    ).encode("utf-8")
+    ).encode()
     path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, "w") as archive:
         mimetype = zipfile.ZipInfo("mimetype", date_time)
@@ -79,12 +79,13 @@ def create_fixture(root):
 def run(root, *arguments):
     environment = os.environ.copy()
     environment["ALKAHEST_REPRO_ROOT"] = str(root)
-    return subprocess.run(
+    return run_process(
         [sys.executable, *VALIDATOR, *arguments],
         env=environment,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         encoding="utf-8",
+        check=False,
     )
 
 
@@ -108,7 +109,7 @@ def mutate_policy(root, mutate):
 
 
 def mutate_epub_timestamp(root):
-    data = policy(root)
+    policy(root)
     path = root / "book/_build/epub/Alkahest-Reference-Book.epub"
     with zipfile.ZipFile(path) as archive:
         opf = archive.read("EPUB/content.opf")

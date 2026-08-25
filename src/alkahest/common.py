@@ -2,17 +2,18 @@
 
 import json
 from pathlib import Path
+from typing import Any, Never
 
 
 class ContractError(RuntimeError):
     """A user-facing publishing contract violation."""
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise ContractError(f"error: {message}")
 
 
-def load_json(path, label):
+def load_json(path: str | Path, label: str) -> Any:
     path = Path(path)
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -22,7 +23,7 @@ def load_json(path, label):
         fail(f"invalid {label} JSON in {path}: {error}")
 
 
-def qmd_sources(root):
+def qmd_sources(root: str | Path) -> list[Path]:
     root = Path(root)
     return sorted(
         path

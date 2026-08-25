@@ -4,18 +4,20 @@ import html
 import re
 import sys
 from pathlib import Path
+from typing import Any, Never
 
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise RuntimeError(f"error: {message}")
 
 
 def main():
     root = ROOT / "book"
     registry_path = root / "_extensions" / "alkahest-icons" / "registry.lua"
-    entries, current = {}, None
+    entries: dict[str, dict[str, Any]] = {}
+    current: str | None = None
     for line in registry_path.read_text(encoding="utf-8").splitlines():
         entry = re.match(r'^  (?:([a-z][a-z0-9-]*)|\["([a-z][a-z0-9-]*)"\]) = \{\s*$', line)
         if entry:
@@ -40,10 +42,10 @@ def main():
             fail(f"icon registry is missing required name: {required}")
     lookup = {}
     for name in sorted(entries):
-        entry = entries[name]
-        if not entry.get("label"):
+        registry_entry = entries[name]
+        if not registry_entry.get("label"):
             fail(f"icon {name} has no default label")
-        asset = entry.get("asset")
+        asset = registry_entry.get("asset")
         if not asset:
             fail(f"icon {name} has no asset")
         if not re.fullmatch(r"icons/[a-z0-9-]+\.svg", asset):
@@ -51,9 +53,9 @@ def main():
         svg = (root / asset).read_text(encoding="utf-8")
         if 'viewBox="0 0 24 24"' not in svg:
             fail(f"icon {name} asset must use the shared 24 by 24 SVG view box")
-        if re.search(r"<text\b", svg, re.I):
+        if re.search(r"<text\b", svg, re.IGNORECASE):
             fail(f"icon {name} asset must not contain embedded text")
-        for key in (name, *entry["aliases"]):
+        for key in (name, *registry_entry["aliases"]):
             if key in lookup:
                 fail(f"duplicate icon name or alias: {key}")
             lookup[key] = name
@@ -123,4 +125,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

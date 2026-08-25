@@ -44,22 +44,23 @@ def main():
         if not re.search(r'<rights\s+license="[^"]+">', text):
             fail(f"citation style {relative} has no declared license")
     config = (root / "_quarto.yml").read_text(encoding="utf-8")
-    if not re.search(r"^bibliography:\s*references\.bib\s*$", config, re.M):
+    if not re.search(r"^bibliography:\s*references\.bib\s*$", config, re.MULTILINE):
         fail("default bibliography must be references.bib")
-    if not re.search(r"^csl:\s*citations/chicago-author-date\.csl\s*$", config, re.M):
+    if not re.search(r"^csl:\s*citations/chicago-author-date\.csl\s*$", config, re.MULTILINE):
         fail("default citation style must be the locked Chicago author-date file")
     numeric = (root / "_quarto-citation-numeric.yml").read_text(encoding="utf-8")
-    if not re.search(r"^csl:\s*citations/ieee\.csl\s*$", numeric, re.M):
+    if not re.search(r"^csl:\s*citations/ieee\.csl\s*$", numeric, re.MULTILINE):
         fail("numeric profile must select the locked IEEE file")
     for profile in ("_quarto-typst.yml", "_quarto-typst-6x9.yml", "_quarto-typst-review.yml"):
         if not re.search(
-            r"^\s+citeproc:\s*true\s*$", (root / profile).read_text(encoding="utf-8"), re.M
+            r"^\s+citeproc:\s*true\s*$", (root / profile).read_text(encoding="utf-8"), re.MULTILINE
         ):
             fail(f"Typst profile {profile} must run citations through Pandoc citeproc")
     if len(re.findall(r"\{#refs\}", (root / "references.qmd").read_text(encoding="utf-8"))) != 1:
         fail("expected exactly one shared references division")
     bibliography_path = root / "references.bib"
-    keys, key_lines = set(), {}
+    keys: set[str] = set()
+    key_lines: dict[str, int] = {}
     for line_number, line in enumerate(
         bibliography_path.read_text(encoding="utf-8").splitlines(), 1
     ):
@@ -76,11 +77,13 @@ def main():
     if not keys:
         fail("bibliography has no entries")
     nocite = set()
-    block = re.search(r"^nocite:\s*\|\s*\n((?:[ \t]+.*(?:\n|\Z))*)", config, re.M)
+    block = re.search(r"^nocite:\s*\|\s*\n((?:[ \t]+.*(?:\n|\Z))*)", config, re.MULTILINE)
     if block:
         nocite.update(re.findall(r"@([A-Za-z0-9][A-Za-z0-9_.:+-]*)", block.group(1)))
-    nocite.update(re.findall(r"""^nocite:\s*["']?@([A-Za-z0-9][A-Za-z0-9_.:+-]*)""", config, re.M))
-    if re.search(r"^nocite:", config, re.M) and not nocite:
+    nocite.update(
+        re.findall(r"""^nocite:\s*["']?@([A-Za-z0-9][A-Za-z0-9_.:+-]*)""", config, re.MULTILINE)
+    )
+    if re.search(r"^nocite:", config, re.MULTILINE) and not nocite:
         fail("nocite metadata must list at least one explicit bibliography key")
     for key in sorted(nocite):
         if key not in keys:
@@ -108,7 +111,8 @@ def main():
         "rem",
         "alg",
     }
-    cited, calls = set(), {}
+    cited: set[str] = set()
+    calls: dict[str, int] = {}
     for source in sorted(
         path
         for path in root.rglob("*.qmd")
@@ -150,4 +154,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

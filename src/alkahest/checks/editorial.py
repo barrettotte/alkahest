@@ -102,9 +102,9 @@ def image_has_alternative(alt, attributes):
 
 
 def scan_sources(root, sources):
-    errors = []
-    identities = {}
-    per_source_ids = {source: set() for source in sources}
+    errors: list[str] = []
+    identities: dict[str, tuple[Path, str]] = {}
+    per_source_ids: dict[Path, set[str]] = {source: set() for source in sources}
     links = []
     references = []
     image_count = diagram_count = math_count = external_count = 0
@@ -220,9 +220,9 @@ def scan_sources(root, sources):
 
             for image in IMAGE_PATTERN.finditer(visible):
                 image_count += 1
-                alt, target, attributes = image.groups()
-                attributes = attributes or ""
-                if not image_has_alternative(alt, attributes):
+                image_alt, target, image_attributes = image.groups()
+                image_attributes = image_attributes or ""
+                if not image_has_alternative(image_alt, image_attributes):
                     errors.append(
                         f"{source.relative_to(root)}:{line_number}: image '{target}' "
                         "needs nonempty alt text, fig-alt, or .decorative"
@@ -327,4 +327,4 @@ if __name__ == "__main__":
         main()
     except (OSError, RuntimeError, UnicodeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

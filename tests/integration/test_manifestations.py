@@ -14,7 +14,6 @@ from alkahest.manifestations import (
     validate_schema,
 )
 
-
 ROOT = Path(__file__).resolve().parent.parent.parent
 REGISTRY = json.loads((ROOT / "book/manifestations.json").read_text(encoding="utf-8"))
 SCHEMA = json.loads(
@@ -39,7 +38,7 @@ def expect_failure(name, message, operation):
         if message not in str(error):
             raise RuntimeError(
                 f"manifestation fixture {name!r} missed diagnostic {message!r}: {error}"
-            )
+            ) from error
         return
     raise RuntimeError(f"invalid manifestation fixture passed: {name}")
 
@@ -50,7 +49,7 @@ def set_identifiers(registry, identifier, values):
 
 def main():
     validate_schema(copy.deepcopy(SCHEMA))
-    records = validate_record(ROOT, copy.deepcopy(REGISTRY))
+    validate_record(ROOT, copy.deepcopy(REGISTRY))
     validate_identifier({"scheme": "isbn-10", "value": "0306406152"}, "valid fixture")
     validate_identifier({"scheme": "isbn-13", "value": "9780306406157"}, "valid fixture")
     validate_identifier(
@@ -217,7 +216,7 @@ def main():
             "unsafe-artifact",
             "safe repository-relative path",
             lambda registry: manifestation(registry, "web-full-en")["production"].update(
-                {"artifact": "/tmp/book"}
+                {"artifact": "/outside/book"}
             ),
         ),
         (

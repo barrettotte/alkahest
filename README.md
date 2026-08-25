@@ -6,10 +6,10 @@ PDF, and LuaLaTeX PDF while testing math, code, citations, diagrams,
 accessibility, editions, generated back matter, and publication policy.
 
 This repository is currently the toolkit laboratory and exhaustive specimen,
-not the author-facing book scaffold. `make new-book` now generates a thirteen-
-file repository centered on `book.toml` and numbered manuscripts; the complete
-engine is pinned as one managed archive and expands only into ignored build
-space.
+not the eventual public template repository. `make new-book` generates a
+twelve-file development book centered on `book.toml` and numbered manuscripts;
+its tiny `Containerfile` uses the complete rootless engine image without
+vendoring engine code or an archive.
 
 ## Common commands
 
@@ -29,8 +29,8 @@ make ci              # Run the complete rendering and validation pipeline.
 ```
 
 Specialist commands use regular patterns. For example, `make check-icons`,
-`make test-citations`, `make render-epub`, `make generate-theme`, and
-`make package-template-engine` remain available. Release work uses
+`make test-citations`, `make render-epub`, and `make generate-theme` remain
+available. Release work uses
 `make generate-release-profiles`. Run `make list` for the complete index.
 
 Normal rendering and validation are offline after `make bootstrap`. Generated
@@ -39,6 +39,8 @@ artifacts are written below `book/_build/` and ignored by Git.
 ## Repository roles
 
 - `book/` is the exhaustive reference manuscript and its format adapters.
+- `guide/` is an internal Alkahest book that teaches and continuously tests the
+  concise author workflow through the self-contained rootless engine image.
 - `src/alkahest/` is the reusable Python library and central task registry;
   checks, generators, and rendered-output helpers have their own packages.
 - `scripts/` contains nine boundaries that still need their own process or
@@ -53,6 +55,8 @@ artifacts are written below `book/_build/` and ignored by Git.
 
 ## Documentation map
 
+- [Author guide](guide/README.md) is the best starting point for writing a book
+  and can be rendered as HTML, EPUB, or PDF with its own concise Makefile.
 - [Content architecture](docs/content-architecture.md) covers identities,
   editions, controlled reuse, companions, generated lists, and learning roles.
 - [Media workflows](docs/media-workflows.md) covers generated diagrams, charts,
@@ -70,7 +74,7 @@ artifacts are written below `book/_build/` and ignored by Git.
   manifest, and optional pinned ONIX 3.1 output.
 - [Toolchain](docs/toolchain.md) covers the rootless offline environment and
   links to its exact lock record.
-- [Reusable template engine](docs/template-engine.md) defines the extracted
+- [Reusable template engine](docs/template-engine.md) defines the image-owned
   presentation boundary and what remains book-local.
 - [Creating a new book](docs/new-book.md) covers safe scaffold generation,
   independent metadata, engine provenance, and the starter author workflow.

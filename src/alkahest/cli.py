@@ -119,8 +119,8 @@ def _run_tests(names: Sequence[str]) -> int:
 
 def _quality() -> int:
     commands = (
-        ["ruff", "check", "--select", "E9,F63,F7,F82", "src", "tests"],
-        ["ruff", "format", "--check", "src", "tests"],
+        ["ruff", "check", "src", "scripts", "tests"],
+        ["ruff", "format", "--check", "src", "scripts", "tests"],
         ["mypy"],
         ["pytest", "-m", "not locked"],
     )

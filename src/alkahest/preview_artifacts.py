@@ -45,7 +45,8 @@ def preview_inventory(root):
     book_root = Path(root) / "book"
     registry = load_editions(book_root / "editions.json")
     selected_ids = set(edition_source_ids(registry, "preview"))
-    selected, omitted = [], []
+    selected: list[dict[str, object]] = []
+    omitted: list[dict[str, object]] = []
     for source_id, source in registry["sources"].items():
         record = _source_record(book_root, source_id, source)
         (selected if source_id in selected_ids else omitted).append(record)

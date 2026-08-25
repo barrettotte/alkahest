@@ -3,6 +3,7 @@
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 from .common import fail, load_json
 
@@ -275,7 +276,7 @@ def inventory_book(book_root, policy, variant):
         qmd.append(path)
     if not qmd:
         fail(f"language variant '{variant['language']}' contains no manuscript sources")
-    records = {}
+    records: dict[tuple[str, str], dict[str, Any]] = {}
     for path in sorted(qmd):
         _scan_qmd(path, path.relative_to(content_root).as_posix(), records)
     for filename, section, namespace, kind in (
@@ -322,7 +323,7 @@ def _validate_variants(book_root, policy):
             declared = re.findall(
                 r"^lang:\s*([A-Za-z0-9-]+)\s*$",
                 (Path(book_root) / profile).read_text(encoding="utf-8"),
-                re.M,
+                re.MULTILINE,
             )
             if declared != [language]:
                 fail(f"language profile '{profile}' must declare lang: {language} exactly once")
@@ -398,7 +399,9 @@ def add_companion_assets(book_root, policy, records):
         paths.add(path)
         if not (Path(book_root) / path).is_file():
             fail(f"companion asset '{identity}' references missing file '{path}'")
-        if not re.fullmatch(r"[a-z0-9.+-]+/[a-z0-9.+-]+", asset.get("media_type", ""), re.I):
+        if not re.fullmatch(
+            r"[a-z0-9.+-]+/[a-z0-9.+-]+", asset.get("media_type", ""), re.IGNORECASE
+        ):
             fail(f"companion asset '{identity}' needs a media_type")
         if not asset.get("description", "").strip():
             fail(f"companion asset '{identity}' needs a concise description")
@@ -605,7 +608,7 @@ def validate_identity_book(book_root):
             fail(
                 f"migration '{migration['namespace']}:{migration['from']}' does not name a retired identity"
             )
-    counts = {}
+    counts: dict[str, int] = {}
     for record in records.values():
         counts[record["kind"]] = counts.get(record["kind"], 0) + 1
     return {

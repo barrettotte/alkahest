@@ -6,6 +6,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+from alkahest.process import run_process
 
 VALIDATOR = ("-m", "alkahest.checks.writing_overrides")
 VALID_CHAPTER = """# Fixture
@@ -58,11 +59,12 @@ def write_root(parent, name, chapter=VALID_CHAPTER):
 
 
 def run(root):
-    return subprocess.run(
+    return run_process(
         [sys.executable, *VALIDATOR, "--root", str(root)],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         encoding="utf-8",
+        check=False,
     )
 
 

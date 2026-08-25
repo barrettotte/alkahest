@@ -1,12 +1,13 @@
 """Validate new-book policy and smoke-test a deterministic generated project."""
 
 import json
-import os
+import shutil
 import sys
 import tempfile
 import tomllib
 from pathlib import Path
 
+from alkahest.author_project import TOOLCHAIN_IMAGE
 from alkahest.common import ContractError
 from alkahest.new_book import (
     create_new_book,
@@ -36,8 +37,12 @@ def main():
         raise RuntimeError("error: new-book scaffold is not deterministic")
     if (
         b"doctor: ##" not in first["Makefile"]
+        or b"bootstrap: ##" not in first["Makefile"]
         or b"build-all: ##" not in first["Makefile"]
+        or b"--network=none" not in first["Makefile"]
         or b"book.toml" not in first["README.md"]
+        or f"FROM {TOOLCHAIN_IMAGE}\n".encode() not in first["Containerfile"]
+        or any(path.endswith((".zip", ".py")) for path in first)
     ):
         raise RuntimeError("error: new-book concise author workflow is incomplete")
     author_command = (ROOT / "scripts/author.py").read_text(encoding="utf-8")
@@ -56,9 +61,49 @@ def main():
         raise RuntimeError("error: generated book.toml exposes managed details")
     if b"alkahest-preview-placeholder" not in first["manuscript/index.qmd"]:
         raise RuntimeError("error: new-book preview notice placeholder is missing")
+    guide = ROOT / "guide"
+    guide_config = tomllib.loads((guide / "book.toml").read_text(encoding="utf-8"))
+    guide_containerfile = (guide / "Containerfile").read_text(encoding="utf-8")
+    guide_makefile = (guide / "Makefile").read_text(encoding="utf-8")
+    if (
+        guide_config["book"]["title"] != "Writing Books with Alkahest"
+        or len(guide_config["excerpt"]["chapters"]) != 2
+        or any((guide / ".alkahest").glob("*.zip"))
+        or f"FROM {TOOLCHAIN_IMAGE}\n" not in guide_containerfile
+        or 'ENTRYPOINT ["/opt/alkahest/tools/bin/python"' not in guide_containerfile
+        or "bootstrap: ##" not in guide_makefile
+        or "--network=none" not in guide_makefile
+        or "UV ?=" in guide_makefile
+    ):
+        raise RuntimeError("error: checked-in author guide is stale or misconfigured")
     with tempfile.TemporaryDirectory(prefix="alkahest-new-book-check.") as temporary:
-        destination = Path(temporary) / "small-book"
-        second_destination = Path(temporary) / "second-book"
+        temporary_root = Path(temporary)
+        guide_smoke = temporary_root / "author-guide"
+        shutil.copytree(
+            guide,
+            guide_smoke,
+            ignore=shutil.ignore_patterns("_build", "cache", ".uv-cache", "__pycache__"),
+        )
+        run_process(
+            [sys.executable, str(ROOT / "scripts/author.py"), "check"],
+            cwd=guide_smoke,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        guide_manifest = json.loads(
+            (guide_smoke / "_build/.work/full/author-workspace.json").read_text()
+        )
+        if len(guide_manifest["sources"]) != 7:
+            raise RuntimeError("error: checked-in author guide source discovery is incomplete")
+        guide_workspace = guide_smoke / "_build/.work/full"
+        if (
+            "theme/alkahest-fonts.css" not in (guide_workspace / "_quarto-html.yml").read_text()
+            or "epub-fonts:" not in (guide_workspace / "_quarto-epub.yml").read_text()
+        ):
+            raise RuntimeError("error: author profiles do not package the locked web fonts")
+        destination = temporary_root / "small-book"
+        second_destination = temporary_root / "second-book"
         result = create_new_book(
             ROOT,
             destination,
@@ -70,21 +115,11 @@ def main():
         if result["files"] != facts["files"]:
             raise RuntimeError("error: new-book result file count is inconsistent")
         run_process(
-            [sys.executable, ".alkahest/alkahest.py", "check"],
+            [sys.executable, str(ROOT / "scripts/author.py"), "check"],
             cwd=destination,
             check=True,
             capture_output=True,
             text=True,
-        )
-        doctor_environment = os.environ.copy()
-        doctor_environment["QUARTO"] = sys.executable
-        doctor_result = run_process(
-            [sys.executable, ".alkahest/alkahest.py", "doctor"],
-            cwd=destination,
-            check=True,
-            capture_output=True,
-            text=True,
-            env=doctor_environment,
         )
         help_result = run_process(
             ["make", "help"],
@@ -93,10 +128,10 @@ def main():
             capture_output=True,
             text=True,
         )
-        if "ok: author environment" not in doctor_result.stdout or not all(
-            marker in help_result.stdout for marker in ("doctor", "build", "build-all")
+        if not all(
+            marker in help_result.stdout for marker in ("bootstrap", "doctor", "build", "build-all")
         ):
-            raise RuntimeError("error: generated-book diagnostics or help is incomplete")
+            raise RuntimeError("error: generated-book help is incomplete")
         full = json.loads((destination / "_build/.work/full/author-workspace.json").read_text())
         excerpt = json.loads(
             (destination / "_build/.work/excerpt/author-workspace.json").read_text()
@@ -125,17 +160,17 @@ def main():
         if (
             second_result["files"] != facts["files"]
             or second_facts["chapters"] != 1
-            or first_scaffold["engine"]["archive_sha256"]
-            != second_scaffold["engine"]["archive_sha256"]
+            or first_scaffold["engine"]["image"] != second_scaffold["engine"]["image"]
+            or first_scaffold["engine"]["image"] != TOOLCHAIN_IMAGE
             or (destination / "book.toml").read_bytes()
             == (second_destination / "book.toml").read_bytes()
         ):
             raise RuntimeError("error: second tiny book does not share the engine cleanly")
     print(
         "ok: new-book generator "
-        f"({facts['files']} committed files; {facts['engine_files']} pinned engine archive; "
-        f"{facts['engine_members']} managed members; version {policy['generator']['version']}; "
-        "two-book author-workspace smoke passed)"
+        f"({facts['files']} committed files; rootless image {facts['engine_image']}; "
+        f"version {policy['generator']['version']}; "
+        "two-book author-workspace and checked-in guide smoke passed)"
     )
 
 
@@ -144,4 +179,4 @@ if __name__ == "__main__":
         main()
     except (ContractError, OSError, RuntimeError, UnicodeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

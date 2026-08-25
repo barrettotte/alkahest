@@ -5,28 +5,29 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Never
 
 from .writing_sources import writing_sources
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
-CSPELL_DIRECTIVE = re.compile(r"cspell\s*:\s*([A-Za-z-]+)(?:\s+(.*?))?", re.I)
-HTML_COMMENT = re.compile(r"<!--[ \t]*(.*?)[ \t]*-->", re.S)
-REASON = re.compile(r"writing-override\s*:\s*(.+)", re.I)
+CSPELL_DIRECTIVE = re.compile(r"cspell\s*:\s*([A-Za-z-]+)(?:\s+(.*?))?", re.IGNORECASE)
+HTML_COMMENT = re.compile(r"<!--[ \t]*(.*?)[ \t]*-->", re.DOTALL)
+REASON = re.compile(r"writing-override\s*:\s*(.+)", re.IGNORECASE)
 VALE_RULE = re.compile(
     r"vale\s+([A-Za-z][A-Za-z0-9-]*\.[A-Za-z][A-Za-z0-9-]*)"
     r"(?:\s*(\[.*\]))?\s*=\s*(NO|YES)",
-    re.I,
+    re.IGNORECASE,
 )
 FENCE_OPEN = re.compile(r"^[ \t]{0,3}(`{3,}|~{3,})")
 INLINE_CODE = re.compile(r"(`+)[^\n]*?\1")
-CONFIG_REASON = re.compile(r"#[ \t]*writing-override\s*:\s*(.+)", re.I)
+CONFIG_REASON = re.compile(r"#[ \t]*writing-override\s*:\s*(.+)", re.IGNORECASE)
 VALE_CONFIG_DISABLE = re.compile(
     r"^([A-Za-z][A-Za-z0-9-]*\.[A-Za-z][A-Za-z0-9-]*)\s*=\s*NO\s*$",
-    re.I,
+    re.IGNORECASE,
 )
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise RuntimeError("error: " + message)
 
 
@@ -115,7 +116,7 @@ def parse_match_selector(selector, location):
 
 
 def token_occurrences(masked_sources, token):
-    pattern = re.compile(rf"(?<!\w){re.escape(token)}(?!\w)", re.I)
+    pattern = re.compile(rf"(?<!\w){re.escape(token)}(?!\w)", re.IGNORECASE)
     return {
         path: len(pattern.findall(text))
         for path, text in masked_sources.items()
@@ -151,7 +152,7 @@ def check_source(path, root, masked_sources, rejected):
             }
         )
 
-    used_reasons = set()
+    used_reasons: set[int] = set()
     cspell_disabled = None
     vale_disabled = {}
     override_count = 0
@@ -190,7 +191,7 @@ def check_source(path, root, masked_sources, rejected):
                 tokens = argument.split()
                 if not tokens:
                     fail(f"{location}: cspell:{command} needs at least one token")
-                if len(tokens) != len(set(token.casefold() for token in tokens)):
+                if len(tokens) != len({token.casefold() for token in tokens}):
                     fail(f"{location}: cspell:{command} contains duplicate tokens")
                 if any(token.casefold() in rejected for token in tokens):
                     require_reason(comments, index, used_reasons, location)

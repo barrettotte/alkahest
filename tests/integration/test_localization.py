@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SOURCE_CHECKER = ("-m", "alkahest.checks.localization")
@@ -189,7 +189,7 @@ def create_fixture(root):
 
 def run(checker, root):
     command = list(checker) if isinstance(checker, tuple) else [str(checker)]
-    return subprocess.run(
+    return run_process(
         [
             sys.executable,
             *command,

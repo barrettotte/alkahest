@@ -2,11 +2,11 @@
 
 import copy
 import json
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
+from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CHECKER = ("-m", "alkahest.checks.pdf_accessibility")
@@ -17,7 +17,7 @@ def run_case(name, policy, expected, message=None):
     with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8") as handle:
         json.dump(policy, handle)
         handle.flush()
-        result = subprocess.run(
+        result = run_process(
             [sys.executable, *CHECKER, handle.name],
             cwd=ROOT,
             text=True,

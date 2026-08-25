@@ -12,7 +12,6 @@ from urllib.parse import urlparse
 
 from .common import ContractError, fail, load_json
 
-
 ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 LANGUAGE = re.compile(r"[a-z]{2,3}(?:-[A-Z][A-Za-z0-9]{1,7})*")
 TERRITORY = re.compile(r"WORLD|[A-Z]{2}")
@@ -480,12 +479,11 @@ def validate_record(root, data):
         target = records[target_id]
         if target["language"] != manifestation["language"] and relation["type"] != "translation-of":
             fail(f"{label} non-translation relation must retain language")
-        if relation["type"] == "translation-of":
-            if (
-                target["language"] == manifestation["language"]
-                or target["format"] != manifestation["format"]
-            ):
-                fail(f"{label} translation must change language within one format")
+        if relation["type"] == "translation-of" and (
+            target["language"] == manifestation["language"]
+            or target["format"] != manifestation["format"]
+        ):
+            fail(f"{label} translation must change language within one format")
         if relation["type"] == "preview-of":
             if target["variant"] != "full":
                 fail(f"{label} preview must point to a full manifestation")
@@ -493,9 +491,10 @@ def validate_record(root, data):
                 fail(f"{label} preview must retain its full manifestation format")
             if manifestation["format"] == "pdf" and dimensions[identifier] != dimensions[target_id]:
                 fail(f"{label} PDF preview must retain its full manifestation dimensions")
-        if relation["type"] == "print-interior-from":
-            if target["format"] != "pdf" or dimensions[identifier] != dimensions[target_id]:
-                fail(f"{label} print interior relation needs a dimension-matched PDF")
+        if relation["type"] == "print-interior-from" and (
+            target["format"] != "pdf" or dimensions[identifier] != dimensions[target_id]
+        ):
+            fail(f"{label} print interior relation needs a dimension-matched PDF")
 
     visited = set()
 
@@ -556,12 +555,12 @@ def validate_repository(root, registry, records):
             fail(f"{label} language is absent from the locale registry")
 
         artifact = manifestation["production"]["artifact"]
-        if manifestation["format"] in {"web", "epub", "pdf"} and manifestation["variant"] in {
-            "full",
-            "review",
-        }:
-            if artifact not in reproducible_artifacts:
-                fail(f"{label} primary artifact is absent from the reproducibility policy")
+        if (
+            manifestation["format"] in {"web", "epub", "pdf"}
+            and manifestation["variant"] in {"full", "review"}
+            and artifact not in reproducible_artifacts
+        ):
+            fail(f"{label} primary artifact is absent from the reproducibility policy")
         if manifestation["format"] == "pdf" and manifestation["variant"] in {"full", "review"}:
             profile = pdf_profiles.get(artifact)
             if not profile:

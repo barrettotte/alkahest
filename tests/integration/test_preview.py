@@ -48,32 +48,24 @@ def valid_snapshot():
             "private": True,
         },
     ]
-    html = " ".join(
-        (
-            PREVIEW_DESCRIPTION,
-            "sec-preface sec-core-feature-specimen alkahest-preview-notice",
-            "alkahest-preview-watermark",
-            'data-full-edition-link="unassigned" data-purchase-link="unassigned"',
-            LINKS_PENDING,
-            "Preview chapters Preview reference",
-            'role="doc-biblioref" ref-turing1936 ref-knuth1984',
-            'href="appendices/page-system-checklist.html#sec-appendix-numbering"',
-            'href="../reference.html#sec-heading-hierarchy"',
-            'href="../reference.html#eq-ohms-law"',
-        )
+    html = (
+        f"{PREVIEW_DESCRIPTION} "
+        "sec-preface sec-core-feature-specimen alkahest-preview-notice "
+        "alkahest-preview-watermark "
+        'data-full-edition-link="unassigned" data-purchase-link="unassigned" '
+        f"{LINKS_PENDING} Preview chapters Preview reference "
+        'role="doc-biblioref" ref-turing1936 ref-knuth1984 '
+        'href="appendices/page-system-checklist.html#sec-appendix-numbering" '
+        'href="../reference.html#sec-heading-hierarchy" '
+        'href="../reference.html#eq-ohms-law"'
     )
-    epub = " ".join(
-        (
-            PREVIEW_UUID,
-            PREVIEW_DESCRIPTION,
-            "sec-preface sec-core-feature-specimen alkahest-preview-notice",
-            "alkahest-preview-watermark",
-            LINKS_PENDING,
-            "ref-turing1936 ref-knuth1984",
-            'href="ch007.xhtml#sec-appendix-numbering"',
-            'href="ch002.xhtml#sec-heading-hierarchy"',
-            'href="ch002.xhtml#eq-ohms-law"',
-        )
+    epub = (
+        f"{PREVIEW_UUID} {PREVIEW_DESCRIPTION} "
+        "sec-preface sec-core-feature-specimen alkahest-preview-notice "
+        f"alkahest-preview-watermark {LINKS_PENDING} ref-turing1936 ref-knuth1984 "
+        'href="ch007.xhtml#sec-appendix-numbering" '
+        'href="ch002.xhtml#sec-heading-hierarchy" '
+        'href="ch002.xhtml#eq-ohms-law"'
     )
     return {
         "selected": selected,

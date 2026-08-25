@@ -4,11 +4,12 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Any, Never
 
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def fail(message):
+def fail(message: str) -> Never:
     raise RuntimeError(f"error: {message}")
 
 
@@ -28,8 +29,16 @@ def main():
     if not root.is_dir():
         fail("generated-list book root does not exist")
     path = root / "generated-lists.yml"
-    version = language = section = current_list = current_term = None
-    order, objects, lists, terms, sections = [], [], {}, {}, set()
+    version: int | None = None
+    language: str | None = None
+    section: str | None = None
+    current_list: str | None = None
+    current_term: str | None = None
+    order: list[str] = []
+    objects: list[dict[str, Any]] = []
+    lists: dict[str, dict[str, Any]] = {}
+    terms: dict[str, dict[str, Any]] = {}
+    sections: set[str] = set()
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if re.match(r"^\s*(?:#.*)?$", line):
             continue
@@ -121,7 +130,9 @@ def main():
             fail(f"generated-list registry has no {required} section")
     if not lists:
         fail("generated-list registry has no configured lists")
-    ordered, prefix_owner, source_count = set(), {}, {}
+    ordered: set[str] = set()
+    prefix_owner: dict[str, str] = {}
+    source_count: dict[str, int] = {}
     for name in order:
         if name in ordered:
             fail(f"duplicate list in order: {name}")
@@ -151,7 +162,9 @@ def main():
             fail(f"non-cross-reference list {name} cannot declare a prefix")
     if source_count.get("glossary-acronyms", 0) > 1:
         fail("generated-list registry permits at most one glossary-acronyms list")
-    definitions, locations, placeholders = set(), {}, 0
+    definitions: set[str] = set()
+    locations: dict[str, str] = {}
+    placeholders = 0
     for source in sorted(
         item
         for item in root.rglob("*.qmd")
@@ -190,7 +203,8 @@ def main():
                 fence = opening.group(1)
     if placeholders != 1:
         fail(f"expected exactly one generated-lists placeholder; found {placeholders}")
-    registered, counts = set(), {}
+    registered: set[str] = set()
+    counts: dict[str, int] = {}
     for obj in objects:
         identity = obj["id"]
         if identity in registered:
@@ -216,8 +230,8 @@ def main():
                 fail(f"generated-list term {name} has no {field}")
         if "$" in term["display"]:
             fail(f"generated-list term {name} display is a TeX fragment without dollar delimiters")
-        owner = lists.get(term["list"])
-        if not owner or owner["source"] != "terms":
+        term_list = lists.get(term["list"])
+        if not term_list or term_list["source"] != "terms":
             fail(f"generated-list term {name} targets an unknown terms list")
         if term["display"] in display_seen:
             fail(f"duplicate generated-list term display {term['display']}")
@@ -245,4 +259,4 @@ if __name__ == "__main__":
         main()
     except (OSError, UnicodeError, RuntimeError) as error:
         print(error, file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

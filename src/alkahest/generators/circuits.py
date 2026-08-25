@@ -3,6 +3,7 @@
 import argparse
 import re
 from pathlib import Path
+from typing import Any
 
 import schemdraw
 import schemdraw.elements as elm
@@ -46,7 +47,7 @@ def generate(output):
 
     source = drawing.add(elm.SourceV().up().length(5.2).label("Vₛ = 9 V", loc="top"))
     drawing.add(elm.Line().right().length(3.6))
-    upper_resistor = drawing.add(elm.ResistorIEC().down().label("R₁ = 1 kΩ", loc="top"))
+    upper_resistor: Any = drawing.add(elm.ResistorIEC().down().label("R₁ = 1 kΩ", loc="top"))
     drawing.add(elm.Dot().label("Vout = 6 V", loc="right"))
     drawing.add(elm.ResistorIEC().down().label("R₂ = 2 kΩ", loc="top"))
     drawing.add(elm.Line().left().tox(source.start))

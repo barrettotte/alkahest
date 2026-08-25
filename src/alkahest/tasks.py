@@ -48,7 +48,6 @@ SOURCE_CHECKS: Final = (
     ScriptTask("physics-diagrams", "@alkahest.checks.physics", "physics diagrams"),
     ScriptTask("rich-media", "@alkahest.checks.rich_media", "rich media and fallbacks"),
     ScriptTask("asset-rights", ":check-asset-rights", "asset rights and privacy"),
-    ScriptTask("template-engine", ":check-template-engine", "template extraction boundary"),
     ScriptTask("new-book", "@alkahest.checks.new_book", "minimal generated-book scaffold"),
     ScriptTask("theme-defaults", ":check-theme-defaults", "theme defaults and adapters"),
     ScriptTask("release-profiles", ":check-release-profiles", "full and excerpt profiles"),
@@ -116,9 +115,6 @@ CHECKS: Final = {
         "glyph-coverage", "@alkahest.checks.glyph_coverage", "font glyph coverage", True
     ),
     "rights-report": ScriptTask("rights-report", ":check-rights-report", "rights report bytes"),
-    "template-package": ScriptTask(
-        "template-package", ":check-template-package", "template package artifact"
-    ),
     "companion-bundles": ScriptTask(
         "companion-bundles", ":check-companion-bundles", "companion bundle artifacts"
     ),
@@ -254,7 +250,6 @@ GENERATORS: Final = {
 PACKAGERS: Final = {
     task.name: task
     for task in (
-        ScriptTask("template-engine", ":package-template-engine", "template engine ZIP"),
         ScriptTask("companion-bundles", ":package-companion-bundles", "companion bundles"),
     )
 }

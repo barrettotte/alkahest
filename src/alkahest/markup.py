@@ -2,7 +2,6 @@
 
 import re
 
-
 RAW_TEXT_ELEMENTS = {"script", "style"}
 UNORDERED_ATTRIBUTES = {"dir", "epub:type", "lang", "role", "xml:lang"}
 
@@ -22,7 +21,7 @@ def _tag_end(text, start):
 
 
 def _attributes(text):
-    attributes = []
+    attributes: list[tuple[int, str, int, str]] = []
     index = 0
     while index < len(text):
         while index < len(text) and text[index].isspace():
