@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any, Never
 
+from alkahest.common import load_yaml
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -18,53 +20,38 @@ def main():
     if not root.is_dir():
         fail("notes book root does not exist")
     registry_path = root / "notes.yml"
-    version: int | None = None
-    section: str | None = None
-    current: str | None = None
-    order: list[str] = []
+    registry = load_yaml(registry_path, "notes registry")
+    unknown = set(registry) - {"version", "order", "notes"}
+    if unknown:
+        fail(f"notes registry has unsupported fields: {', '.join(sorted(map(str, unknown)))}")
+    if registry.get("version") != 1:
+        fail("notes registry version must be 1")
+    raw_order = registry.get("order")
+    if not isinstance(raw_order, list) or not all(isinstance(name, str) for name in raw_order):
+        fail("notes order must be a list of note IDs")
+    order: list[str] = raw_order
+    raw_entries = registry.get("notes")
+    if not isinstance(raw_entries, dict):
+        fail("notes registry notes must be a mapping")
     entries: dict[str, dict[str, Any]] = {}
     order_seen: set[str] = set()
-    for number, line in enumerate(registry_path.read_text(encoding="utf-8").splitlines(), 1):
-        if re.match(r"^\s*(?:#.*)?$", line):
-            continue
-        match = re.fullmatch(r"version: ([0-9]+)", line)
-        if match:
-            if version is not None:
-                fail(f"{registry_path}:{number}: duplicate version")
-            version = int(match.group(1))
-            continue
-        if line in {"order:", "notes:"}:
-            section, current = line[:-1], None
-            continue
-        match = re.fullmatch(r"  - ([a-z][a-z0-9-]*)", line) if section == "order" else None
-        if match:
-            name = match.group(1)
-            if name in order_seen:
-                fail(f"{registry_path}:{number}: duplicate note in order: {name}")
-            order_seen.add(name)
-            order.append(name)
-            continue
-        match = re.fullmatch(r"  ([a-z][a-z0-9-]*):", line) if section == "notes" else None
-        if match:
-            current = match.group(1)
-            if current in entries:
-                fail(f"{registry_path}:{number}: duplicate note ID: {current}")
-            entries[current] = {"line": number}
-            continue
-        if section != "notes" or current is None:
-            fail(f"{registry_path}:{number}: field appears before a note ID")
-        match = re.fullmatch(r"    (source|repeat|references): (\S.*)", line)
-        if match:
-            field, value = match.groups()
-            if field in entries[current]:
-                fail(f"{registry_path}:{number}: duplicate {field} for {current}")
-            entries[current][field] = value
-            continue
-        fail(f"{registry_path}:{number}: unsupported notes syntax: {line}")
-    if version != 1:
-        fail("notes registry version must be 1")
     if not order:
         fail("notes registry has no ordered notes")
+    for name in order:
+        if not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+            fail(f"invalid note ID in order: {name}")
+        if name in order_seen:
+            fail(f"duplicate note in order: {name}")
+        order_seen.add(name)
+    for name, raw_entry in raw_entries.items():
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+            fail(f"invalid note ID: {name}")
+        if not isinstance(raw_entry, dict):
+            fail(f"note {name} must be a mapping")
+        unknown = set(raw_entry) - {"source", "repeat", "references"}
+        if unknown:
+            fail(f"note {name} has unsupported fields: {', '.join(sorted(map(str, unknown)))}")
+        entries[name] = dict(raw_entry)
     if len(order) != len(entries):
         fail("notes order and mapping contain different entry counts")
     for name in order:
@@ -74,13 +61,16 @@ def main():
         entry = entries[name]
         if name not in order_seen:
             fail(f"note {name} is absent from order")
-        if not re.fullmatch(r"(?:appendices/)?[a-z0-9][a-z0-9-]*\.qmd", entry.get("source", "")):
+        source = entry.get("source")
+        if not isinstance(source, str) or not re.fullmatch(
+            r"(?:appendices/)?[a-z0-9][a-z0-9-]*\.qmd", source
+        ):
             fail(f"note {name} has invalid source")
-        if entry.get("repeat") not in {"once", "reuse"}:
+        repeat = entry.get("repeat")
+        if not isinstance(repeat, str) or repeat not in {"once", "reuse"}:
             fail(f"note {name} has unsupported repeat policy")
-        if not re.fullmatch(r"[1-9][0-9]*", entry.get("references", "")):
+        if type(entry.get("references")) is not int or entry["references"] < 1:
             fail(f"note {name} has invalid reference count")
-        entry["references"] = int(entry["references"])
         if entry["repeat"] == "once" and entry["references"] != 1:
             fail(f"note {name} uses repeat=once with more than one reference")
     definitions: dict[str, dict[str, str]] = {}

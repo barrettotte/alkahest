@@ -5,7 +5,10 @@ description = "Reusable tooling for the Alkahest technical-book publishing templ
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 license = "MIT"
-dependencies = ["defusedxml>=0.7.1,<0.8"]
+dependencies = [
+  "defusedxml>=0.7.1,<0.8",
+  "pyyaml>=6.0,<7",
+]
 
 [project.scripts]
 alkahest = "alkahest.cli:main"
@@ -23,6 +26,7 @@ quality = [
   "mypy>=1.18,<2",
   "ruff>=0.16,<0.17",
   "types-defusedxml>=0.7,<0.8",
+  "types-pyyaml>=6.0,<7",
 ]
 security = [
   "pip-audit>=2.10,<3",

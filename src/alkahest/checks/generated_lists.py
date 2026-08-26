@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any, Never
 
+from alkahest.common import load_yaml
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -13,121 +15,80 @@ def fail(message: str) -> Never:
     raise RuntimeError(f"error: {message}")
 
 
-def scalar(raw, location):
-    value = raw.strip()
-    if len(value) >= 2 and value[0] == value[-1] == "'":
-        value = value[1:-1].replace("''", "'")
-    elif len(value) >= 2 and value[0] == value[-1] == '"':
-        value = value[1:-1].replace(r"\"", '"').replace(r"\\", "\\")
-    if not value.strip():
-        fail(f"{location}: empty scalar value")
-    return value
-
-
 def main():
     root = Path(os.environ.get("ALKAHEST_GENERATED_LISTS_BOOK_ROOT", ROOT / "book")).resolve()
     if not root.is_dir():
         fail("generated-list book root does not exist")
     path = root / "generated-lists.yml"
-    version: int | None = None
-    language: str | None = None
-    section: str | None = None
-    current_list: str | None = None
-    current_term: str | None = None
-    order: list[str] = []
-    objects: list[dict[str, Any]] = []
+    registry = load_yaml(path, "generated-list registry")
+    unknown = set(registry) - {"version", "lang", "order", "lists", "objects", "terms"}
+    if unknown:
+        fail(
+            "generated-list registry has unsupported fields: "
+            + ", ".join(sorted(map(str, unknown)))
+        )
+    if registry.get("version") != 1:
+        fail("generated-list registry version must be 1")
+    language = registry.get("lang")
+    if not isinstance(language, str) or not re.fullmatch(
+        r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language
+    ):
+        fail("generated-list registry language must be a BCP 47 tag")
+    raw_order = registry.get("order")
+    raw_lists = registry.get("lists")
+    raw_objects = registry.get("objects")
+    raw_terms = registry.get("terms")
+    if not isinstance(raw_order, list) or not all(isinstance(name, str) for name in raw_order):
+        fail("generated-list order must be a list of names")
+    if not isinstance(raw_lists, dict):
+        fail("generated-list lists must be a mapping")
+    if not isinstance(raw_objects, list):
+        fail("generated-list objects must be a list")
+    if not isinstance(raw_terms, dict):
+        fail("generated-list terms must be a mapping")
+    order: list[str] = raw_order
     lists: dict[str, dict[str, Any]] = {}
     terms: dict[str, dict[str, Any]] = {}
-    sections: set[str] = set()
-    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        if re.match(r"^\s*(?:#.*)?$", line):
-            continue
-        match = re.fullmatch(r"version: ([0-9]+)", line)
-        if match:
-            if version is not None:
-                fail(f"{path}:{number}: duplicate version")
-            version = int(match.group(1))
-            continue
-        match = re.fullmatch(r"lang: (\S+)", line)
-        if match:
-            if language is not None:
-                fail(f"{path}:{number}: duplicate language")
-            language = match.group(1)
-            continue
-        match = re.fullmatch(r"(order|lists|objects|terms):", line)
-        if match:
-            section = match.group(1)
-            if section in sections:
-                fail(f"{path}:{number}: duplicate {section} section")
-            sections.add(section)
-            current_list = current_term = None
-            continue
-        if section is None:
-            fail(f"{path}:{number}: field appears before a section")
-        match = re.fullmatch(r"  - ([a-z][a-z0-9-]*)", line) if section == "order" else None
-        if match:
-            order.append(match.group(1))
-            continue
-        match = re.fullmatch(r"  ([a-z][a-z0-9-]*):", line) if section == "lists" else None
-        if match:
-            current_list = match.group(1)
-            if current_list in lists:
-                fail(f"{path}:{number}: duplicate list {current_list}")
-            lists[current_list] = {"line": number}
-            continue
-        match = (
-            re.fullmatch(r"    (title|source|prefix|enabled): (\S.*)", line)
-            if section == "lists"
-            else None
-        )
-        if match:
-            if current_list is None:
-                fail(f"{path}:{number}: list field before list name")
-            field, raw = match.groups()
-            if field in lists[current_list]:
-                fail(f"{path}:{number}: duplicate {field} for {current_list}")
-            lists[current_list][field] = scalar(raw, f"{path}:{number}")
-            continue
-        match = re.fullmatch(r"  - id: ([a-z][a-z0-9-]*)", line) if section == "objects" else None
-        if match:
-            objects.append({"id": match.group(1), "line": number})
-            continue
-        match = re.fullmatch(r"    title: (\S.*)", line) if section == "objects" else None
-        if match:
-            if not objects:
-                fail(f"{path}:{number}: object title before object ID")
-            if "title" in objects[-1]:
-                fail(f"{path}:{number}: duplicate object title")
-            objects[-1]["title"] = scalar(match.group(1), f"{path}:{number}")
-            continue
-        match = re.fullmatch(r"  ([a-z][a-z0-9-]*):", line) if section == "terms" else None
-        if match:
-            current_term = match.group(1)
-            if current_term in terms:
-                fail(f"{path}:{number}: duplicate term {current_term}")
-            terms[current_term] = {"line": number}
-            continue
-        match = (
-            re.fullmatch(r"    (list|display|alt|meaning|sort|target): (\S.*)", line)
-            if section == "terms"
-            else None
-        )
-        if match:
-            if current_term is None:
-                fail(f"{path}:{number}: term field before term ID")
-            field, raw = match.groups()
-            if field in terms[current_term]:
-                fail(f"{path}:{number}: duplicate {field} for {current_term}")
-            terms[current_term][field] = scalar(raw, f"{path}:{number}")
-            continue
-        fail(f"{path}:{number}: unsupported generated-list syntax: {line}")
-    if version != 1:
-        fail("generated-list registry version must be 1")
-    if not language or not re.fullmatch(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language):
-        fail("generated-list registry language must be a BCP 47 tag")
-    for required in ("order", "lists", "objects", "terms"):
-        if required not in sections:
-            fail(f"generated-list registry has no {required} section")
+    for name, raw_item in raw_lists.items():
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+            fail(f"invalid generated-list name: {name}")
+        if not isinstance(raw_item, dict):
+            fail(f"configured list {name} must be a mapping")
+        unknown = set(raw_item) - {"title", "source", "prefix", "enabled"}
+        if unknown:
+            fail(
+                f"configured list {name} has unsupported fields: "
+                f"{', '.join(sorted(map(str, unknown)))}"
+            )
+        item = dict(raw_item)
+        for field in ("title", "source", "prefix"):
+            if field in item and not isinstance(item[field], str):
+                fail(f"configured list {name} {field} must be text")
+        lists[name] = item
+    objects: list[dict[str, Any]] = []
+    for raw_object in raw_objects:
+        if not isinstance(raw_object, dict) or set(raw_object) - {"id", "title"}:
+            fail("each generated-list object must contain only id and title")
+        if not all(isinstance(raw_object.get(field), str) for field in ("id", "title")):
+            fail("each generated-list object needs text id and title fields")
+        if not re.fullmatch(r"[a-z][a-z0-9-]*", raw_object["id"]):
+            fail(f"invalid generated-list object ID: {raw_object['id']}")
+        objects.append(dict(raw_object))
+    for name, raw_term in raw_terms.items():
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+            fail(f"invalid generated-list term: {name}")
+        if not isinstance(raw_term, dict):
+            fail(f"generated-list term {name} must be a mapping")
+        allowed = {"list", "display", "alt", "meaning", "sort", "target"}
+        unknown = set(raw_term) - allowed
+        if unknown:
+            fail(
+                f"generated-list term {name} has unsupported fields: "
+                f"{', '.join(sorted(map(str, unknown)))}"
+            )
+        if not all(isinstance(value, str) for value in raw_term.values()):
+            fail(f"generated-list term {name} fields must be text")
+        terms[name] = dict(raw_term)
     if not lists:
         fail("generated-list registry has no configured lists")
     ordered: set[str] = set()
@@ -147,8 +108,8 @@ def main():
             fail(f"configured list {name} has no title")
         if item.get("source") not in {"crossref", "glossary-acronyms", "terms"}:
             fail(f"configured list {name} has unsupported source")
-        item.setdefault("enabled", "true")
-        if item["enabled"] not in {"true", "false"}:
+        item.setdefault("enabled", True)
+        if not isinstance(item["enabled"], bool):
             fail(f"configured list {name} enabled must be true or false")
         source_count[item["source"]] = source_count.get(item["source"], 0) + 1
         if item["source"] == "crossref":
@@ -239,16 +200,16 @@ def main():
         if term["target"] not in definitions:
             fail(f"generated-list term {name} targets unknown object {term['target']}")
         counts[term["list"]] = counts.get(term["list"], 0) + 1
+    glossary_terms = load_yaml(root / "glossary.yml", "glossary registry").get("terms", {})
+    if not isinstance(glossary_terms, dict):
+        fail("glossary registry terms must be a mapping")
     acronyms = sum(
-        bool(re.match(r"^    acronym: \S", line))
-        for line in (root / "glossary.yml").read_text(encoding="utf-8").splitlines()
+        isinstance(entry, dict) and bool(entry.get("acronym")) for entry in glossary_terms.values()
     )
     for name, item in lists.items():
         if item["source"] == "glossary-acronyms":
             counts[name] = acronyms
-    empty = sorted(
-        name for name, item in lists.items() if item["enabled"] == "true" and not counts.get(name)
-    )
+    empty = sorted(name for name, item in lists.items() if item["enabled"] and not counts.get(name))
     print(
         f"ok: generated lists ({len(lists)} configured; {len(lists) - len(empty)} nonempty; {len(objects)} cross-reference objects; {acronyms} acronyms; {len(terms)} terms; empty enabled: {', '.join(empty) if empty else 'none'})"
     )

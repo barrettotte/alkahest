@@ -6,7 +6,7 @@ import re
 import shutil
 from pathlib import Path
 
-from .common import fail, load_json, qmd_sources
+from .common import fail, load_json, load_yaml, qmd_sources
 
 REQUIRED_EDITIONS = (
     "abridged",
@@ -440,12 +440,25 @@ def validate_edition_book(book_root):
                         f"edition '{edition_name}' leaves dangling reference '@{target}' in '{source}'"
                     )
         if "index-backmatter.qmd" in selected:
-            for line in (book_root / "index.yml").read_text(encoding="utf-8").splitlines():
-                locator = re.fullmatch(r"\s+-\s+([A-Za-z0-9_/-]+\.qmd)#[A-Za-z0-9_.:-]+\s*", line)
-                if locator and locator.group(1) not in selected:
-                    fail(
-                        f"edition '{edition_name}' retains index locator into omitted '{locator.group(1)}'"
-                    )
+            entries = load_yaml(book_root / "index.yml", "index registry").get("entries")
+            if not isinstance(entries, dict):
+                fail("index registry entries must be a mapping")
+            for entry in entries.values():
+                if not isinstance(entry, dict):
+                    continue
+                locations = entry.get("locations", [])
+                ranges = entry.get("ranges", [])
+                if not isinstance(locations, list) or not isinstance(ranges, list):
+                    fail("index registry locators must be lists")
+                locators = locations + ranges
+                for locator in locators:
+                    if not isinstance(locator, str):
+                        fail("index registry locators must be text")
+                    source, separator, _marker = locator.partition("#")
+                    if separator and source not in selected:
+                        fail(
+                            f"edition '{edition_name}' retains index locator into omitted '{source}'"
+                        )
         if edition["access"] == "public":
             for source_id in source_ids:
                 if registry["sources"][source_id]["availability"] == "private":

@@ -1,4 +1,4 @@
-# Media workflows
+# Media workflows {#doc-media-workflows}
 
 Alkahest publishes one reviewed, deterministic derivative across HTML, EPUB,
 Typst, and LuaLaTeX. Editable text or data remains the canonical source;
@@ -21,7 +21,7 @@ Every generator runs offline. The check command validates source schema and
 domain invariants, regenerates into a disposable directory, and requires byte
 equality with the committed derivative. Version, runtime, package, and binary
 hashes belong in the root `uv.lock`, the container lock, and
-`docs/toolchain-lock.md`; duplicating them in prose makes documentation stale.
+`docs/toolchain.md`; duplicating them in prose makes documentation stale.
 
 ## Candidate decisions
 

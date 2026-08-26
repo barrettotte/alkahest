@@ -90,7 +90,6 @@ def _run_tests(names: Sequence[str]) -> int:
     for name in expanded:
         normalized = name.replace("-", "_")
         python_test = root / f"test_{normalized}.py"
-        shell_test = root / f"test-{name}.sh"
         if python_test.is_file():
             command = [sys.executable, "-m", "pytest", str(python_test)]
         elif name == "accessibility-browser":
@@ -100,15 +99,6 @@ def _run_tests(names: Sequence[str]) -> int:
                 "-m",
                 "alkahest.checks.suites",
                 "browser-fixture",
-            ]
-        elif shell_test.is_file():
-            command = [
-                sys.executable,
-                "-m",
-                "pytest",
-                str(root / "test_process_contracts.py"),
-                "-k",
-                normalized,
             ]
         else:
             raise ValueError(f"unknown test: {name}; run make test for the complete suite")

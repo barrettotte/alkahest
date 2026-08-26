@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "evaluated_at": "2026-08-21",
-  "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v19",
+  "toolchain_image": "localhost/alkahest-publishing:quarto-1.10.18-v20",
   "verifier": {
     "name": "veraPDF",
     "version": "1.30.2",

@@ -337,6 +337,10 @@ def toolchain_inside() -> int:
     version("Poppler", [executable("pdfinfo"), "-v"], r"^pdfinfo version ", first_line=True)
     version("Python system runtime", ["/usr/bin/python3", "--version"], r"^Python ")
     version("Python uv environment", ["/opt/alkahest/tools/bin/python", "--version"], r"^Python ")
+    version(
+        "PyYAML",
+        ["/opt/alkahest/tools/bin/python", "-c", "import yaml; print(yaml.__version__)"],
+    )
     version("uv", [executable("uv"), "--version"], r"^uv ")
     version("Node", [executable("node"), "--version"], r"^v")
     version("npm", [executable("npm"), "--version"])

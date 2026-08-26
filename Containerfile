@@ -329,7 +329,7 @@ RUN UV_CACHE_DIR=/tmp/uv-cache \
             --no-install-project \
             --python 3.13.15 \
     && /opt/alkahest/tools/bin/python -c \
-        'import defusedxml, schemdraw; from rdkit import rdBase; assert defusedxml.__version__ == "0.7.1"; assert schemdraw.__version__ == "0.23"; assert rdBase.rdkitVersion == "2026.03.5"' \
+        'import defusedxml, schemdraw, yaml; from rdkit import rdBase; assert defusedxml.__version__ == "0.7.1"; assert schemdraw.__version__ == "0.23"; assert yaml.__version__ == "6.0.3"; assert rdBase.rdkitVersion == "2026.03.5"' \
     && chmod -R a+rX /opt/alkahest/python /opt/alkahest/tools /opt/alkahest/tools-project \
     && rm -rf /tmp/uv-cache
 

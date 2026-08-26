@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any, Never
 
+from alkahest.common import load_yaml
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -18,85 +20,39 @@ def main():
     if not root.is_dir():
         fail("glossary book root does not exist")
     registry_path = root / "glossary.yml"
-    entries: dict[str, dict[str, Any]] = {}
-    version: int | None = None
-    language: str | None = None
-    saw_terms = False
-    current: str | None = None
-    mode: str | None = None
-    for line_number, line in enumerate(registry_path.read_text(encoding="utf-8").splitlines(), 1):
-        if current and mode == "definition" and re.match(r"^      \S", line):
-            entries[current]["definition"] = (
-                entries[current]["definition"] + " " + line[6:]
-            ).strip()
-            continue
-        alias = (
-            re.match(r"^      - ([a-z][a-z0-9-]*)$", line)
-            if current and mode == "aliases"
-            else None
-        )
-        if alias:
-            if current is None:
-                fail(f"{registry_path}:{line_number}: alias appears before a glossary ID")
-            entries[current]["aliases"].append(alias.group(1))
-            continue
-        mode = None
-        if re.match(r"^\s*(?:#.*)?$", line):
-            continue
-        match = re.fullmatch(r"version: ([0-9]+)", line)
-        if match:
-            if version is not None:
-                fail(f"{registry_path}:{line_number}: duplicate version")
-            version = int(match.group(1))
-            continue
-        match = re.fullmatch(r"lang: (\S+)", line)
-        if match:
-            if language is not None:
-                fail(f"{registry_path}:{line_number}: duplicate language tag")
-            language = match.group(1)
-            continue
-        if line == "terms:":
-            if saw_terms:
-                fail(f"{registry_path}:{line_number}: duplicate terms mapping")
-            saw_terms = True
-            continue
-        match = re.fullmatch(r"  ([a-z][a-z0-9-]*):", line)
-        if match:
-            current = match.group(1)
-            if current in entries:
-                fail(f"{registry_path}:{line_number}: duplicate glossary ID: {current}")
-            entries[current] = {"aliases": [], "line": line_number}
-            continue
-        if current is None:
-            fail(f"{registry_path}:{line_number}: field appears before a glossary ID")
-        if line == "    aliases:":
-            if entries[current].get("saw_aliases"):
-                fail(f"{registry_path}:{line_number}: duplicate aliases field for {current}")
-            entries[current]["saw_aliases"] = True
-            mode = "aliases"
-            continue
-        if line == "    definition: >-":
-            if "definition" in entries[current]:
-                fail(f"{registry_path}:{line_number}: duplicate definition for {current}")
-            entries[current]["definition"] = ""
-            mode = "definition"
-            continue
-        match = re.fullmatch(r"    (term|plural|acronym|acronym-plural): (\S.*)", line)
-        if match:
-            field, value = match.groups()
-            if field in entries[current]:
-                fail(f"{registry_path}:{line_number}: duplicate {field} for {current}")
-            entries[current][field] = value
-            continue
-        fail(f"{registry_path}:{line_number}: unsupported glossary syntax: {line}")
-    if version != 1:
+    registry = load_yaml(registry_path, "glossary registry")
+    unknown = set(registry) - {"version", "lang", "terms"}
+    if unknown:
+        fail(f"glossary registry has unsupported fields: {', '.join(sorted(map(str, unknown)))}")
+    if registry.get("version") != 1:
         fail("glossary registry version must be 1")
-    if not language or not re.fullmatch(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language):
+    language = registry.get("lang")
+    if not isinstance(language, str) or not re.fullmatch(
+        r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language
+    ):
         fail("glossary registry language must be a BCP 47-style tag")
-    if not saw_terms:
-        fail("glossary registry has no terms mapping")
-    if not entries:
+    raw_entries = registry.get("terms")
+    if not isinstance(raw_entries, dict) or not raw_entries:
         fail("glossary registry has no entries")
+    entries: dict[str, dict[str, Any]] = {}
+    allowed_fields = {"term", "plural", "acronym", "acronym-plural", "aliases", "definition"}
+    for name, raw_entry in raw_entries.items():
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+            fail(f"invalid glossary ID: {name}")
+        if not isinstance(raw_entry, dict):
+            fail(f"glossary {name} must be a mapping")
+        unknown = set(raw_entry) - allowed_fields
+        if unknown:
+            fail(f"glossary {name} has unsupported fields: {', '.join(sorted(map(str, unknown)))}")
+        aliases = raw_entry.get("aliases", [])
+        if not isinstance(aliases, list) or not all(isinstance(alias, str) for alias in aliases):
+            fail(f"glossary {name} aliases must be a list of names")
+        entry = dict(raw_entry)
+        entry["aliases"] = aliases
+        for field in allowed_fields - {"aliases"}:
+            if field in entry and not isinstance(entry[field], str):
+                fail(f"glossary {name} {field} must be text")
+        entries[name] = entry
     lookup: dict[str, str] = {}
     display_terms: set[str] = set()
     for name in sorted(entries):

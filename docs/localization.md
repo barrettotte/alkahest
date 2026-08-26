@@ -1,4 +1,4 @@
-# Localization and writing systems
+# Localization and writing systems {#doc-localization}
 
 The template separates a book's primary locale from local language changes.
 Set the project-level `lang` to a BCP 47 language tag such as `en-US`; mark a

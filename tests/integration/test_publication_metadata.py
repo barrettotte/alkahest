@@ -44,9 +44,6 @@ def write_json(path, value):
 def integration_root(directory):
     root = Path(directory)
     (root / "book").mkdir(parents=True)
-    (root / "scripts").mkdir()
-    (root / "src/alkahest").mkdir(parents=True)
-    (root / "docs").mkdir()
     (root / "book/_quarto.yml").write_text(
         "metadata-files:\n  - generated/metadata.yml\nbook:\n  chapters: []\n",
         encoding="utf-8",
@@ -75,17 +72,6 @@ def integration_root(directory):
     write_json(root / "book/epub-accessibility.json", epub)
     write_json(root / "book/assets.json", assets)
     write_json(root / "book/reproducibility.json", {"schema_version": 1})
-    (root / "Makefile").write_text(
-        "check-%:\n\ttest -n '$*'\ntest-%:\n\ttest -n '$*'\n", encoding="utf-8"
-    )
-    (root / "src/alkahest/tasks.py").write_text(
-        'ScriptTask("publication-metadata", ":check-publication-metadata")\n',
-        encoding="utf-8",
-    )
-    (root / "docs/publication-metadata.md").write_text(
-        "book/publication.json config/metadata/publication.schema.json work-level manifestation\n",
-        encoding="utf-8",
-    )
     return root
 
 

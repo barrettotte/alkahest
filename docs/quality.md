@@ -1,4 +1,4 @@
-# Source and writing quality
+# Source and writing quality {#doc-quality}
 
 Alkahest validates the earliest representation that can establish each fact,
 then checks rendered artifacts where conversion can introduce regressions. All

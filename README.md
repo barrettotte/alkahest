@@ -57,33 +57,24 @@ artifacts are written below `book/_build/` and ignored by Git.
 
 - [Author guide](guide/README.md) is the best starting point for writing a book
   and can be rendered as HTML, EPUB, or PDF with its own concise Makefile.
-- [Content architecture](docs/content-architecture.md) covers identities,
-  editions, controlled reuse, companions, generated lists, and learning roles.
+- [Authoring reference](docs/authoring.md) covers portable headings, references,
+  mathematics, code, figures, and citations.
+- [Book structure](docs/book-structure.md) covers identities, editions,
+  appendices, reusable content, companions, and instructional components;
+  [reference material](docs/reference-material.md) covers icons, glossary terms,
+  indexes, and notes.
+- [Cross-format design](docs/design.md) covers themes, typography, page systems,
+  fonts, overrides, and layout review.
 - [Media workflows](docs/media-workflows.md) covers generated diagrams, charts,
   circuits, chemistry, computing, physics, and rich-media fallbacks.
-- [Accessibility](docs/accessibility.md) covers HTML, EPUB, reader review, and
-  PDF/UA evidence without making premature conformance claims.
-- [Source and writing quality](docs/quality.md) covers integrity checks, the
-  static-only execution boundary, spelling, terminology, and overrides.
-- [Publication profiles](docs/publication-profiles.md) covers page geometry and
-  the Typst/LuaLaTeX backend decision.
-- [Publication metadata](docs/publication-metadata.md) defines canonical
-  work-level facts; [manifestations](docs/manifestations.md) define product
-  variants, relations, availability, and typed identifiers; [metadata
-  generation](docs/metadata-generation.md) feeds all formats, the release
-  manifest, and optional pinned ONIX 3.1 output.
-- [Toolchain](docs/toolchain.md) covers the rootless offline environment and
-  links to its exact lock record.
-- [Reusable template engine](docs/template-engine.md) defines the image-owned
-  presentation boundary and what remains book-local.
-- [Creating a new book](docs/new-book.md) covers safe scaffold generation,
-  independent metadata, engine provenance, and the starter author workflow.
-- [Shared defaults and book themes](docs/theme-overrides.md) explains the
-  versioned baseline, small per-book overrides, and generated format adapters.
-- [Full and preview releases](docs/release-profiles.md) covers per-book chapter
-  allowlists, product metadata overrides, and isolated public staging.
-- [Extension APIs](docs/extension-apis.md) defines stable author syntax,
-  book-local registries, engine hooks, filters, and deterministic generators.
-- [Book-owned records](docs/book-contracts.md) explains which publishing facts
-  remain local to each book.
+- [Localization](docs/localization.md) covers writing systems, line breaking,
+  locale profiles, and multilingual QA.
+- [Publishing](docs/publishing.md) covers output profiles, accessibility,
+  metadata, product manifestations, generated adapters, and public previews.
+- [Quality](docs/quality.md) covers integrity, reproducibility, writing checks,
+  asset rights, and the static-only execution boundary.
+- [Toolchain](docs/toolchain.md) covers the rootless offline environment, its
+  exact lock record, updating, and baseline evidence.
+- [Template engine](docs/engine.md) covers new-book generation, ownership
+  boundaries, and extension APIs.
 Named after the theoretical “universal solvent” in Renaissance alchemy.

@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .common import fail, load_json
+from .common import fail, load_json, load_yaml
 
 IDENTITY_KINDS = (
     "chapter",
@@ -210,32 +210,19 @@ def _scan_qmd(path, source, records):
         fail(f"{source}: unclosed fenced code block")
 
 
-def _yaml_keys(path, section, namespace, kind, source, records):
-    inside = found = False
-    for number, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
-        if not inside and re.fullmatch(re.escape(section) + r":\s*", line):
-            inside = found = True
-            continue
-        if not inside:
-            continue
-        if line and not line[0].isspace():
-            break
-        match = re.fullmatch(r"  ([a-z][a-z0-9-]*):\s*", line)
-        if match:
-            _add(
-                records,
-                {
-                    "namespace": namespace,
-                    "id": match.group(1),
-                    "kind": kind,
-                    "source": source,
-                    "line": number,
-                },
-            )
-    if not found:
+def _registry_keys(path, section, namespace, kind, source, records):
+    values = load_yaml(path, f"{kind} registry").get(section)
+    if not isinstance(values, dict):
         fail(f"{source} has no '{section}' mapping")
-    if not any(record["namespace"] == namespace for record in records.values()):
+    if not values:
         fail(f"{source} has no persistent {kind} identities")
+    for identity in values:
+        if not isinstance(identity, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", identity):
+            fail(f"{source} has invalid persistent {kind} identity '{identity}'")
+        _add(
+            records,
+            {"namespace": namespace, "id": identity, "kind": kind, "source": source},
+        )
 
 
 def inventory_book(book_root, policy, variant):
@@ -277,7 +264,7 @@ def inventory_book(book_root, policy, variant):
         path = content_root / filename
         if not path.is_file():
             fail(f"language variant '{variant['language']}' is missing {filename}")
-        _yaml_keys(path, section, namespace, kind, filename, records)
+        _registry_keys(path, section, namespace, kind, filename, records)
     return records
 
 

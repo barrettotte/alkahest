@@ -22,7 +22,7 @@ LANGUAGE = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
 CHAPTER = re.compile(r"[0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\.qmd")
 PROFILES = {"full", "excerpt"}
 FORMATS = {"html", "epub", "typst", "latex"}
-TOOLCHAIN_IMAGE = "localhost/alkahest-publishing:quarto-1.10.18-v19"
+TOOLCHAIN_IMAGE = "localhost/alkahest-publishing:quarto-1.10.18-v20"
 DEFAULT_CONTENT = {
     "front": ["manuscript/index.qmd"],
     "chapter_directory": "manuscript/chapters",

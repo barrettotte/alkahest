@@ -5,7 +5,7 @@
     "version": "0.3.0",
     "uuid_namespace": "7c9258a3-0288-5cee-81d4-e5baf719c6cb"
   },
-  "engine_image": "localhost/alkahest-publishing:quarto-1.10.18-v19",
+  "engine_image": "localhost/alkahest-publishing:quarto-1.10.18-v20",
   "defaults": {
     "subtitle": "A new technical book",
     "description": "A new book project created from the Alkahest technical-book template.",

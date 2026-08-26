@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any, Never
 
+from alkahest.common import load_yaml
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -18,68 +20,43 @@ def main():
     if not root.is_dir():
         fail("index book root does not exist")
     registry_path = root / "index.yml"
-    version: int | None = None
-    language: str | None = None
-    in_entries = False
-    current: str | None = None
-    list_field: str | None = None
-    entries: dict[str, dict[str, Any]] = {}
-    for number, line in enumerate(registry_path.read_text(encoding="utf-8").splitlines(), 1):
-        if re.match(r"^\s*(?:#.*)?$", line):
-            continue
-        match = re.fullmatch(r"version: ([0-9]+)", line)
-        if match:
-            if version is not None:
-                fail(f"{registry_path}:{number}: duplicate version")
-            version = int(match.group(1))
-            continue
-        match = re.fullmatch(r"lang: (\S+)", line)
-        if match:
-            if language is not None:
-                fail(f"{registry_path}:{number}: duplicate language")
-            language = match.group(1)
-            continue
-        if line == "entries:":
-            in_entries, current, list_field = True, None, None
-            continue
-        match = re.fullmatch(r"  ([a-z][a-z0-9-]*):", line) if in_entries else None
-        if match:
-            current = match.group(1)
-            if current in entries:
-                fail(f"{registry_path}:{number}: duplicate index ID: {current}")
-            entries[current] = {"line": number}
-            list_field = None
-            continue
-        if not in_entries or current is None:
-            fail(f"{registry_path}:{number}: field appears before an index ID")
-        match = re.fullmatch(r"    (term|kind|sort|parent|see): (\S.*)", line)
-        if match:
-            field, value = match.groups()
-            if field in entries[current]:
-                fail(f"{registry_path}:{number}: duplicate {field} for {current}")
-            entries[current][field] = value
-            list_field = None
-            continue
-        match = re.fullmatch(r"    (aliases|locations|ranges|see-also):", line)
-        if match:
-            list_field = match.group(1)
-            if list_field in entries[current]:
-                fail(f"{registry_path}:{number}: duplicate {list_field} for {current}")
-            entries[current][list_field] = []
-            continue
-        match = re.fullmatch(r"      - (\S.*)", line) if list_field else None
-        if match:
-            if list_field is None:
-                fail(f"{registry_path}:{number}: list value appears before a list field")
-            entries[current][list_field].append(match.group(1))
-            continue
-        fail(f"{registry_path}:{number}: unsupported index syntax: {line}")
-    if version != 1:
+    registry = load_yaml(registry_path, "index registry")
+    unknown = set(registry) - {"version", "lang", "entries"}
+    if unknown:
+        fail(f"index registry has unsupported fields: {', '.join(sorted(map(str, unknown)))}")
+    if registry.get("version") != 1:
         fail("index registry version must be 1")
-    if not language or not re.fullmatch(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language):
+    language = registry.get("lang")
+    if not isinstance(language, str) or not re.fullmatch(
+        r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language
+    ):
         fail("index registry language must be a BCP 47 tag")
-    if not entries:
+    raw_entries = registry.get("entries")
+    if not isinstance(raw_entries, dict) or not raw_entries:
         fail("index registry has no entries")
+    entries: dict[str, dict[str, Any]] = {}
+    scalar_fields = {"term", "kind", "sort", "parent", "see"}
+    list_fields = {"aliases", "locations", "ranges", "see-also"}
+    for name, raw_entry in raw_entries.items():
+        if not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9-]*", name):
+            fail(f"invalid index ID: {name}")
+        if not isinstance(raw_entry, dict):
+            fail(f"index entry {name} must be a mapping")
+        unknown = set(raw_entry) - scalar_fields - list_fields
+        if unknown:
+            fail(
+                f"index entry {name} has unsupported fields: {', '.join(sorted(map(str, unknown)))}"
+            )
+        entry = dict(raw_entry)
+        for field in scalar_fields:
+            if field in entry and not isinstance(entry[field], str):
+                fail(f"index entry {name} {field} must be text")
+        for field in list_fields:
+            values = entry.get(field, [])
+            if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
+                fail(f"index entry {name} {field} must be a list of values")
+            entry[field] = values
+        entries[name] = entry
     lookup = {name: name for name in entries}
     child_count: dict[str, int] = {}
     for name in sorted(entries):
