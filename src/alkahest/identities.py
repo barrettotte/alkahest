@@ -1,6 +1,5 @@
-"""Discover and validate stable manuscript, registry, asset, and reusable identities."""
+"""Discover and validate manuscript, registry, asset, and reusable identities."""
 
-import json
 import re
 from pathlib import Path
 from typing import Any
@@ -31,16 +30,10 @@ IDENTITY_KINDS = (
 )
 
 
-def load_json_file(path, label):
-    return load_json(path, label)
-
-
 def load_identity_policy(path):
-    policy = load_json_file(path, "identity policy")
+    policy = load_json(path, "identity policy")
     if policy.get("version", 0) != 1:
         fail("identity policy version must be 1")
-    if not re.fullmatch(r"[a-z][a-z0-9-]*", policy.get("book_id", "")):
-        fail("identity policy book_id must be a stable lowercase ID")
     if not re.fullmatch(
         r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", policy.get("canonical_language", "")
     ):
@@ -55,8 +48,6 @@ def load_identity_policy(path):
         r"[A-Za-z0-9][A-Za-z0-9_.-]*\.json", policy.get("reusable_content_registry", "")
     ):
         fail("identity policy reusable_content_registry must name a root JSON file")
-    if not isinstance(policy.get("migrations"), list):
-        fail("identity policy migrations must be an array")
     return policy
 
 
@@ -376,7 +367,7 @@ def validate_language_variants(book_root, policy, canonical_records):
 
 
 def add_companion_assets(book_root, policy, records):
-    registry = load_json_file(Path(book_root) / policy["companion_registry"], "companion registry")
+    registry = load_json(Path(book_root) / policy["companion_registry"], "companion registry")
     if registry.get("version", 0) != 1:
         fail("companion registry version must be 1")
     items = registry.get("items")
@@ -412,7 +403,7 @@ def add_companion_assets(book_root, policy, records):
 
 
 def add_reusable_content(book_root, policy, records):
-    registry = load_json_file(
+    registry = load_json(
         Path(book_root) / policy["reusable_content_registry"], "reusable-content registry"
     )
     if registry.get("version", 0) != 1:
@@ -451,7 +442,7 @@ def validate_edition_manifests(book_root, policy, records):
     for manifest_path in policy["edition_manifests"]:
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*\.json", manifest_path):
             fail(f"invalid edition-manifest path '{manifest_path}'")
-        manifest = load_json_file(Path(book_root) / manifest_path, "edition manifest")
+        manifest = load_json(Path(book_root) / manifest_path, "edition manifest")
         if not all(
             isinstance(manifest.get(field), dict) for field in ("sources", "structures", "editions")
         ):
@@ -489,46 +480,12 @@ def validate_edition_manifests(book_root, policy, records):
                 fail(f"edition structure '{name}' has no persistently identified sources")
 
 
-def validate_migrations(policy):
-    sources, edges = set(), {}
-    for migration in policy["migrations"]:
-        if not isinstance(migration, dict):
-            fail("each identity migration must be an object")
-        namespace, old, new = (
-            migration.get("namespace", ""),
-            migration.get("from", ""),
-            migration.get("to"),
-        )
-        if namespace not in {"content", "glossary", "index", "asset", "reuse"}:
-            fail(f"invalid migration namespace '{namespace}'")
-        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", old):
-            fail("identity migration from must be a valid ID")
-        key = (namespace, old)
-        if key in sources:
-            fail(f"identity '{namespace}:{old}' has more than one migration")
-        sources.add(key)
-        if not migration.get("reason", "").strip():
-            fail(f"identity migration '{namespace}:{old}' needs a reason")
-        if new is not None:
-            if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", new) or new == old:
-                fail(f"identity migration '{namespace}:{old}' has an invalid replacement")
-            edges[key] = (namespace, new)
-    for start in edges:
-        seen, cursor = set(), start
-        while cursor in edges:
-            if cursor in seen:
-                fail("identity migrations contain a cycle")
-            seen.add(cursor)
-            cursor = edges[cursor]
-
-
 def inventory_identity_book(book_root):
-    """Build the canonical identity inventory shared by checks and lock updates."""
+    """Build the canonical identity inventory shared by source and rendered checks."""
     book_root = Path(book_root).resolve()
     if not book_root.is_dir():
         fail("identity book root does not exist")
     policy = load_identity_policy(book_root / "identities.json")
-    validate_migrations(policy)
     records = inventory_book(book_root, policy, canonical_variant(book_root, policy))
     add_companion_assets(book_root, policy, records)
     add_reusable_content(book_root, policy, records)
@@ -538,167 +495,14 @@ def inventory_identity_book(book_root):
 
 
 def validate_identity_book(book_root):
-    """Validate the canonical inventory against the persistent identity lock."""
-    book_root = Path(book_root).resolve()
+    """Validate the current canonical identity inventory."""
     policy, records = inventory_identity_book(book_root)
-    lock = load_json_file(book_root / "identity-lock.json", "identity lock")
-    if lock.get("version", 0) != 1:
-        fail("identity lock version must be 1")
-    if lock.get("book_id", "") != policy["book_id"]:
-        fail("identity lock book_id differs from identities.json")
-    if not isinstance(lock.get("identities"), list):
-        fail("identity lock identities must be an array")
-    active, retired = {}, {}
-    for entry in lock["identities"]:
-        if not isinstance(entry, dict):
-            fail("malformed identity-lock entry")
-        key = identity_key(entry)
-        status = entry.get("status", "")
-        if key in active or key in retired:
-            fail(f"duplicate identity-lock entry '{entry['namespace']}:{entry['id']}'")
-        if status == "active":
-            active[key] = entry
-        elif status == "retired":
-            retired[key] = entry
-        else:
-            fail(f"identity-lock entry '{entry['namespace']}:{entry['id']}' has invalid status")
-    for key in sorted(records):
-        record = records[key]
-        if key in retired:
-            fail(f"retired identity '{record['namespace']}:{record['id']}' was reused")
-        if key not in active:
-            fail(
-                f"new identity '{record['namespace']}:{record['id']}' is not locked; run make update-identities"
-            )
-        locked = active[key]
-        if locked.get("kind", "") != record["kind"] or locked.get("source", "") != record["source"]:
-            fail(
-                f"locked identity '{record['namespace']}:{record['id']}' metadata changed; run make update-identities"
-            )
-    for key in sorted(active):
-        if key not in records:
-            entry = active[key]
-            fail(
-                f"active identity '{entry['namespace']}:{entry['id']}' disappeared; add an explicit migration, then run make update-identities"
-            )
-    migrations = {(item["namespace"], item["from"]): item for item in policy["migrations"]}
-    for key in sorted(retired):
-        entry = retired[key]
-        migration = migrations.get(key)
-        if not migration:
-            fail(f"retired identity '{entry['namespace']}:{entry['id']}' has no migration record")
-        if entry.get("reason", "") != migration["reason"]:
-            fail(
-                f"retired identity '{entry['namespace']}:{entry['id']}' migration reason differs from the lock"
-            )
-        if "to" in migration:
-            target = (migration["namespace"], migration["to"])
-            if target not in active:
-                fail(f"migration target '{migration['namespace']}:{migration['to']}' is not active")
-            if entry.get("replaced_by", "") != migration["to"]:
-                fail(
-                    f"retired identity '{entry['namespace']}:{entry['id']}' replacement differs from the lock"
-                )
-        elif "replaced_by" in entry:
-            fail(
-                f"retired identity '{entry['namespace']}:{entry['id']}' unexpectedly has a replacement"
-            )
-    for key, migration in sorted(migrations.items()):
-        if key not in retired:
-            fail(
-                f"migration '{migration['namespace']}:{migration['from']}' does not name a retired identity"
-            )
     counts: dict[str, int] = {}
     for record in records.values():
         counts[record["kind"]] = counts.get(record["kind"], 0) + 1
     return {
-        "active": len(records),
-        "retired": len(retired),
+        "identities": len(records),
         "counts": counts,
         "language_variants": len(policy["language_variants"]),
         "edition_manifests": len(policy["edition_manifests"]),
     }
-
-
-def update_identity_lock(book_root):
-    """Refresh the identity lock while preserving explicit retirement history."""
-    book_root = Path(book_root).resolve()
-    policy, records = inventory_identity_book(book_root)
-    lock_path = book_root / "identity-lock.json"
-    old = (
-        load_json_file(lock_path, "identity lock")
-        if lock_path.is_file()
-        else {"version": 1, "book_id": policy["book_id"], "identities": []}
-    )
-    if old.get("book_id", "") != policy["book_id"]:
-        fail("identity lock belongs to a different book_id")
-
-    old_active, old_retired = {}, {}
-    for entry in old.get("identities", []):
-        key = identity_key(entry)
-        if key in old_active or key in old_retired:
-            fail("duplicate existing identity-lock entry")
-        if entry.get("status", "") == "active":
-            old_active[key] = entry
-        elif entry.get("status", "") == "retired":
-            old_retired[key] = entry
-        else:
-            fail("malformed existing identity-lock entry")
-
-    migrations = {(item["namespace"], item["from"]): item for item in policy["migrations"]}
-    identities = []
-    for key in sorted(old_retired):
-        entry = old_retired[key]
-        if key in records:
-            fail(f"retired identity '{entry['namespace']}:{entry['id']}' was reused")
-        migration = migrations.get(key)
-        if not migration:
-            fail(f"retired identity '{entry['namespace']}:{entry['id']}' has no migration record")
-        changed = entry.get("reason", "") != migration["reason"] or (
-            entry.get("replaced_by") != migration.get("to")
-        )
-        if changed:
-            fail(
-                f"migration for retired identity '{entry['namespace']}:{entry['id']}' "
-                "changed after retirement"
-            )
-        identities.append(entry)
-
-    for key in sorted(old_active):
-        if key in records:
-            continue
-        entry = old_active[key]
-        migration = migrations.get(key)
-        if not migration:
-            fail(f"identity '{entry['namespace']}:{entry['id']}' disappeared without a migration")
-        if "to" in migration and (migration["namespace"], migration["to"]) not in records:
-            fail(f"migration target '{migration['namespace']}:{migration['to']}' does not exist")
-        retired = dict(entry, status="retired", reason=migration["reason"])
-        if "to" in migration:
-            retired["replaced_by"] = migration["to"]
-        else:
-            retired.pop("replaced_by", None)
-        identities.append(retired)
-
-    for key in sorted(records):
-        record = records[key]
-        if key in old_retired:
-            fail(f"retired identity '{record['namespace']}:{record['id']}' was reused")
-        entry = {field: value for field, value in record.items() if field != "line"}
-        entry["status"] = "active"
-        identities.append(entry)
-
-    for key, migration in sorted(migrations.items()):
-        if key not in old_retired and not (key in old_active and key not in records):
-            fail(
-                f"migration '{migration['namespace']}:{migration['from']}' does not name "
-                "a retired or removed identity"
-            )
-
-    identities.sort(key=lambda item: (item["namespace"], item["id"], item["status"]))
-    output = {"version": 1, "book_id": policy["book_id"], "identities": identities}
-    lock_path.write_text(
-        json.dumps(output, indent=3, ensure_ascii=True, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    return {"path": lock_path, "identities": len(identities)}

@@ -1,6 +1,5 @@
 {
   "version": 1,
-  "book_id": "alkahest-reference-book",
   "canonical_language": "en-US",
   "language_variants": [
     {
@@ -19,6 +18,5 @@
     "editions.json"
   ],
   "companion_registry": "companion.json",
-  "reusable_content_registry": "reusable-content.json",
-  "migrations": []
+  "reusable_content_registry": "reusable-content.json"
 }

@@ -14,20 +14,19 @@ their semantic families. Learning roles use `obj-`, `pre-`, `plan-`, `sum-`,
 `rev-`, `hint-`, and `ans-`; companion assets use `asset-...`; reusable
 placements use `reuse-use-...`.
 
-`book/identities.json` defines policy, variants, editions, companion/reuse
-registries, and intentional migrations. `book/identity-lock.json` is the
-committed deterministic ledger of active and retired IDs. Ordinary validation
-never edits it. After an intentional addition or migration, run:
+`book/identities.json` connects the canonical manuscript, translated variants,
+edition manifests, and companion/reuse registries. Validate the current source
+inventory with:
 
 ```console
-make update-identities
 make check-identities
 ```
 
-Renaming or removing an active ID requires a substantive migration record. A
-retired ID is never reused. Shared-source locales retain canonical IDs;
-translated variants may use different files and prose but must preserve the
-same semantic identity sets.
+The check requires explicit IDs, rejects duplicates, binds edition sources to
+identified chapters, and verifies that translated variants preserve the same
+semantic identity sets. Avoid renaming an ID once external links or published
+references depend on it; pre-release changes do not require a compatibility
+ledger.
 
 ## Editions and privacy
 

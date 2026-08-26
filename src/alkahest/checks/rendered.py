@@ -13,6 +13,7 @@ import zipfile
 from pathlib import Path
 from typing import Never
 
+from alkahest.identities import inventory_identity_book
 from alkahest.process import run_process
 from alkahest.rendering.text_contract import validate as validate_text_contract
 from alkahest.rendering.text_normalize import normalize
@@ -228,20 +229,18 @@ def check_id_literal(path: Path, literal: str, label: str) -> None:
 
 
 def check_identities() -> None:
-    lock_path = ROOT / "book/identity-lock.json"
+    book_root = ROOT / "book"
     html_root = BUILD / "html"
     locale_root = BUILD / "locale/fr/html"
     preview_root = BUILD / "smoke/editions/preview/html"
     supplemental_root = BUILD / "smoke/editions/supplemental/html"
     private_root = BUILD / "smoke/editions/private/html"
     epub = epub_text(BUILD / "epub/Alkahest-Reference-Book.epub")
-    for path in (lock_path, html_root, locale_root, preview_root, supplemental_root, private_root):
+    for path in (html_root, locale_root, preview_root, supplemental_root, private_root):
         require_path(path, "rendered-identity input")
-    identities = json.loads(lock_path.read_text(encoding="utf-8"))["identities"]
+    _policy, identities = inventory_identity_book(book_root)
     checked_content = checked_assets = checked_reuse = 0
-    for entry in identities:
-        if entry.get("status") != "active":
-            continue
+    for entry in identities.values():
         namespace = entry["namespace"]
         kind = entry["kind"]
         identity = entry["id"]

@@ -119,8 +119,7 @@ def check_identities(arguments: tuple[str, ...]) -> None:
     counts = result["counts"]
     required = ", ".join(f"{counts.get(kind, 0)} {kind}" for kind in IDENTITY_KINDS)
     print(
-        f"ok: persistent identities ({result['active']} active; "
-        f"{result['retired']} retired; {required}; "
+        f"ok: persistent identities ({result['identities']} current; {required}; "
         f"{result['language_variants']} language variants; "
         f"{result['edition_manifests']} edition manifest)"
     )
@@ -331,15 +330,6 @@ def stage_edition_operation(arguments: tuple[str, ...]) -> None:
     print(stage_edition(book_root, edition, html_resources=html_resources))
 
 
-def update_identities_operation(arguments: tuple[str, ...]) -> None:
-    _require_no_arguments(arguments)
-    from .identities import update_identity_lock
-
-    book_root = Path(os.environ.get("ALKAHEST_IDENTITY_BOOK_ROOT", ROOT / "book"))
-    result = update_identity_lock(book_root)
-    print(f"updated {result['path']} ({result['identities']} retained active/retired identities)")
-
-
 def generate_publication_metadata(arguments: tuple[str, ...]) -> None:
     if arguments not in ((), ("--require-onix",)):
         raise ValueError("usage: alkahest generate publication-metadata [--require-onix]")
@@ -421,7 +411,6 @@ OPERATIONS: Final[dict[str, Operation]] = {
     "generate-rights-report": generate_rights_report,
     "package-companion-bundles": package_companion_bundles_operation,
     "stage-edition": stage_edition_operation,
-    "update-identities": update_identities_operation,
 }
 
 

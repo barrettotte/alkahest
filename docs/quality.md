@@ -75,7 +75,7 @@ conversion preserved it. The complete consistency contract is:
 | Generated lists and index | List/index registries, markers, ranges, hierarchy, and relations | Linked HTML/EPUB lists and indexes plus page-resolved Typst/LuaLaTeX numbering |
 | Glossary | Entries, aliases, forms, calls, and one generated placeholder | Stable sorted anchors, links, definitions, language scope, acronyms, and print page references |
 | Appendices and numbering | Appendix/edition manifests, IDs, inclusion rules, and references | Stable appendix letters, local numbering, contents, cross-references, and shared citations |
-| Persistent identity | Identity ledger, migrations, namespaces, variants, and retired IDs | Anchors retained across HTML, EPUB, previews, supplemental/private editions, and locales |
+| Persistent identity | Explicit IDs, uniqueness, namespaces, editions, and translated variants | Anchors retained across HTML, EPUB, previews, supplemental/private editions, and locales |
 | Edition variants and privacy | Whole-book manifests and staged source isolation | Inclusion/omission, grouping, numbering, links, and public/private canary checks |
 | Localization | Locale modes, translation manifests, language scopes, scripts, locked packages, glyph coverage, fallback, and hyphenation policy | HTML/EPUB document languages, inline direction, localized labels and cross-references, EPUB metadata, and hyphenation |
 | Publication metadata | Closed canonical work record, roles, dates, rights, accessibility, and provenance | Current Quarto, EPUB discovery, and PDF expectation parity |

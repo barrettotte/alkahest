@@ -41,8 +41,8 @@ second anchor. The same stable-ID rule applies to `fig-`, `tbl-`, `eq-`, and
 Do not place underscores in IDs, encode a displayed number in an ID, or rename
 an ID merely because wording changes.
 
-The checked ledger, glossary/index namespaces, companion-asset IDs, translation
-parity, edition behavior, and explicit migration workflow are defined in
+The checked inventory, glossary/index namespaces, companion-asset IDs,
+translation parity, and edition behavior are defined in
 [`content-architecture.md`](content-architecture.md#persistent-identities).
 
 References may cross chapter, part, back-matter, and appendix boundaries in

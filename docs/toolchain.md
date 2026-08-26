@@ -198,12 +198,11 @@ Libertinus Serif coverage before rendering. `make render-locale-smoke` renders
 an HTML edition with `fr-FR` document metadata and generated labels; it is a
 translation/locale fixture, not an independently translated manuscript.
 
-`make check-identities` validates explicit manuscript and registry IDs against
-the committed identity ledger. After an intentional addition—or after recording
-an explicit rename/removal migration—use `make update-identities`, review the
-lockfile diff, and rerun the check. `make test-identities` exercises the invalid
-and translated fixtures; `make check-rendered-identities` checks the resulting
-HTML, EPUB, edition, and locale anchors after rendering.
+`make check-identities` validates the current manuscript and registry IDs for
+explicitness, uniqueness, edition membership, and translation parity.
+`make test-identities` exercises the invalid and translated fixtures;
+`make check-rendered-identities` checks the resulting HTML, EPUB, edition, and
+locale anchors after rendering.
 
 `make check-editions` validates the whole-book source manifest, reduced-book
 reference integrity, format compatibility, and public/private isolation.
@@ -271,6 +270,6 @@ Treat a Quarto update as a dependency change:
    and font hashes in the Containerfile and `docs/toolchain-lock.md`.
 3. Run the complete reference-book build.
 4. Compare warnings, generated intermediates, and visual fixtures.
-5. Record incompatibilities or migrations before accepting the update.
+5. Record incompatibilities before accepting the update.
 
 Do not use a floating image tag such as `latest` in normal builds.

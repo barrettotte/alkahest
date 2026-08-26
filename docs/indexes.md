@@ -71,8 +71,8 @@ An abstract model of computation.{{< alk-index computing id=abstract-model >}}
 ```
 
 The alias `computing` resolves to the canonical `computation` entry. It is
-retained as `data-index-requested` in HTML/EPUB for acceptance and migration
-diagnostics, while every generated anchor uses canonical identity.
+retained as `data-index-requested` in HTML/EPUB for acceptance diagnostics,
+while every generated anchor uses canonical identity.
 
 A range repeats one declared marker ID at its boundaries:
 

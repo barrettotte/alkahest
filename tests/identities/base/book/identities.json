@@ -1,6 +1,5 @@
 {
   "version": 1,
-  "book_id": "identity-fixture",
   "canonical_language": "en-US",
   "language_variants": [
     {"language": "en-US", "root": "en", "mode": "canonical"},
@@ -8,6 +7,5 @@
   ],
   "edition_manifests": ["editions.json"],
   "companion_registry": "companion.json",
-  "reusable_content_registry": "reusable-content.json",
-  "migrations": []
+  "reusable_content_registry": "reusable-content.json"
 }
