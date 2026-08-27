@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-from alkahest.new_book import create_new_book
 from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,24 +63,3 @@ def test_author_guide_builds_full_and_excerpt_outputs() -> None:
 
             pdf = output / "typst/Writing-Books-with-Alkahest.pdf"
             assert pdf.is_file() and pdf.stat().st_size > 10_000
-
-
-@pytest.mark.locked
-def test_generated_book_compiles_through_its_container_only_surface() -> None:
-    with tempfile.TemporaryDirectory(prefix="alkahest-generated-book.") as temporary:
-        book = Path(temporary) / "book"
-        create_new_book(
-            ROOT,
-            book,
-            title="A Container-Only Book",
-            author="Example Author",
-            created="2026-08-24",
-        )
-        assert not list(book.rglob("*.zip"))
-        assert not list(book.rglob("*.py"))
-
-        run_make(book, "bootstrap")
-        run_make(book, "check")
-
-        for profile in ("full", "excerpt"):
-            assert (book / f"_build/.work/{profile}/author-workspace.json").is_file()

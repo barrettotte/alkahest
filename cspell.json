@@ -1,9 +1,42 @@
 {
   "version": "0.2",
-  "import": ["./config/writing/cspell-terms.json"],
   "language": "en-US",
   "useGitignore": false,
   "enabledLanguageIds": ["markdown"],
+  "dictionaryDefinitions": [
+    {
+      "name": "alkahest-shared",
+      "path": "./config/writing/dictionaries/shared.txt",
+      "addWords": false
+    },
+    {
+      "name": "alkahest-reference-book",
+      "path": "./book/dictionaries/accepted.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": ["alkahest-shared"],
+  "flagWords": [
+    "alot->a lot",
+    "backwards-compatible->backward-compatible",
+    "Cspell->CSpell",
+    "cspell->CSpell",
+    "e-book->ebook",
+    "Epub->EPUB",
+    "epub->EPUB",
+    "Github->GitHub",
+    "github->GitHub",
+    "GraphViz->Graphviz",
+    "graphviz->Graphviz",
+    "irregardless->regardless",
+    "Javascript->JavaScript",
+    "javascript->JavaScript",
+    "occured->occurred",
+    "seperate->separate",
+    "teh->the",
+    "typst->Typst",
+    "vale->Vale"
+  ],
   "patterns": [
     {
       "name": "markdown-fenced-code-backticks",
@@ -38,6 +71,14 @@
       "pattern": "/(?:^|[\\s{])(?:[.#][-A-Za-z0-9_:]+|[-A-Za-z0-9_:]+(?=\\s*=))/gm"
     },
     {
+      "name": "pandoc-raw-inline-format",
+      "pattern": "/\\{=[-A-Za-z0-9_:+.]+\\}/g"
+    },
+    {
+      "name": "quarto-format-attribute",
+      "pattern": "/\\bwhen-format\\s*=\\s*[\"'][^\"']+[\"']/g"
+    },
+    {
       "name": "quarto-shortcode",
       "pattern": "/\\{\\{[<%][\\s\\S]*?[>%]\\}\\}/g"
     },
@@ -56,6 +97,8 @@
     "pandoc-delimited-math",
     "pandoc-citation-and-crossref-key",
     "pandoc-attribute-name",
+    "pandoc-raw-inline-format",
+    "quarto-format-attribute",
     "quarto-shortcode",
     "yaml-front-matter-key"
   ],
@@ -63,6 +106,20 @@
     {
       "filename": "**/*.qmd",
       "languageId": "markdown"
+    },
+    {
+      "filename": "book/**",
+      "dictionaries": ["alkahest-reference-book"],
+      "flagWords": [
+        "chemfig->Chemfig",
+        "circuitikz->CircuitikZ",
+        "kiloohm->kilohm",
+        "matplotlib->Matplotlib",
+        "rdkit->RDKit",
+        "schemedraw->Schemdraw",
+        "verilog->Verilog",
+        "wavedrom->WaveDrom"
+      ]
     }
   ],
   "ignorePaths": [

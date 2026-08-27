@@ -20,25 +20,6 @@ def clamp(value: int, lower: int, upper: int) -> int:
 ```
 :::
 
-## Opt-in line numbers {#sec-code-line-numbers}
-
-Line numbers help prose discuss a fixed specimen but are omitted by default so
-short examples remain easy to copy. The numbers are presentation, not literal
-characters in the source.
-
-::: {.code-with-filename}
-[`counter.py`]{.code-with-filename-file}
-
-```{.python code-line-numbers="true"}
-def count_enabled(flags: list[bool]) -> int:
-    total = 0
-    for enabled in flags:
-        if enabled:
-            total += 1
-    return total
-```
-:::
-
 ## Line callouts and annotations {#sec-code-annotations}
 
 Inline callout markers connect explanations to source lines. HTML turns them
@@ -126,12 +107,10 @@ done
 
 An executable example is presented as a named source block followed immediately
 by its expected standard output. Both remain static, reviewable manuscript
-content: normal, CI, preview, and release builds do not execute code. Authors
-use dotted language classes such as `{.python}`; executable cell syntax such as
-`{python}` is rejected before rendering. This keeps cloning or publishing a
-book from granting its manuscript ambient command execution. Declarative
-`{mermaid}` and Graphviz `{dot}` diagram cells are the only machine-locked
-exceptions and do not grant a general-purpose command interface.
+content: Alkahest rendering does not execute code. Authors use dotted language
+classes such as `{.python}` rather than executable cell syntax such as
+`{python}`. This keeps cloning or publishing a book from granting its
+manuscript ambient command execution.
 
 ::: {.code-with-filename}
 [`checksum.py`]{.code-with-filename-file}
@@ -151,8 +130,5 @@ print(sum(values))
 :::
 
 The source/output pair is deliberately small enough to verify by inspection.
-If a separate opt-in verifier is added later, it must run offline in a locked
-environment with read-only sources, disposable outputs, explicit resource
-limits, and output-drift checks. Publication caching and frozen execution
-results remain disabled; generated results must stay distinguishable from
-commands and authored prose.
+Books that verify examples should do so in a separate, opt-in test process;
+generated results must stay distinguishable from commands and authored prose.

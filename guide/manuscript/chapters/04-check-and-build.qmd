@@ -22,8 +22,7 @@ excerpt workspaces. It does not render the book.
 | EPUB | `_build/full/epub/` |
 | Typst PDF | `_build/full/typst/` |
 
-Typst is the production PDF default. Run `make build-all` only when you need to
-compare the slower secondary LuaLaTeX PDF.
+Typst is the production PDF engine.
 
 ## Read failures from the top
 
@@ -46,6 +45,6 @@ Run `make clean` whenever you want to remove `_build/`. Cleaning never removes
 manuscripts, configuration, bibliography data, or source assets. It also leaves
 the repository's development caches and rootless publishing image untouched.
 
-Do not manually copy generated HTML, EPUB, PDF, Quarto YAML, Typst, or LaTeX
+Do not manually copy generated HTML, EPUB, PDF, Quarto YAML, or Typst
 files back into the authored source tree. Fix the Markdown or `book.toml`, then
 rebuild every output from the same source.

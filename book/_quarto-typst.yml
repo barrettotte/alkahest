@@ -10,8 +10,7 @@ paragraph-spacing: 3pt
 
 format:
   typst:
-    # Use the same CSL processor as HTML, EPUB, and LuaLaTeX. Native Typst
-    # citations otherwise give narrative citations different semantics.
+    # Use the same CSL processor as HTML and EPUB.
     citeproc: true
     keep-typ: true
     template-partials:

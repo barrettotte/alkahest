@@ -1,6 +1,6 @@
 # Pin the upstream image by manifest digest so a reused Quarto tag cannot change
 # the base filesystem beneath this publishing toolchain.
-FROM ghcr.io/quarto-dev/quarto-full:1.10.18@sha256:280aa58ecdb814dcced42066e4f64d1825020ce5822f2ca2749fc6396020d7de
+FROM ghcr.io/quarto-dev/quarto:1.10.18@sha256:3c10521544c4f182eb5edf3c807f99c5ddad93869b233052fa13cf7cdba13572
 
 # Keep every network-resolved bootstrap input visible in one place. These are
 # intentionally ENV values, not build arguments: all developers and CI use the
@@ -19,48 +19,52 @@ ENV ALKAHEST_UBUNTU_SNAPSHOT="https://snapshot.ubuntu.com/ubuntu/20260816T000000
     ALKAHEST_SOURCE_CODE_PRO_LICENSE_URL="https://raw.githubusercontent.com/adobe-fonts/source-code-pro/d3f1a5962cde503f9409c21e58527611d4a19ef1/LICENSE.md" \
     ALKAHEST_SOURCE_CODE_PRO_LICENSE_SHA256="7c940e28a5388e9bba866cf0e408edda45fe0899ba98665b8f6ab31dc5e4b8ff" \
     ALKAHEST_UV_ARCHIVE_URL="https://github.com/astral-sh/uv/releases/download/0.12.5/uv-x86_64-unknown-linux-gnu.tar.gz" \
-    ALKAHEST_UV_ARCHIVE_SHA256="68a509da24b06b4223a1c0175fb5eb5bc79342b76cbeff0cfe51ac3f5b17b6b2" \
-    ALKAHEST_TEXLIVE_REPOSITORY="https://texlive.info/tlnet-archive/2026/08/16/tlnet" \
-    ALKAHEST_TEXLIVE_TLPDB_SHA256="a1b87eb64a6ffd2076f6bfc872e9ea0aa1e56ba7fe585636eed18a388d4adf8e"
+    ALKAHEST_UV_ARCHIVE_SHA256="68a509da24b06b4223a1c0175fb5eb5bc79342b76cbeff0cfe51ac3f5b17b6b2"
 
 USER root
 
-# Runtime libraries required by Chrome Headless Shell plus the Java, Poppler,
-# and SVG-conversion tools. The upstream `quarto-full` image contains TeX but
-# not these stacks. Resolve them from an immutable Ubuntu archive view and pin
-# each direct dependency so local and CI checks use identical parser versions.
+# Runtime libraries required by Chrome Headless Shell plus Java and Poppler.
+# The immutable Ubuntu archive view fixes the complete dependency solution
+# without repeating distribution-specific package versions here. The minimal
+# base omits CA roots, so the first signed-snapshot transaction disables only
+# TLS peer checking while it installs ca-certificates; normal verification is
+# required immediately afterward.
 RUN sed -i \
         -e "s|http://archive.ubuntu.com/ubuntu/|${ALKAHEST_UBUNTU_SNAPSHOT}/|g" \
         -e "s|http://security.ubuntu.com/ubuntu/|${ALKAHEST_UBUNTU_SNAPSHOT}/|g" \
         /etc/apt/sources.list \
+    && apt-get -o Acquire::https::Verify-Peer=false update \
+    && DEBIAN_FRONTEND=noninteractive apt-get \
+        -o Acquire::https::Verify-Peer=false \
+        install --yes --no-install-recommends ca-certificates \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-        libasound2=1.2.2-2.1ubuntu2.5 \
-        libatk-bridge2.0-0=2.34.2-0ubuntu2~20.04.1 \
-        libatk1.0-0=2.35.1-1ubuntu2 \
-        libatspi2.0-0=2.36.0-2 \
-        libcairo2=1.16.0-4ubuntu1 \
-        librsvg2-bin=2.48.9-1ubuntu0.20.04.4 \
-        libcups2=2.3.1-9ubuntu1.9 \
-        libdbus-1-3=1.12.16-2ubuntu2.3 \
-        libdrm2=2.4.107-8ubuntu1~20.04.2 \
-        libgbm1=21.2.6-0ubuntu0.1~20.04.2 \
-        libglib2.0-0=2.64.6-1~ubuntu20.04.9 \
-        libnspr4=2:4.35-0ubuntu0.20.04.1 \
-        libnss3=2:3.98-0ubuntu0.20.04.2 \
-        libpango-1.0-0=1.44.7-2ubuntu4 \
-        libx11-6=2:1.6.9-2ubuntu1.6 \
-        libxcb1=1.14-2 \
-        libxcomposite1=1:0.4.5-1 \
-        libxdamage1=1:1.1.5-2 \
-        libxext6=2:1.3.4-0ubuntu1 \
-        libxfixes3=1:5.0.3-2 \
-        libxkbcommon0=0.10.0-1 \
-        libxrandr2=2:1.5.2-0ubuntu1 \
-        openjdk-11-jre-headless=11.0.27+6~us1-0ubuntu1~20.04 \
-        poppler-utils=0.86.1-0ubuntu1.7 \
-    && echo "daaec6e04e775ff7582545e055d0559590ff44a75664ff94b0ec3562afeb9509  /usr/bin/rsvg-convert" \
-        | sha256sum --check \
+        curl \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libatspi2.0-0 \
+        libcairo2 \
+        libcups2 \
+        libdbus-1-3 \
+        libdrm2 \
+        libgbm1 \
+        libglib2.0-0 \
+        libnspr4 \
+        libnss3 \
+        libpango-1.0-0 \
+        libx11-6 \
+        libxcb1 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxext6 \
+        libxfixes3 \
+        libxkbcommon0 \
+        libxrandr2 \
+        openjdk-11-jre-headless \
+        poppler-utils \
+        unzip \
+        xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Quarto's diagram renderer needs a browser for non-HTML targets. Install the
@@ -102,33 +106,7 @@ RUN curl --fail --location --silent --show-error \
 
 ENV EPUBCHECK_JAR=/opt/epubcheck/epubcheck.jar
 
-# Install only veraPDF's CLI from its official checksum-locked installer. It
-# supplies machine-verifiable PDF/UA-1 and PDF/UA-2 rules; human checkpoints
-# remain a separate evidence requirement.
-ENV ALKAHEST_VERAPDF_VERSION="1.30.2" \
-    ALKAHEST_VERAPDF_ARCHIVE_URL="https://software.verapdf.org/releases/1.30/verapdf-greenfield-1.30.2-installer.zip" \
-    ALKAHEST_VERAPDF_ARCHIVE_SHA256="6cc6341cb1af644044054b81f00a6590a7918abb18f762243de115258bcad838"
-
-COPY config/pdf/verapdf-install.xml /tmp/verapdf-install.xml
-
-RUN curl --fail --location --silent --show-error \
-        --output /tmp/verapdf-installer.zip \
-        "${ALKAHEST_VERAPDF_ARCHIVE_URL}" \
-    && echo "${ALKAHEST_VERAPDF_ARCHIVE_SHA256}  /tmp/verapdf-installer.zip" \
-        | sha256sum --check \
-    && unzip -q /tmp/verapdf-installer.zip -d /tmp/verapdf-installer \
-    && java -jar \
-        "/tmp/verapdf-installer/verapdf-greenfield-${ALKAHEST_VERAPDF_VERSION}/verapdf-izpack-installer-${ALKAHEST_VERAPDF_VERSION}.jar" \
-        /tmp/verapdf-install.xml \
-    && ln -s /opt/verapdf/verapdf /usr/local/bin/verapdf \
-    && chmod -R a+rX /opt/verapdf \
-    && verapdf --version 2>&1 | grep -Fq "${ALKAHEST_VERAPDF_VERSION}" \
-    && rm -rf \
-        /tmp/verapdf-install.xml \
-        /tmp/verapdf-installer \
-        /tmp/verapdf-installer.zip
-
-# Install one versioned, OFL-licensed font stack for both PDF backends. Keep
+# Install one versioned, OFL-licensed font stack for every output. Keep
 # WOFF2 siblings beside it so the later web/EPUB theme can use identical source
 # releases without introducing another network-resolved build input.
 RUN curl --fail --location --silent --show-error \
@@ -176,83 +154,8 @@ RUN curl --fail --location --silent --show-error \
 # Explicit font paths take precedence over Typst's embedded fallback fonts.
 ENV TYPST_FONT_PATHS=/usr/local/share/fonts/alkahest
 
-# Normal renders have no network access. Verify and select a dated TeX Live
-# repository, then declare packages here instead of letting Quarto discover
-# and download them while compiling a manuscript.
-RUN curl --fail --location --silent --show-error \
-        --output /tmp/texlive.tlpdb.xz \
-        "${ALKAHEST_TEXLIVE_REPOSITORY}/tlpkg/texlive.tlpdb.xz" \
-    && echo "${ALKAHEST_TEXLIVE_TLPDB_SHA256}  /tmp/texlive.tlpdb.xz" \
-        | sha256sum --check \
-    && rm /tmp/texlive.tlpdb.xz \
-    && tlmgr option repository "${ALKAHEST_TEXLIVE_REPOSITORY}" \
-    && tlmgr update --self
-
-# Keep manuscript-required packages in a separate layer. Adding one package
-# does not invalidate the larger operating-system and browser installation.
-RUN tlmgr install \
-        babel-french \
-        babel-german \
-        babel-greek \
-        babel-hebrew \
-        babel-russian \
-        babel-english \
-        hyphen-english \
-        hyphen-french \
-        hyphen-german \
-        hyphen-greek \
-        hyphen-russian \
-        ruhyphen \
-        caption \
-        fvextra \
-        pgf \
-        tcolorbox \
-        tikzfill \
-        pdfcol \
-        fontawesome5 \
-        latex-lab \
-        koma-script
-
-# Assert package revisions and the original baseline font bytes so
-# a bad archive or lock update cannot silently change the typography.
-RUN set -eu; \
-    check_revision() { \
-        actual="$(tlmgr info --only-installed "$1" | sed -n 's/^revision:[[:space:]]*//p')"; \
-        test "${actual}" = "$2"; \
-    }; \
-    check_revision babel-french 79302; \
-    check_revision babel-german 78737; \
-    check_revision babel-greek 78101; \
-    check_revision babel-hebrew 77914; \
-    check_revision babel-russian 57376; \
-    check_revision babel-english 77682; \
-    check_revision hyphen-english 78069; \
-    check_revision hyphen-french 78069; \
-    check_revision hyphen-german 78069; \
-    check_revision hyphen-greek 78069; \
-    check_revision hyphen-russian 78069; \
-    check_revision ruhyphen 79618; \
-    check_revision caption 79618; \
-    check_revision fvextra 78296; \
-    check_revision pgf 79866; \
-    check_revision tcolorbox 79191; \
-    check_revision tikzfill 78793; \
-    check_revision pdfcol 79618; \
-    check_revision fontawesome5 77682; \
-    check_revision latex-lab 79404; \
-    check_revision koma-script 77575; \
-    check_revision lm 77682; \
-    check_revision lm-math 67718; \
-    echo "8c8b4894c328236143c9f57f690e2199482e0a4bed2567747e99ffbbf84ca3af  /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf" | sha256sum --check; \
-    echo "cdad31bd653b7e7f14cc0671de5c05ec91661f2fa8ba9d4ed3c2c511c6a3ed03  /usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf" | sha256sum --check; \
-    echo "1aa18cfefa58132c52ce5de70db1fd1154201c19cd2b2cdaffba4906a33e6852  /opt/TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf" | sha256sum --check; \
-    echo "102fe06c430a8b681b2bf6876b7cd967ae4d47b4b6b41d915eb7913b726d9fb1  /opt/TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.otf" | sha256sum --check; \
-    echo "c1fce25075567bb8dbf2151658c3b442690041db17a2d49fc9e55905ea5b7169  /opt/TinyTeX/texmf-dist/fonts/opentype/public/lm/lmroman10-italic.otf" | sha256sum --check; \
-    echo "2f4ae1bd30d4203a1c74c61d61dddbd5e2c2d5a7001d456b1b98e08b7c47ffb9  /opt/TinyTeX/texmf-dist/fonts/opentype/public/lm/lmmonolt10-bold.otf" | sha256sum --check; \
-    echo "6075562b771f8b82f0c179e363389684f2dd09de30038269e2628e504bd7be0f  /opt/TinyTeX/texmf-dist/fonts/opentype/public/lm-math/latinmodern-math.otf" | sha256sum --check
-
 # Assert the exact faces selected for manuscripts and verify their family names
-# resolve through fontconfig before either PDF backend can use them.
+# resolve through fontconfig before Typst uses them.
 RUN set -eu; \
     echo "fcf06307a77367394fcb0ccb241e59eea70dba3d732be309647611224679c733  /usr/local/share/fonts/alkahest/libertinus/LibertinusSerif-Regular.otf" | sha256sum --check; \
     echo "0264914210ed51b3231ebc92ce529e9f2e166ba9eebf0cd4a579558690a27b64  /usr/local/share/fonts/alkahest/libertinus/LibertinusSerif-Bold.otf" | sha256sum --check; \
@@ -286,16 +189,9 @@ RUN groupadd --gid 10001 alkahest \
         alkahest \
     && install --directory --owner=10001 --group=10001 /workspace
 
-# Retain the base-compatible Ubuntu Python for Quarto internals and bootstrap
-# utilities. Repository validators use the locked uv Python selected below.
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-        python3=3.8.2-0ubuntu2 \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install the exact uv release used by the root Python project. uv then installs
-# its checksum-verified Python build and the locked runtime/diagram environment;
-# neither normal rendering nor regeneration needs the network or writes package
+# its checksum-verified Python build and the locked runtime environment;
+# neither normal rendering nor validation needs the network or writes package
 # state into the bind-mounted repository.
 RUN curl --fail --location --silent --show-error \
         --output /tmp/uv.tar.gz \
@@ -325,16 +221,15 @@ RUN UV_CACHE_DIR=/tmp/uv-cache \
             --project /opt/alkahest/tools-project \
             --locked \
             --no-default-groups \
-            --group diagrams \
             --no-install-project \
             --python 3.13.15 \
     && /opt/alkahest/tools/bin/python -c \
-        'import defusedxml, schemdraw, yaml; from rdkit import rdBase; assert defusedxml.__version__ == "0.7.1"; assert schemdraw.__version__ == "0.23"; assert yaml.__version__ == "6.0.3"; assert rdBase.rdkitVersion == "2026.03.5"' \
+        'import yaml; assert yaml.__version__ == "6.0.3"' \
     && chmod -R a+rX /opt/alkahest/python /opt/alkahest/tools /opt/alkahest/tools-project \
     && rm -rf /tmp/uv-cache
 
-# Keep JavaScript and prose-tool identities beside their late install layers so changes
-# do not invalidate the much larger TeX, font, browser, and media environments.
+# Keep JavaScript and prose-tool identities beside their late install layers so
+# changes do not invalidate the larger font, browser, and media environments.
 ENV ALKAHEST_NODE_VERSION="22.23.2" \
     ALKAHEST_NODE_ARCHIVE_URL="https://nodejs.org/download/release/v22.23.2/node-v22.23.2-linux-x64.tar.xz" \
     ALKAHEST_NODE_ARCHIVE_SHA256="d60acfe00a2932254bb0ad20e01b0d74397a0875595de719654b214f4b03f307" \
@@ -405,36 +300,19 @@ RUN npm ci \
     && chmod -R a+rX /opt/alkahest/writing \
     && rm -rf /tmp/npm-cache
 
-# Quarto's LuaLaTeX PDF/UA-2 profile needs a coherent LaTeX kernel,
-# PDF-management, and tagging stack from the locked TeX Live snapshot. Keep
-# this late so accessibility-tool changes do not invalidate larger tool layers.
-RUN tlmgr update latex l3kernel \
-    && tlmgr install luamml pdfmanagement tagpdf \
-    && test "$(tlmgr info --only-installed latex \
-        | sed -n 's/^revision:[[:space:]]*//p')" = "79618" \
-    && test "$(tlmgr info --only-installed l3kernel \
-        | sed -n 's/^revision:[[:space:]]*//p')" = "79868" \
-    && test "$(tlmgr info --only-installed luamml \
-        | sed -n 's/^revision:[[:space:]]*//p')" = "79442" \
-    && test "$(tlmgr info --only-installed pdfmanagement \
-        | sed -n 's/^revision:[[:space:]]*//p')" = "79164" \
-    && test "$(tlmgr info --only-installed tagpdf \
-        | sed -n 's/^revision:[[:space:]]*//p')" = "79799"
-
 # Embed the author engine in its runtime layout. The development
 # repository keeps canonical files in book/, scripts/, and src/; the runtime
 # image presents one read-only engine root so a mounted book needs none of this
 # repository's source code.
 COPY book/_extensions/ /opt/alkahest/engine/_extensions/
 COPY book/filters/ /opt/alkahest/engine/filters/
-COPY book/latex/ /opt/alkahest/engine/latex/
+COPY book/icons/ /opt/alkahest/engine/icons/
 COPY book/theme/ /opt/alkahest/engine/theme/
 COPY book/typst/ /opt/alkahest/engine/typst/
+COPY book/_brand.yml /opt/alkahest/engine/_brand.yml
 COPY book/alkahest-defaults.yml /opt/alkahest/engine/defaults/quarto.yml
-COPY book/alkahest-theme-defaults.json /opt/alkahest/engine/defaults/theme.json
-COPY book/alkahest-release-defaults.json /opt/alkahest/engine/defaults/releases.json
 COPY scripts/author.py /opt/alkahest/engine/scripts/author.py
-COPY src/alkahest/__init__.py src/alkahest/author_project.py src/alkahest/process.py src/alkahest/release_profiles.py src/alkahest/theme.py /opt/alkahest/engine/src/alkahest/
+COPY src/alkahest/__init__.py src/alkahest/author_project.py src/alkahest/process.py /opt/alkahest/engine/src/alkahest/
 
 # Stage the twelve locked web faces as regular files. Quarto preserves resource
 # timestamps while copying, which cannot operate through a symlink whose target

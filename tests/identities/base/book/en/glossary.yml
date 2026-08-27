@@ -1,6 +1,0 @@
-version: 1
-lang: en-US
-terms:
-  stable-term:
-    term: stable term
-    definition: A term whose identity survives translation.

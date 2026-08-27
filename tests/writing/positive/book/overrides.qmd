@@ -14,13 +14,3 @@ singlelinemisspellng is quoted from the original label.
 <!-- cspell:disable -->
 rangemisspellng appears only inside this bounded quotation.
 <!-- cspell:enable -->
-
-<!-- writing-override: Preserve the historical lowercase product name in this quotation. -->
-<!-- vale Alkahest.Terminology["typst"] = NO -->
-The typst spelling is deliberate in this one quotation.
-<!-- vale Alkahest.Terminology["typst"] = YES -->
-
-<!-- writing-override: Preserve several historical product spellings in this bounded quotation. -->
-<!-- vale Alkahest.Terminology = NO -->
-The vale and typst spellings are deliberate in this bounded quotation.
-<!-- vale Alkahest.Terminology = YES -->

@@ -1,8 +1,7 @@
-"""Check manuscript code points against the locale policy's primary font."""
+"""Check manuscript code points against the engine's primary font."""
 
 from __future__ import annotations
 
-import json
 import shutil
 import sys
 from pathlib import Path
@@ -10,7 +9,7 @@ from pathlib import Path
 from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parents[3]
-POLICY = ROOT / "config" / "localization" / "locales.json"
+FONT_FAMILY = "Libertinus Serif"
 SOURCE_SUFFIXES = {".bib", ".qmd", ".yaml", ".yml"}
 IGNORED_CODEPOINTS = {0x00A0, 0x202F}
 
@@ -54,17 +53,15 @@ def main():
         print("error: fc-list is required for glyph coverage checks", file=sys.stderr)
         return 1
     try:
-        policy = json.loads(POLICY.read_text(encoding="utf-8"))
-        family = policy.get("font_family")
-        if not isinstance(family, str) or not family.strip():
-            raise RuntimeError("localization policy needs a font_family")
         codepoints = manuscript_codepoints()
-        missing = [codepoint for codepoint in codepoints if family not in families_for(codepoint)]
-    except (OSError, json.JSONDecodeError, RuntimeError) as error:
+        missing = [
+            codepoint for codepoint in codepoints if FONT_FAMILY not in families_for(codepoint)
+        ]
+    except (OSError, RuntimeError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     for codepoint in missing:
-        print(f"error: U+{codepoint:04X} is not covered by {family}", file=sys.stderr)
+        print(f"error: U+{codepoint:04X} is not covered by {FONT_FAMILY}", file=sys.stderr)
     if missing:
         print(
             "add a locked, licensed locale font before publishing this manuscript",
@@ -73,7 +70,7 @@ def main():
         return 1
     print(
         "ok: manuscript glyphs are covered by the declared "
-        f"{family} family ({len(codepoints)} non-ASCII code points)"
+        f"{FONT_FAMILY} family ({len(codepoints)} non-ASCII code points)"
     )
     return 0
 

@@ -1,5 +1,0 @@
-reference,quantity,description,compatibility
-U1,1,74HC86 quad XOR gate,2 V to 6 V logic supply
-U2,1,74HC08 quad AND gate,2 V to 6 V logic supply
-C1-C2,2,100 nF ceramic capacitor,at least 10 V rating
-J1-J2,2,2-pin 2.54 mm header,standard breadboard pitch

@@ -42,23 +42,12 @@ local function relation_link(target)
   )
 end
 
-local function latex_page(anchor)
-  return pandoc.RawInline("latex", "\\pageref{" .. anchor .. "}")
-end
-
 local function typst_page(anchor)
   return pandoc.RawInline(
     "typst",
     "#link(<" .. anchor .. ">)[#context counter(page).at(<"
       .. anchor .. ">).first()]"
   )
-end
-
-local function print_page(anchor)
-  if quarto.doc.isFormat("latex") then
-    return latex_page(anchor)
-  end
-  return typst_page(anchor)
 end
 
 local function locator_inlines(entry)
@@ -84,8 +73,8 @@ local function locator_inlines(entry)
           ["aria-label"] = entry.term .. " reference " .. ordinal,
         })
       ))
-    elseif quarto.doc.isFormat("latex") or quarto.doc.isFormat("typst") then
-      table.insert(result, print_page(anchor))
+    elseif quarto.doc.isFormat("typst") then
+      table.insert(result, typst_page(anchor))
     else
       table.insert(result, pandoc.Code(locator.source .. "#" .. locator.marker))
     end
@@ -110,10 +99,10 @@ local function locator_inlines(entry)
         entry.term .. " range " .. ordinal .. " end",
         pandoc.Attr("", { "index-range-link", "index-range-end" })
       ))
-    elseif quarto.doc.isFormat("latex") or quarto.doc.isFormat("typst") then
-      table.insert(result, print_page(start_anchor))
+    elseif quarto.doc.isFormat("typst") then
+      table.insert(result, typst_page(start_anchor))
       table.insert(result, pandoc.Str("–"))
-      table.insert(result, print_page(end_anchor))
+      table.insert(result, typst_page(end_anchor))
     else
       table.insert(result, pandoc.Code(locator.source .. "#" .. locator.marker))
     end
@@ -123,9 +112,7 @@ end
 
 local function entry_blocks(entry, depth)
   local line = {}
-  if quarto.doc.isFormat("latex") and depth > 0 then
-    table.insert(line, pandoc.RawInline("latex", "\\hspace*{" .. depth .. "em}"))
-  elseif quarto.doc.isFormat("typst") and depth > 0 then
+  if quarto.doc.isFormat("typst") and depth > 0 then
     table.insert(line, pandoc.RawInline("typst", "#h(" .. depth .. "em)"))
   end
   table.insert(line, pandoc.Strong({

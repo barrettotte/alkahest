@@ -1,5 +1,0 @@
-# Lists and notation {.unnumbered #generated-lists}
-
-::: {.alkahest-generated-lists-placeholder}
-:::
-

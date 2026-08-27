@@ -18,7 +18,6 @@ make excerpt                         # Build the selected public excerpt.
 
 Run `make help` for the complete concise workflow. Build output is disposable
 and lives under `_build/`; open `_build/full/html/index.html` after `make draft`.
-Everything under `.alkahest/` is managed and should remain unchanged. This
-private development guide expects the parent repository's engine image to have
+This private development guide expects the parent repository's engine image to have
 been built once with `make bootstrap`; normal author commands need no host
 Python, uv, Quarto, or network access.

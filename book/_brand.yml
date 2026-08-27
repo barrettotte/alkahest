@@ -1,4 +1,4 @@
-# Generated from alkahest-theme-defaults.json and theme.json; do not edit.
+# Fixed engine theme shared by every Alkahest book.
 color:
   palette:
     ink: "#20262e"

@@ -4,7 +4,6 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
@@ -14,7 +13,6 @@ from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 FIXTURES = ROOT / "tests/writing"
-OVERRIDE_VALIDATOR = ("-m", "alkahest.checks.writing_overrides")
 TOOLCHAIN_LIBRARY = ROOT / "scripts/toolchain.sh"
 SOURCE_SUFFIXES = {".md", ".qmd"}
 
@@ -66,20 +64,20 @@ CASES = (
     },
     {
         "name": "shared rejected term",
-        "source": "negative/vale/rejected-shared.qmd",
+        "source": "negative/cspell/rejected-shared.qmd",
         "destination": "docs/rejected-shared.qmd",
-        "checker": "vale",
+        "checker": "cspell",
         "returncode": 1,
-        "required": ("Alkahest.Terminology", "Typst"),
+        "required": ("typst",),
         "forbidden": (),
     },
     {
         "name": "book rejected term",
-        "source": "negative/vale/rejected-book.qmd",
+        "source": "negative/cspell/rejected-book.qmd",
         "destination": "book/rejected-book.qmd",
-        "checker": "vale",
+        "checker": "cspell",
         "returncode": 1,
-        "required": ("AlkahestReferenceBook.Terminology", "Verilog"),
+        "required": ("verilog",),
         "forbidden": (),
     },
     {
@@ -110,7 +108,6 @@ def copy_environment(destination):
     destination.mkdir(parents=True)
     shutil.copy2(ROOT / "cspell.json", destination / "cspell.json")
     shutil.copy2(ROOT / ".vale.ini", destination / ".vale.ini")
-    shutil.copytree(ROOT / ".vale", destination / ".vale")
     shutil.copytree(ROOT / "config/writing", destination / "config/writing")
     (destination / "book/dictionaries").mkdir(parents=True)
     shutil.copy2(
@@ -227,19 +224,6 @@ def check_positive(parent, image, podman):
     if len(paths) != 4:
         fail(f"positive fixture inventory has {len(paths)} sources, expected 4")
 
-    try:
-        override_result = run_process(
-            [sys.executable, *OVERRIDE_VALIDATOR, "--root", str(root)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            encoding="utf-8",
-            timeout=20,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        fail("override validator exceeded the 20-second fixture runtime limit")
-    require_result("positive override policy", override_result, 0)
-
     for checker in ("cspell", "vale"):
         result = run_container(root, image, checker, paths, podman)
         require_result(f"positive {checker} fixtures", result, 0)
@@ -303,7 +287,7 @@ def main():
 
     print(
         "ok: writing-quality fixtures (4 positive sources; 8 negative/warning "
-        "cases; syntax, front matter, icons, terminology scopes, and overrides locked)"
+        "cases; syntax, front matter, icons, terminology, and overrides locked)"
     )
 
 

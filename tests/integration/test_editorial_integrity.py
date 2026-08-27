@@ -136,7 +136,7 @@ def main():
             lambda root: replace(
                 root / "chapter.qmd",
                 "# Editorial integrity fixture {#sec-fixture}",
-                "# Editorial integrity fixture {#sec-fixture}\n\n\\newpage{=latex}",
+                "# Editorial integrity fixture {#sec-fixture}\n\n#pagebreak(){=typst}",
             ),
         )
     print(

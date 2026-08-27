@@ -1,8 +1,0 @@
-# Private answers {.unnumbered #sec-private-learning-fixture}
-
-::: {#ans-fixture .answer-key data-for="rev-fixture"}
-::: {.callout-important}
-## Answer key
-It proves that every semantic relationship is checked.
-:::
-:::

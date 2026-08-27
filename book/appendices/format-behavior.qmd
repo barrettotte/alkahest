@@ -11,6 +11,6 @@ this is an intentional renderer limitation, not missing manuscript content.
 
 ## Print behavior {#sec-appendix-print-behavior}
 
-Typst and LuaLaTeX provide designed division openers. Exact line and page
+Typst provides designed division openers. Exact line and page
 breaks may differ, while hierarchy, wording, numbering, and trim-specific
 geometry remain equivalent.

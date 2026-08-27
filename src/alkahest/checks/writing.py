@@ -138,9 +138,7 @@ def check_prose(sources: list[str]) -> int:
 
 
 def check_writing(mode: str) -> int:
-    """Validate overrides and run the requested writing gates."""
-    run([sys.executable, "-m", "alkahest.generators.writing_terminology", "--check"])
-    run([sys.executable, "-m", "alkahest.checks.writing_overrides"])
+    """Run the requested writing gates."""
     sources = writing_sources(ROOT)
     if not sources:
         raise WritingError("no canonical writing sources found")

@@ -8,14 +8,12 @@ ALK := $(PODMAN) run --rm --pull=never --network=none \
 	--tmpfs /tmp:rw,size=2g,mode=1777 \
 	--env HOME=/tmp \
 	--env JAVA_TOOL_OPTIONS=-Duser.home=/tmp \
-	--env TEXMFCACHE=/tmp \
-	--env TEXMFVAR=/tmp \
 	--env XDG_CACHE_HOME=/tmp/cache \
 	--volume "$(CURDIR):/book:rw" \
 	--workdir /book \
 	$(IMAGE)
 
-.PHONY: help bootstrap chapter doctor draft check build build-all excerpt clean
+.PHONY: help bootstrap chapter doctor draft check build excerpt clean
 
 help: ## Show the writer workflow.
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -36,11 +34,8 @@ draft: ## Build the full HTML draft.
 check: ## Validate book.toml and compile disposable workspaces.
 	$(ALK) check
 
-build: ## Build full HTML, EPUB, and production Typst editions.
+build: ## Build full HTML, EPUB, and production Typst outputs.
 	$(ALK) build
-
-build-all: ## Also build the advanced LuaLaTeX edition.
-	$(ALK) build-all
 
 excerpt: ## Build the selected public HTML, EPUB, and Typst excerpt.
 	$(ALK) excerpt

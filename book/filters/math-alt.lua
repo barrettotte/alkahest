@@ -1,6 +1,13 @@
 -- Give annotated inline mathematics explicit alternatives in Typst PDF output.
 local class_name = "alkahest-math-alt"
 
+function Meta(metadata)
+  if FORMAT:match("typst") then
+    metadata.subject = metadata.description
+  end
+  return metadata
+end
+
 local function has_class(span)
   for _, value in ipairs(span.classes) do
     if value == class_name then
@@ -42,6 +49,6 @@ function Span(span)
     }
   end
 
-  -- HTML/EPUB retain native MathML and LuaLaTeX retains tagged native math.
+  -- HTML and EPUB retain native MathML.
   return span.content
 end

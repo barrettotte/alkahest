@@ -1,6 +1,6 @@
 # Add the book-facing command to the complete, rootless Alkahest runtime.
 # The public template will replace this local tag with a released GHCR digest.
-FROM localhost/alkahest-publishing:quarto-1.10.18-v20
+FROM localhost/alkahest-publishing:quarto-1.10.18-v22
 
 WORKDIR /book
 ENTRYPOINT ["/opt/alkahest/tools/bin/python", "/opt/alkahest/engine/scripts/author.py"]

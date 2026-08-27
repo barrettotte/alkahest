@@ -26,8 +26,8 @@ if ! podman image exists "${ALKAHEST_TOOLCHAIN_IMAGE}"; then
 fi
 
 # Map the invoking identity into the rootless container so bind-mounted outputs
-# retain normal host ownership. Ephemeral caches make undeclared dependencies
-# visible, while --network=none guarantees renders cannot download them.
+# retain normal host ownership, while --network=none guarantees renders cannot
+# download undeclared dependencies.
 exec podman run --rm \
   --pull=never \
   --network=none \
@@ -37,11 +37,7 @@ exec podman run --rm \
   --tmpfs /tmp:rw,size=2g,mode=1777 \
   --env HOME=/tmp \
   --env JAVA_TOOL_OPTIONS=-Duser.home=/tmp \
-  --env TEXMFCACHE=/tmp \
-  --env TEXMFVAR=/tmp \
   --env XDG_CACHE_HOME=/tmp/cache \
-  --env "SOURCE_DATE_EPOCH=${ALKAHEST_SOURCE_DATE_EPOCH}" \
-  --env FORCE_SOURCE_DATE=1 \
   --volume "${repo_root}:/workspace:rw" \
   --workdir /workspace \
   "${ALKAHEST_TOOLCHAIN_IMAGE}" \

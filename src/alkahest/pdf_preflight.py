@@ -7,8 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Never
 
-from defusedxml import ElementTree as ET
-
 from .process import run_process
 
 BOX_NAMES = ("MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox")
@@ -277,65 +275,6 @@ def validate_raster_images(
     return len(images)
 
 
-def validate_color_spaces(
-    output: str,
-    allowed_families: set[str],
-    allowed_icc_components: set[int],
-    permit_output_intent: bool,
-) -> set[str]:
-    """Validate veraPDF's complete document color-space feature inventory."""
-
-    try:
-        report = ET.fromstring(output)
-    except ET.ParseError as error:
-        fail(f"could not parse veraPDF feature report: {error}")
-    summary = report.find("./batchSummary")
-    feature_reports = report.find("./batchSummary/featureReports")
-    if (
-        summary is None
-        or summary.get("failedToParse") != "0"
-        or summary.get("encrypted") != "0"
-        or summary.get("veraExceptions") != "0"
-        or feature_reports is None
-        or feature_reports.get("failedJobs") != "0"
-        or feature_reports.text != "1"
-    ):
-        fail("veraPDF did not produce one successful feature report")
-
-    color_spaces = report.findall(".//featuresReport//colorSpace")
-    if not color_spaces:
-        fail("veraPDF did not report any document color spaces")
-    families: set[str] = set()
-    for color_space in color_spaces:
-        family = color_space.get("family")
-        if not family:
-            fail("veraPDF reported a color space without a family")
-        families.add(family)
-        if family not in allowed_families:
-            fail(f"document uses disallowed vector color-space family {family}")
-        if family == "ICCBased":
-            components_text = color_space.findtext("components")
-            if components_text is None:
-                fail("ICCBased color space does not report a component count")
-            try:
-                components = int(components_text)
-            except (TypeError, ValueError):
-                fail("ICCBased color space does not report a component count")
-            if components not in allowed_icc_components:
-                fail(
-                    f"ICCBased color space has {components} components; "
-                    "the current RGB/gray profile permits only "
-                    f"{sorted(allowed_icc_components)}"
-                )
-    output_intents = report.findall(".//featuresReport//outputIntent")
-    if output_intents and not permit_output_intent:
-        fail(
-            "document contains an output intent, but the generic RGB/gray "
-            "profiles forbid undeclared printer conversions"
-        )
-    return families
-
-
 def run_tool(command: list[str], allowed_stderr: set[str] | None = None) -> str:
     result = run_process(command, text=True, capture_output=True, check=False)
     if result.returncode:
@@ -347,7 +286,7 @@ def run_tool(command: list[str], allowed_stderr: set[str] | None = None) -> str:
     return result.stdout
 
 
-def inspect_pdf(path: Path, profile: dict, policy: dict) -> tuple[int, int, int, set[str]]:
+def inspect_pdf(path: Path, profile: dict, policy: dict) -> tuple[int, int, int]:
     """Run Poppler inspection for one configured artifact."""
 
     if not path.is_file():
@@ -386,23 +325,4 @@ def inspect_pdf(path: Path, profile: dict, policy: dict) -> tuple[int, int, int,
         float(policy["continuous_tone_minimum_ppi"]),
         float(policy["one_bit_minimum_ppi"]),
     )
-    color_report = run_tool(
-        [
-            "verapdf",
-            "--loglevel",
-            "1",
-            "--off",
-            "--extract",
-            "colorSpace,outputIntent",
-            "--format",
-            "xml",
-            str(path),
-        ]
-    )
-    color_families = validate_color_spaces(
-        color_report,
-        set(policy["allowed_vector_color_families"]),
-        {int(value) for value in policy["allowed_icc_components"]},
-        bool(policy["permit_output_intent"]),
-    )
-    return page_count, font_count, image_count, color_families
+    return page_count, font_count, image_count

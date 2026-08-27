@@ -2,7 +2,6 @@
 
 from alkahest.pdf_preflight import (
     PreflightError,
-    validate_color_spaces,
     validate_document_metadata,
     validate_fonts,
     validate_page_boxes,
@@ -45,18 +44,6 @@ IMAGES = """page   num  type   width height color comp bpc  enc interp  object I
 
 ALLOWED_COLORS = {("mono", 1), ("gray", 1), ("rgb", 3), ("icc", 3)}
 
-COLOR_REPORT = """<?xml version="1.0" encoding="utf-8"?>
-<report>
-  <jobs><job><featuresReport><documentResources><colorSpaces>
-    <colorSpace id="rgb" family="DeviceRGB" />
-    <colorSpace id="icc" family="ICCBased"><components>3</components></colorSpace>
-  </colorSpaces></documentResources></featuresReport></job></jobs>
-  <batchSummary failedToParse="0" encrypted="0" veraExceptions="0">
-    <featureReports failedJobs="0">1</featureReports>
-  </batchSummary>
-</report>
-"""
-
 
 def rejected(name, action, message):
     try:
@@ -92,12 +79,6 @@ def main():
         raise RuntimeError("valid font fixture returned the wrong row count")
     if validate_raster_images(IMAGES, ALLOWED_COLORS, 300, 600) != 2:
         raise RuntimeError("valid image fixture returned the wrong row count")
-    if validate_color_spaces(COLOR_REPORT, {"DeviceRGB", "ICCBased"}, {1, 3}, False) != {
-        "DeviceRGB",
-        "ICCBased",
-    }:
-        raise RuntimeError("valid color-space fixture returned the wrong families")
-
     cases = [
         (
             "encrypted",
@@ -180,43 +161,10 @@ def main():
             ),
             "disallowed color model cmyk/4",
         ),
-        (
-            "vector-cmyk",
-            lambda: validate_color_spaces(
-                COLOR_REPORT.replace("DeviceRGB", "DeviceCMYK"),
-                {"DeviceRGB", "ICCBased"},
-                {1, 3},
-                False,
-            ),
-            "disallowed vector color-space family DeviceCMYK",
-        ),
-        (
-            "icc-cmyk",
-            lambda: validate_color_spaces(
-                COLOR_REPORT.replace("<components>3", "<components>4"),
-                {"DeviceRGB", "ICCBased"},
-                {1, 3},
-                False,
-            ),
-            "has 4 components",
-        ),
-        (
-            "undeclared-output-intent",
-            lambda: validate_color_spaces(
-                COLOR_REPORT.replace(
-                    "</documentResources>",
-                    "<outputIntents><outputIntent /></outputIntents></documentResources>",
-                ),
-                {"DeviceRGB", "ICCBased"},
-                {1, 3},
-                False,
-            ),
-            "contains an output intent",
-        ),
     ]
     for name, action, message in cases:
         rejected(name, action, message)
-    print(f"ok: PDF preflight fixtures ({len(cases) + 5} cases)")
+    print(f"ok: PDF preflight fixtures ({len(cases) + 4} cases)")
 
 
 def test_contract():

@@ -6,7 +6,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
-.verapdf/
 node_modules/
 .coverage
 htmlcov/
@@ -17,13 +16,10 @@ Thumbs.db
 *~
 
 book/_build/
-book/icons/*.pdf
 book/*.html
 book/*.epub
 book/*.pdf
-book/*.tex
 book/*.typ
-book/*.log
 book/*_files/
 book/site_libs/
 book/theme/fonts/

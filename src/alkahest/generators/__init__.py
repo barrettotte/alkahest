@@ -1,1 +1,0 @@
-"""Deterministic publication asset generators."""

@@ -35,8 +35,8 @@ $$
 V = I R
 $$ {#eq-ohms-law}
 
-Refer to it as @eq-ohms-law. Prefer standard LaTeX mathematics that Pandoc can
-carry consistently into MathML, Typst, and LuaLaTeX.
+Refer to it as @eq-ohms-law. Prefer standard Pandoc mathematics that can be
+carried consistently into MathML and Typst.
 
 ## Tables
 
@@ -79,8 +79,6 @@ Add BibTeX or BibLaTeX records to `references.bib`, cite them with a key such as
 `[@quarto-guide]`, and leave `manuscript/references.qmd` as the single generated
 bibliography location. The default citation style is Chicago author-date.
 
-Semantic icons, glossary terms, indexes, reusable notices, rich media, learning
-components, notes, and companion downloads are available when a book needs
-them. They use optional book-owned registries rather than extra fields in
-`book.toml`; start with ordinary Markdown and add those systems only for a real
+Semantic icons, glossary terms, and indexes are available when a book needs
+them. Start with ordinary Markdown and add those systems only for a real
 editorial need.

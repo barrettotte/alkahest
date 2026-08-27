@@ -1,16 +1,10 @@
 project:
   output-dir: _build/epub
 
-# Pandoc otherwise creates a fresh UUID on every render. This stable identifier
-# names only the reference specimen; a real publication replaces it through
-# the canonical metadata profile.
-identifier: "urn:uuid:f6757ec7-8201-46d2-8cda-584f28f8d8d8"
-
 format:
   epub:
     css:
       - theme/alkahest-epub.css
-      - generated/theme-overrides.css
     epub-fonts:
       - theme/fonts/LibertinusSerif-Regular.woff2
       - theme/fonts/LibertinusSerif-Italic.woff2

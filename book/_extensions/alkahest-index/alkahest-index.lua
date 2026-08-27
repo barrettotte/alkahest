@@ -57,12 +57,7 @@ return {
       attributes["data-index-range"] = range_edge
     end
 
-    if quarto.doc.isFormat("latex") then
-      return pandoc.Span(
-        { pandoc.RawInline("latex", "\\label{" .. identifier .. "}") },
-        pandoc.Attr("", { "index-marker" }, attributes)
-      )
-    elseif quarto.doc.isFormat("typst") then
+    if quarto.doc.isFormat("typst") then
       return pandoc.Span(
         { pandoc.RawInline("typst", "#box(width: 0pt)[] <" .. identifier .. ">") },
         pandoc.Attr("", { "index-marker" }, attributes)

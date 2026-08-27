@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-ROOT_DOCUMENTS = ("README.md", "ROADMAP.md")
+ROOT_DOCUMENTS = ("README.md",)
 SOURCE_TREES = {
     "book": {".md", ".qmd"},
     "docs": {".md"},

@@ -2,9 +2,6 @@ project:
   output-dir: _build/html
   resources:
     - theme/fonts/licenses
-    # Rich playback stays a web enhancement. EPUB and PDF receive registered
-    # SVG, description, and transcript fallbacks from the shortcode instead.
-    - "media/**"
 
 # Quarto 1.10.18 duplicates color-scheme link IDs when auto-applying Brand to a
 # book. The Sass adapter consumes the same visible tokens until that is fixed.
@@ -19,6 +16,4 @@ format:
     # Native MathML keeps the web book semantic and independent of a CDN.
     html-math-method: mathml
     theme: theme/alkahest.scss
-    css:
-      - theme/alkahest-fonts.css
-      - generated/theme-overrides.css
+    css: theme/alkahest-fonts.css

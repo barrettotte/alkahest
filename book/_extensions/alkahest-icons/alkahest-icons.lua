@@ -53,11 +53,6 @@ return {
       end
     end
 
-    local asset = entry.asset
-    if quarto.doc.isFormat("latex") then
-      asset = asset:gsub("%.svg$", ".pdf")
-    end
-
     -- Reflowable editions always require equivalent visible text, so hiding the
     -- span avoids a duplicate screen-reader announcement. The image alternative
     -- remains intact for format conversion and PDF metadata.
@@ -65,7 +60,7 @@ return {
 
     local image = pandoc.Image(
       { pandoc.Str(label) },
-      asset,
+      entry.asset,
       label,
       pandoc.Attr("", { "semantic-icon-image" }, {
         width = "1em",

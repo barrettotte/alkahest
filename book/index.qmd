@@ -1,8 +1,5 @@
 # Preface {.unnumbered #sec-preface}
 
-::: {.alkahest-preview-placeholder}
-:::
-
 This deliberately small book is an executable specification for Alkahest. Each
 example exists to expose formatting or conversion problems before a real
 manuscript depends on the template.
@@ -12,18 +9,6 @@ vary its identity later, but shared typography, hierarchy, color roles, and
 component behavior remain testable here.
 
 ::: {.content-visible when-format="html"}
-## Publication data {.unnumbered .unlisted #sec-publication-data}
-
-- **Edition:** {{< meta alkahest.edition >}}
-- **Publisher:** {{< meta alkahest.publisher >}}
-- **Copyright:** © {{< meta alkahest.copyright-year >}}
-  {{< meta alkahest.copyright-holder >}}
-- **Rights:** {{< meta alkahest.rights-statement >}}
-- **Identifier:** {{< meta alkahest.identifier >}}
-
-These visible placeholders prove that reflowable editions receive the same
-metadata as the print templates without implying that the specimen is released.
-
 ## Dedication {.unnumbered .unlisted #sec-dedication}
 
 *{{< meta dedication >}}*

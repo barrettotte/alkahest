@@ -50,7 +50,7 @@ LINK_PATTERN = re.compile(
     r"(?:\s+(?:\"[^\"\n]*\"|'[^'\n]*'))?\s*\)"
 )
 INLINE_MATH_PATTERN = re.compile(r"(?<![$\\])\$(?!\$)(?:\\.|[^$\\\n])+(?<!\\)\$(?!\$)")
-RAW_BACKEND_PATTERN = re.compile(r"\{=(?:latex|typst)\}|```\{(?:latex|typst)\}")
+RAW_BACKEND_PATTERN = re.compile(r"\{=typst\}|```\{typst\}")
 
 
 def fail(errors):

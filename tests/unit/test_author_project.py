@@ -1,4 +1,4 @@
-"""Unit tests for the minimal generated-book author workflow."""
+"""Unit tests for the minimal author workflow."""
 
 from types import SimpleNamespace
 
@@ -9,13 +9,12 @@ from alkahest import author_project
 
 def render_context(monkeypatch, tmp_path):
     root = tmp_path / "book"
-    stage = root / ".work" / "full"
+    stage = root / "_build" / ".work" / "full"
     stage.mkdir(parents=True)
-    monkeypatch.setenv("QUARTO", "/test/quarto")
     monkeypatch.setattr(
         author_project,
         "compile_workspace",
-        lambda *_arguments: {"stage": stage, "config": {"book": {"created": "2026-08-23"}}},
+        lambda *_arguments: {"stage": stage, "config": {}},
     )
     return root, stage
 

@@ -1,4 +1,0 @@
-# Back matter
-
-::: {.alkahest-book-notes-placeholder}
-:::

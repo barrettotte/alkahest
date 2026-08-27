@@ -28,7 +28,6 @@ def parse_arguments():
     chapter.add_argument("title")
     commands.add_parser("draft", help="build the full HTML draft")
     commands.add_parser("build", help="build HTML, EPUB, and production Typst")
-    commands.add_parser("build-all", help="also build the secondary LuaLaTeX PDF")
     commands.add_parser("excerpt", help="build the public HTML, EPUB, and Typst excerpt")
     commands.add_parser("clean", help="remove disposable build output")
     return parser.parse_args()
@@ -48,16 +47,12 @@ def engine_root(book_root):
         prefix=".development-engine.", dir=development_root
     ) as temporary:
         engine = Path(temporary)
-        for directory in ("_extensions", "filters", "latex", "theme", "typst"):
+        for directory in ("_extensions", "filters", "icons", "theme", "typst"):
             (engine / directory).symlink_to(source_root / directory, target_is_directory=True)
         defaults = engine / "defaults"
         defaults.mkdir()
-        for source, destination in (
-            ("alkahest-defaults.yml", "quarto.yml"),
-            ("alkahest-theme-defaults.json", "theme.json"),
-            ("alkahest-release-defaults.json", "releases.json"),
-        ):
-            (defaults / destination).symlink_to(source_root / source)
+        (defaults / "quarto.yml").symlink_to(source_root / "alkahest-defaults.yml")
+        (engine / "_brand.yml").symlink_to(source_root / "_brand.yml")
         yield engine
 
 
@@ -84,8 +79,6 @@ def main():
             render(root, engine, "full", ["html"])
         elif arguments.command == "build":
             render(root, engine, "full", ["html", "epub", "typst"])
-        elif arguments.command == "build-all":
-            render(root, engine, "full", ["html", "epub", "typst", "latex"])
         elif arguments.command == "excerpt":
             render(root, engine, "excerpt", ["html", "epub", "typst"])
         elif arguments.command == "clean":

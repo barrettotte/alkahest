@@ -109,8 +109,8 @@ is [$u$]{.alkahest-math-alt alt="the upper bound u"}. Each result belongs to
 ## Authoring boundary {#sec-math-boundary}
 
 The supported baseline is portable TeX notation that Pandoc can translate to
-native MathML, Typst mathematics, and LuaLaTeX. Raw MathJax, raw Typst, and raw
-LaTeX are reserved for an explicitly documented output-specific fallback.
+native MathML and Typst mathematics. Raw MathJax and raw Typst are reserved for
+an explicitly documented output-specific fallback.
 Equation numbers and theorem numbers are generated; authors never type them.
 
 Displayed equations and annotated inline-math spans carry meaningful natural-

@@ -56,7 +56,7 @@ you expect to reference.
 
 ## Keep the source portable
 
-Use semantic Markdown before raw HTML, Typst, or LaTeX. A few dependable forms
+Use semantic Markdown before raw HTML or Typst. A few dependable forms
 cover most prose:
 
 - `**bold**` for strong importance and `*italic*` for emphasis;

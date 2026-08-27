@@ -56,6 +56,6 @@ in the generated first-use page references.
 The back-matter placeholder builds the book's glossary once from the registry.
 Entries sort by their displayed term and retain stable ID-derived anchors.
 HTML and EPUB term references link to those entries and expose the definition as
-supplementary hover text. Typst and LuaLaTeX glossary entries report the page of
+supplementary hover text. Typst glossary entries report the page of
 the explicit first-use marker, so pagination is calculated by each print engine
 rather than copied into source.

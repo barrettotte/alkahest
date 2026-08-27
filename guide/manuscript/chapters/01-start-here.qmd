@@ -50,7 +50,7 @@ loop. Open `_build/full/html/index.html` in a browser. A successful build prints
 only the format being rendered and the output location; renderer diagnostics
 remain visible when something fails.
 
-Use `make help` whenever you forget a command. The generated Makefile is the
+Use `make help` whenever you forget a command. The book Makefile is the
 complete routine interface, not a small sample of a larger command list.
 
 ::: {.callout-important}

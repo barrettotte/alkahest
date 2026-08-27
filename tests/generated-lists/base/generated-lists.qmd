@@ -1,5 +1,0 @@
-# Lists {.unnumbered}
-
-::: {.alkahest-generated-lists-placeholder}
-:::
-

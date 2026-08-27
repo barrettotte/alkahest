@@ -4,6 +4,8 @@
 .pytest_cache
 .ruff_cache
 .uv-cache
+.coverage
+ROADMAP.md
 **/__pycache__
 **/*.pyc
 **/node_modules

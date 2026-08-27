@@ -1,3 +1,0 @@
-# Compose this profile with any output profile when a book needs numbered
-# citations, for example: --profile citation-numeric,html.
-csl: citations/ieee.csl

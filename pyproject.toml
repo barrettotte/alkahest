@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.13,<3.14"
 license = "MIT"
 dependencies = [
-  "defusedxml>=0.7.1,<0.8",
   "pyyaml>=6.0,<7",
 ]
 
@@ -25,15 +24,10 @@ test = [
 quality = [
   "mypy>=1.18,<2",
   "ruff>=0.16,<0.17",
-  "types-defusedxml>=0.7,<0.8",
   "types-pyyaml>=6.0,<7",
 ]
 security = [
   "pip-audit>=2.10,<3",
-]
-diagrams = [
-  "rdkit==2026.3.5",
-  "schemdraw==0.23",
 ]
 dev = [
   { include-group = "test" },
@@ -46,9 +40,6 @@ cache-dir = ".uv-cache"
 default-groups = ["dev"]
 exclude-newer = "2026-08-19T23:59:59Z"
 
-[tool.uv.dependency-groups]
-diagrams = { requires-python = "==3.13.*" }
-
 [tool.pytest.ini_options]
 addopts = ["-ra", "--strict-config", "--strict-markers"]
 testpaths = ["tests"]
@@ -57,6 +48,7 @@ markers = ["locked: requires the pinned container or browser toolchain"]
 [tool.coverage.run]
 branch = true
 source = ["alkahest"]
+patch = ["subprocess"]
 
 [tool.coverage.report]
 show_missing = true

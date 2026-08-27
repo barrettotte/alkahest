@@ -1,5 +1,4 @@
-# Author-owned book facts. Everything under .alkahest/ is managed.
-schema_version = 2
+# Author-owned book facts.
 
 [book]
 title = "Writing Books with Alkahest"
@@ -11,10 +10,3 @@ description = "A task-oriented guide to writing, checking, and publishing books 
 [excerpt]
 chapters = ["01-start-here.qmd", "02-write-and-organize.qmd"]
 message = "This excerpt teaches the essential Alkahest writing workflow; the full guide covers technical content, production builds, and public excerpts."
-
-# Optional design overrides:
-# [theme.colors]
-# primary = "#334155"
-# accent = "#9a4f12"
-# [theme.typography]
-# display = "Libertinus Serif Display"

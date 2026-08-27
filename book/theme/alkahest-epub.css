@@ -172,35 +172,6 @@ body {
   font-kerning: normal;
 }
 
-/* Reflowable readers receive a conservative preview mark rather than a fixed
-   overlay, followed by the same semantic notice used by the web edition. */
-.alkahest-preview-watermark {
-  margin: 1.5em 0 0.8em;
-  color: #5f6b7c;
-  font-family: "Libertinus Sans", sans-serif;
-  font-size: 1.25em;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-align: center;
-}
-
-.alkahest-preview-notice {
-  margin: 0 0 1.5em;
-  padding: 0.8em 0.9em;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-left: 0.25em solid #9a4f12;
-}
-
-.alkahest-preview-notice p {
-  margin: 0 0 0.65em;
-  text-indent: 0;
-}
-
-.alkahest-preview-notice p:last-child {
-  margin-bottom: 0;
-}
-
 :lang(en),
 :lang(fr),
 :lang(de),
@@ -417,58 +388,6 @@ span[id^="eq-"] {
   border-left-color: #5f6b7c;
 }
 
-.learning-objectives,
-.learning-prerequisites,
-.learning-plan,
-.learning-summary,
-.review-question,
-.question-hint,
-.answer-key {
-  margin: 1.1em 0;
-}
-
-.learning-plan .callout-body p,
-.answer-key .callout-body p {
-  text-indent: 0;
-}
-
-.question-hint {
-  margin-left: 1em;
-}
-
-.answer-key {
-  border-left: 0.2em solid #9a5b35;
-}
-
-.companion-reference {
-  display: block;
-  margin: 1em 0;
-  padding: 0.8em 0.9em;
-  background: #f4efe6;
-  border-left: 0.2em solid #9a5b35;
-  overflow-wrap: anywhere;
-}
-
-.table-note {
-  display: block;
-  margin-top: -0.5em;
-  color: #5f6b7c;
-  font-size: 0.86em;
-}
-
-h4.table-title {
-  display: block;
-  margin: 1.2em 0 0.35em;
-  color: #334155;
-  font-family: "Libertinus Sans", sans-serif;
-  font-weight: 700;
-  text-align: center;
-}
-
-#test-sequence-table > table th:first-child {
-  white-space: nowrap;
-}
-
 .semantic-icon {
   display: inline-block;
   width: 1em;
@@ -516,27 +435,6 @@ h4.table-title {
   font-size: 0.88em;
 }
 
-.generated-reference-lists {
-  margin: 1.4em 0;
-}
-
-.generated-list-entry {
-  margin: 0 0 0.35em;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.generated-list-entry p {
-  margin: 0;
-  text-indent: 0;
-}
-
-.generated-list-acronym-link,
-.generated-list-term-entry p > strong {
-  color: #334155;
-  font-family: "Libertinus Sans", sans-serif;
-}
-
 .icon-notice .callout-title .semantic-icon {
   width: 0.95em;
   height: 0.95em;
@@ -554,66 +452,6 @@ h4.table-title {
   overflow-wrap: anywhere;
 }
 
-.callout.optional-material-block,
-.optional-material-block > .callout {
-  border-left-color: #5f6b7c;
-}
-
-.reusable-content {
-  margin-block: 1em;
-  padding: 0.7em 0.9em;
-  border: 1px solid #cbd5e1;
-  border-left: 0.22em solid #334155;
-  background: #f1f5f9;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.reusable-content > :last-child {
-  margin-bottom: 0;
-}
-
-.reuse-kind-legal {
-  border-left-color: #9a4f12;
-}
-
-.project-block > .callout {
-  border-left-color: #334155;
-}
-
-.lab-block > .callout {
-  border-left-color: #a15c38;
-}
-
-/* EPUB keeps margin notes and instructional callouts inline in source order. */
-.callout.margin-note,
-.callout.project-block,
-.callout.lab-block {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.figure-full-width {
-  width: 100%;
-  max-width: 100%;
-}
-
-.figure-source {
-  display: block;
-  margin-top: 0.2em;
-  color: #5f6b7c;
-  font-size: 0.88em;
-}
-
-.diagram-description {
-  display: block;
-  margin: 0.4em 0 1em;
-  padding-left: 0.75em;
-  border-left: 0.2em solid #c5cbd3;
-  color: #5f6b7c;
-  font-size: 0.9em;
-}
-
 img,
 svg {
   max-width: 100%;
@@ -623,24 +461,6 @@ svg {
 nav#toc a,
 nav#landmarks a {
   text-decoration: none;
-}
-
-.book-endnote-reference {
-  white-space: nowrap;
-}
-
-.generated-book-notes > ol {
-  padding-inline-start: 1.6em;
-}
-
-.book-endnote {
-  margin-block-end: 0.9em;
-}
-
-.book-endnote-backlink {
-  color: #5f6b7c;
-  font-family: "Libertinus Sans", sans-serif;
-  font-size: 0.9em;
 }
 
 .index-marker {

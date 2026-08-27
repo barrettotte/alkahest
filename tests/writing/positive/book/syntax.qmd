@@ -1,6 +1,6 @@
 ---
 title: "Syntax exclusion fixture"
-structuralkeymisspellng: typst
+structuralkeymisspellng: Typst
 description: "Reader-facing metadata remains correctly spelled."
 ---
 
@@ -32,11 +32,11 @@ bracketmathmisspellng + typst = 3
 
 Citation syntax includes [@citationkeymisspellng] and narrative @secondcitationmisspellng.
 
-```{=latex}
-\rawbackendmisspellng{typst}
+```{=typst}
+#rawbackendmisspellng[typst]
 ```
 
-Raw inline markup is `\inlinebackendmisspellng{typst}`{=latex}.
+Raw inline markup is `#inlinebackendmisspellng[typst]`{=typst}.
 
 [Correct visible attribute text]{.attributeclassmisspellng attributekeymisspellng="structural-value"}
 

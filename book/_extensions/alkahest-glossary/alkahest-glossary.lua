@@ -128,12 +128,6 @@ return {
     local content = { pandoc.Str(display) }
     if form == "first" or form == "first-plural" then
       identifier = first_use_anchor(entry)
-      if quarto.doc.isFormat("latex") then
-        table.insert(content, 1, pandoc.RawInline(
-          "latex",
-          "\\label{" .. identifier .. "}"
-        ))
-      end
     end
     local reference = pandoc.Span(
       content,

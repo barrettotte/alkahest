@@ -41,40 +41,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-// Preview labeling is injected from profile metadata into the shared preface.
-// The decorative watermark is ignored by assistive technology; the adjacent
-// notice carries the same information as ordinary text.
-.alkahest-preview-notice {
-  position: relative;
-  z-index: 1;
-  margin-block: 1.25rem 2rem;
-  padding: 1rem 1.15rem;
-  background: rgba($alkahest-mist, 0.94);
-  border: 1px solid $alkahest-line;
-  border-inline-start: 0.28rem solid $alkahest-copper;
-  border-radius: 0.2rem;
-}
-
-.alkahest-preview-notice > :last-child {
-  margin-bottom: 0;
-}
-
-.alkahest-preview-watermark {
-  position: fixed;
-  z-index: 0;
-  inset-block-start: 48%;
-  inset-inline-start: 50%;
-  color: rgba($alkahest-slate, 0.075);
-  font-family: "Libertinus Sans", system-ui, sans-serif;
-  font-size: clamp(3.5rem, 12vw, 8rem);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  pointer-events: none;
-  transform: translate(-50%, -50%) rotate(-32deg);
-  user-select: none;
-  white-space: nowrap;
-}
-
 p {
   orphans: 2;
   widows: 2;
@@ -368,66 +334,6 @@ span[id^="eq-"] {
   border-left-color: $alkahest-muted;
 }
 
-// Learning roles retain native callout semantics; these restrained accents
-// make the repeated editorial categories scannable without relying on color.
-.learning-objectives,
-.learning-prerequisites,
-.learning-plan,
-.learning-summary,
-.review-question,
-.question-hint,
-.answer-key {
-  margin-block: 1.15rem;
-}
-
-.learning-plan .callout-body > p,
-.answer-key .callout-body > p {
-  text-indent: 0;
-}
-
-.question-hint {
-  margin-inline-start: 1rem;
-}
-
-.answer-key {
-  border-inline-start: 0.22rem solid $alkahest-copper;
-}
-
-// Companion records remain legible as complete metadata cards while their
-// HTML titles provide the progressive enhancement of a direct download.
-.companion-reference {
-  display: block;
-  margin-block: 1rem;
-  padding: 0.85rem 1rem;
-  background: rgba($alkahest-paper, 0.65);
-  border-inline-start: 0.22rem solid $alkahest-copper;
-  overflow-wrap: anywhere;
-}
-
-.companion-download {
-  font-family: "Libertinus Sans", system-ui, sans-serif;
-}
-
-.table-note {
-  display: block;
-  margin-top: -0.55rem;
-  color: $alkahest-muted;
-  font-size: 0.88rem;
-}
-
-h4.table-title {
-  display: block;
-  margin: 1.25rem 0 0.35rem;
-  color: $alkahest-slate;
-  font-family: "Libertinus Sans", system-ui, sans-serif;
-  font-weight: 700;
-  text-align: center;
-}
-
-#test-sequence-table > table th:first-child {
-  white-space: nowrap;
-}
-
 .semantic-icon {
   display: inline-block;
   width: 1em;
@@ -474,27 +380,6 @@ h4.table-title {
   font-size: 0.88em;
 }
 
-// Generated lists share a compact entry rhythm while retaining native Quarto
-// cross-reference links and math, so numbers never drift between backends.
-.generated-reference-lists {
-  margin-block: 1.5rem;
-}
-
-.generated-list-entry {
-  margin-block: 0 0.35rem;
-  break-inside: avoid-page;
-}
-
-.generated-list-entry > p {
-  margin: 0;
-}
-
-.generated-list-acronym-link,
-.generated-list-term-entry > p > strong {
-  color: $alkahest-slate;
-  font-family: "Libertinus Sans", system-ui, sans-serif;
-}
-
 // Notice titles reuse the inline registry rather than Quarto's unrelated
 // backend icons. A little trailing space separates the symbol from its label.
 .callout.icon-notice .callout-title-container .semantic-icon {
@@ -519,121 +404,6 @@ h4.table-title {
     min-width: 0;
     overflow-wrap: anywhere;
   }
-}
-
-.callout.project-block,
-.callout.lab-block,
-.callout.margin-note {
-  break-inside: avoid-page;
-}
-
-.callout.project-block {
-  border-left-color: $alkahest-slate;
-}
-
-.callout.lab-block {
-  border-left-color: $alkahest-copper;
-}
-
-.callout.optional-material-block {
-  border-left-color: $alkahest-muted;
-}
-
-// Reused prose remains visibly part of the reading flow while its stable
-// boundary stays apparent to authors and reviewers.
-.reusable-content {
-  margin-block: 1rem;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid $alkahest-line;
-  border-left: 0.22rem solid $alkahest-slate;
-  background: $alkahest-mist;
-  break-inside: avoid-page;
-}
-
-.reusable-content > :last-child {
-  margin-bottom: 0;
-}
-
-.reuse-kind-legal {
-  border-left-color: $alkahest-copper;
-}
-
-// Preserve source order and a readable fallback everywhere. On roomy web
-// layouts the note becomes a compact inset beside the paragraph that owns it.
-@media (min-width: 1200px) {
-  .callout.margin-note {
-    float: inline-end;
-    width: min(17rem, 44%);
-    margin: 0.25rem 0 1rem 1.25rem;
-  }
-}
-
-// A full-width figure may use the safe gutter beside the prose measure on roomy
-// screens. Keeping its start edge fixed prevents a navigation rail from clipping
-// the caption; narrow layouts retain the ordinary content width.
-#quarto-content .figure-full-width {
-  width: 100%;
-
-  @media (min-width: 992px) {
-    width: calc(100% + 1rem);
-    max-width: calc(100vw - 2rem);
-  }
-}
-
-.figure-source {
-  display: block;
-  margin-top: 0.2rem;
-  color: $alkahest-muted;
-  font-size: 0.88em;
-}
-
-.diagram-description {
-  display: block;
-  margin: 0.4rem 0 1rem;
-  padding-left: 0.75rem;
-  border-left: 0.2rem solid $alkahest-line;
-  color: $alkahest-muted;
-  font-size: 0.9em;
-}
-
-.rich-media {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border: 1px solid $alkahest-line;
-  border-radius: 0.25rem;
-  background: $alkahest-paper;
-}
-
-.rich-media-player {
-  display: block;
-  width: min(100%, 42rem);
-  margin: 0.75rem auto;
-}
-
-.rich-media-audio {
-  min-height: 3.25rem;
-}
-
-.rich-media-video {
-  aspect-ratio: 16 / 9;
-  background: $alkahest-ink;
-}
-
-iframe.rich-media-player {
-  min-height: 25rem;
-  border: 1px solid $alkahest-line;
-  background: $alkahest-paper;
-}
-
-.rich-media-transcript {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  border-left: 0.2rem solid $alkahest-line;
-  background: rgba($alkahest-line, 0.18);
-}
-
-.rich-media-transcript > :last-child {
-  margin-bottom: 0;
 }
 
 .index-marker {

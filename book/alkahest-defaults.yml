@@ -6,7 +6,10 @@ execute:
   freeze: false
 
 crossrefs-hover: true
-babel-otherlangs: []
+accessibilitySummary: >-
+  This publication includes structured navigation and alternative text where
+  supplied by the author. Automated accessibility checks are part of the build;
+  no formal accessibility conformance claim is made.
 
 toc: true
 toc-title: "Contents"
@@ -16,17 +19,9 @@ number-depth: 3
 crossref:
   chapters: true
 
-alkahest:
-  notes:
-    placement: footnotes
-
 filters:
-  - _extensions/alkahest-notes/alkahest-notes-filter.lua
   - _extensions/alkahest-glossary/alkahest-glossary-filter.lua
   - _extensions/alkahest-index/alkahest-index-filter.lua
-  - _extensions/alkahest-generated-lists/alkahest-generated-lists.lua
-  - filters/preview.lua
-  - filters/pdf-metadata.lua
   - filters/math-alt.lua
   - at: post-render
     path: filters/strip-invalid-alt.lua

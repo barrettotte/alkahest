@@ -32,8 +32,8 @@ components rather than used as a substitute for reorganizing a chapter.
 
 The reference language comes from the active locale and uses unabbreviated
 labels. For example, @sec-heading-hierarchy and @sec-numbered-subsection are
-section references; @fig-half-adder, @tbl-half-adder, @eq-ohms-law, and
-@lst-half-adder exercise the figure, table, equation, and listing labels.
+section references; @tbl-half-adder, @eq-ohms-law, and @lst-half-adder exercise
+the table, equation, and listing labels.
 
 ## Links, emphasis, and notes {#sec-links-emphasis-notes}
 
@@ -42,10 +42,10 @@ Alkahest is developed as a collection of plain-text sources. The
 @sec-equations is an internal cross-reference. This sentence has a footnote
 that must remain navigable in reflowable output.[^page-geometry] A later
 sentence deliberately reuses the same semantic note so each placement policy
-must apply its documented repeat behavior.[^page-geometry]
+must preserve a consistent target.[^page-geometry]
 
-[^page-geometry]: [A useful footnote should not depend on the geometry of a
-    printed page.]{#note-page-geometry .alkahest-note}
+[^page-geometry]: A useful footnote should not depend on the geometry of a
+    printed page.
 
 ## Paragraph rhythm {#sec-paragraph-rhythm}
 
@@ -58,8 +58,8 @@ space. This conventional book treatment keeps related prose together and
 avoids turning a page of short technical paragraphs into disconnected blocks.
 
 A third consecutive paragraph makes accidental one-off behavior visible. The
-PDF backends should agree on the treatment even when their exact line breaks
-differ, while HTML and EPUB retain their reflowable medium-appropriate styles.
+Typst provides the designed print treatment, while HTML and EPUB retain their
+reflowable medium-appropriate styles.
 The selected text faces must also provide *real italics*, **real bold**, and
 ***bold italic*** alongside punctuation such as “curly quotes,” en dashes,
 em dashes, and ellipses… without synthetic styling or fallback.
@@ -105,17 +105,6 @@ The code face must keep commonly confused characters distinct:
 
 {{< alk-index book-design id=reference-tour range=end >}}
 
-## Diagrams and figures {#sec-diagrams-and-figures}
-
-@fig-half-adder is a text-authored diagram. Later specimens will add proper
-logic symbols, timing diagrams, electrical schematics, plots, and chemical
-structures.
-
-![The information flow through a half-adder.](figures/generated/half-adder-gates.svg){#fig-half-adder fig-alt="Inputs A and B each feed two gates: XOR produces Sum, while AND produces Carry." width="90%"}
-
-[Diagram description: Inputs A and B each feed two gates: XOR produces Sum,
-while AND produces Carry.]{.diagram-description}
-
 ## Tables {#sec-reference-tables}
 
 | A | B | Sum | Carry |
@@ -131,23 +120,11 @@ while AND produces Carry.]{.diagram-description}
 
 ## Book divisions {#sec-book-divisions}
 
-The title, publication-data, and dedication treatments draw from one shared
-metadata record. This chapter belongs to a named part, and
+The title and dedication treatments draw from the book configuration. This
+chapter belongs to a named part, and
 @sec-page-system-checklist exercises an independently addressable appendix.
 
-::: {.content-visible unless-profile="edition-preview"}
-The full-family editions also retain @sec-format-behavior and
-@sec-language-and-script without hard-coded letters.
-:::
+The full book also retains @sec-format-behavior without hard-coded letters.
 
 A chapter-to-appendix route reaches @sec-appendix-numbering and its
 @fig-appendix-signal without hard-coding either destination's displayed number.
-
-## Deliberately pending specimens {#sec-pending-specimens}
-
-The following features require a tool choice or design decision and are tracked
-in the roadmap rather than represented by a misleading placeholder:
-
-- chemical formulae, reactions, and 2D molecular structures;
-- publication-quality electrical circuits and logic diagrams;
-- data-driven graphs with accessible descriptions.

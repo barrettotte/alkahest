@@ -6,11 +6,9 @@ entry, and alphabetic numbering visible in every applicable output.
 ## Required opening pages {#sec-required-opening-pages}
 
 - The title uses book metadata rather than manuscript-only wording.
-- Publication data remains a conspicuous placeholder until an edition supplies
-  verified rights and identifier records.
 - The optional dedication has no heading or folio in print.
-- Parts, chapters, and appendices begin on recto pages in print profiles.
-- The reserved verso after the dedication contains no text or page furniture.
+- Part and appendix divisions begin on new pages; chapters flow naturally.
+- The contents follows the opening pages without inserting artificial blanks.
 - Long headings wrap inside the live area and remain with following prose.
 - Split paragraphs retain at least two lines on each side of a page boundary.
 

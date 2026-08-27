@@ -1,5 +1,0 @@
-# Components
-
-One reference.[^source-order]
-
-[^source-order]: [Source-order note.]{#note-source-order .alkahest-note}

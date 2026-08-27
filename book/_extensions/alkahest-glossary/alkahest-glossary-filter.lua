@@ -17,7 +17,7 @@ local function has_class(element, expected)
 end
 
 local function is_print()
-  return quarto.doc.isFormat("latex") or quarto.doc.isFormat("typst")
+  return quarto.doc.isFormat("typst")
 end
 
 local function glossary_anchor(entry)
@@ -59,18 +59,10 @@ local function page_reference_inlines(entry)
     return nil
   end
 
-  local page_number
-  if quarto.doc.isFormat("latex") then
-    page_number = pandoc.RawInline(
-      "latex",
-      "\\pageref{" .. first_use_anchor(entry) .. "}"
-    )
-  else
-    page_number = pandoc.RawInline(
-      "typst",
-      "#context counter(page).at(<" .. first_use_anchor(entry) .. ">).first()"
-    )
-  end
+  local page_number = pandoc.RawInline(
+    "typst",
+    "#context counter(page).at(<" .. first_use_anchor(entry) .. ">).first()"
+  )
   return pandoc.Span(
     {
       pandoc.Emph({ pandoc.Str("First use: p."), pandoc.Space(), page_number }),
@@ -96,9 +88,6 @@ local function generated_glossary()
   local blocks = {}
   for _, entry in ipairs(registry.entries) do
     local content = {}
-    if quarto.doc.isFormat("latex") then
-      table.insert(content, pandoc.RawInline("latex", "\\noindent "))
-    end
     table.insert(content, pandoc.Strong({ glossary_headword(entry) }))
     table.insert(content, pandoc.LineBreak())
     for _, inline in ipairs(definition_inlines(entry.definition)) do
@@ -115,9 +104,7 @@ local function generated_glossary()
       table.insert(content, page_reference)
     end
     local entry_blocks = { pandoc.Para(content) }
-    if quarto.doc.isFormat("latex") then
-      table.insert(entry_blocks, pandoc.RawBlock("latex", "\\smallskip"))
-    elseif quarto.doc.isFormat("typst") then
+    if quarto.doc.isFormat("typst") then
       table.insert(entry_blocks, pandoc.RawBlock("typst", "#v(0.35em)"))
     end
     table.insert(blocks, pandoc.Div(

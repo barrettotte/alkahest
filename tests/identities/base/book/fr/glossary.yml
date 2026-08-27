@@ -1,6 +1,0 @@
-version: 1
-lang: fr-FR
-terms:
-  stable-term:
-    term: terme stable
-    definition: Un terme dont l’identité survit à la traduction.

@@ -1,4 +1,4 @@
-"""Stage deterministic icon and webfont inputs before Quarto renders."""
+"""Stage locked webfonts before Quarto renders."""
 
 from __future__ import annotations
 
@@ -6,8 +6,6 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
-
-from .process import run_process
 
 ROOT = Path(__file__).resolve().parents[2]
 WEBFONT_SOURCE = Path("/opt/alkahest/fonts/web")
@@ -33,24 +31,6 @@ SOURCE_CODE_PRO_FACES = (
 
 class StagingError(RuntimeError):
     """Report an unavailable or failed staging input."""
-
-
-def stage_icons() -> None:
-    """Derive LuaLaTeX PDF vectors from canonical semantic-icon SVGs."""
-    converter = shutil.which("rsvg-convert")
-    if converter is None:
-        raise StagingError("rsvg-convert is required to stage semantic icon derivatives")
-    for source in sorted((ROOT / "book" / "icons").glob("*.svg")):
-        destination = source.with_suffix(".pdf")
-        if destination.is_file() and destination.stat().st_mtime_ns >= source.stat().st_mtime_ns:
-            continue
-        result = run_process(
-            [converter, "--format=pdf", "--output", destination, source],
-            cwd=ROOT,
-            check=False,
-        )
-        if result.returncode:
-            raise StagingError(f"could not stage semantic icon: {source.relative_to(ROOT)}")
 
 
 def copy_if_changed(source: Path, destination: Path) -> None:
@@ -86,13 +66,10 @@ def stage_webfonts() -> None:
 def main(arguments: list[str] | None = None) -> int:
     """Stage one class of Quarto render inputs."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("kind", choices=("icons", "webfonts"))
-    options = parser.parse_args(arguments)
+    parser.add_argument("kind", choices=("webfonts",))
+    parser.parse_args(arguments)
     try:
-        if options.kind == "icons":
-            stage_icons()
-        else:
-            stage_webfonts()
+        stage_webfonts()
     except (OSError, StagingError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
