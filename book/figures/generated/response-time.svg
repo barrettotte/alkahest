@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" role="img" aria-labelledby="title desc">
   <title id="title">Response time by system load</title>
   <desc id="desc">A line chart with five measured points. Response time rises from 18 milliseconds at zero percent load to 71 milliseconds at full load, with the steepest increase above 75 percent.</desc>
-  <metadata>Generated deterministically from figures/data/response-time.csv by alkahest.generators.graphs; original Alkahest fixture, CC0 1.0.</metadata>
   <rect width="800" height="460" fill="#ffffff"/>
   <g font-family="Libertinus Sans, sans-serif" font-size="16" fill="#20262e">
     <line x1="110" y1="375.0" x2="730" y2="375.0" stroke="#c5cbd3" stroke-width="1"/>
