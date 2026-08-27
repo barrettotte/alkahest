@@ -2,6 +2,7 @@
 
 import argparse
 from pathlib import Path
+from typing import cast
 
 ROOT = Path(__file__).resolve().parents[3]
 ROOT_DOCUMENTS = ("README.md",)
@@ -20,12 +21,20 @@ EXCLUDED_PREFIXES = (
 )
 
 
-def is_below(path, prefix):
+class Arguments(argparse.Namespace):
+    """Typed writing-source command arguments."""
+
+    root: Path
+
+
+def is_below(path: Path, prefix: Path) -> bool:
+    """Return whether one relative path is below a prefix."""
     return path.parts[: len(prefix.parts)] == prefix.parts
 
 
-def writing_sources(root):
-    paths = []
+def writing_sources(root: Path) -> list[str]:
+    """List the canonical prose files checked by writing tools."""
+    paths: list[Path] = []
     for name in ROOT_DOCUMENTS:
         path = root / name
         if path.is_file():
@@ -46,17 +55,17 @@ def writing_sources(root):
     return sorted({path.relative_to(root).as_posix() for path in paths})
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Print one canonical writing-source path per line."
-    )
+def main() -> None:
+    """Print the canonical writing-source inventory."""
+    parser = argparse.ArgumentParser(description="Print one canonical writing-source path per line.")
     parser.add_argument(
         "--root",
         type=Path,
         default=ROOT,
         help="repository root to inventory (defaults to this checkout)",
     )
-    args = parser.parse_args()
+    args = cast(Arguments, parser.parse_args())
+
     sources = writing_sources(args.root.resolve())
     if not sources:
         raise SystemExit("error: no canonical writing sources found")

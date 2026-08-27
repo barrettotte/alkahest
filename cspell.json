@@ -3,19 +3,32 @@
   "language": "en-US",
   "useGitignore": false,
   "enabledLanguageIds": ["markdown"],
+  "words": [
+    "Alkahest",
+    "BasedPyright",
+    "backmatter",
+    "Chemfig",
+    "Containerfile",
+    "CSpell",
+    "EPUBCheck",
+    "esterification",
+    "MathML",
+    "Pandoc",
+    "Poppler",
+    "Quarto",
+    "reflowable",
+    "Schemdraw",
+    "Typst",
+    "Vale",
+    "WaveDrom"
+  ],
   "dictionaryDefinitions": [
-    {
-      "name": "alkahest-shared",
-      "path": "./config/writing/dictionaries/shared.txt",
-      "addWords": false
-    },
     {
       "name": "alkahest-reference-book",
       "path": "./book/dictionaries/accepted.txt",
       "addWords": true
     }
   ],
-  "dictionaries": ["alkahest-shared"],
   "flagWords": [
     "alot->a lot",
     "backwards-compatible->backward-compatible",

@@ -1,5 +1,7 @@
 """Exercise PDF preflight parsers and rejection boundaries with text fixtures."""
 
+from collections.abc import Callable
+
 from alkahest.pdf_preflight import (
     PreflightError,
     validate_document_metadata,
@@ -45,21 +47,21 @@ IMAGES = """page   num  type   width height color comp bpc  enc interp  object I
 ALLOWED_COLORS = {("mono", 1), ("gray", 1), ("rgb", 3), ("icc", 3)}
 
 
-def rejected(name, action, message):
+def rejected(name: str, action: Callable[[], object], message: str) -> None:
+    """Require one invalid preflight action to fail as expected."""
     try:
         action()
     except PreflightError as error:
         if message not in str(error):
-            raise RuntimeError(
-                f"{name}: expected diagnostic containing {message!r}, got {error!r}"
-            ) from error
+            raise RuntimeError(f"{name}: expected diagnostic containing {message!r}, got {error!r}") from error
     else:
         raise RuntimeError(f"{name}: invalid fixture unexpectedly passed")
 
 
-def replace_image(**changes):
-    fields = IMAGES.splitlines()[2].split()
-    positions = {
+def replace_image(**changes: object) -> str:
+    """Replace selected fields in the first raster-image row."""
+    fields: list[str] = list(IMAGES.splitlines()[2].split())
+    positions: dict[str, int] = {
         "color": 5,
         "components": 6,
         "bits": 7,
@@ -71,27 +73,26 @@ def replace_image(**changes):
     return "\n".join(IMAGES.splitlines()[:2] + [" ".join(fields)]) + "\n"
 
 
-def main():
+def main() -> None:
+    """Exercise valid and rejected PDF preflight fixtures."""
     if validate_document_metadata(INFO, {"1.7"}) != 2:
         raise RuntimeError("valid metadata fixture returned the wrong page count")
+
     validate_page_boxes(BOXES, 2, 504, 720, 0, 0.1)
     if validate_fonts(FONTS) != 2:
         raise RuntimeError("valid font fixture returned the wrong row count")
     if validate_raster_images(IMAGES, ALLOWED_COLORS, 300, 600) != 2:
         raise RuntimeError("valid image fixture returned the wrong row count")
-    cases = [
+
+    cases: list[tuple[str, Callable[[], object], str]] = [
         (
             "encrypted",
-            lambda: validate_document_metadata(
-                INFO.replace("Encrypted:       no", "Encrypted:       yes"), {"1.7"}
-            ),
+            lambda: validate_document_metadata(INFO.replace("Encrypted:       no", "Encrypted:       yes"), {"1.7"}),
             "must not be encrypted",
         ),
         (
             "javascript",
-            lambda: validate_document_metadata(
-                INFO.replace("JavaScript:      no", "JavaScript:      yes"), {"1.7"}
-            ),
+            lambda: validate_document_metadata(INFO.replace("JavaScript:      no", "JavaScript:      yes"), {"1.7"}),
             "must not contain JavaScript",
         ),
         (
@@ -167,6 +168,6 @@ def main():
     print(f"ok: PDF preflight fixtures ({len(cases) + 4} cases)")
 
 
-def test_contract():
-    result = main()
-    assert result in (None, 0)
+def test_contract() -> None:
+    """Run the PDF preflight contract fixtures under pytest."""
+    main()

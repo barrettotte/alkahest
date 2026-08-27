@@ -20,7 +20,7 @@ check: ## Validate the reference source.
 test: ## Run the local test suite.
 	$(ALK) test
 
-quality: ## Run Ruff, mypy, and pytest.
+quality: ## Run Ruff, BasedPyright, and pytest.
 	$(ALK) quality
 
 security: ## Scan Python source and dependencies.
@@ -34,5 +34,5 @@ ci: ## Run the complete publishing pipeline.
 
 clean: ## Remove disposable reference and guide output.
 	rm -rf book/.quarto book/_build book/theme/fonts book/Alkahest-Reference-Book.tex book/index.typ \
-		book/index_files book/reference_files guide/_build .pytest_cache .ruff_cache .mypy_cache \
+		book/index_files book/reference_files guide/_build .pytest_cache .ruff_cache \
 		.coverage htmlcov tools/.venv tools/writing/node_modules

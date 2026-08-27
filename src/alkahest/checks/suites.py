@@ -8,20 +8,21 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from typing import cast
 
-from alkahest.pdf_preflight import PreflightError, inspect_pdf
+from alkahest.pdf_preflight import PDFPolicy, PDFProfile, PreflightError, inspect_pdf
 from alkahest.process import run_process
 
 ROOT = Path(__file__).resolve().parents[3]
 HTML = ROOT / "book/_build/html"
 EPUB = ROOT / "book/_build/epub/Alkahest-Reference-Book.epub"
 PDF = ROOT / "book/_build/print/7x10/typst/Alkahest-Reference-Book.pdf"
-PDF_PROFILE = {
+PDF_PROFILE: PDFProfile = {
     "backend": "typst",
     "trim_points": (504, 720),
     "bleed_points": 0,
 }
-PDF_POLICY = {
+PDF_POLICY: PDFPolicy = {
     "geometry_tolerance_points": 0.1,
     "continuous_tone_minimum_ppi": 300,
     "one_bit_minimum_ppi": 600,
@@ -38,6 +39,12 @@ PDF_POLICY = {
 
 class SuiteError(RuntimeError):
     """Report one failed external validation command."""
+
+
+class Arguments(argparse.Namespace):
+    """Typed rendered-suite command arguments."""
+
+    suite: str
 
 
 def executable(name: str) -> str:
@@ -57,6 +64,7 @@ def run(arguments: list[str], *, check: bool = True) -> int:
 
 
 def module(name: str, *arguments: str) -> None:
+    """Run one Python validator module."""
     run([sys.executable, "-m", name, *arguments])
 
 
@@ -71,6 +79,7 @@ def epub() -> None:
     """Validate EPUB structure and automated accessibility."""
     if not EPUB.is_file():
         raise SuiteError("missing rendered EPUB; run make render first")
+
     run([executable("java"), "-jar", os.environ["EPUBCHECK_JAR"], str(EPUB)])
     with tempfile.TemporaryDirectory(prefix="alkahest-ace-") as directory:
         report = Path(directory) / "report"
@@ -97,23 +106,21 @@ def publication() -> None:
     """Validate links, EPUB, and the production Typst PDF."""
     module("alkahest.checks.html_links", str(HTML))
     epub()
+
     if not PDF.is_file():
         raise SuiteError("missing rendered Typst PDF; run make render first")
     try:
         pages, fonts, images = inspect_pdf(PDF, PDF_PROFILE, PDF_POLICY)
     except PreflightError as error:
         raise SuiteError(f"PDF preflight failed: {error}") from error
-    print(
-        f"ok: Typst 7 x 10 PDF ({pages} pages; no bleed; "
-        f"{fonts} embedded/subset fonts; {images} raster images)"
-    )
+    print(f"ok: Typst 7 x 10 PDF ({pages} pages; no bleed; {fonts} embedded/subset fonts; {images} raster images)")
 
 
 def main(arguments: list[str] | None = None) -> int:
     """Dispatch one rendered-output suite."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("suite", choices=("accessibility", "epub", "publication"))
-    options = parser.parse_args(arguments)
+    options = cast(Arguments, parser.parse_args(arguments))
     try:
         {
             "accessibility": accessibility,

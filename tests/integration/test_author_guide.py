@@ -15,6 +15,7 @@ FOOTNOTE = "Native named footnotes stay simple and portable."
 
 
 def guide_copy(destination: Path) -> Path:
+    """Copy the author guide into one isolated test directory."""
     target = destination / "guide"
     shutil.copytree(
         GUIDE,
@@ -25,6 +26,7 @@ def guide_copy(destination: Path) -> Path:
 
 
 def run_make(book: Path, target: str) -> None:
+    """Run one author-facing Make target."""
     result = run_process(
         ["make", target],
         cwd=book,
@@ -37,6 +39,7 @@ def run_make(book: Path, target: str) -> None:
 
 @pytest.mark.locked
 def test_author_guide_builds_full_and_excerpt_outputs() -> None:
+    """Build complete and excerpt guide publications."""
     with tempfile.TemporaryDirectory(prefix="alkahest-author-guide.") as temporary:
         guide = guide_copy(Path(temporary))
         run_make(guide, "bootstrap")
@@ -51,9 +54,7 @@ def test_author_guide_builds_full_and_excerpt_outputs() -> None:
 
             epub = output / "epub/Writing-Books-with-Alkahest.epub"
             with zipfile.ZipFile(epub) as package:
-                assert any(
-                    name.endswith("LibertinusSerif-Regular.woff2") for name in package.namelist()
-                )
+                assert any(name.endswith("LibertinusSerif-Regular.woff2") for name in package.namelist())
                 epub_text = "".join(
                     package.read(name).decode("utf-8", errors="ignore")
                     for name in package.namelist()

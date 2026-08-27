@@ -47,12 +47,14 @@ def stage_webfonts() -> None:
     """Stage locked WOFF2 faces and their license notices."""
     if not WEBFONT_SOURCE.is_dir():
         raise StagingError("locked webfonts are unavailable; render through alkahest render")
+
     destination = ROOT / "book" / "theme" / "fonts"
     (destination / "licenses").mkdir(parents=True, exist_ok=True)
     for face in LIBERTINUS_FACES:
         copy_if_changed(WEBFONT_SOURCE / "libertinus" / face, destination / face)
     for face in SOURCE_CODE_PRO_FACES:
         copy_if_changed(WEBFONT_SOURCE / "source-code-pro" / face, destination / face)
+
     copy_if_changed(
         FONT_LICENSE_SOURCE / "libertinus" / "OFL.txt",
         destination / "licenses" / "Libertinus-OFL.txt",

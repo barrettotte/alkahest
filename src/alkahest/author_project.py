@@ -59,6 +59,7 @@ class Workspace(TypedDict):
 
 
 def fail(message: str) -> Never:
+    """Raise one author-facing project error."""
     raise AuthorProjectError(f"error: {message}")
 
 
@@ -79,58 +80,82 @@ def slug(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", normalized.lower()).strip("-")
 
 
-def load_author_config(root: Path) -> AuthorConfig:
-    """Load the intentionally small author-owned configuration."""
+def load_config_tables(root: Path) -> tuple[dict[str, object], dict[str, object]]:
+    """Read and validate the two supported book configuration tables."""
     try:
-        document = tomllib.loads((root / "book.toml").read_text(encoding="utf-8"))
+        document_value = cast(object, tomllib.loads((root / "book.toml").read_text(encoding="utf-8")))
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
         fail(f"cannot read book.toml: {error}")
-    if not isinstance(document, dict) or set(document) - {"book", "excerpt"}:
+
+    if not isinstance(document_value, dict):
+        fail("book.toml must contain a top-level table")
+
+    document = cast(dict[str, object], document_value)
+    if set(document) - {"book", "excerpt"}:
         fail("book.toml supports only [book] and [excerpt]")
-    book = document.get("book")
-    if not isinstance(book, dict) or set(book) - {
-        "title",
-        "subtitle",
-        "author",
-        "language",
-        "description",
-    }:
+
+    book_value = document.get("book")
+    if not isinstance(book_value, dict):
+        fail("book.toml requires a [book] table")
+
+    book = cast(dict[str, object], book_value)
+    excerpt_value = document.get("excerpt", {})
+    if not isinstance(excerpt_value, dict):
+        fail("[excerpt] must be a table")
+    return book, cast(dict[str, object], excerpt_value)
+
+
+def parse_book_settings(book: dict[str, object]) -> BookSettings:
+    """Validate publication metadata from the book table."""
+    if set(book) - {"title", "subtitle", "author", "language", "description"}:
         fail("[book] contains unsupported fields")
+
     title = plain(book.get("title"), "book title")
     author = plain(book.get("author"), "book author")
     language = plain(book.get("language", "en-US"), "book language")
     if re.fullmatch(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", language) is None:
         fail("book language must be a language tag such as en-US")
-    excerpt = document.get("excerpt", {})
-    if not isinstance(excerpt, dict) or set(excerpt) - {"chapters", "message"}:
+
+    return {
+        "title": title,
+        "subtitle": plain(book.get("subtitle"), "book subtitle", required=False),
+        "author": author,
+        "language": language,
+        "description": plain(book.get("description"), "book description", required=False),
+        "identifier": f"urn:uuid:{uuid.uuid5(NAMESPACE, f'{title}\0{author}')}",
+    }
+
+
+def parse_excerpt_settings(excerpt: dict[str, object]) -> ExcerptSettings:
+    """Validate chapter selection and messaging from the excerpt table."""
+    if set(excerpt) - {"chapters", "message"}:
         fail("[excerpt] contains unsupported fields")
+
     chapters_value = excerpt.get("chapters", [])
-    if (
-        not isinstance(chapters_value, list)
-        or len(chapters_value) > 2
-        or any(not isinstance(item, str) for item in chapters_value)
-    ):
+    if not isinstance(chapters_value, list):
         fail("excerpt chapters must contain at most two unique filenames")
-    chapters = cast(list[str], chapters_value)
+
+    chapter_objects = cast(list[object], chapters_value)
+    if len(chapter_objects) > 2 or any(not isinstance(item, str) for item in chapter_objects):
+        fail("excerpt chapters must contain at most two unique filenames")
+
+    chapters = cast(list[str], chapter_objects)
     if len(chapters) != len(set(chapters)):
         fail("excerpt chapters must contain at most two unique filenames")
-    if any(not isinstance(item, str) or CHAPTER.fullmatch(item) is None for item in chapters):
+    if any(CHAPTER.fullmatch(item) is None for item in chapters):
         fail("excerpt chapter names must use NN-kebab-case.qmd")
+
     message = plain(
         excerpt.get("message", "This excerpt contains selected chapters, not the complete book."),
         "excerpt message",
     )
-    return {
-        "book": {
-            "title": title,
-            "subtitle": plain(book.get("subtitle"), "book subtitle", required=False),
-            "author": author,
-            "language": language,
-            "description": plain(book.get("description"), "book description", required=False),
-            "identifier": f"urn:uuid:{uuid.uuid5(NAMESPACE, f'{title}\0{author}')}",
-        },
-        "excerpt": {"chapters": chapters, "message": message},
-    }
+    return {"chapters": chapters, "message": message}
+
+
+def load_author_config(root: Path) -> AuthorConfig:
+    """Load the intentionally small author-owned configuration."""
+    book, excerpt = load_config_tables(root)
+    return {"book": parse_book_settings(book), "excerpt": parse_excerpt_settings(excerpt)}
 
 
 def discover_content(root: Path, config: AuthorConfig) -> dict[str, list[str]]:
@@ -139,28 +164,26 @@ def discover_content(root: Path, config: AuthorConfig) -> dict[str, list[str]]:
     for relative in required:
         if not (root / relative).is_file():
             fail(f"required author file is missing: {relative}")
+
     discovered: dict[str, list[str]] = {}
     for kind in ("chapters", "appendices"):
         directory = root / "manuscript" / kind
         if not directory.is_dir():
             fail(f"content directory is missing: manuscript/{kind}")
-        invalid = [
-            path.name for path in directory.glob("*.qmd") if CHAPTER.fullmatch(path.name) is None
-        ]
+        invalid = [path.name for path in directory.glob("*.qmd") if CHAPTER.fullmatch(path.name) is None]
         if invalid:
             fail(f"{kind} filename must use NN-kebab-case.qmd: {min(invalid)}")
-        discovered[kind] = [
-            path.relative_to(root).as_posix() for path in sorted(directory.glob("*.qmd"))
-        ]
+        discovered[kind] = [path.relative_to(root).as_posix() for path in sorted(directory.glob("*.qmd"))]
+
     if not discovered["chapters"]:
         fail("book needs at least one numbered chapter")
+
     requested = set(config["excerpt"]["chapters"])
     names = {PurePosixPath(path).name for path in discovered["chapters"]}
     if requested - names:
         fail(f"excerpt references a missing chapter: {min(requested - names)}")
-    discovered["excerpt"] = [
-        path for path in discovered["chapters"] if PurePosixPath(path).name in requested
-    ]
+
+    discovered["excerpt"] = [path for path in discovered["chapters"] if PurePosixPath(path).name in requested]
     return discovered
 
 
@@ -186,9 +209,11 @@ def project_config(config: AuthorConfig, sources: list[str], appendices: list[st
     for field in ("subtitle", "description"):
         if book[field]:
             lines.append(f"  {field}: {yaml_string(book[field])}")
+
     lines.extend(["  chapters:", *[f"    - {source}" for source in sources]])
     if appendices:
         lines.extend(["  appendices:", *[f"    - {source}" for source in appendices]])
+
     lines.extend(
         [
             "",
@@ -218,55 +243,54 @@ def replace_workspace(path: Path, root: Path) -> None:
         shutil.rmtree(path)
 
 
-def compile_workspace(root: Path, engine_root: Path, profile: str = "full") -> Workspace:
-    """Compile one disposable full or excerpt Quarto workspace."""
-    root = root.resolve()
-    engine_root = engine_root.resolve()
-    if profile not in PROFILES:
-        fail(f"unknown author profile: {profile}")
-    config = load_author_config(root)
-    content = discover_content(root, config)
-    selected = content["chapters"] if profile == "full" else content["excerpt"]
-    # Quarto requires a book home page at the project root, so stage the
-    # author-facing manuscript/index.qmd there without exposing that detail.
-    source_paths = ["index.qmd", *selected, "manuscript/references.qmd"]
-    appendices = content["appendices"] if profile == "full" else []
-    stage = root / "_build" / ".work" / profile
-    replace_workspace(stage, root)
-    stage.mkdir(parents=True)
+def relative_symlink(source: Path, target: Path) -> None:
+    """Create a relative symbolic link at the requested target."""
+    target.symlink_to(Path(os.path.relpath(source, target.parent)))
 
+
+def stage_engine_runtime(stage: Path, engine_root: Path) -> None:
+    """Link immutable engine resources into an author workspace."""
     for directory in ("_extensions", "filters", "icons", "theme", "typst"):
         source = engine_root / directory
         if not source.is_dir():
             fail(f"engine runtime is missing {directory}")
-        (stage / directory).symlink_to(Path(os.path.relpath(source, stage)))
-    for source_name, target_name in (
-        ("defaults/quarto.yml", "alkahest-defaults.yml"),
-        ("_brand.yml", "_brand.yml"),
-    ):
+        relative_symlink(source, stage / directory)
+    for source_name, target_name in (("defaults/quarto.yml", "alkahest-defaults.yml"), ("_brand.yml", "_brand.yml")):
         source = engine_root / source_name
         if not source.is_file():
             fail(f"engine runtime is missing {source_name}")
-        (stage / target_name).symlink_to(Path(os.path.relpath(source, stage)))
+        relative_symlink(source, stage / target_name)
 
-    for relative in [*source_paths, *appendices]:
+
+def stage_manuscript(
+    stage: Path,
+    root: Path,
+    sources: list[str],
+    appendices: list[str],
+    config: AuthorConfig,
+    profile: str,
+) -> None:
+    """Stage manuscript files and customize the book home page."""
+    marker = "::: {.alkahest-excerpt-placeholder}\n:::"
+    replacement = "" if profile == "full" else f"::: {{.callout-note}}\n{config['excerpt']['message']}\n:::"
+    for relative in [*sources, *appendices]:
         source = root / ("manuscript/index.qmd" if relative == "index.qmd" else relative)
         target = stage / relative
         target.parent.mkdir(parents=True, exist_ok=True)
+
         if relative == "index.qmd":
             text = source.read_text(encoding="utf-8")
-            marker = "::: {.alkahest-excerpt-placeholder}\n:::"
-            replacement = (
-                ""
-                if profile == "full"
-                else f"::: {{.callout-note}}\n{config['excerpt']['message']}\n:::"
-            )
             target.write_text(text.replace(marker, replacement), encoding="utf-8")
         else:
-            target.symlink_to(Path(os.path.relpath(source, target.parent)))
-    (stage / "references.bib").symlink_to(Path(os.path.relpath(root / "references.bib", stage)))
+            relative_symlink(source, target)
+
+
+def stage_author_resources(stage: Path, root: Path, config: AuthorConfig) -> None:
+    """Stage the bibliography, assets, and optional registries."""
+    relative_symlink(root / "references.bib", stage / "references.bib")
     if (root / "assets").is_dir():
-        (stage / "assets").symlink_to(Path(os.path.relpath(root / "assets", stage)))
+        relative_symlink(root / "assets", stage / "assets")
+
     for registry, empty in (
         ("glossary.yml", "version: 1\nlang: en-US\nterms: {}\n"),
         ("index.yml", "version: 1\nlang: en-US\nentries: {}\n"),
@@ -274,16 +298,42 @@ def compile_workspace(root: Path, engine_root: Path, profile: str = "full") -> W
         source = root / registry
         target = stage / registry
         if source.is_file():
-            target.symlink_to(Path(os.path.relpath(source, stage)))
+            relative_symlink(source, target)
         else:
             target.write_text(empty.replace("en-US", config["book"]["language"]), encoding="utf-8")
 
-    (stage / "_quarto.yml").write_text(
-        project_config(config, source_paths, appendices), encoding="utf-8"
-    )
+
+def write_workspace_config(stage: Path, config: AuthorConfig, sources: list[str], appendices: list[str]) -> None:
+    """Write project and output-format configuration files."""
+    (stage / "_quarto.yml").write_text(project_config(config, sources, appendices), encoding="utf-8")
     for name, text in FORMAT_PROFILES.items():
         (stage / f"_quarto-{name}.yml").write_text(text, encoding="utf-8")
-    return {"stage": stage, "sources": [*source_paths, *appendices], "config": config}
+
+
+def compile_workspace(root: Path, engine_root: Path, profile: str = "full") -> Workspace:
+    """Compile one disposable full or excerpt Quarto workspace."""
+    root = root.resolve()
+    engine_root = engine_root.resolve()
+    if profile not in PROFILES:
+        fail(f"unknown author profile: {profile}")
+
+    config = load_author_config(root)
+    content = discover_content(root, config)
+    selected = content["chapters"] if profile == "full" else content["excerpt"]
+
+    # Quarto requires a book home page at the project root, so stage the
+    # author-facing manuscript/index.qmd there without exposing that detail.
+    sources = ["index.qmd", *selected, "manuscript/references.qmd"]
+    appendices = content["appendices"] if profile == "full" else []
+    stage = root / "_build" / ".work" / profile
+
+    replace_workspace(stage, root)
+    stage.mkdir(parents=True)
+    stage_engine_runtime(stage, engine_root)
+    stage_manuscript(stage, root, sources, appendices, config, profile)
+    stage_author_resources(stage, root, config)
+    write_workspace_config(stage, config, sources, appendices)
+    return {"stage": stage, "sources": [*sources, *appendices], "config": config}
 
 
 def add_chapter(root: Path, title: str) -> Path:
@@ -292,12 +342,14 @@ def add_chapter(root: Path, title: str) -> Path:
     title = plain(title, "chapter title")
     config = load_author_config(root)
     discover_content(root, config)
+
     directory = root / "manuscript" / "chapters"
     numbers = [int(path.name[:2]) for path in directory.glob("*.qmd")]
     number = max(numbers, default=0) + 1
     name = slug(title)
     if number > 99 or not name:
         fail("chapter title cannot produce a valid numbered filename")
+
     path = directory / f"{number:02d}-{name}.qmd"
     path.write_text(f"# {title}\n\nStart writing here.\n", encoding="utf-8")
     return path
@@ -319,6 +371,7 @@ def render(root: Path, engine_root: Path, profile: str, formats: list[str]) -> W
     unknown = set(formats) - FORMATS
     if unknown:
         fail(f"unknown render format: {min(unknown)}")
+
     result = compile_workspace(root, engine_root, profile)
     stage = result["stage"]
     for format_name in formats:
@@ -332,15 +385,16 @@ def render(root: Path, engine_root: Path, profile: str, formats: list[str]) -> W
             text=True,
         )
         if completed.returncode:
-            fail(
-                f"{format_name} render failed with status {completed.returncode}\n{completed.stdout.strip()}"
-            )
+            fail(f"{format_name} render failed with status {completed.returncode}\n{completed.stdout.strip()}")
+
         generated = stage / "_output" / format_name
         destination = root.resolve() / "_build" / profile / format_name
         if not generated.is_dir() or destination.parent != root.resolve() / "_build" / profile:
             fail(f"{format_name} render did not create its expected output")
+
         if destination.exists():
             shutil.rmtree(destination)
+
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(generated, destination)
         print(f"built: _build/{profile}/{format_name}")

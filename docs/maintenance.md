@@ -24,7 +24,7 @@ command when discovery from numbered files or an existing command is adequate.
 ```sh
 make bootstrap   # Build the pinned rootless image; this is the networked step.
 make check       # Validate links, IDs, citations, glossary, icons, and index.
-make quality     # Run Ruff, formatting, mypy, and local tests.
+make quality     # Run Ruff, formatting, BasedPyright, and local tests.
 make render      # Build HTML, EPUB, and Typst output.
 make ci          # Run the complete offline validation after bootstrap.
 ```
@@ -37,7 +37,7 @@ Quarto container. `make help` is the complete command reference.
 Inputs downloaded by `Containerfile` are pinned by version and checksum. When
 one changes:
 
-1. update its version, URL, checksum, and installed-file assertion together;
+1. update its version, URL, archive checksum, and version assertion together;
 2. update `uv.lock` or `tools/writing/package-lock.json` when applicable;
 3. bump the image suffix in `scripts/toolchain.sh` and `guide/Containerfile`;
 4. rebuild with `make bootstrap`; and
@@ -50,11 +50,10 @@ Poppler, and the Python runtime used by engine checks.
 
 ## Writing checks and overrides
 
-CSpell configuration lives in `cspell.json`; accepted words live in
-`config/writing/dictionaries/shared.txt` and
-`book/dictionaries/accepted.txt`. Vale's small set of editorial warnings is
-configured in `.vale.ini`. Use native source-local comments for exceptional
-quoted spellings, and add recurring terms to the narrowest dictionary.
+CSpell configuration and shared terms live in `cspell.json`; reference-book
+terms live in `book/dictionaries/accepted.txt`. Vale's small set of editorial
+warnings is configured in `.vale.ini`. Use native source-local comments for
+exceptional quoted spellings, and add recurring terms to the narrowest scope.
 
 ## Tests
 

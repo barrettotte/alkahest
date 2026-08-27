@@ -30,11 +30,12 @@ CROSS_REFERENCE_PREFIXES = {
 
 
 def fail(message: str) -> None:
+    """Raise one citation contract error."""
     raise RuntimeError(f"error: {message}")
 
 
-def main() -> None:
-    root = ROOT / "book"
+def validate_configuration(root: Path) -> str:
+    """Validate the citation style and renderer configuration."""
     style = root / STYLE
     if hashlib.sha256(style.read_bytes()).hexdigest() != STYLE_SHA256:
         fail("the Chicago author-date citation style changed")
@@ -43,46 +44,63 @@ def main() -> None:
         fail("the reference book must use its shared bibliography and citation style")
     if "citeproc: true" not in (root / "_quarto-typst.yml").read_text(encoding="utf-8"):
         fail("Typst must use Pandoc citeproc")
-    keys = set(
-        re.findall(
+    return config
+
+
+def bibliography_keys(root: Path) -> set[str]:
+    """Collect the keys declared by the shared bibliography."""
+    keys = {
+        match.group(1)
+        for match in re.finditer(
             r"^\s*@[A-Za-z]+\s*\{\s*([^,\s]+)\s*,",
             (root / "references.bib").read_text(encoding="utf-8"),
             re.MULTILINE,
         )
-    )
+    }
     if not keys:
         fail("the bibliography is empty")
+    return keys
+
+
+def citation_calls(root: Path) -> set[str]:
+    """Collect citation-like calls from visible manuscript source."""
     calls: set[str] = set()
     for source in root.rglob("*.qmd"):
         if "_build" in source.parts:
             continue
         text = re.sub(r"```.*?```", "", source.read_text(encoding="utf-8"), flags=re.DOTALL)
         calls.update(
-            call.rstrip(".,:")
-            for call in re.findall(
-                r"(?<![A-Za-z0-9_])@([A-Za-z0-9][A-Za-z0-9_.:+-]*)",
-                text,
-            )
+            match.group(1).rstrip(".,:")
+            for match in re.finditer(r"(?<![A-Za-z0-9_])@([A-Za-z0-9][A-Za-z0-9_.:+-]*)", text)
         )
+    return calls
+
+
+def validate_usage(keys: set[str], calls: set[str], config: str) -> set[str]:
+    """Reject unknown calls and bibliography entries without a usage policy."""
     cited = calls & keys
-    nocite = (
-        set(
-            re.findall(
-                r"@([A-Za-z0-9][A-Za-z0-9_.:+-]*)",
-                config.split("nocite:", 1)[-1],
-            )
-        )
+    nocite: set[str] = (
+        {match.group(1) for match in re.finditer(r"@([A-Za-z0-9][A-Za-z0-9_.:+-]*)", config.split("nocite:", 1)[-1])}
         if "nocite:" in config
-        else set()
+        else set[str]()
     )
-    unknown = {
-        call for call in calls - keys if call.partition("-")[0] not in CROSS_REFERENCE_PREFIXES
-    }
+
+    unknown = {call for call in calls - keys if call.partition("-")[0] not in CROSS_REFERENCE_PREFIXES}
     if unknown:
         fail(f"citation references missing bibliography key: {min(unknown)}")
+
     unused = keys - cited - nocite
     if unused:
         fail(f"bibliography key is neither cited nor explicitly included: {min(unused)}")
+    return cited
+
+
+def main() -> None:
+    """Validate bibliography configuration and every citation call."""
+    root = ROOT / "book"
+    config = validate_configuration(root)
+    keys = bibliography_keys(root)
+    cited = validate_usage(keys, citation_calls(root), config)
     print(f"ok: citations ({len(keys)} bibliography keys; {len(cited)} cited)")
 
 

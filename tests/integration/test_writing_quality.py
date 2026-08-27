@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+from typing import Never, TypedDict
 
 import pytest
 
@@ -16,7 +17,20 @@ FIXTURES = ROOT / "tests/writing"
 TOOLCHAIN_LIBRARY = ROOT / "scripts/toolchain.sh"
 SOURCE_SUFFIXES = {".md", ".qmd"}
 
-CASES = (
+
+class Case(TypedDict):
+    """One writing-quality fixture contract."""
+
+    name: str
+    source: str
+    destination: str
+    checker: str
+    returncode: int
+    required: tuple[str, ...]
+    forbidden: tuple[str, ...]
+
+
+CASES: tuple[Case, ...] = (
     {
         "name": "visible spelling",
         "source": "negative/cspell/visible.qmd",
@@ -92,11 +106,13 @@ CASES = (
 )
 
 
-def fail(message):
+def fail(message: str) -> Never:
+    """Raise one writing-quality fixture error."""
     raise RuntimeError(message)
 
 
-def toolchain_image():
+def toolchain_image() -> str:
+    """Read the pinned publishing image name."""
     text = TOOLCHAIN_LIBRARY.read_text(encoding="utf-8")
     match = re.search(r'ALKAHEST_TOOLCHAIN_IMAGE="([^"]+)"', text)
     if not match:
@@ -104,19 +120,17 @@ def toolchain_image():
     return match.group(1)
 
 
-def copy_environment(destination):
+def copy_environment(destination: Path) -> None:
+    """Copy the shared writing-check configuration."""
     destination.mkdir(parents=True)
     shutil.copy2(ROOT / "cspell.json", destination / "cspell.json")
     shutil.copy2(ROOT / ".vale.ini", destination / ".vale.ini")
-    shutil.copytree(ROOT / "config/writing", destination / "config/writing")
     (destination / "book/dictionaries").mkdir(parents=True)
-    shutil.copy2(
-        ROOT / "book/dictionaries/accepted.txt",
-        destination / "book/dictionaries/accepted.txt",
-    )
+    shutil.copy2(ROOT / "book/dictionaries/accepted.txt", destination / "book/dictionaries/accepted.txt")
 
 
-def copy_tree_contents(source, destination):
+def copy_tree_contents(source: Path, destination: Path) -> None:
+    """Copy one fixture tree into an isolated root."""
     for path in sorted(source.rglob("*")):
         if not path.is_file():
             continue
@@ -125,7 +139,8 @@ def copy_tree_contents(source, destination):
         shutil.copy2(path, target)
 
 
-def sources(root):
+def sources(root: Path) -> list[str]:
+    """List writing sources below one fixture root."""
     return sorted(
         path.relative_to(root).as_posix()
         for tree in (root / "book", root / "docs")
@@ -135,9 +150,34 @@ def sources(root):
     )
 
 
-def run_container(root, image, checker, paths, podman):
-    uid = os.getuid()
-    gid = os.getgid()
+def checker_arguments(checker: str, paths: list[str]) -> list[str]:
+    """Build arguments for one writing checker."""
+    if checker == "cspell":
+        return [
+            "cspell",
+            "lint",
+            "--config",
+            "cspell.json",
+            "--no-config-search",
+            "--root",
+            "/workspace",
+            "--no-cache",
+            "--no-progress",
+            "--no-summary",
+            "--no-color",
+            "--unique",
+            "--validate-directives",
+            *paths,
+        ]
+    if checker == "vale":
+        return ["vale", "--config=.vale.ini", "--no-global", "--no-wrap", "--output=line", *paths]
+    fail("unknown writing checker: " + checker)
+
+
+def run_container(
+    root: Path, image: str, checker: str, paths: list[str], podman: str
+) -> subprocess.CompletedProcess[str]:
+    """Run one writing checker in the locked container."""
     container_tmp = Path("/") / "tmp"
     command = [
         podman,
@@ -147,7 +187,7 @@ def run_container(root, image, checker, paths, podman):
         "--network=none",
         "--userns=keep-id",
         "--user",
-        f"{uid}:{gid}",
+        f"{os.getuid()}:{os.getgid()}",
         "--security-opt",
         "label=disable",
         "--tmpfs",
@@ -159,39 +199,8 @@ def run_container(root, image, checker, paths, podman):
         "--workdir",
         "/workspace",
         image,
+        *checker_arguments(checker, paths),
     ]
-    if checker == "cspell":
-        command.extend(
-            [
-                "cspell",
-                "lint",
-                "--config",
-                "cspell.json",
-                "--no-config-search",
-                "--root",
-                "/workspace",
-                "--no-cache",
-                "--no-progress",
-                "--no-summary",
-                "--no-color",
-                "--unique",
-                "--validate-directives",
-                *paths,
-            ]
-        )
-    elif checker == "vale":
-        command.extend(
-            [
-                "vale",
-                "--config=.vale.ini",
-                "--no-global",
-                "--no-wrap",
-                "--output=line",
-                *paths,
-            ]
-        )
-    else:
-        fail("unknown writing checker: " + checker)
     try:
         return run_process(
             command,
@@ -205,7 +214,14 @@ def run_container(root, image, checker, paths, podman):
         fail(f"{checker} exceeded the 20-second fixture runtime limit")
 
 
-def require_result(name, result, returncode, required=(), forbidden=()):
+def require_result(
+    name: str,
+    result: subprocess.CompletedProcess[str],
+    returncode: int,
+    required: tuple[str, ...] | list[str] = (),
+    forbidden: tuple[str, ...] | list[str] = (),
+) -> None:
+    """Validate one writing-check process result."""
     if result.returncode != returncode:
         fail(f"{name} returned {result.returncode}, expected {returncode}:\n{result.stdout}")
     for marker in required:
@@ -216,7 +232,8 @@ def require_result(name, result, returncode, required=(), forbidden=()):
             fail(f"{name} exposed excluded marker '{marker}':\n{result.stdout}")
 
 
-def check_positive(parent, image, podman):
+def check_positive(parent: Path, image: str, podman: str) -> None:
+    """Require all positive writing fixtures to pass quietly."""
     root = parent / "positive"
     copy_environment(root)
     copy_tree_contents(FIXTURES / "positive", root)
@@ -231,16 +248,18 @@ def check_positive(parent, image, podman):
             fail(f"positive {checker} fixtures produced findings:\n{result.stdout}")
 
 
-def check_cases(parent, image, podman):
-    groups = {}
+def check_cases(parent: Path, image: str, podman: str) -> None:
+    """Require grouped negative writing fixtures to fail correctly."""
+    groups: dict[tuple[str, int], list[Case]] = {}
     for case in CASES:
         groups.setdefault((case["checker"], case["returncode"]), []).append(case)
     for index, ((checker, returncode), cases) in enumerate(groups.items(), start=1):
         root = parent / f"case-group-{index}"
         copy_environment(root)
-        destinations = []
-        required = []
-        forbidden = []
+        destinations: list[str] = []
+        required: list[str] = []
+        forbidden: list[str] = []
+
         for case in cases:
             source = FIXTURES / case["source"]
             destination = root / case["destination"]
@@ -249,24 +268,21 @@ def check_cases(parent, image, podman):
             destinations.append(case["destination"])
             required.extend(case["required"])
             forbidden.extend(case["forbidden"])
+
         name = ", ".join(case["name"] for case in cases)
         result = run_container(root, image, checker, destinations, podman)
-        require_result(
-            name,
-            result,
-            returncode,
-            required,
-            forbidden,
-        )
+        require_result(name, result, returncode, required, forbidden)
 
 
-def main():
+def main() -> None:
+    """Exercise end-to-end writing-quality fixtures."""
     if os.getuid() == 0:
         fail("writing-quality fixtures must run as a non-root host user")
     podman = shutil.which("podman")
     if podman is None:
         fail("Podman is required but was not found")
     image = toolchain_image()
+
     try:
         image_check = run_process(
             [podman, "image", "exists", image],
@@ -292,6 +308,6 @@ def main():
 
 
 @pytest.mark.locked
-def test_contract():
-    result = main()
-    assert result in (None, 0)
+def test_contract() -> None:
+    """Run the writing-quality contract fixtures under pytest."""
+    main()

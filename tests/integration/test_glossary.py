@@ -14,6 +14,7 @@ FIXTURE = ROOT / "tests/glossary/base"
 
 
 def replace(path: Path, old: str, new: str, *, regex: bool = False) -> None:
+    """Replace one literal or regular-expression fixture fragment."""
     text = path.read_text(encoding="utf-8")
     if regex:
         changed, count = re.subn(old, new, text, count=1, flags=re.MULTILINE)
@@ -26,15 +27,27 @@ def replace(path: Path, old: str, new: str, *, regex: bool = False) -> None:
 
 
 def run(root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Run the glossary validator against one fixture root."""
     monkeypatch.setenv("ALKAHEST_GLOSSARY_BOOK_ROOT", str(root))
     glossary.main()
 
 
 def test_valid_glossary(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Accept the complete glossary fixture."""
     run(FIXTURE, monkeypatch)
 
 
 Mutation = Callable[[Path], None]
+
+
+def edit(relative: str, old: str, new: str, *, regex: bool = False) -> Mutation:
+    """Create one typed glossary fixture mutation."""
+
+    def mutate(root: Path) -> None:
+        """Apply the configured glossary fixture replacement."""
+        replace(root / relative, old, new, regex=regex)
+
+    return mutate
 
 
 @pytest.mark.parametrize(
@@ -43,27 +56,23 @@ Mutation = Callable[[Path], None]
         (
             "duplicate-display",
             "duplicate glossary display term",
-            lambda root: replace(
-                root / "glossary.yml", "term: matrix", "term: central processing unit"
-            ),
+            edit("glossary.yml", "term: matrix", "term: central processing unit"),
         ),
         (
             "duplicate-alias",
             "duplicate glossary name or alias",
-            lambda root: replace(root / "glossary.yml", "      - array", "      - cpu"),
+            edit("glossary.yml", "      - array", "      - cpu"),
         ),
         (
             "undefined-term",
             "unknown glossary name or alias",
-            lambda root: replace(
-                root / "chapter-two.qmd", "alk-term matrix", "alk-term missing-term"
-            ),
+            edit("chapter-two.qmd", "alk-term matrix", "alk-term missing-term"),
         ),
         (
             "unused-entry",
             "is unused",
-            lambda root: replace(
-                root / "chapter-two.qmd",
+            edit(
+                "chapter-two.qmd",
                 r" and\n+an unlinked \{\{< alk-term matrix form=first link=false >\}\} reference",
                 " reference",
                 regex=True,
@@ -72,8 +81,8 @@ Mutation = Callable[[Path], None]
         (
             "duplicate-first-use",
             "duplicate explicit first use",
-            lambda root: replace(
-                root / "chapter-one.qmd",
+            edit(
+                "chapter-one.qmd",
                 "examples begin here.",
                 "examples begin here.\n\n{{< alk-term cpu form=first >}} again.",
             ),
@@ -81,38 +90,32 @@ Mutation = Callable[[Path], None]
         (
             "missing-first-use",
             "has no explicit first-use marker",
-            lambda root: replace(
-                root / "chapter-one.qmd", "form=first case=sentence", "form=term case=sentence"
-            ),
+            edit("chapter-one.qmd", "form=first case=sentence", "form=term case=sentence"),
         ),
         (
             "invalid-case",
             "unknown alk-term case",
-            lambda root: replace(root / "chapter-one.qmd", "case=sentence", "case=uppercase"),
+            edit("chapter-one.qmd", "case=sentence", "case=uppercase"),
         ),
         (
             "invalid-link",
             "alk-term link must be true or false",
-            lambda root: replace(root / "chapter-two.qmd", "link=false", "link=maybe"),
+            edit("chapter-two.qmd", "link=false", "link=maybe"),
         ),
         (
             "unavailable-form",
             "form acronym is unavailable",
-            lambda root: replace(
-                root / "chapter-two.qmd", "form=first link=false", "form=acronym link=false"
-            ),
+            edit("chapter-two.qmd", "form=first link=false", "form=acronym link=false"),
         ),
         (
             "invalid-language",
             "language must be a BCP 47-style tag",
-            lambda root: replace(root / "glossary.yml", "lang: en-US", "lang: en_US"),
+            edit("glossary.yml", "lang: en-US", "lang: en_US"),
         ),
         (
             "missing-placeholder",
             "expected exactly one generated-glossary placeholder",
-            lambda root: replace(
-                root / "glossary-backmatter.qmd", "::: {.alkahest-glossary-placeholder}\n:::\n", ""
-            ),
+            edit("glossary-backmatter.qmd", "::: {.alkahest-glossary-placeholder}\n:::\n", ""),
         ),
     ),
 )
@@ -123,6 +126,7 @@ def test_invalid_glossary(
     expected: str,
     mutate: Mutation,
 ) -> None:
+    """Reject one deliberately invalid glossary fixture."""
     root = tmp_path / name
     shutil.copytree(FIXTURE, root)
     mutate(root)

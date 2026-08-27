@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import cast
 
+from ..common import load_json
 from ..process import run_process
 from .writing_sources import writing_sources
 
@@ -18,6 +19,12 @@ ROOT = Path(__file__).resolve().parents[3]
 
 class WritingError(RuntimeError):
     """Report a failed writing-quality prerequisite or command."""
+
+
+class Arguments(argparse.Namespace):
+    """Typed writing-check command arguments."""
+
+    mode: str
 
 
 def executable(name: str) -> str:
@@ -78,16 +85,19 @@ def check_toolchain() -> None:
             os.environ["ALKAHEST_ACE_VERSION"],
         ),
     }
+
     for name, (actual, wanted) in expected.items():
         if actual != wanted:
             raise WritingError(f"{name} version is {actual!r}; expected {wanted!r}")
-    axe = json.loads(
-        Path("/opt/alkahest/writing/node_modules/axe-core/package.json").read_text(encoding="utf-8")
-    )["version"]
+
+    package = load_json("/opt/alkahest/writing/node_modules/axe-core/package.json", "axe-core package")
+    if not isinstance(package, dict) or not isinstance(package.get("version"), str):
+        raise WritingError("axe-core package does not declare a text version")
+
+    axe = package["version"]
     if axe != os.environ["ALKAHEST_AXE_CORE_VERSION"]:
-        raise WritingError(
-            f"axe-core version is {axe!r}; expected {os.environ['ALKAHEST_AXE_CORE_VERSION']!r}"
-        )
+        raise WritingError(f"axe-core version is {axe!r}; expected {os.environ['ALKAHEST_AXE_CORE_VERSION']!r}")
+
     print(
         f"Node {expected['Node'][0]}, npm {expected['npm'][0]}, Vale "
         f"{os.environ['ALKAHEST_VALE_VERSION']}, CSpell {expected['CSpell'][0]}, "
@@ -121,9 +131,7 @@ def check_spelling(sources: list[str]) -> int:
 
 def check_prose(sources: list[str]) -> int:
     """Run Vale over canonical writing sources."""
-    print(
-        f"Writing prose gate ({len(sources)} canonical sources; subjective rules remain warnings)"
-    )
+    print(f"Writing prose gate ({len(sources)} canonical sources; subjective rules remain warnings)")
     return run(
         [
             executable("vale"),
@@ -146,6 +154,7 @@ def check_writing(mode: str) -> int:
         return check_spelling(sources)
     if mode == "prose":
         return check_prose(sources)
+
     spelling = check_spelling(sources)
     prose = check_prose(sources)
     return spelling or prose
@@ -155,7 +164,7 @@ def main(arguments: list[str] | None = None) -> int:
     """Run one writing suite."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("all", "spelling", "prose", "toolchain"))
-    options = parser.parse_args(arguments)
+    options = cast(Arguments, parser.parse_args(arguments))
     try:
         if options.mode == "toolchain":
             check_toolchain()

@@ -26,6 +26,7 @@ def run() -> int:
     bootstrap = run_process([ROOT / "scripts" / "bootstrap.sh"], cwd=ROOT, check=False)
     if bootstrap.returncode:
         return bootstrap.returncode
+
     for command in COMMANDS:
         arguments = [sys.executable, "-m", "alkahest", *command]
         result = run_process(arguments, cwd=ROOT, check=False)

@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Never
+from typing import Never, TypedDict
 
 from .process import run_process
 
@@ -26,10 +26,39 @@ PAGE_SIZE = re.compile(
     r"(?P<width>[\d.]+)\s+x\s+(?P<height>[\d.]+)\s+pts"
     r"(?:\s+\(.+\))?$"
 )
+type Box = tuple[float, float, float, float]
+type PageBoxes = dict[int, dict[str, Box]]
+type PageRotations = dict[int, int]
+type PageSizes = dict[int, tuple[float, float]]
 
 
 class PreflightError(RuntimeError):
     """Report a PDF that violates the configured preflight contract."""
+
+
+class PDFProfile(TypedDict):
+    """Physical PDF artifact settings."""
+
+    backend: str
+    trim_points: tuple[float, float]
+    bleed_points: float
+
+
+class RasterColorModel(TypedDict):
+    """One permitted raster color model."""
+
+    name: str
+    components: int
+
+
+class PDFPolicy(TypedDict):
+    """Validated publication PDF policy."""
+
+    geometry_tolerance_points: float
+    continuous_tone_minimum_ppi: float
+    one_bit_minimum_ppi: float
+    allowed_pdf_versions: list[str]
+    allowed_raster_color_models: list[RasterColorModel]
 
 
 @dataclass(frozen=True)
@@ -53,10 +82,12 @@ class RasterImage:
 
 
 def fail(message: str) -> Never:
+    """Raise one PDF preflight error."""
     raise PreflightError(message)
 
 
 def metadata_value(output: str, name: str) -> str:
+    """Read one named value from pdfinfo output."""
     prefix = f"{name}:"
     for line in output.splitlines():
         if line.startswith(prefix):
@@ -71,23 +102,122 @@ def validate_document_metadata(output: str, allowed_versions: set[str]) -> int:
         pages = int(metadata_value(output, "Pages"))
     except ValueError:
         fail("pdfinfo reported a nonnumeric page count")
+
     if pages < 1:
         fail("PDF must contain at least one page")
     if metadata_value(output, "Encrypted") != "no":
         fail("PDF must not be encrypted")
     if metadata_value(output, "JavaScript") != "no":
         fail("PDF must not contain JavaScript")
+
     version = metadata_value(output, "PDF version")
     if version not in allowed_versions:
-        fail(
-            f"PDF version {version} is outside the allowed set: "
-            f"{', '.join(sorted(allowed_versions))}"
-        )
+        fail(f"PDF version {version} is outside the allowed set: {', '.join(sorted(allowed_versions))}")
     return pages
 
 
 def close_enough(actual: float, expected: float, tolerance: float) -> bool:
+    """Compare two point measurements within tolerance."""
     return abs(actual - expected) <= tolerance
+
+
+def parse_page_geometry(output: str) -> tuple[PageBoxes, PageRotations, PageSizes]:
+    """Parse page boxes, rotations, and sizes from pdfinfo output."""
+    boxes: PageBoxes = {}
+    rotations: PageRotations = {}
+    sizes: PageSizes = {}
+    for line in output.splitlines():
+        stripped = line.strip()
+        if box_match := PAGE_BOX.match(stripped):
+            values = (
+                float(box_match.group("x0")),
+                float(box_match.group("y0")),
+                float(box_match.group("x1")),
+                float(box_match.group("y1")),
+            )
+            boxes.setdefault(int(box_match.group("page")), {})[box_match.group("box")] = values
+        elif rotation_match := PAGE_ROTATION.match(stripped):
+            rotations[int(rotation_match.group("page"))] = int(rotation_match.group("rotation"))
+        elif size_match := PAGE_SIZE.match(stripped):
+            sizes[int(size_match.group("page"))] = (
+                float(size_match.group("width")),
+                float(size_match.group("height")),
+            )
+    return boxes, rotations, sizes
+
+
+def require_page_geometry(
+    boxes: PageBoxes,
+    rotations: PageRotations,
+    sizes: PageSizes,
+    expected_pages: set[int],
+    box_pages: set[int],
+) -> None:
+    """Require complete pdfinfo geometry for expected pages."""
+    if set(boxes) != box_pages:
+        fail(f"pdfinfo omitted page-box data for pages {sorted(box_pages - set(boxes))}")
+    if set(rotations) != expected_pages:
+        fail(f"pdfinfo omitted rotation data for pages {sorted(expected_pages - set(rotations))}")
+    if set(sizes) != expected_pages:
+        fail(f"pdfinfo omitted page-size data for pages {sorted(expected_pages - set(sizes))}")
+
+
+def expected_page_boxes(trim_width: float, trim_height: float, bleed_points: float) -> dict[str, Box]:
+    """Build expected media and trim boxes for one profile."""
+    media = (0.0, 0.0, trim_width + 2 * bleed_points, trim_height + 2 * bleed_points)
+    trim = (
+        bleed_points,
+        bleed_points,
+        bleed_points + trim_width,
+        bleed_points + trim_height,
+    )
+    return {
+        "MediaBox": media,
+        "CropBox": media,
+        "BleedBox": media,
+        "TrimBox": trim,
+        "ArtBox": trim,
+    }
+
+
+def validate_page_sizes(
+    rotations: PageRotations,
+    sizes: PageSizes,
+    expected_pages: set[int],
+    media: Box,
+    tolerance: float,
+) -> None:
+    """Validate every page rotation and physical size."""
+    expected_size = (media[2] - media[0], media[3] - media[1])
+    for page in sorted(expected_pages):
+        if rotations[page] != 0:
+            fail(f"page {page} has unsupported rotation {rotations[page]}")
+        if not all(
+            close_enough(actual, expected, tolerance)
+            for actual, expected in zip(sizes[page], expected_size, strict=True)
+        ):
+            fail(
+                f"page {page} is {sizes[page][0]} x {sizes[page][1]} points; "
+                f"expected {expected_size[0]} x {expected_size[1]}"
+            )
+
+
+def validate_explicit_boxes(
+    boxes: PageBoxes, box_pages: set[int], expected_boxes: dict[str, Box], tolerance: float
+) -> None:
+    """Validate sampled explicit PDF page boxes."""
+    for page in sorted(box_pages):
+        if set(boxes[page]) != set(BOX_NAMES):
+            missing_boxes = sorted(set(BOX_NAMES) - set(boxes[page]))
+            fail(f"page {page} omits required boxes: {', '.join(missing_boxes)}")
+
+        for box_name, expected in expected_boxes.items():
+            actual = boxes[page][box_name]
+            if not all(
+                close_enough(actual_value, expected_value, tolerance)
+                for actual_value, expected_value in zip(actual, expected, strict=True)
+            ):
+                fail(f"page {page} {box_name} is {actual}; expected {expected} within {tolerance} point")
 
 
 def validate_page_boxes(
@@ -100,96 +230,26 @@ def validate_page_boxes(
     sampled_box_pages: set[int] | None = None,
 ) -> None:
     """Validate every page size/rotation and sampled explicit page boxes."""
-
-    boxes: dict[int, dict[str, tuple[float, float, float, float]]] = {}
-    rotations: dict[int, int] = {}
-    sizes: dict[int, tuple[float, float]] = {}
-    for line in output.splitlines():
-        box_match = PAGE_BOX.match(line.strip())
-        if box_match:
-            values = (
-                float(box_match.group("x0")),
-                float(box_match.group("y0")),
-                float(box_match.group("x1")),
-                float(box_match.group("y1")),
-            )
-            boxes.setdefault(int(box_match.group("page")), {})[box_match.group("box")] = values
-            continue
-        rotation_match = PAGE_ROTATION.match(line.strip())
-        if rotation_match:
-            rotations[int(rotation_match.group("page"))] = int(rotation_match.group("rotation"))
-            continue
-        size_match = PAGE_SIZE.match(line.strip())
-        if size_match:
-            sizes[int(size_match.group("page"))] = (
-                float(size_match.group("width")),
-                float(size_match.group("height")),
-            )
-
+    boxes, rotations, sizes = parse_page_geometry(output)
     expected_pages = set(range(1, page_count + 1))
     box_pages = sampled_box_pages if sampled_box_pages is not None else expected_pages
-    if set(boxes) != box_pages:
-        missing = sorted(box_pages - set(boxes))
-        fail(f"pdfinfo omitted page-box data for pages {missing}")
-    if set(rotations) != expected_pages:
-        missing = sorted(expected_pages - set(rotations))
-        fail(f"pdfinfo omitted rotation data for pages {missing}")
-    if set(sizes) != expected_pages:
-        missing = sorted(expected_pages - set(sizes))
-        fail(f"pdfinfo omitted page-size data for pages {missing}")
-
-    media = (0.0, 0.0, trim_width + 2 * bleed_points, trim_height + 2 * bleed_points)
-    trim = (
-        bleed_points,
-        bleed_points,
-        bleed_points + trim_width,
-        bleed_points + trim_height,
-    )
-    expected_boxes = {
-        "MediaBox": media,
-        "CropBox": media,
-        "BleedBox": media,
-        "TrimBox": trim,
-        "ArtBox": trim,
-    }
-
-    for page in sorted(expected_pages):
-        if rotations[page] != 0:
-            fail(f"page {page} has unsupported rotation {rotations[page]}")
-        expected_size = (media[2] - media[0], media[3] - media[1])
-        if not all(
-            close_enough(actual, expected, tolerance)
-            for actual, expected in zip(sizes[page], expected_size, strict=True)
-        ):
-            fail(
-                f"page {page} is {sizes[page][0]} x {sizes[page][1]} points; "
-                f"expected {expected_size[0]} x {expected_size[1]}"
-            )
-
-    for page in sorted(box_pages):
-        if set(boxes[page]) != set(BOX_NAMES):
-            missing_boxes = sorted(set(BOX_NAMES) - set(boxes[page]))
-            fail(f"page {page} omits required boxes: {', '.join(missing_boxes)}")
-        for box_name, expected in expected_boxes.items():
-            actual = boxes[page][box_name]
-            if not all(
-                close_enough(actual_value, expected_value, tolerance)
-                for actual_value, expected_value in zip(actual, expected, strict=True)
-            ):
-                fail(
-                    f"page {page} {box_name} is {actual}; expected {expected} "
-                    f"within {tolerance} point"
-                )
+    require_page_geometry(boxes, rotations, sizes, expected_pages, box_pages)
+    expected_boxes = expected_page_boxes(trim_width, trim_height, bleed_points)
+    validate_page_sizes(rotations, sizes, expected_pages, expected_boxes["MediaBox"], tolerance)
+    validate_explicit_boxes(boxes, box_pages, expected_boxes, tolerance)
 
 
 def parse_font_rows(output: str) -> list[tuple[str, bool, bool]]:
+    """Parse font name, embedding, and subset flags."""
     rows: list[tuple[str, bool, bool]] = []
     for line in output.splitlines()[2:]:
         if not line.strip():
             continue
+
         match = FONT_ROW.match(line.strip())
         if not match:
             fail(f"could not parse pdffonts row: {line.strip()}")
+
         rows.append(
             (
                 match.group("name"),
@@ -215,6 +275,7 @@ def validate_fonts(output: str) -> int:
 
 
 def parse_raster_images(output: str) -> list[RasterImage]:
+    """Parse raster-image rows from pdfimages output."""
     rows: list[RasterImage] = []
     for line in output.splitlines()[2:]:
         fields = line.split()
@@ -259,10 +320,8 @@ def validate_raster_images(
         identity = f"page {image.page}, object {image.object_number} {image.object_generation}"
         color_model = (image.color, image.components)
         if color_model not in allowed_color_models:
-            fail(
-                f"raster image at {identity} uses disallowed color model "
-                f"{image.color}/{image.components}"
-            )
+            fail(f"raster image at {identity} uses disallowed color model {image.color}/{image.components}")
+
         one_bit = image.color == "mono" or image.bits_per_component == 1
         minimum = one_bit_minimum_ppi if one_bit else continuous_tone_minimum_ppi
         effective = min(image.x_ppi, image.y_ppi)
@@ -276,9 +335,11 @@ def validate_raster_images(
 
 
 def run_tool(command: list[str], allowed_stderr: set[str] | None = None) -> str:
+    """Run one Poppler tool and reject unexpected diagnostics."""
     result = run_process(command, text=True, capture_output=True, check=False)
     if result.returncode:
         fail(f"{' '.join(command)} failed: {result.stderr.strip()}")
+
     diagnostics = {line.strip() for line in result.stderr.splitlines() if line.strip()}
     unexpected = diagnostics - (allowed_stderr or set())
     if unexpected:
@@ -286,12 +347,13 @@ def run_tool(command: list[str], allowed_stderr: set[str] | None = None) -> str:
     return result.stdout
 
 
-def inspect_pdf(path: Path, profile: dict, policy: dict) -> tuple[int, int, int]:
+def inspect_pdf(path: Path, profile: PDFProfile, policy: PDFPolicy) -> tuple[int, int, int]:
     """Run Poppler inspection for one configured artifact."""
 
     if not path.is_file():
         fail(f"missing artifact {path}")
-    allowed_stderr = set()
+
+    allowed_stderr: set[str] = set()
     if profile["backend"] == "typst":
         allowed_stderr.add("Syntax Error: Suspects object is wrong type (boolean)")
 
@@ -316,9 +378,7 @@ def inspect_pdf(path: Path, profile: dict, policy: dict) -> tuple[int, int, int]
         sampled_pages,
     )
     font_count = validate_fonts(run_tool(["pdffonts", str(path)]))
-    allowed_colors = {
-        (entry["name"], int(entry["components"])) for entry in policy["allowed_raster_color_models"]
-    }
+    allowed_colors = {(entry["name"], int(entry["components"])) for entry in policy["allowed_raster_color_models"]}
     image_count = validate_raster_images(
         run_tool(["pdfimages", "-list", str(path)]),
         allowed_colors,

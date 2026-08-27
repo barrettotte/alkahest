@@ -5,39 +5,75 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any
 
+# Invoke subprocesses only after the public boundary validates the executable.
 _RUN = subprocess.run
 
 
-def run_process(
-    arguments: Sequence[str | os.PathLike[str]], **options: Any
-) -> subprocess.CompletedProcess[Any]:
-    """Resolve and execute one argument vector without invoking a shell."""
+def validated_command(arguments: Sequence[str | os.PathLike[str]]) -> list[str]:
+    """Convert and validate an external command argument vector."""
     if isinstance(arguments, (str, bytes)) or not arguments:
         raise ValueError("process arguments must be a nonempty sequence")
+
     command = [os.fspath(argument) for argument in arguments]
-    if any(not isinstance(argument, str) for argument in command):
-        raise ValueError("process arguments must resolve to text")
     if any(not argument or "\0" in argument for argument in command):
         raise ValueError("process arguments must be nonempty and contain no null bytes")
-    if "shell" in options or "executable" in options:
-        raise ValueError("the trusted process boundary does not accept shell or executable options")
+    return command
 
-    requested = Path(command[0])
+
+def resolve_executable(command: str, cwd: str | os.PathLike[str] | None) -> Path:
+    """Resolve one executable name and require an executable file."""
+    requested = Path(command)
     if requested.is_absolute():
         executable = requested
     elif requested.parent != Path("."):
-        base = Path(options.get("cwd", Path.cwd()))
+        base = Path.cwd() if cwd is None else Path(cwd)
         executable = (base / requested).resolve()
     else:
-        found = shutil.which(command[0])
+        found = shutil.which(command)
         if found is None:
-            raise FileNotFoundError(f"required executable was not found: {command[0]}")
+            raise FileNotFoundError(f"required executable was not found: {command}")
         executable = Path(found).resolve()
+
     if not executable.is_file() or not os.access(executable, os.X_OK):
         raise PermissionError(f"process executable is not an executable file: {executable}")
-    command[0] = str(executable)
-    return _RUN(command, shell=False, **options)
+    return executable
+
+
+def run_process(
+    arguments: Sequence[str | os.PathLike[str]],
+    *,
+    cwd: str | os.PathLike[str] | None = None,
+    check: bool = False,
+    capture_output: bool = False,
+    text: bool = True,
+    stdout: int | None = None,
+    stderr: int | None = None,
+    encoding: str | None = None,
+    timeout: float | None = None,
+    env: Mapping[str, str] | None = None,
+    **unsupported: object,
+) -> subprocess.CompletedProcess[str]:
+    """Resolve and execute one argument vector without invoking a shell."""
+    if unsupported:
+        raise ValueError("the trusted process boundary does not accept shell or executable options")
+    if not text:
+        raise ValueError("the trusted process boundary supports text output only")
+
+    command = validated_command(arguments)
+    command[0] = str(resolve_executable(command[0], cwd))
+    return _RUN(
+        command,
+        cwd=cwd,
+        check=check,
+        capture_output=capture_output,
+        text=True,
+        stdout=stdout,
+        stderr=stderr,
+        encoding=encoding,
+        timeout=timeout,
+        env=env,
+        shell=False,
+    )

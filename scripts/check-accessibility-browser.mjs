@@ -13,9 +13,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const AXE_PATH =
-  process.env.ALKAHEST_AXE_PATH ??
-  "/opt/alkahest/writing/node_modules/axe-core/axe.min.js";
+const AXE_PATH = process.env.ALKAHEST_AXE_PATH ?? "/opt/alkahest/writing/node_modules/axe-core/axe.min.js";
 const CHROME = process.env.QUARTO_CHROMIUM;
 const RULE_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 const SUPPLEMENTAL_RULES = ["tabindex"];
@@ -84,11 +82,14 @@ run().catch(error => {
 }
 
 export function auditFiles(files) {
-  if (!CHROME) throw new Error("QUARTO_CHROMIUM is not configured");
+  if (!CHROME) {
+    throw new Error("QUARTO_CHROMIUM is not configured");
+  }
   const axeSource = readFileSync(AXE_PATH, "utf8");
   const urls = files.map((file) => pathToFileURL(path.resolve(file)).href);
   const directory = mkdtempSync(path.join(tmpdir(), "alkahest-axe."));
   const harness = path.join(directory, "runner.html");
+
   try {
     writeFileSync(harness, harnessSource(axeSource, urls), "utf8");
     const result = spawnSync(
@@ -104,19 +105,22 @@ export function auditFiles(files) {
       ],
       { encoding: "utf8", maxBuffer: 32 * 1024 * 1024, timeout: 60000 },
     );
-    if (result.error) throw result.error;
+
+    if (result.error) {
+      throw result.error;
+    }
     const marker = result.stdout.indexOf(RESULT_MARKER);
     if (marker < 0) {
       throw new Error(
         `headless Chrome produced no axe result (status ${result.status}): ${result.stderr}`,
       );
     }
-    const encoded = result.stdout
-      .slice(marker + RESULT_MARKER.length)
-      .split("<", 1)[0]
-      .trim();
+
+    const encoded = result.stdout.slice(marker + RESULT_MARKER.length).split("<", 1)[0].trim();
     const parsed = JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
-    if (parsed.error) throw new Error(parsed.error);
+    if (parsed.error) {
+      throw new Error(parsed.error);
+    }
     return parsed;
   } finally {
     rmSync(directory, { recursive: true, force: true });
@@ -126,9 +130,7 @@ export function auditFiles(files) {
 function reportFailure(report, root) {
   const file = path.relative(root, fileURLToPath(report.url));
   for (const violation of report.violations) {
-    console.error(
-      `  ${file}: ${violation.id} (${violation.impact ?? "unknown impact"}): ${violation.help}`,
-    );
+    console.error(`  ${file}: ${violation.id} (${violation.impact ?? "unknown impact"}): ${violation.help}`);
     for (const node of violation.nodes) {
       console.error(`    ${node.target.join(" ")}: ${node.failureSummary ?? "failed"}`);
     }
@@ -137,25 +139,30 @@ function reportFailure(report, root) {
 
 function main() {
   const root = path.resolve(process.argv[2] ?? "book/_build/html");
-  const files = process.argv.slice(3).length
-    ? process.argv.slice(3).map((file) => path.resolve(file))
-    : [];
+  const files = process.argv.slice(3).length ? process.argv.slice(3).map((file) => path.resolve(file)) : [];
   if (!files.length) {
     const visit = (directory) => {
       for (const name of readdirSync(directory).sort()) {
         const candidate = path.join(directory, name);
-        if (statSync(candidate).isDirectory()) visit(candidate);
-        else if (candidate.endsWith(".html")) files.push(candidate);
+        if (statSync(candidate).isDirectory()) {
+          visit(candidate);
+        } else if (candidate.endsWith(".html")) {
+          files.push(candidate);
+        }
       }
     };
     visit(root);
   }
-  if (!files.length) throw new Error(`no rendered HTML files below ${root}`);
+
+  if (!files.length) {
+    throw new Error(`no rendered HTML files below ${root}`);
+  }
   const reports = auditFiles(files);
   let violations = 0;
   let incomplete = 0;
   let passes = 0;
   const reviewRules = new Map();
+
   for (const report of reports) {
     if (report.engine !== "4.13.0") {
       throw new Error(`unexpected axe-core version ${report.engine}`);
@@ -172,20 +179,12 @@ function main() {
     reportFailure(report, root);
   }
   if (violations) {
-    throw new Error(
-      `axe-core found ${violations} WCAG 2.2 A/AA rule violations across ${reports.length} documents`,
-    );
+    throw new Error(`axe-core found ${violations} WCAG 2.2 A/AA rule violations across ${reports.length} documents`);
   }
   for (const [rule, count] of [...reviewRules].sort()) {
-    console.log(
-      `review: ${rule} needs human judgment in ${count.documents} documents ` +
-        `(${count.nodes} nodes)`,
-    );
+    console.log(`review: ${rule} needs human judgment in ${count.documents} documents (${count.nodes} nodes)`);
   }
-  console.log(
-    `ok: axe-core WCAG scan (${reports.length} documents; ${passes} rule passes; ` +
-      `${incomplete} results need manual review; 0 violations)`,
-  );
+  console.log(`ok: axe-core WCAG scan (${reports.length} documents; ${passes} rule passes; ${incomplete} results need manual review; 0 violations)`);
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {

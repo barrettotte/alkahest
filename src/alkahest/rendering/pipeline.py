@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from typing import cast
 
 from ..process import run_process
 
@@ -17,6 +18,12 @@ PLANS = {
     "typst": ("typst",),
     "all": FORMATS,
 }
+
+
+class Arguments(argparse.Namespace):
+    """Typed render command arguments."""
+
+    profile: str
 
 
 def render(target: str) -> None:
@@ -39,7 +46,7 @@ def main(arguments: list[str] | None = None) -> int:
     """Render a selected publication format."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("profile", choices=tuple(PLANS))
-    options = parser.parse_args(arguments)
+    options = cast(Arguments, parser.parse_args(arguments))
     try:
         render(options.profile)
     except (OSError, RuntimeError, ValueError) as error:

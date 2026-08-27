@@ -15,35 +15,69 @@ Mutation = Callable[[Path], None]
 
 
 def replace(path: Path, old: str, new: str, *, regex: bool = False) -> None:
+    """Replace one literal or regular-expression fixture fragment."""
     text = path.read_text(encoding="utf-8")
     if regex:
         changed, count = re.subn(old, new, text, count=1, flags=re.MULTILINE)
     else:
         count = int(old in text)
         changed = text.replace(old, new, 1)
+
     if count != 1:
         raise RuntimeError(f"fixture edit did not match {old!r} in {path}")
     path.write_text(changed, encoding="utf-8")
 
 
 def edit(relative: str, old: str, new: str, *, regex: bool = False) -> Mutation:
-    return lambda root: replace(root / relative, old, new, regex=regex)
+    """Create one typed index fixture replacement."""
+
+    def mutate(root: Path) -> None:
+        """Apply the configured index fixture replacement."""
+        replace(root / relative, old, new, regex=regex)
+
+    return mutate
 
 
 def append(relative: str, content: str) -> Mutation:
+    """Create one typed index fixture append."""
+
     def mutate(root: Path) -> None:
+        """Append content to the configured fixture file."""
         path = root / relative
         path.write_text(path.read_text(encoding="utf-8") + content, encoding="utf-8")
 
     return mutate
 
 
+def edits(*mutations: Mutation) -> Mutation:
+    """Combine several index fixture mutations."""
+
+    def mutate(root: Path) -> None:
+        """Apply every configured fixture mutation."""
+        for mutation in mutations:
+            mutation(root)
+
+    return mutate
+
+
+def copy(relative: str, destination: str) -> Mutation:
+    """Create one typed fixture-file copy."""
+
+    def mutate(root: Path) -> None:
+        """Copy the configured fixture file."""
+        shutil.copy2(root / relative, root / destination)
+
+    return mutate
+
+
 def run(root: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Run the index validator against one fixture root."""
     monkeypatch.setenv("ALKAHEST_INDEX_BOOK_ROOT", str(root))
     index.main()
 
 
 def test_valid_index(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Accept the complete index fixture."""
     run(FIXTURE, monkeypatch)
 
 
@@ -82,9 +116,9 @@ def test_valid_index(monkeypatch: pytest.MonkeyPatch) -> None:
         (
             "undeclared-range",
             "declared index range needs exactly one start and one end",
-            lambda root: (
-                replace(root / "chapter.qmd", "id=tour range=start", "id=extra range=start"),
-                replace(root / "chapter.qmd", "id=tour range=end", "id=extra range=end"),
+            edits(
+                edit("chapter.qmd", "id=tour range=start", "id=extra range=start"),
+                edit("chapter.qmd", "id=tour range=end", "id=extra range=end"),
             ),
         ),
         (
@@ -133,7 +167,7 @@ def test_valid_index(monkeypatch: pytest.MonkeyPatch) -> None:
         (
             "duplicate-placeholder",
             "expected exactly one index placeholder; found 2",
-            lambda root: shutil.copy2(root / "index-backmatter.qmd", root / "second-index.qmd"),
+            copy("index-backmatter.qmd", "second-index.qmd"),
         ),
         (
             "backend-command",
@@ -149,6 +183,7 @@ def test_invalid_index(
     expected: str,
     mutate: Mutation,
 ) -> None:
+    """Reject one deliberately invalid index fixture."""
     root = tmp_path / name
     shutil.copytree(FIXTURE, root)
     mutate(root)

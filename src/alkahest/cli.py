@@ -7,11 +7,20 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Sequence
+from typing import cast
 
 from .process import run_process
 from .rendering.pipeline import PLANS
 from .rendering.pipeline import main as render_main
 from .tasks import ROOT, SOURCE_TASKS, TASKS, Task, run_task
+
+
+class Arguments(argparse.Namespace):
+    """Typed maintainer command arguments."""
+
+    command: str
+    names: list[str]
+    profile: str
 
 
 def run_many(tasks: Sequence[Task]) -> int:
@@ -30,7 +39,7 @@ def quality() -> int:
     for command in (
         ["ruff", "check", "src", "scripts", "tests"],
         ["ruff", "format", "--check", "src", "scripts", "tests"],
-        ["mypy"],
+        ["basedpyright"],
         ["pytest", "-m", "not locked"],
     ):
         try:
@@ -61,6 +70,7 @@ def tests(names: Sequence[str]) -> int:
             cwd=ROOT,
             check=False,
         ).returncode
+
     for name in names:
         path = ROOT / "tests/integration" / f"test_{name.replace('-', '_')}.py"
         if not path.is_file():
@@ -75,16 +85,20 @@ def parser() -> argparse.ArgumentParser:
     """Build the compact maintainer parser."""
     command = argparse.ArgumentParser(prog="alkahest", description=__doc__)
     actions = command.add_subparsers(dest="command", required=True)
+
     actions.add_parser("list", help="list checks and render formats")
     actions.add_parser("bootstrap", help="build the rootless publishing image")
     actions.add_parser("doctor", help="verify the pinned Quarto container")
     actions.add_parser("quality", help="run lint, formatting, typing, and tests")
     actions.add_parser("security", help="scan source and dependencies")
     actions.add_parser("ci", help="run the complete validation pipeline")
+
     check = actions.add_parser("check", help="run source or rendered checks")
     check.add_argument("names", nargs="*")
+
     test = actions.add_parser("test", help="run tests")
     test.add_argument("names", nargs="*")
+
     render = actions.add_parser("render", help="render HTML, EPUB, or Typst")
     render.add_argument("profile", nargs="?", default="all", choices=tuple(PLANS))
     return command
@@ -92,38 +106,34 @@ def parser() -> argparse.ArgumentParser:
 
 def main(arguments: Sequence[str] | None = None) -> int:
     """Run one maintainer command."""
-    values = parser().parse_args(arguments)
+    values = cast(Arguments, parser().parse_args(arguments))
     if values.command == "list":
         print("checks:")
         for task in TASKS.values():
             print(f"  {task.name:<16} {task.description}")
         print("\nrenders: " + ", ".join(PLANS))
         return 0
+
     if values.command == "bootstrap":
         return run_process([ROOT / "scripts/bootstrap.sh"], cwd=ROOT, check=False).returncode
     if values.command == "doctor":
-        return run_process(
-            [ROOT / "scripts/quarto.sh", "--version"], cwd=ROOT, check=False
-        ).returncode
+        return run_process([ROOT / "scripts/quarto.sh", "--version"], cwd=ROOT, check=False).returncode
     if values.command == "quality":
         return quality()
     if values.command == "security":
         return security()
     if values.command == "ci":
         from .ci import run
-
         return run()
+
     if values.command == "check":
-        selected = (
-            SOURCE_TASKS
-            if not values.names
-            else tuple(TASKS[name] for name in values.names if name in TASKS)
-        )
+        selected = SOURCE_TASKS if not values.names else tuple(TASKS[name] for name in values.names if name in TASKS)
         unknown = set(values.names) - set(TASKS)
         if unknown:
             print(f"error: unknown check: {min(unknown)}", file=sys.stderr)
             return 2
         return run_many(selected)
+
     if values.command == "test":
         return tests(values.names)
     if values.command == "render":

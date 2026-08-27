@@ -5,7 +5,6 @@ __pycache__/
 .uv-cache/
 .pytest_cache/
 .ruff_cache/
-.mypy_cache/
 node_modules/
 .coverage
 htmlcov/

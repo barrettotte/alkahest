@@ -22,7 +22,7 @@ test = [
   "pytest-cov>=7.0,<8",
 ]
 quality = [
-  "mypy>=1.18,<2",
+  "basedpyright>=1.39,<2",
   "ruff>=0.16,<0.17",
   "types-pyyaml>=6.0,<7",
 ]
@@ -56,22 +56,22 @@ skip_covered = true
 
 [tool.ruff]
 target-version = "py313"
-line-length = 100
+line-length = 120
 
 [tool.ruff.lint]
-extend-select = ["B", "I", "S", "UP"]
+extend-select = ["B", "D100", "D102", "D103", "D104", "D105", "D107", "I", "S", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]
 
-[tool.mypy]
-python_version = "3.13"
-files = ["src/alkahest"]
-check_untyped_defs = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_configs = true
-warn_unused_ignores = true
+[tool.basedpyright]
+include = ["src", "scripts", "tests"]
+pythonVersion = "3.13"
+reportAny = "error"
+reportExplicitAny = "error"
+typeCheckingMode = "strict"
+venv = ".venv"
+venvPath = "."
 
 [tool.uv.build-backend]
 module-name = "alkahest"
