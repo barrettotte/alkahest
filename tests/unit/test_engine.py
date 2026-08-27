@@ -11,6 +11,18 @@ from alkahest import ci
 from alkahest.rendering.pipeline import FORMATS, PLANS
 from alkahest.staging import copy_if_changed
 
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_guide_uses_the_locked_toolchain_image() -> None:
+    """Keep the guide base image synchronized with the toolchain lock."""
+    toolchain_lines = (ROOT / "scripts/toolchain.sh").read_text(encoding="utf-8").splitlines()
+    image_line = next(line for line in toolchain_lines if line.startswith("readonly ALKAHEST_TOOLCHAIN_IMAGE="))
+    locked_image = image_line.split('"', 2)[1]
+    guide_lines = (ROOT / "guide/Containerfile").read_text(encoding="utf-8").splitlines()
+    guide_image = next(line.removeprefix("FROM ") for line in guide_lines if line.startswith("FROM "))
+    assert guide_image == locked_image
+
 
 def test_render_surface_is_typst_only() -> None:
     """Expose only HTML, EPUB, and Typst rendering."""

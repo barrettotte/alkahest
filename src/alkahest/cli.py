@@ -124,6 +124,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
         return security()
     if values.command == "ci":
         from .ci import run
+
         return run()
 
     if values.command == "check":

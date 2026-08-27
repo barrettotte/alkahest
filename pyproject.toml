@@ -19,7 +19,6 @@ build-backend = "uv_build"
 [dependency-groups]
 test = [
   "pytest>=9.0,<10",
-  "pytest-cov>=7.0,<8",
 ]
 quality = [
   "basedpyright>=1.39,<2",
@@ -45,21 +44,15 @@ addopts = ["-ra", "--strict-config", "--strict-markers"]
 testpaths = ["tests"]
 markers = ["locked: requires the pinned container or browser toolchain"]
 
-[tool.coverage.run]
-branch = true
-source = ["alkahest"]
-patch = ["subprocess"]
-
-[tool.coverage.report]
-show_missing = true
-skip_covered = true
-
 [tool.ruff]
 target-version = "py313"
 line-length = 120
 
 [tool.ruff.lint]
-extend-select = ["B", "D100", "D102", "D103", "D104", "D105", "D107", "I", "S", "UP"]
+extend-select = ["B", "C90", "D100", "D102", "D103", "D104", "D105", "D107", "I", "S", "UP"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 12
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]
