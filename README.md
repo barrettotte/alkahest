@@ -11,6 +11,21 @@ Quarto, Typst, fonts, prose checks, and accessibility validators live in a rootl
 
 The repo was named after the theoretical “universal solvent” of Renaissance alchemy.
 
+## Prerequisites
+
+This currently supports x86-64 Linux hosts. MacOS, Windows, and
+ARM systems are not yet supported because parts of the locked container
+toolchain are distributed as Linux AMD64 archives.
+
+Maintainers need:
+
+- GNU Make;
+- [uv](https://docs.astral.sh/uv/) 0.12.5; and
+- [Podman](https://podman.io/) configured for rootless containers.
+
+`make bootstrap` requires network access to build the pinned publishing image.
+Rendering and validation run without network access after that image exists.
+
 ## Maintainer commands
 
 ```sh
