@@ -3,15 +3,15 @@ project:
   resources:
     - theme/fonts/licenses
 
-# Quarto 1.10.18 duplicates color-scheme link IDs when auto-applying Brand to a
-# book. The Sass adapter consumes the same visible tokens until that is fixed.
+# The pinned Quarto release duplicates color-scheme link IDs when auto-applying
+# Brand to a book. The Sass adapter consumes the same visible tokens directly.
 brand: false
 
 format:
   html:
     code-copy: true
     include-before-body: theme/accessibility-before-body.html
-    # Interactive pages preserve source columns; print CSS still forces wrap.
+    # Interactive pages preserve source columns; print CSS forces wrapping.
     code-overflow: scroll
     # Native MathML keeps the web book semantic and independent of a CDN.
     html-math-method: mathml

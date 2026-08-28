@@ -206,7 +206,7 @@ ENV PUPPETEER_EXECUTABLE_PATH="${QUARTO_CHROMIUM}" \
 
 # npm's lockfile records the integrity of CSpell, axe-core, Ace by DAISY, and
 # every transitive package.
-# Ignore lifecycle scripts and remove the temporary package cache so runtime
+# Ignore lifecycle scripts and remove the transient package cache so runtime
 # checks are offline, deterministic, and writable by neither the manuscript nor
 # the unprivileged publishing user.
 COPY tools/writing/package.json tools/writing/package-lock.json /opt/alkahest/writing/

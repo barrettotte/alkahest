@@ -24,12 +24,11 @@ def test_guide_uses_the_locked_toolchain_image() -> None:
     assert guide_image == locked_image
 
 
-def test_render_surface_is_typst_only() -> None:
-    """Expose only HTML, EPUB, and Typst rendering."""
+def test_render_surface_exposes_supported_formats() -> None:
+    """Expose the complete HTML, EPUB, and Typst render surface."""
     assert FORMATS == ("html", "epub", "typst")
     assert PLANS["typst"] == ("typst",)
     assert PLANS["all"] == FORMATS
-    assert "latex" not in PLANS
 
 
 def test_staging_copy_skips_identical_bytes(tmp_path: Path) -> None:

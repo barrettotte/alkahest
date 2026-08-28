@@ -11,10 +11,8 @@ from alkahest.tasks import SOURCE_TASKS, Task
 def test_parser_exposes_only_maintainer_commands() -> None:
     """Expose the deliberately small maintainer command surface."""
     help_text = cli.parser().format_help()
-    for command in ("bootstrap", "doctor", "check", "test", "quality", "security", "render", "ci"):
-        assert command in help_text
-    for removed in ("new-book", "generate", "package", "report"):
-        assert f"\n    {removed} " not in help_text
+    commands = "{list,bootstrap,doctor,quality,security,ci,check,test,render}"
+    assert commands in help_text
 
 
 def test_unknown_check_is_rejected() -> None:

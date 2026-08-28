@@ -3,7 +3,7 @@
 Alkahest has one job: turn a neutral Quarto manuscript into HTML, EPUB, and a
 Typst PDF without asking authors to maintain publishing infrastructure. The
 reference book proves the reusable engine; `guide/` proves the small interface
-an eventual template repository will expose.
+used by an author repository.
 
 ## Boundaries
 
@@ -72,5 +72,5 @@ reader testing or a professional accessibility audit.
 Before adding a registry, generator, profile, task, or script, ask whether one
 ordinary file or an existing tool already expresses the requirement. New
 abstraction is justified only after the same stable need appears more than
-once. Before the first public release, change provisional interfaces directly;
-there is no legacy compatibility contract to preserve.
+once. Preserve compatibility only for interfaces documented as stable; change
+internal interfaces directly instead of adding speculative migration layers.

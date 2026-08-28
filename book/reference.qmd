@@ -1,7 +1,7 @@
 # Core feature specimen {#sec-core-feature-specimen}
 
-This chapter begins the cross-format test corpus. It includes common technical
-elements and will grow as each roadmap capability is evaluated.
+This chapter is the cross-format feature specimen. It exercises common
+technical elements through one backend-neutral manuscript.
 {{< alk-term central-processing-unit form=first case=sentence >}} designs provide
 a concrete counterpoint to Turing's abstract model of computation,{{< alk-index computing id=abstract-model >}} a fitting
 early citation [@turing1936].{{< alk-index turing-alan id=turing-citation >}}
@@ -27,8 +27,8 @@ technical structure such as phases, subsystems, or derivation stages.
 #### Detail heading excluded from numbering and contents {#sec-detail-heading}
 
 Level-four headings provide local structure without extending decimal numbers
-or crowding the contents. Levels five and six are reserved for future semantic
-components rather than used as a substitute for reorganizing a chapter.
+or crowding the contents. Levels five and six are excluded from the publication
+hierarchy rather than used as a substitute for reorganizing a chapter.
 
 The reference language comes from the active locale and uses unabbreviated
 labels. For example, @sec-heading-hierarchy and @sec-numbered-subsection are

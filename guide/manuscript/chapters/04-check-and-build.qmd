@@ -1,6 +1,6 @@
 # Check and Build
 
-Use the fastest command that answers the question you currently have. Routine
+Use the fastest command that answers the question at hand. Routine
 writing should not wait for every publication format.
 
 ## Use the short feedback loop
@@ -31,7 +31,7 @@ failure diagnostics. Start with the first explicit error rather than later
 consequences. Common causes are:
 
 - a chapter filename that does not use `NN-kebab-case.qmd`;
-- an excerpt filename that no longer exists;
+- an excerpt filename absent from the manuscript;
 - malformed TOML, YAML, BibTeX, or Markdown attributes;
 - a missing local asset or citation key; or
 - neither local Quarto nor the pinned Podman image being available.

@@ -47,7 +47,7 @@ def status_code(load: int) -> int:
 Interactive HTML preserves source columns with horizontal scrolling. EPUB and
 fixed-page outputs wrap long lines because clipping or shrinking an entire
 listing would make content inaccessible. A visual continuation is never a new
-source line. Authors should still prefer readable source and use an intentional
+source line. Authors should prefer readable source and use an intentional
 long line only when the unbroken value matters.
 
 The first fixture wraps at ordinary spaces. The second is an intentionally

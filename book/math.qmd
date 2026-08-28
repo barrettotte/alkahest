@@ -114,5 +114,5 @@ an explicitly documented output-specific fallback.
 Equation numbers and theorem numbers are generated; authors never type them.
 
 Displayed equations and annotated inline-math spans carry meaningful natural-
-language alternatives. Surrounding prose must still introduce every symbol
+language alternatives. Surrounding prose must introduce every symbol
 and state the expression's purpose.

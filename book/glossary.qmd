@@ -15,7 +15,7 @@ retain one identity. A multiprocessor discussion{{< alk-index computation id=pro
 same entry emits {{< alk-term central-processing-unit form=plural >}}.
 
 The {{< alk-term instruction-set-architecture form=first >}}{{< alk-index isa id=isa-contract >}} defines the
-programmer-visible processor contract. The `isa` alias still resolves to the
+programmer-visible processor contract. The `isa` alias resolves to the
 canonical registry identity when rendered as {{< alk-term isa form=acronym >}}.
 
 Irregular forms are data rather than author memory: one

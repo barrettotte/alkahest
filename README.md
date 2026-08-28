@@ -1,21 +1,19 @@
 # Alkahest
 
-Alkahest is a reusable engine for writing one Quarto Markdown manuscript and
-publishing it as HTML, EPUB, and a Typst PDF.
+A containerized publishing engine for turning Quarto Markdown into HTML, EPUB, and Typst PDF books.
 
-This is intentionally pre-release: a later template repo will consume the released container image.
+The repository contains the publishing engine, a compact reference book, and an
+author guide. Authors maintain `book.toml`, numbered manuscript files,
+references, and assets; a rootless container supplies Quarto, Typst, fonts,
+prose checks, and accessibility validators.
 
-Authors should eventually need only a small book repository containing
-`book.toml`, numbered manuscript files, references, and assets.
-Quarto, Typst, fonts, prose checks, and accessibility validators live in a rootless container.
-
-The repo was named after the theoretical “universal solvent” of Renaissance alchemy.
+The name refers to the theoretical “universal solvent” of Renaissance alchemy.
 
 ## Prerequisites
 
-This currently supports x86-64 Linux hosts. MacOS, Windows, and
-ARM systems are not yet supported because parts of the locked container
-toolchain are distributed as Linux AMD64 archives.
+Alkahest supports x86-64 Linux hosts. macOS, Windows, and ARM systems are
+unsupported because parts of the locked toolchain are distributed as Linux
+AMD64 archives.
 
 Maintainers need:
 
@@ -53,6 +51,5 @@ Normal rendering and validation are offline after `make bootstrap`.
 - `tests/` covers reusable logic and meaningful tool integrations.
 - `docs/maintenance.md` records engine boundaries and maintenance policy.
 
-Start with [the author guide](guide/README.md) to see the intended writing
-experience.
+Start with [the author guide](guide/README.md) to see the intended writing experience.
 Engine maintainers should read [the maintenance guide](docs/maintenance.md).

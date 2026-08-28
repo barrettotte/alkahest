@@ -35,7 +35,7 @@ Inspect all three before sharing them. Confirm that:
 
 - the notice clearly says the publication is incomplete;
 - the contents contain only intended chapters;
-- links, citations, figures, and references still resolve;
+- links, citations, figures, and references resolve within the excerpt;
 - no answer keys, private notes, or unrelated assets are present; and
 - title and author metadata are correct.
 
@@ -48,5 +48,5 @@ Keep `_build/` ignored.
 The template creates publication files; it does not decide where you should
 upload them. Choose stores, web hosting, identifiers, licenses, companion
 hosting, and print vendors near publication, when those decisions are real.
-Until then, the most valuable test is continuing to write and noticing where
-the routine author workflow creates friction.
+Regular writing is the most valuable workflow test because it reveals where
+routine authoring creates friction.
