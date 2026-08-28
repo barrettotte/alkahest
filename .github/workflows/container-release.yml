@@ -97,8 +97,14 @@ jobs:
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Share Docker-compatible credentials with the attestation action.
+          mkdir -p "${HOME}/.docker"
           printf '%s' "${GHCR_TOKEN}" |
-            podman login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
+            podman login \
+              --authfile "${HOME}/.docker/config.json" \
+              --username "${GITHUB_ACTOR}" \
+              --password-stdin \
+              ghcr.io
 
       - name: Push immutable image tags
         id: push
@@ -110,8 +116,11 @@ jobs:
           source scripts/toolchain.sh
           podman tag "${ALKAHEST_TOOLCHAIN_IMAGE}" "${VERSION_REF}"
           podman tag "${ALKAHEST_TOOLCHAIN_IMAGE}" "${COMMIT_REF}"
-          podman push --digestfile /tmp/alkahest-image-digest "${VERSION_REF}"
-          podman push "${COMMIT_REF}"
+          podman push \
+            --authfile "${HOME}/.docker/config.json" \
+            --digestfile /tmp/alkahest-image-digest \
+            "${VERSION_REF}"
+          podman push --authfile "${HOME}/.docker/config.json" "${COMMIT_REF}"
 
           digest="$(tr -d '\n' < /tmp/alkahest-image-digest)"
           if [[ ! "${digest}" =~ ^sha256:[0-9a-f]{64}$ ]]; then
@@ -126,6 +135,7 @@ jobs:
           subject-name: ${{ steps.release.outputs.image }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+          create-storage-record: false
 
       - name: Summarize published image
         env:
