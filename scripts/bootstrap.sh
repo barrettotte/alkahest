@@ -12,6 +12,8 @@ if ! command -v podman >/dev/null 2>&1; then
 fi
 
 repo_root="$(alkahest_repo_root)"
+image_version="${ALKAHEST_IMAGE_VERSION:-development}"
+image_revision="${ALKAHEST_IMAGE_REVISION:-unknown}"
 
 # Always re-resolve the digest-pinned base manifest. Build layers remain cached,
 # while a missing or withdrawn upstream digest fails instead of falling back to
@@ -19,5 +21,7 @@ repo_root="$(alkahest_repo_root)"
 podman build \
   --pull=always \
   --file "${repo_root}/Containerfile" \
+  --label "org.opencontainers.image.version=${image_version}" \
+  --label "org.opencontainers.image.revision=${image_revision}" \
   --tag "${ALKAHEST_TOOLCHAIN_IMAGE}" \
   "${repo_root}"

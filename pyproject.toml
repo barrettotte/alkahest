@@ -1,6 +1,6 @@
 [project]
 name = "alkahest-book-tools"
-version = "0.2.0"
+version = "0.1.0"
 description = "Reusable tooling for the Alkahest technical-book publishing template"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"

@@ -261,6 +261,17 @@ ENV PYTHONPATH=/workspace/src:/opt/alkahest/engine/src
 ENV PATH="/opt/alkahest/tools/bin:${PATH}"
 WORKDIR /workspace
 
+# Identify the image and link it to its source repository. The build wrapper
+# replaces the development identity when producing a release image.
+LABEL org.opencontainers.image.title="Alkahest" \
+    org.opencontainers.image.description="Containerized publishing engine for Quarto Markdown books" \
+    org.opencontainers.image.source="https://github.com/barrettotte/alkahest" \
+    org.opencontainers.image.url="https://github.com/barrettotte/alkahest" \
+    org.opencontainers.image.documentation="https://github.com/barrettotte/alkahest#readme" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.version="development" \
+    org.opencontainers.image.revision="unknown"
+
 # Rendering and validation run unprivileged even when the caller invokes the
 # image directly instead of using the repository wrappers.
 USER 10001:10001

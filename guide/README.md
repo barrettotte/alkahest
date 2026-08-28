@@ -18,6 +18,6 @@ make excerpt                         # Build the selected public excerpt.
 
 Run `make help` for the complete concise workflow. Build output is disposable
 and lives under `_build/`; open `_build/full/html/index.html` after `make draft`.
-This in-repository guide expects the parent repository's engine image to have
-been built once with `make bootstrap`; normal author commands need no host
-Python, uv, Quarto, or network access.
+For this in-repository guide, `make bootstrap` builds the current parent engine
+before building the book container. Normal author commands need no host Python,
+uv, Quarto, or network access.

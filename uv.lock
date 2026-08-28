@@ -7,7 +7,7 @@ exclude-newer = "2026-08-19T23:59:59Z"
 
 [[package]]
 name = "alkahest-book-tools"
-version = "0.2.0"
+version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "pyyaml" },

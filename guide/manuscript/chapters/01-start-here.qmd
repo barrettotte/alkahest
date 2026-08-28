@@ -10,10 +10,9 @@ You need Make and rootless Podman. The container supplies Python, Quarto, the
 PDF backends, fonts, and the Alkahest engine, so none of them must be installed
 on the host.
 
-Because this guide is developed alongside the engine, first run `make bootstrap`
-at the repository root to build the engine image. Then run `make bootstrap` here
-once to create the tiny book-facing image. An extracted author repository pins
-a released engine image instead of the local development tag.
+Run `make bootstrap` here once to build the current parent engine and create the
+tiny book-facing image. An extracted author repository pins a released engine
+image instead of the local development tag.
 
 Run `make doctor` next. It validates the book configuration, counts the
 chapters, and confirms the renderer inside the container. Routine author

@@ -19,6 +19,9 @@ help: ## Show the writer workflow.
 	@awk 'BEGIN {FS = ":.*## "; printf "Usage: make <target>\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 bootstrap: ## Build this book's rootless container from the Alkahest engine.
+	@if [ -f ../scripts/bootstrap.sh ]; then \
+		$(MAKE) --no-print-directory -C .. bootstrap; \
+	fi
 	$(PODMAN) build --pull=never --file Containerfile --tag $(IMAGE) .
 
 chapter: ## Create the next numbered chapter: make chapter TITLE="My Chapter".

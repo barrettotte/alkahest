@@ -39,14 +39,28 @@ one changes:
 
 1. update its version, URL, archive checksum, and version assertion together;
 2. update `uv.lock` or `tools/writing/package-lock.json` when applicable;
-3. bump the image suffix in `scripts/toolchain.sh` and `guide/Containerfile`;
-4. rebuild with `make bootstrap`; and
-5. run `make ci` before committing.
+3. rebuild the stable local development image with `make bootstrap`; and
+4. run `make ci` before committing.
 
 Normal renders run rootless with networking disabled. The wrappers map the host
 UID and GID so output remains owned by the author. The image contains Quarto,
 Typst, fonts, browser accessibility tooling, EPUBCheck, Ace, CSpell, Vale,
 Poppler, and the Python runtime used by engine checks.
+
+## Container releases
+
+Publishing a GitHub Release tagged `v<version>` runs the full validation
+pipeline before pushing `ghcr.io/barrettotte/alkahest:<version>` and a
+commit-specific tag. The tag must match the version in `pyproject.toml`. The
+workflow also publishes an artifact-provenance attestation and deliberately
+does not create a mutable `latest` tag.
+
+Before publishing, update the version in `pyproject.toml`, run `uv lock`, and
+add a matching version-and-date section to `CHANGELOG.md`.
+
+After the first publication, confirm that the package is public in its GitHub
+package settings. Downstream author repositories should pin the released image
+by version and digest rather than relying on a mutable tag.
 
 ## Writing checks and overrides
 

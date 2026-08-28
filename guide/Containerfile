@@ -1,6 +1,6 @@
 # Add the book-facing command to the complete, rootless Alkahest runtime.
 # In-repository books use the local tag; extracted books pin a released digest.
-FROM localhost/alkahest-publishing:quarto-1.10.18-v23
+FROM localhost/alkahest-publishing:development
 
 WORKDIR /book
 ENTRYPOINT ["/opt/alkahest/tools/bin/python", "/opt/alkahest/engine/scripts/author.py"]

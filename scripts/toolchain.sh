@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Define the shared toolchain image lock and repository path helper.
 
-# Bump this tag whenever the Containerfile's effective toolchain changes. All
-# wrappers consume the same constant so stale local images fail consistently.
-readonly ALKAHEST_TOOLCHAIN_IMAGE="localhost/alkahest-publishing:quarto-1.10.18-v23"
+# Bootstrap replaces this development image with the current local toolchain.
+readonly ALKAHEST_TOOLCHAIN_IMAGE="localhost/alkahest-publishing:development"
 
 alkahest_repo_root() {
   local script_dir
